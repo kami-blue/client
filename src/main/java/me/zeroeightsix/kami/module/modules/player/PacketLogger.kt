@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.threads.safeAsyncListener
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.*
@@ -91,13 +90,15 @@ internal object PacketLogger : Module(
                                 "entityId: ${it.packet.entityId}")
                     }
                     is SPacketEntityMetadata -> {
-                        var data = "dataEntries: "
-                        for (entry in it.packet.dataManagerEntries) {
-                            data += "> isDirty: ${entry.isDirty} " +
-                                "key: ${entry.key} " +
-                                "value: ${entry.value} "
+                        val dataEntry = StringBuilder().run {
+                            append("dataEntries: ")
+                            for (entry in it.packet.dataManagerEntries) {
+                                append("> isDirty: ${entry.isDirty} key: ${entry.key} value: ${entry.value} ")
+                            }
+                            toString()
                         }
-                        add(Type.SERVER, it.packet.javaClass.simpleName, data)
+
+                        add(Type.SERVER, it.packet.javaClass.simpleName, dataEntry)
                     }
                     is SPacketUnloadChunk -> {
                         if (!ignoreChunkLoading) {
@@ -107,24 +108,33 @@ internal object PacketLogger : Module(
                         }
                     }
                     is SPacketDestroyEntities -> {
-                        var entries = "entityIDs: "
-                        for (entry in it.packet.entityIDs) {
-                            entries += "> $entry "
+                        val entities = StringBuilder().run {
+                            append("entityIDs: ")
+                            for (entry in it.packet.entityIDs) {
+                                append("> $entry ")
+                            }
+                            toString()
                         }
-                        add(Type.SERVER, it.packet.javaClass.simpleName, entries)
+
+                        add(Type.SERVER, it.packet.javaClass.simpleName, entities)
                     }
                     is SPacketPlayerPosLook -> {
-                        var flags = "flags: "
-                        for (entry in it.packet.flags) {
-                            flags += "> ${entry.name} "
+                        val flags = StringBuilder().run {
+                            append("flags: ")
+                            for (entry in it.packet.flags) {
+                                append("> ${entry.name} ")
+                            }
+                            toString()
                         }
+
                         add(Type.SERVER, it.packet.javaClass.simpleName,
                             "x: ${it.packet.x} " +
                                 "y: ${it.packet.y} " +
                                 "z: ${it.packet.z} " +
                                 "pitch: ${it.packet.pitch} " +
                                 "yaw: ${it.packet.yaw} " +
-                                "teleportId: ${it.packet.teleportId}")
+                                "teleportId: ${it.packet.teleportId}" +
+                                flags)
 
                     }
                     is SPacketBlockChange -> {
@@ -134,11 +144,15 @@ internal object PacketLogger : Module(
                                 "z: ${it.packet.blockPosition.z}")
                     }
                     is SPacketMultiBlockChange -> {
-                        var changedBlocks = "changedBlocks: "
-                        for (changedBlock in it.packet.changedBlocks) {
-                            changedBlocks += "> x: ${changedBlock.pos.x} y: ${changedBlock.pos.y} z: ${changedBlock.pos.z} "
+                        val changedBlock = StringBuilder().run {
+                            append("changedBlocks: ")
+                            for (changedBlock in it.packet.changedBlocks) {
+                                append("> x: ${changedBlock.pos.x} y: ${changedBlock.pos.y} z: ${changedBlock.pos.z} ")
+                            }
+                            toString()
                         }
-                        add(Type.SERVER, it.packet.javaClass.simpleName, changedBlocks)
+
+                        add(Type.SERVER, it.packet.javaClass.simpleName, changedBlock)
                     }
                     is SPacketTimeUpdate -> {
                         add(Type.SERVER, it.packet.javaClass.simpleName,
