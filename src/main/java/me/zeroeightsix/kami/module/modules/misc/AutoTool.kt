@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.SafeClientEvent
+import me.zeroeightsix.kami.event.events.PlayerAttackEvent
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
@@ -12,7 +13,6 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Enchantments
-import net.minecraftforge.event.entity.player.AttackEntityEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Mouse
@@ -37,8 +37,8 @@ internal object AutoTool : Module(
             if (shouldMoveBack || !switchBack.value) equipBestTool(world.getBlockState(it.pos))
         }
 
-        safeListener<AttackEntityEvent> {
-            if (swapWeapon.value && it.target is EntityLivingBase) equipBestWeapon(preferWeapon.value)
+        safeListener<PlayerAttackEvent> {
+            if (swapWeapon.value && it.entity is EntityLivingBase) equipBestWeapon(preferWeapon.value)
         }
 
         safeListener<TickEvent.ClientTickEvent> {

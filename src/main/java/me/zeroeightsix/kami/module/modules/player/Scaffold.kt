@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.client.entity.MixinEntity
+import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*
@@ -169,7 +170,7 @@ internal object Scaffold : Module(
     }
 
     private fun SafeClientEvent.getBlockSlot(): HotbarSlot? {
-        playerController.updateController()
+        playerController.syncCurrentPlayItem()
         return player.hotbarSlots.firstItem<ItemBlock, HotbarSlot>()
     }
 

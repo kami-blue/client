@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
-import me.zeroeightsix.kami.event.events.RenderShaderEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.mixin.extension.entityOutlineShader
 import me.zeroeightsix.kami.mixin.extension.listShaders
@@ -102,7 +101,7 @@ internal object ESP : Module(
             }
         }
 
-        listener<RenderShaderEvent> {
+        listener<RenderWorldEvent> {
             if (mode.value != ESPMode.SHADER) return@listener
 
             frameBuffer?.bindFramebuffer(false)

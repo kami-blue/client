@@ -147,10 +147,7 @@ internal object CrystalAura : Module(
     val minDamage get() = max(minDamageP, minDamageE)
     val maxSelfDamage get() = min(maxSelfDamageP, maxSelfDamageE)
 
-    override fun isActive() =
-        isEnabled
-            && (mc.player?.allSlots?.countItem(Items.END_CRYSTAL) ?: 0) > 0
-            && inactiveTicks <= 20
+    override fun isActive() = isEnabled && inactiveTicks <= 20
 
     init {
         onEnable {

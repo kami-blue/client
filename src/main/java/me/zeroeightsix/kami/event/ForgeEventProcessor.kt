@@ -13,7 +13,6 @@ import me.zeroeightsix.kami.util.graphics.ProjectionUtils
 import me.zeroeightsix.kami.util.text.MessageDetection
 import net.minecraftforge.client.event.*
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
-import net.minecraftforge.event.entity.player.AttackEntityEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.event.world.ChunkEvent
 import net.minecraftforge.fml.common.eventhandler.EventPriority
@@ -31,6 +30,12 @@ object ForgeEventProcessor {
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase == TickEvent.Phase.START) {
+            mc.profiler.startSection("kbTickPre")
+        } else {
+            mc.profiler.startSection("kbTickPost")
+        }
+
         KamiEventBus.post(event)
 
         if (event.phase == TickEvent.Phase.END && prevWidth != mc.displayWidth || prevHeight != mc.displayHeight) {
@@ -38,15 +43,16 @@ object ForgeEventProcessor {
             prevHeight = mc.displayHeight
             KamiEventBus.post(ResolutionUpdateEvent(mc.displayWidth, mc.displayHeight))
         }
+
+        mc.profiler.endSection()
     }
 
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
     fun onWorldRender(event: RenderWorldLastEvent) {
+        mc.profiler.startSection("kbRender3D")
+
         ProjectionUtils.updateMatrix()
-
-        mc.profiler.startSection("KamiWorldRender")
-
         KamiTessellator.prepareGL()
         KamiEventBus.post(RenderWorldEvent())
         KamiTessellator.releaseGL()
@@ -117,18 +123,8 @@ object ForgeEventProcessor {
     }
 
     @SubscribeEvent
-    fun onPlayerPush(event: PlayerSPPushOutOfBlocksEvent) {
-        KamiEventBus.post(event)
-    }
-
-    @SubscribeEvent
     fun onLeftClickBlock(event: PlayerInteractEvent.LeftClickBlock) {
         KamiEventBus.post(event)
-    }
-
-    @SubscribeEvent
-    fun onAttackEntity(entityEvent: AttackEntityEvent) {
-        KamiEventBus.post(entityEvent)
     }
 
     @SubscribeEvent

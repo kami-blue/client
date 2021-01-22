@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.manager.managers
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.manager.Manager
+import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.items.clickSlot
@@ -33,7 +34,7 @@ object PlayerInventoryManager : Manager {
 
             getTaskOrNext()?.nextInfo()?.let {
                 clickSlot(it.windowId, it.slot, it.mouseButton, it.type)
-                playerController.updateController()
+                playerController.syncCurrentPlayItem()
             }
 
             if (actionQueue.isEmpty()) currentId = 0

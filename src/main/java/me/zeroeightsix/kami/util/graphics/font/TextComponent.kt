@@ -110,9 +110,8 @@ class TextComponent(val separator: String = " ") {
 
     fun isEmpty() = textLines.firstOrNull { it?.isEmpty() == false } == null
 
-    fun getWidth(customFont: Boolean = FontRenderAdapter.useCustomFont) = textLines.map {
-        it?.getWidth(customFont) ?: 0f
-    }.maxOrNull() ?: 0f
+    fun getWidth(customFont: Boolean = FontRenderAdapter.useCustomFont) = textLines
+        .maxOfOrNull { it?.getWidth(customFont) ?: 0.0f } ?: 0.0f
 
     fun getHeight(lineSpace: Int, skipEmptyLines: Boolean = true, customFont: Boolean = FontRenderAdapter.useCustomFont) =
         FontRenderAdapter.getFontHeight(customFont = customFont) * getLines(skipEmptyLines) + lineSpace * (getLines(skipEmptyLines) - 1)

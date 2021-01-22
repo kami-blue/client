@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.mixin.client.render;
 import com.google.common.base.Predicate;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent;
-import me.zeroeightsix.kami.event.events.RenderShaderEvent;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
@@ -12,6 +11,7 @@ import me.zeroeightsix.kami.module.modules.render.AntiFog;
 import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
 import me.zeroeightsix.kami.module.modules.render.CameraClip;
 import me.zeroeightsix.kami.module.modules.render.NoHurtCam;
+import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.math.Vec2f;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -39,7 +39,9 @@ public class MixinEntityRenderer {
 
     @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;renderGameOverlay(F)V", shift = At.Shift.AFTER))
     public void updateCameraAndRender(float partialTicks, long nanoTime, CallbackInfo ci) {
+        Wrapper.getMinecraft().profiler.startSection("kbRender2D");
         KamiEventBus.INSTANCE.post(new RenderOverlayEvent());
+        Wrapper.getMinecraft().profiler.endSection();
     }
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
@@ -91,12 +93,6 @@ public class MixinEntityRenderer {
         } else {
             return entity.getEyeHeight();
         }
-    }
-
-    @Inject(method = "renderWorldPass", at = @At("RETURN"))
-    public void renderShaderPre(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
-        RenderShaderEvent eventPre = new RenderShaderEvent();
-        KamiEventBus.INSTANCE.post(eventPre);
     }
 
     @Redirect(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;turn(FF)V"))
