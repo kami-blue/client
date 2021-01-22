@@ -324,6 +324,10 @@ internal object PacketLogger : Module(
     /**
      * Writes a line to the csv following the format:
      * from (client or server), packet name, time since start, time since last packet, packet data
+     *
+     * @param side The [PacketSide] where this packet is from
+     * @param packet Packet to add
+     * @param data Data of the [packet] in [String]
      */
     private fun add(side: PacketSide, packet: Packet<*>, data: String) {
         val string = "${side.displayName},${packet.javaClass.simpleName},${System.currentTimeMillis() - start},${System.currentTimeMillis() - last},${data}\n"
