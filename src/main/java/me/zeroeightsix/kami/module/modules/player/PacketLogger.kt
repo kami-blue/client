@@ -56,12 +56,10 @@ internal object PacketLogger : Module(
 
             filename = "packet_logger_${fileTimeFormatter.format(LocalTime.now())}.csv"
             lines.add("From,Packet Name,Time Since Start (ms),Time Since Last (ms),Data\n")
-            sendChatMessage("$chatName started.")
         }
 
         onDisable {
             if (mc.player != null) write()
-            sendChatMessage("$chatName stopped.")
         }
 
         safeListener<PacketEvent.Receive> {
