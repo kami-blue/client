@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraft.network.Packet
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.*
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -84,7 +85,7 @@ internal object PacketLogger : Module(
             if (packetType == Type.SERVER || packetType == Type.BOTH) {
                 when (it.packet) {
                     is SPacketEntityTeleport -> {
-                        add(Type.SERVER, it.packet.javaClass.simpleName,
+                        add(Type.SERVER, it.packet,
                             "x: ${it.packet.x} " +
                                 "y: ${it.packet.y} " +
                                 "z: ${it.packet.z} " +
@@ -101,11 +102,11 @@ internal object PacketLogger : Module(
                             toString()
                         }
 
-                        add(Type.SERVER, it.packet.javaClass.simpleName, dataEntry)
+                        add(Type.SERVER, it.packet, dataEntry)
                     }
                     is SPacketUnloadChunk -> {
                         if (!ignoreChunkLoading) {
-                            add(Type.SERVER, it.packet.javaClass.simpleName,
+                            add(Type.SERVER, it.packet,
                                 "x: ${it.packet.x} " +
                                     "z: ${it.packet.z}")
                         }
@@ -119,7 +120,7 @@ internal object PacketLogger : Module(
                             toString()
                         }
 
-                        add(Type.SERVER, it.packet.javaClass.simpleName, entities)
+                        add(Type.SERVER, it.packet, entities)
                     }
                     is SPacketPlayerPosLook -> {
                         val flags = StringBuilder().run {
@@ -130,7 +131,7 @@ internal object PacketLogger : Module(
                             toString()
                         }
 
-                        add(Type.SERVER, it.packet.javaClass.simpleName,
+                        add(Type.SERVER, it.packet,
                             "x: ${it.packet.x} " +
                                 "y: ${it.packet.y} " +
                                 "z: ${it.packet.z} " +
@@ -141,7 +142,7 @@ internal object PacketLogger : Module(
 
                     }
                     is SPacketBlockChange -> {
-                        add(Type.SERVER, it.packet.javaClass.simpleName,
+                        add(Type.SERVER, it.packet,
                             "x: ${it.packet.blockPosition.x} " +
                                 "y: ${it.packet.blockPosition.y} " +
                                 "z: ${it.packet.blockPosition.z}")
@@ -155,57 +156,57 @@ internal object PacketLogger : Module(
                             toString()
                         }
 
-                        add(Type.SERVER, it.packet.javaClass.simpleName, changedBlock)
+                        add(Type.SERVER, it.packet, changedBlock)
                     }
                     is SPacketTimeUpdate -> {
-                        add(Type.SERVER, it.packet.javaClass.simpleName,
+                        add(Type.SERVER, it.packet,
                             "totalWorldTime: ${it.packet.totalWorldTime} " +
                                 "worldTime: ${it.packet.worldTime}")
                     }
                     is SPacketChat -> {
                         if (!ignoreChat) {
-                            add(Type.SERVER, it.packet.javaClass.simpleName,
+                            add(Type.SERVER, it.packet,
                                 "unformattedText: ${it.packet.chatComponent.unformattedText} " +
                                     "type: ${it.packet.type} " +
                                     "isSystem: ${it.packet.isSystem}")
                         }
                     }
                     is SPacketTeams -> {
-                        add(Type.SERVER, it.packet.javaClass.simpleName,
+                        add(Type.SERVER, it.packet,
                             "action: ${it.packet.action} " +
                                 "displayName: ${it.packet.displayName} " +
                                 "color: ${it.packet.color}")
                     }
                     is SPacketChunkData -> {
-                        add(Type.SERVER, it.packet.javaClass.simpleName,
+                        add(Type.SERVER, it.packet,
                             "chunkX: ${it.packet.chunkX} " +
                                 "chunkZ: ${it.packet.chunkZ} " +
                                 "extractedSize: ${it.packet.extractedSize}")
                     }
                     is SPacketEntityProperties -> {
-                        add(Type.SERVER, it.packet.javaClass.simpleName,
+                        add(Type.SERVER, it.packet,
                             "entityId: ${it.packet.entityId}")
                     }
                     is SPacketUpdateTileEntity -> {
-                        add(Type.SERVER, it.packet.javaClass.simpleName,
+                        add(Type.SERVER, it.packet,
                             "posX: ${it.packet.pos.x} " +
                                 "posY: ${it.packet.pos.y} " +
                                 "posZ: ${it.packet.pos.z}")
                     }
                     is SPacketSpawnObject -> {
-                        add(Type.SERVER, it.packet.javaClass.simpleName,
+                        add(Type.SERVER, it.packet,
                             "entityID: ${it.packet.entityID} " +
                                 "data: ${it.packet.data}")
                     }
                     is SPacketKeepAlive -> {
                         if (!ignoreKeepAlive) {
-                            add(Type.SERVER, it.packet.javaClass.simpleName,
+                            add(Type.SERVER, it.packet,
                                 "id: ${it.packet.id}")
                         }
                     }
                     else -> {
                         if (!ignoreUnknown) {
-                            add(Type.SERVER, it.packet.javaClass.simpleName, "Not Registered in PacketLogger.kt")
+                            add(Type.SERVER, it.packet, "Not Registered in PacketLogger.kt")
                         }
                     }
                 }
@@ -220,24 +221,24 @@ internal object PacketLogger : Module(
             if (packetType == Type.CLIENT || packetType == Type.BOTH) {
                 when (it.packet) {
                     is CPacketAnimation -> {
-                        add(Type.CLIENT, it.packet.javaClass.simpleName,
+                        add(Type.CLIENT, it.packet,
                             "hand: ${it.packet.hand}")
                     }
                     is CPacketPlayer.Rotation -> {
-                        add(Type.CLIENT, it.packet.javaClass.simpleName,
+                        add(Type.CLIENT, it.packet,
                             "pitch: ${it.packet.pitch} " +
                                 "yaw: ${it.packet.yaw} " +
                                 "onGround: ${it.packet.isOnGround}")
                     }
                     is CPacketPlayer.Position -> {
-                        add(Type.CLIENT, it.packet.javaClass.simpleName,
+                        add(Type.CLIENT, it.packet,
                             "x: ${it.packet.x} " +
                                 "y: ${it.packet.y} " +
                                 "z: ${it.packet.z} " +
                                 "onGround: ${it.packet.isOnGround}")
                     }
                     is CPacketPlayer.PositionRotation -> {
-                        add(Type.CLIENT, it.packet.javaClass.simpleName,
+                        add(Type.CLIENT, it.packet,
                             "x: ${it.packet.x} " +
                                 "y: ${it.packet.y} " +
                                 "z: ${it.packet.z} " +
@@ -246,7 +247,7 @@ internal object PacketLogger : Module(
                                 "onGround: ${it.packet.isOnGround}")
                     }
                     is CPacketPlayerDigging -> {
-                        add(Type.CLIENT, it.packet.javaClass.simpleName,
+                        add(Type.CLIENT, it.packet,
                             "positionX: ${it.packet.position.x} " +
                                 "positionY: ${it.packet.position.y} " +
                                 "positionZ: ${it.packet.position.z} " +
@@ -254,12 +255,12 @@ internal object PacketLogger : Module(
                                 "action: ${it.packet.action} ")
                     }
                     is CPacketEntityAction -> {
-                        add(Type.CLIENT, it.packet.javaClass.simpleName,
+                        add(Type.CLIENT, it.packet,
                             "action: ${it.packet.action} " +
                                 "auxData: ${it.packet.auxData}")
                     }
                     is CPacketUseEntity -> {
-                        add(Type.CLIENT, it.packet.javaClass.simpleName,
+                        add(Type.CLIENT, it.packet,
                             "action: ${it.packet.action} " +
                                 "hand: ${it.packet.hand} " +
                                 "hitVecX: ${it.packet.hitVec.x} " +
@@ -267,28 +268,28 @@ internal object PacketLogger : Module(
                                 "hitVecZ: ${it.packet.hitVec.z}")
                     }
                     is CPacketPlayerTryUseItem -> {
-                        add(Type.CLIENT, it.packet.javaClass.simpleName,
+                        add(Type.CLIENT, it.packet,
                             "hand: ${it.packet.hand}")
                     }
                     is CPacketConfirmTeleport -> {
-                        add(Type.CLIENT, it.packet.javaClass.simpleName,
+                        add(Type.CLIENT, it.packet,
                             "teleportId: ${it.packet.teleportId}")
                     }
                     is CPacketChatMessage -> {
                         if (!ignoreChat) {
-                            add(Type.SERVER, it.packet.javaClass.simpleName,
+                            add(Type.SERVER, it.packet,
                                 "message: ${it.packet.message}")
                         }
                     }
                     is CPacketKeepAlive -> {
                         if (!ignoreKeepAlive) {
-                            add(Type.CLIENT, it.packet.javaClass.simpleName,
+                            add(Type.CLIENT, it.packet,
                                 "key: ${it.packet.key}")
                         }
                     }
                     else -> {
                         if (!ignoreUnknown) {
-                            add(Type.CLIENT, it.packet.javaClass.simpleName, "Not Registered in PacketLogger.kt")
+                            add(Type.CLIENT, it.packet, "Not Registered in PacketLogger.kt")
                         }
                     }
                 }
@@ -324,9 +325,9 @@ internal object PacketLogger : Module(
      * Writes a line to the csv following the format:
      * from (client or server), packet name, time since start, time since last packet, packet data
      */
-    private fun add(from: Type, packetName: String, data: String) {
+    private fun add(from: Type, packet: Packet<*>, data: String) {
         synchronized(this) {
-            lines.add("${from.name},$packetName,${System.currentTimeMillis() - start},${System.currentTimeMillis() - last},$data")
+            lines.add("${from.name},${packet.javaClass.simpleName},${System.currentTimeMillis() - start},${System.currentTimeMillis() - last},$data")
             lines.add("\n")
             last = System.currentTimeMillis()
         }
