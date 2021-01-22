@@ -10,7 +10,7 @@ import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.Packet
@@ -218,8 +218,6 @@ internal object PacketLogger : Module(
                         }
                     }
                 }
-
-                if (logInChat) sendChatMessage(lines.joinToString())
             }
         }
 
@@ -301,12 +299,6 @@ internal object PacketLogger : Module(
                         }
                     }
                 }
-
-                if (logInChat) {
-                    synchronized(this) {
-                        sendChatMessage(lines.joinToString())
-                    }
-                }
             }
         }
     }
@@ -334,9 +326,15 @@ internal object PacketLogger : Module(
      * from (client or server), packet name, time since start, time since last packet, packet data
      */
     private fun add(side: PacketSide, packet: Packet<*>, data: String) {
+        val string = "${side.displayName},${packet.javaClass.simpleName},${System.currentTimeMillis() - start},${System.currentTimeMillis() - last},${data}\n"
+
         synchronized(this) {
-            lines.add("${side.displayName},${packet.javaClass.simpleName},${System.currentTimeMillis() - start},${System.currentTimeMillis() - last},${data}\n")
+            lines.add(string)
             last = System.currentTimeMillis()
+        }
+
+        if (logInChat) {
+            MessageSendHelper.sendChatMessage(string)
         }
     }
 }
