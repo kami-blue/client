@@ -22,13 +22,13 @@ internal object PacketLogger : Module(
     description = "Logs sent packets to a file",
     category = Category.PLAYER
 ) {
-    private val showClientTicks by setting("ShowClientTicks", true)
-    private val logInChat by setting("LogInChat", false)
-    private val packetsFrom by setting("LogPacketsFrom", Type.BOTH)
-    private val ignoreKeepAlive by setting("IgnoreKeepAlive", true)
-    private val ignoreChunkLoading by setting("IgnoreChunkLoading", true)
-    private val ignoreUnknown by setting("IgnoreUnknownPackets", false)
-    private val ignoreChat by setting("IgnoreChat", true)
+    private val showClientTicks by setting("ShowClientTicks", true, description = "Show timestamps of client ticks.")
+    private val logInChat by setting("LogInChat", false, description = "Print packets in the chat.")
+    private val packetType by setting("PacketType", Type.BOTH, description = "Log packets from the server, from the client, or both.")
+    private val ignoreKeepAlive by setting("IgnoreKeepAlive", true, description = "Ignore both incoming and outgoing KeepAlive packets.")
+    private val ignoreChunkLoading by setting("IgnoreChunkLoading", true, description = "Ignore chunk loading and unloading packets.")
+    private val ignoreUnknown by setting("IgnoreUnknownPackets", false, description = "Ignore packets that aren't explicitly handled.")
+    private val ignoreChat by setting("IgnoreChat", true, description = "Ignore chat packets.")
 
     private val sdf = SimpleDateFormat("HH-mm-ss_SSS")
     private val sdflog = SimpleDateFormat("HH:mm:ss.SSS")
@@ -63,7 +63,7 @@ internal object PacketLogger : Module(
         }
 
         safeListener<PacketEvent.Receive> {
-            if (packetsFrom == Type.SERVER || packetsFrom == Type.BOTH) {
+            if (packetType == Type.SERVER || packetType == Type.BOTH) {
                 when (it.packet) {
                     is SPacketEntityTeleport -> {
                         add(Type.SERVER, it.packet.javaClass.simpleName,
@@ -182,7 +182,7 @@ internal object PacketLogger : Module(
 
         /* Listen to PostSend and not Send since packets can get cancelled before we actually send them */
         safeListener<PacketEvent.PostSend> {
-            if (packetsFrom == Type.CLIENT || packetsFrom == Type.BOTH ) {
+            if (packetType == Type.CLIENT || packetType == Type.BOTH ) {
                 when (it.packet) {
                     is CPacketAnimation -> {
                         add(Type.CLIENT, it.packet.javaClass.simpleName,
