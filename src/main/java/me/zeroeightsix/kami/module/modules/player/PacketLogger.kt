@@ -145,7 +145,7 @@ internal object PacketLogger : Module(
                                 "z: ${it.packet.z} " +
                                 "pitch: ${it.packet.pitch} " +
                                 "yaw: ${it.packet.yaw} " +
-                                "teleportId: ${it.packet.teleportId}" +
+                                "teleportID: ${it.packet.teleportId}" +
                                 flags)
 
                     }
