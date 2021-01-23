@@ -279,7 +279,7 @@ internal object PacketLogger : Module(
                     }
                     is CPacketConfirmTeleport -> {
                         add(PacketSide.CLIENT, it.packet,
-                            "teleportId: ${it.packet.teleportId}")
+                            "teleportID: ${it.packet.teleportId}")
                     }
                     is CPacketChatMessage -> {
                         if (!ignoreChat) {
