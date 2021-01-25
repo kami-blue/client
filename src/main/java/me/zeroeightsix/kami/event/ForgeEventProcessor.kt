@@ -36,9 +36,9 @@ object ForgeEventProcessor {
             mc.profiler.startSection("kbTickPost")
         }
 
-        KamiEventBus.post(event)
+        KamiEventBus.postProfiler(event)
 
-        if (event.phase == TickEvent.Phase.END && prevWidth != mc.displayWidth || prevHeight != mc.displayHeight) {
+        if (event.phase == TickEvent.Phase.END && (prevWidth != mc.displayWidth || prevHeight != mc.displayHeight)) {
             prevWidth = mc.displayWidth
             prevHeight = mc.displayHeight
             KamiEventBus.post(ResolutionUpdateEvent(mc.displayWidth, mc.displayHeight))
@@ -50,14 +50,10 @@ object ForgeEventProcessor {
     @SubscribeEvent
     @Suppress("UNUSED_PARAMETER")
     fun onWorldRender(event: RenderWorldLastEvent) {
-        mc.profiler.startSection("kbRender3D")
-
         ProjectionUtils.updateMatrix()
         KamiTessellator.prepareGL()
         KamiEventBus.post(RenderWorldEvent())
         KamiTessellator.releaseGL()
-
-        mc.profiler.endSection()
     }
 
     @SubscribeEvent

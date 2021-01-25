@@ -1,8 +1,13 @@
 package me.zeroeightsix.kami.event
 
+import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.eventbus.IEventBus
 
 interface Event
+
+interface ProfilerEvent {
+    val profilerName: String
+}
 
 open class SingletonEvent(val eventBus: IEventBus) {
     fun post() {
@@ -28,6 +33,8 @@ open class Cancellable : ICancellable {
     override var cancelled = false
 }
 
-enum class Phase {
-    PRE, PERI, POST;
+enum class Phase(override val displayName: String) : DisplayEnum {
+    PRE("Pre"),
+    PERI("Peri"),
+    POST("Post")
 }

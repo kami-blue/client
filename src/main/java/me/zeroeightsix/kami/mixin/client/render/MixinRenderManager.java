@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.mixin.client.render;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.Phase;
 import me.zeroeightsix.kami.event.events.RenderEntityEvent;
-import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,10 +16,8 @@ public class MixinRenderManager {
     public void renderEntityPre(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
         if (entity == null) return;
 
-        Wrapper.getMinecraft().profiler.startSection("kbRenderEntityPre");
         RenderEntityEvent event = new RenderEntityEvent(entity, x, y, z, yaw, partialTicks, Phase.PRE);
         KamiEventBus.INSTANCE.post(event);
-        Wrapper.getMinecraft().profiler.endSection();
 
         if (event.getCancelled()) ci.cancel();
     }
@@ -29,19 +26,15 @@ public class MixinRenderManager {
     public void renderEntityPeri(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
         if (entity == null) return;
 
-        Wrapper.getMinecraft().profiler.startSection("kbRenderEntityPeri");
         RenderEntityEvent event = new RenderEntityEvent(entity, x, y, z, yaw, partialTicks, Phase.PERI);
         KamiEventBus.INSTANCE.post(event);
-        Wrapper.getMinecraft().profiler.endSection();
     }
 
     @Inject(method = "renderEntity", at = @At("RETURN"))
     public void renderEntityPost(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
         if (entity == null) return;
 
-        Wrapper.getMinecraft().profiler.startSection("kbRenderEntityPost");
         RenderEntityEvent event = new RenderEntityEvent(entity, x, y, z, yaw, partialTicks, Phase.POST);
         KamiEventBus.INSTANCE.post(event);
-        Wrapper.getMinecraft().profiler.endSection();
     }
 }
