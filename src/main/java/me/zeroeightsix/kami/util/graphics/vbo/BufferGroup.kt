@@ -1,5 +1,9 @@
 package me.zeroeightsix.kami.util.graphics.vbo
 
+import me.zeroeightsix.kami.util.graphics.compat.GL_ARRAY_BUFFER
+import me.zeroeightsix.kami.util.graphics.compat.glBindBuffer
+import me.zeroeightsix.kami.util.graphics.compat.glBufferData
+import me.zeroeightsix.kami.util.graphics.compat.glGenBuffers
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11.glDrawArrays
 import java.nio.FloatBuffer
