@@ -17,7 +17,7 @@ abstract class AbstractBufferGroup(
 
     protected val id by lazy { glGenBuffers() }
     protected var size = 0
-    protected var renderSize = 0
+    var renderSize = 0; private set
 
     fun put(block: VertexBuilder.() -> Unit) {
         VertexBuilder(posBuffer, colorBuffer, texPosBuffer).apply(block).build()

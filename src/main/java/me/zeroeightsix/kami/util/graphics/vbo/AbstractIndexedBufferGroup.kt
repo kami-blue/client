@@ -20,7 +20,7 @@ abstract class AbstractIndexedBufferGroup<B: Buffer, T: Number>(
     protected abstract val indexBuffer: B
 
     private val indexBufferID by lazy { glGenBuffers() }
-    private var indexSize = 0
+    var indexSize = 0; private set
 
     abstract fun uploadIndex(indices: Array<T>)
 
