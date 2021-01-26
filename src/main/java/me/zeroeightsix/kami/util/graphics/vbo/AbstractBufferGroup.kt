@@ -4,11 +4,10 @@ import me.zeroeightsix.kami.util.graphics.compat.glBindBuffer
 import me.zeroeightsix.kami.util.graphics.compat.glBufferData
 import me.zeroeightsix.kami.util.graphics.compat.glGenBuffers
 import org.lwjgl.BufferUtils
-import org.lwjgl.opengl.GL15
+import org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER
 import java.nio.FloatBuffer
 
 abstract class AbstractBufferGroup(
-    protected val mode: Int,
     protected val usage: Int,
     protected val buffer: FloatBuffer,
     protected val posBuffer: IPosBuffer?,
@@ -28,19 +27,20 @@ abstract class AbstractBufferGroup(
     fun upload() {
         buffer.flip()
 
-        glBindBuffer(GL15.GL_ARRAY_BUFFER, id)
-        glBufferData(GL15.GL_ARRAY_BUFFER, buffer, usage)
-        glBindBuffer(GL15.GL_ARRAY_BUFFER, 0)
+        glBindBuffer(GL_ARRAY_BUFFER, id)
+        glBufferData(GL_ARRAY_BUFFER, buffer, usage)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
 
         buffer.clear()
         renderSize = size
         size = 0
     }
 
-    abstract fun render()
+    abstract fun render(mode: Int)
+
+    abstract fun render(mode: Int, start: Int, size: Int)
 
     abstract class AbstractBuilder<T : AbstractBufferGroup>(
-        protected val mode: Int,
         protected val usage: Int,
         capacity: Int
     ) {
@@ -51,23 +51,23 @@ abstract class AbstractBufferGroup(
         protected var texPosBuffer: ITexPosBuffer? = null
 
         fun pos2Buffer() {
-            posBuffer = Pos2Buffer(mode, usage, buffer)
+            posBuffer = Pos2Buffer(usage, buffer)
         }
 
         fun pos3Buffer() {
-            posBuffer = Pos3Buffer(mode, usage, buffer)
+            posBuffer = Pos3Buffer(usage, buffer)
         }
 
         fun color3Buffer() {
-            colorBuffer = Color3Buffer(mode, usage, buffer)
+            colorBuffer = Color3Buffer(usage, buffer)
         }
 
         fun color4Buffer() {
-            colorBuffer = Color4Buffer(mode, usage, buffer)
+            colorBuffer = Color4Buffer(usage, buffer)
         }
 
         fun texPosBuffer() {
-            texPosBuffer = TexPosBuffer(mode, usage, buffer)
+            texPosBuffer = TexPosBuffer(usage, buffer)
         }
 
         abstract fun build(): T

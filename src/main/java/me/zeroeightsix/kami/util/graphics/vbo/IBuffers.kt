@@ -8,7 +8,6 @@ import org.lwjgl.opengl.GL11.*
 import java.nio.FloatBuffer
 
 interface IBuffer {
-    val mode: Int
     val usage: Int
     val buffer: FloatBuffer
 

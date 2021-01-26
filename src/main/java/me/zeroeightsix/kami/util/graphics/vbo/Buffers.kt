@@ -7,7 +7,6 @@ import org.kamiblue.commons.tuples.z
 import java.nio.FloatBuffer
 
 abstract class AbstractBuffer(
-    final override val mode: Int,
     final override val usage: Int,
     final override val buffer: FloatBuffer
 ) : IBuffer {
@@ -15,11 +14,11 @@ abstract class AbstractBuffer(
     override var offset: Long = 0L
 }
 
-class Pos2Buffer(mode: Int, usage: Int, buffer: FloatBuffer) : AbstractBuffer(mode, usage, buffer), IPosBuffer {
+class Pos2Buffer(usage: Int, buffer: FloatBuffer) : AbstractBuffer(usage, buffer), IPosBuffer {
     override val vertexSize: Int = 2
 }
 
-class Pos3Buffer(mode: Int, usage: Int, buffer: FloatBuffer) : AbstractBuffer(mode, usage, buffer), IPosBuffer {
+class Pos3Buffer(usage: Int, buffer: FloatBuffer) : AbstractBuffer(usage, buffer), IPosBuffer {
     override val vertexSize: Int = 3
 
     override fun pos(pos: Vec3f) {
@@ -28,11 +27,11 @@ class Pos3Buffer(mode: Int, usage: Int, buffer: FloatBuffer) : AbstractBuffer(mo
     }
 }
 
-class Color3Buffer(mode: Int, usage: Int, buffer: FloatBuffer) : AbstractBuffer(mode, usage, buffer), IColorBuffer {
+class Color3Buffer(usage: Int, buffer: FloatBuffer) : AbstractBuffer(usage, buffer), IColorBuffer {
     override val vertexSize: Int = 3
 }
 
-class Color4Buffer(mode: Int, usage: Int, buffer: FloatBuffer) : AbstractBuffer(mode, usage, buffer), IColorBuffer {
+class Color4Buffer(usage: Int, buffer: FloatBuffer) : AbstractBuffer(usage, buffer), IColorBuffer {
     override val vertexSize: Int = 4
 
     override fun color(color: Vec4f) {
@@ -41,4 +40,4 @@ class Color4Buffer(mode: Int, usage: Int, buffer: FloatBuffer) : AbstractBuffer(
     }
 }
 
-class TexPosBuffer(mode: Int, usage: Int, buffer: FloatBuffer) : AbstractBuffer(mode, usage, buffer), ITexPosBuffer
+class TexPosBuffer(usage: Int, buffer: FloatBuffer) : AbstractBuffer(usage, buffer), ITexPosBuffer

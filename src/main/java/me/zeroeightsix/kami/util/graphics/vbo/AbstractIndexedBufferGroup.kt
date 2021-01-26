@@ -9,14 +9,13 @@ import java.nio.Buffer
 import java.nio.FloatBuffer
 
 abstract class AbstractIndexedBufferGroup<B: Buffer, T: Number>(
-    mode: Int,
     usage: Int,
     buffer: FloatBuffer,
     posBuffer: IPosBuffer?,
     colorBuffer: IColorBuffer?,
     texPosBuffer: ITexPosBuffer?,
     private val type: Int
-) : AbstractBufferGroup(mode, usage, buffer, posBuffer, colorBuffer, texPosBuffer) {
+) : AbstractBufferGroup(usage, buffer, posBuffer, colorBuffer, texPosBuffer) {
 
     protected abstract val indexBuffer: B
 
@@ -40,7 +39,11 @@ abstract class AbstractIndexedBufferGroup<B: Buffer, T: Number>(
 
     protected abstract fun glBufferData()
 
-    final override fun render() {
+    override fun render(mode: Int) {
+        render(mode, 0, indexSize)
+    }
+
+    final override fun render(mode: Int, start: Int, size: Int) {
         glBindBuffer(GL_ARRAY_BUFFER, id)
         posBuffer?.preRender()
         colorBuffer?.preRender()
@@ -48,7 +51,7 @@ abstract class AbstractIndexedBufferGroup<B: Buffer, T: Number>(
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID)
 
-        glDrawElements(mode, indexSize, type, 0)
+        glDrawElements(mode, size, type, start.toLong())
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
 

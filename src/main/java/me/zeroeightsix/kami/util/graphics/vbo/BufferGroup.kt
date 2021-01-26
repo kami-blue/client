@@ -6,25 +6,27 @@ import me.zeroeightsix.kami.util.graphics.compat.glGenBuffers
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER
-import org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER
 import java.nio.FloatBuffer
 
 class BufferGroup private constructor(
-    mode: Int,
     usage: Int,
     buffer: FloatBuffer,
     posBuffer: IPosBuffer?,
     colorBuffer: IColorBuffer?,
     texPosBuffer: ITexPosBuffer?
-) : AbstractBufferGroup(mode, usage, buffer, posBuffer, colorBuffer, texPosBuffer) {
+) : AbstractBufferGroup(usage, buffer, posBuffer, colorBuffer, texPosBuffer) {
 
-    override fun render() {
+    override fun render(mode: Int) {
+        render(mode, 0, renderSize)
+    }
+
+    override fun render(mode: Int, start: Int, size: Int) {
         glBindBuffer(GL_ARRAY_BUFFER, id)
         posBuffer?.preRender()
         colorBuffer?.preRender()
         texPosBuffer?.preRender()
 
-        glDrawArrays(mode, 0, renderSize)
+        glDrawArrays(mode, start, size)
 
         posBuffer?.postRender()
         colorBuffer?.postRender()
@@ -33,23 +35,18 @@ class BufferGroup private constructor(
     }
 
     class Builder(
-        mode: Int,
         usage: Int,
         capacity: Int = 0x10000
-    ) : AbstractBufferGroup.AbstractBuilder<BufferGroup>(mode, usage, capacity) {
-
+    ) : AbstractBufferGroup.AbstractBuilder<BufferGroup>(usage, capacity) {
         override fun build(): BufferGroup {
             prebuild()
-            return BufferGroup(mode, usage, buffer, posBuffer, colorBuffer, texPosBuffer)
+            return BufferGroup(usage, buffer, posBuffer, colorBuffer, texPosBuffer)
         }
-
     }
-
 }
 
 fun newBufferGroup(
-    mode: Int,
     usage: Int,
     capacity: Int = 0x10000,
     block: BufferGroup.Builder.() -> Unit
-) = BufferGroup.Builder(mode, usage, capacity).apply(block).build()
+) = BufferGroup.Builder(usage, capacity).apply(block).build()
