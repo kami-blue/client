@@ -141,7 +141,7 @@ object KamiFontRenderer {
         resetStyle()
 
         for ((index, char) in text.withIndex()) {
-            if (checkStyleCode(text, index)) continue
+            if (checkFormatCode(text, index)) continue
 
             val chunk = currentVariant.getChunk(char)
             val charInfo = currentVariant.getCharInfo(char)
@@ -192,7 +192,7 @@ object KamiFontRenderer {
         var width = 0.0
         resetStyle()
         for ((index, char) in text.withIndex()) {
-            if (checkStyleCode(text, index)) continue
+            if (checkFormatCode(text, index)) continue
             width += currentVariant.getCharInfo(char).width + CustomFont.gap
         }
         resetStyle()
@@ -204,38 +204,48 @@ object KamiFontRenderer {
         currentColor = DyeColors.WHITE.color
     }
 
-    private fun checkStyleCode(text: String, index: Int): Boolean {
+    private fun checkFormatCode(text: String, index: Int): Boolean {
         if (text.getOrNull(index - 1) == '§') return true
 
         if (text.getOrNull(index) == '§') {
-            when (text.getOrNull(index + 1)) {
-                Style.REGULAR.codeChar -> currentVariant = glyphArray[0]
-                Style.BOLD.codeChar -> currentVariant = glyphArray[1]
-                Style.ITALIC.codeChar -> currentVariant = glyphArray[2]
-            }
-            currentColor = when (text.getOrNull(index + 1)) {
-                TextFormatting.BLACK.toString()[1] -> ColorHolder(0, 0, 0)
-                TextFormatting.DARK_BLUE.toString()[1] -> ColorHolder(0, 0, 170)
-                TextFormatting.DARK_GREEN.toString()[1] -> ColorHolder(0, 170, 0)
-                TextFormatting.DARK_AQUA.toString()[1] -> ColorHolder(0, 170, 170)
-                TextFormatting.DARK_RED.toString()[1] -> ColorHolder(170, 0, 0)
-                TextFormatting.DARK_PURPLE.toString()[1] -> ColorHolder(170, 0, 170)
-                TextFormatting.GOLD.toString()[1] -> ColorHolder(250, 170, 0)
-                TextFormatting.GRAY.toString()[1] -> ColorHolder(170, 170, 170)
-                TextFormatting.DARK_GRAY.toString()[1] -> ColorHolder(85, 85, 85)
-                TextFormatting.BLUE.toString()[1] -> ColorHolder(85, 85, 255)
-                TextFormatting.GREEN.toString()[1] -> ColorHolder(85, 255, 85)
-                TextFormatting.AQUA.toString()[1] -> ColorHolder(85, 255, 255)
-                TextFormatting.RED.toString()[1] -> ColorHolder(255, 85, 85)
-                TextFormatting.LIGHT_PURPLE.toString()[1] -> ColorHolder(255, 85, 255)
-                TextFormatting.YELLOW.toString()[1] -> ColorHolder(255, 255, 85)
-                TextFormatting.WHITE.toString()[1] -> DyeColors.WHITE.color
-                TextFormatting.RESET.toString()[1] -> DyeColors.WHITE.color
-                else -> currentColor
-            }
+            val nextChar = text.getOrNull(index + 1)
+            checkStyleCode(nextChar)
+            checkColorCode(nextChar)
             return true
         }
 
         return false
+    }
+
+    private fun checkStyleCode(char: Char?) {
+        currentVariant = when (char) {
+            Style.REGULAR.codeChar -> glyphArray[0]
+            Style.BOLD.codeChar -> glyphArray[1]
+            Style.ITALIC.codeChar -> glyphArray[2]
+            else -> currentVariant
+        }
+    }
+
+    private fun checkColorCode(char: Char?) {
+        currentColor = when (char) {
+            TextFormatting.BLACK.toString()[1] -> ColorHolder(0, 0, 0)
+            TextFormatting.DARK_BLUE.toString()[1] -> ColorHolder(0, 0, 170)
+            TextFormatting.DARK_GREEN.toString()[1] -> ColorHolder(0, 170, 0)
+            TextFormatting.DARK_AQUA.toString()[1] -> ColorHolder(0, 170, 170)
+            TextFormatting.DARK_RED.toString()[1] -> ColorHolder(170, 0, 0)
+            TextFormatting.DARK_PURPLE.toString()[1] -> ColorHolder(170, 0, 170)
+            TextFormatting.GOLD.toString()[1] -> ColorHolder(250, 170, 0)
+            TextFormatting.GRAY.toString()[1] -> ColorHolder(170, 170, 170)
+            TextFormatting.DARK_GRAY.toString()[1] -> ColorHolder(85, 85, 85)
+            TextFormatting.BLUE.toString()[1] -> ColorHolder(85, 85, 255)
+            TextFormatting.GREEN.toString()[1] -> ColorHolder(85, 255, 85)
+            TextFormatting.AQUA.toString()[1] -> ColorHolder(85, 255, 255)
+            TextFormatting.RED.toString()[1] -> ColorHolder(255, 85, 85)
+            TextFormatting.LIGHT_PURPLE.toString()[1] -> ColorHolder(255, 85, 255)
+            TextFormatting.YELLOW.toString()[1] -> ColorHolder(255, 255, 85)
+            TextFormatting.WHITE.toString()[1] -> DyeColors.WHITE.color
+            TextFormatting.RESET.toString()[1] -> DyeColors.WHITE.color
+            else -> currentColor
+        }
     }
 }
