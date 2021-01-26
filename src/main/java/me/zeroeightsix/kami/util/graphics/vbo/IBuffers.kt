@@ -10,32 +10,20 @@ import java.nio.FloatBuffer
 interface IBuffer {
     val mode: Int
     val usage: Int
-    val capacity: Int
-
-    val id: Int
-    val dataType: Int
-    val vertexSize: Int
     val buffer: FloatBuffer
 
-    fun upload() {
-        buffer.flip()
+    val dataType: Int
+    val vertexSize: Int
 
-        glBindBuffer(GL_ARRAY_BUFFER, id)
-        glBufferData(GL_ARRAY_BUFFER, buffer, usage)
-        glBindBuffer(GL_ARRAY_BUFFER, 0)
-    }
+    var stride: Int
+    var offset: Long
 
     fun preRender() {
         glEnableClientState(dataType)
-        glBindBuffer(GL_ARRAY_BUFFER, id)
     }
 
     fun postRender() {
         glDisableClientState(dataType)
-    }
-
-    fun clear() {
-        buffer.position(0)
     }
 }
 
@@ -45,7 +33,7 @@ interface IPosBuffer : IBuffer {
 
     override fun preRender() {
         super.preRender()
-        glVertexPointer(vertexSize, GL_FLOAT, 0, 0)
+        glVertexPointer(vertexSize, GL_FLOAT, stride, offset)
     }
 
     fun pos(pos: Vec3f) {
@@ -60,7 +48,7 @@ interface IColorBuffer : IBuffer {
 
     override fun preRender() {
         super.preRender()
-        glColorPointer(vertexSize, GL_FLOAT, 0, 0)
+        glColorPointer(vertexSize, GL_FLOAT, stride, offset)
     }
 
     fun color(color: Vec4f) {
@@ -79,7 +67,7 @@ interface ITexPosBuffer : IBuffer {
 
     override fun preRender() {
         super.preRender()
-        glTexCoordPointer(vertexSize, GL_FLOAT, 0, 0)
+        glTexCoordPointer(vertexSize, GL_FLOAT, stride, offset)
     }
 
     fun uv(color: Vec2f) {

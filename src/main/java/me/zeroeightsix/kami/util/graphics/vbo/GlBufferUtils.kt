@@ -5,7 +5,12 @@ import org.lwjgl.opengl.ARBVertexBufferObject
 import org.lwjgl.opengl.GL15
 import java.nio.FloatBuffer
 
-val GL_ARRAY_BUFFER = 0x8892
+const val GL_ARRAY_BUFFER = 0x8892
+
+fun glGenBuffers(): Int {
+    return if (GlCompatUtils.arbVbo) ARBVertexBufferObject.glGenBuffersARB()
+    else GL15.glGenBuffers()
+}
 
 fun glBindBuffer(target: Int, buffer: Int) {
     if (GlCompatUtils.arbVbo) {

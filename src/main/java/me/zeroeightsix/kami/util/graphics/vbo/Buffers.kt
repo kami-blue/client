@@ -1,27 +1,25 @@
 package me.zeroeightsix.kami.util.graphics.vbo
 
-import net.minecraft.client.renderer.GLAllocation
 import org.kamiblue.commons.tuples.a
 import org.kamiblue.commons.tuples.operations.Vec3f
 import org.kamiblue.commons.tuples.operations.Vec4f
 import org.kamiblue.commons.tuples.z
-import org.lwjgl.opengl.GL15.glGenBuffers
 import java.nio.FloatBuffer
 
 abstract class AbstractBuffer(
-    override val mode: Int,
-    override val usage: Int,
-    final override val capacity: Int
+    final override val mode: Int,
+    final override val usage: Int,
+    final override val buffer: FloatBuffer
 ) : IBuffer {
-    override val id: Int = glGenBuffers()
-    override val buffer: FloatBuffer = GLAllocation.createDirectFloatBuffer(capacity)
+    override var stride: Int = 0
+    override var offset: Long = 0L
 }
 
-class Pos2Buffer(mode: Int, usage: Int, capacity: Int = 0x10000) : AbstractBuffer(mode, usage, capacity), IPosBuffer {
+class Pos2Buffer(mode: Int, usage: Int, buffer: FloatBuffer) : AbstractBuffer(mode, usage, buffer), IPosBuffer {
     override val vertexSize: Int = 2
 }
 
-class Pos3Buffer(mode: Int, usage: Int, capacity: Int = 0x10000) : AbstractBuffer(mode, usage, capacity), IPosBuffer {
+class Pos3Buffer(mode: Int, usage: Int, buffer: FloatBuffer) : AbstractBuffer(mode, usage, buffer), IPosBuffer {
     override val vertexSize: Int = 3
 
     override fun pos(pos: Vec3f) {
@@ -30,11 +28,11 @@ class Pos3Buffer(mode: Int, usage: Int, capacity: Int = 0x10000) : AbstractBuffe
     }
 }
 
-class Color3Buffer(mode: Int, usage: Int, capacity: Int = 0x10000) : AbstractBuffer(mode, usage, capacity), IColorBuffer {
+class Color3Buffer(mode: Int, usage: Int, buffer: FloatBuffer) : AbstractBuffer(mode, usage, buffer), IColorBuffer {
     override val vertexSize: Int = 3
 }
 
-class Color4Buffer(mode: Int, usage: Int, capacity: Int = 0x10000) : AbstractBuffer(mode, usage, capacity), IColorBuffer {
+class Color4Buffer(mode: Int, usage: Int, buffer: FloatBuffer) : AbstractBuffer(mode, usage, buffer), IColorBuffer {
     override val vertexSize: Int = 4
 
     override fun color(color: Vec4f) {
@@ -43,4 +41,4 @@ class Color4Buffer(mode: Int, usage: Int, capacity: Int = 0x10000) : AbstractBuf
     }
 }
 
-class TexPosBuffer(mode: Int, usage: Int, capacity: Int = 0x10000) : AbstractBuffer(mode, usage, capacity), ITexPosBuffer
+class TexPosBuffer(mode: Int, usage: Int, buffer: FloatBuffer) : AbstractBuffer(mode, usage, buffer), ITexPosBuffer

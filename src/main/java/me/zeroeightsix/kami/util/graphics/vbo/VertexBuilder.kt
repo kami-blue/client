@@ -22,6 +22,14 @@ class VertexBuilder(
         builderPos = pos
     }
 
+    fun pos(posX: Double, posY: Double) {
+        builderPos = Vec3f(posX.toFloat(), posY.toFloat(), 0.0f)
+    }
+
+    fun pos(posX: Double, posY: Double, posZ: Double) {
+        builderPos = Vec3f(posX.toFloat(), posY.toFloat(), posZ.toFloat())
+    }
+
     fun pos(posX: Float, posY: Float) {
         builderPos = Vec3f(posX, posY, 0.0f)
     }
@@ -36,6 +44,14 @@ class VertexBuilder(
 
     fun color(color: Vec4f) {
         builderColor = color
+    }
+
+    fun color(r: Int, g: Int, b: Int) {
+        builderColor = Vec4f(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f)
+    }
+
+    fun color(r: Int, g: Int, b: Int, a: Int) {
+        builderColor = Vec4f(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f)
     }
 
     fun color(r: Float, g: Float, b: Float) {
