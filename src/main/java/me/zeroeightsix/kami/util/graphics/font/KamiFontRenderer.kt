@@ -64,7 +64,7 @@ object KamiFontRenderer {
      * Stores different variants (Regular, Bold, Italic) of glyphs
      * 0: Regular, 1: Bold, 2: Italic
      */
-    val glyphArray: Array<FontGlyphs>
+    private val glyphArray: Array<FontGlyphs>
 
     /** CurrentVariant being used */
     private var currentVariant: FontGlyphs
@@ -110,7 +110,7 @@ object KamiFontRenderer {
                 Font(CustomFont.fontName.value, style.styleConst, 64)
             }
         } catch (e: Exception) {
-            KamiMod.LOG.error("Failed loading main font. Using Sans Serif font.", e)
+            KamiMod.LOG.warn("Failed loading main font. Using Sans Serif font.", e)
             getSansSerifFont(style.styleConst)
         }
 
@@ -118,10 +118,11 @@ object KamiFontRenderer {
         val fallbackFont = try {
             Font(getFallbackFont(), style.styleConst, 64)
         } catch (e: Exception) {
-            KamiMod.LOG.error("Failed loading fallback font. Using Sans Serif font", e)
+            KamiMod.LOG.warn("Failed loading fallback font. Using Sans Serif font", e)
             getSansSerifFont(style.styleConst)
         }
-        return FontGlyphs(style, font, fallbackFont)
+
+        return FontGlyphs(font, fallbackFont)
     }
 
     private fun getFallbackFont() = fallbackFonts.firstOrNull { availableFonts.contains(it) }
@@ -176,7 +177,7 @@ object KamiFontRenderer {
 
     private fun getShadowColor(color: ColorHolder) = ColorHolder((color.r * 0.2f).toInt(), (color.g * 0.2f).toInt(), (color.b * 0.2f).toInt(), (color.a * 0.9f).toInt())
 
-    private fun drawQuad(posX: Double, posY: Double, charInfo: FontGlyphs.CharInfo) {
+    private fun drawQuad(posX: Double, posY: Double, charInfo: CharInfo) {
         buffer.begin(GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_TEX)
         buffer.pos(posX, posY, 0.0).tex(charInfo.u1, charInfo.v1).endVertex()
         buffer.pos(posX, posY + charInfo.height, 0.0).tex(charInfo.u1, charInfo.v2).endVertex()

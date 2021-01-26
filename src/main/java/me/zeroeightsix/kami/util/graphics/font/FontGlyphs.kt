@@ -57,7 +57,7 @@ import kotlin.math.min
  *
  * @new version edited by David Aaron Muhar (bobjob)
  */
-class FontGlyphs(val style: Style, private val font: Font, private val fallbackFont: Font) {
+class FontGlyphs(private val font: Font, private val fallbackFont: Font) {
 
     /** HashMap for storing all the glyph chunks, each chunk contains 256 glyphs mapping to characters */
     private val chunkMap = HashMap<Int, GlyphChunk>()
@@ -185,8 +185,6 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
     class CharInfoBuilder(val posX: Int, val posY: Int, val width: Int, val height: Int) {
         fun build(textureHeight: Double): CharInfo {
             return CharInfo(
-                posX.toDouble(),
-                posY.toDouble(),
                 width.toDouble(),
                 height.toDouble(),
                 posX / TEXTURE_WIDTH_DOUBLE,
@@ -195,60 +193,6 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
                 (posY + height) / textureHeight
             )
         }
-    }
-
-    class CharInfo(
-        /** Character's stored x position  */
-        val posX1: Double,
-
-        /** Character's stored y position  */
-        val posY1: Double,
-
-        /** Character's width  */
-        val width: Double,
-
-        /** Character's height  */
-        val height: Double,
-
-        /** Upper left u */
-        val u1: Double,
-
-        /** Upper left v */
-        val v1: Double,
-
-        /** Lower right u */
-        val u2: Double,
-
-        /** Lower right v */
-        val v2: Double
-    )
-
-    class GlyphChunk(
-        /** Id of this chunk */
-        val chunk: Int,
-
-        /** [MipmapTexture] object */
-        val texture: MipmapTexture,
-
-        /** Array for all characters' info in this chunk */
-        val charInfoArray: Array<CharInfo>
-    ) {
-        private var lodbias = 0.0f
-
-        fun updateLodBias(input: Float) {
-            if (input != lodbias) {
-                lodbias = input
-                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, input)
-            }
-        }
-
-        override fun equals(other: Any?) =
-            this === other
-                || other is GlyphChunk
-                && chunk == other.chunk
-                && texture == other.texture
-
-        override fun hashCode() = 31 * chunk + texture.hashCode()
     }
 
     companion object {
