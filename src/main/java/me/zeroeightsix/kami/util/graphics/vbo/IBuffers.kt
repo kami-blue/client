@@ -80,7 +80,7 @@ interface ITexPosBuffer : IBuffer {
 
     override fun preRender() {
         super.preRender()
-        glColorPointer(vertexSize, GL_FLOAT, 0, 0)
+        glTexCoordPointer(vertexSize, GL_FLOAT, 0, 0)
     }
 
     fun uv(color: Vec2f) {

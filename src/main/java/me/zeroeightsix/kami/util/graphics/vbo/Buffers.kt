@@ -11,17 +11,17 @@ import java.nio.FloatBuffer
 abstract class AbstractBuffer(
     override val mode: Int,
     override val usage: Int,
-    final override val capacity: Int = 4096
+    final override val capacity: Int
 ) : IBuffer {
     override val id: Int = glGenBuffers()
     override val buffer: FloatBuffer = GLAllocation.createDirectFloatBuffer(capacity)
 }
 
-class Pos2Buffer(mode: Int, usage: Int, capacity: Int = 4096) : AbstractBuffer(mode, usage, capacity), IPosBuffer {
+class Pos2Buffer(mode: Int, usage: Int, capacity: Int = 0x10000) : AbstractBuffer(mode, usage, capacity), IPosBuffer {
     override val vertexSize: Int = 2
 }
 
-class Pos3Buffer(mode: Int, usage: Int, capacity: Int = 4096) : AbstractBuffer(mode, usage, capacity), IPosBuffer {
+class Pos3Buffer(mode: Int, usage: Int, capacity: Int = 0x10000) : AbstractBuffer(mode, usage, capacity), IPosBuffer {
     override val vertexSize: Int = 3
 
     override fun pos(pos: Vec3f) {
@@ -30,11 +30,11 @@ class Pos3Buffer(mode: Int, usage: Int, capacity: Int = 4096) : AbstractBuffer(m
     }
 }
 
-class Color3Buffer(mode: Int, usage: Int, capacity: Int = 4096) : AbstractBuffer(mode, usage, capacity), IColorBuffer {
+class Color3Buffer(mode: Int, usage: Int, capacity: Int = 0x10000) : AbstractBuffer(mode, usage, capacity), IColorBuffer {
     override val vertexSize: Int = 3
 }
 
-class Color4Buffer(mode: Int, usage: Int, capacity: Int = 4096) : AbstractBuffer(mode, usage, capacity), IColorBuffer {
+class Color4Buffer(mode: Int, usage: Int, capacity: Int = 0x10000) : AbstractBuffer(mode, usage, capacity), IColorBuffer {
     override val vertexSize: Int = 4
 
     override fun color(color: Vec4f) {
@@ -43,4 +43,4 @@ class Color4Buffer(mode: Int, usage: Int, capacity: Int = 4096) : AbstractBuffer
     }
 }
 
-class TexPosBuffer(mode: Int, usage: Int, capacity: Int = 4096) : AbstractBuffer(mode, usage, capacity), ITexPosBuffer
+class TexPosBuffer(mode: Int, usage: Int, capacity: Int = 0x10000) : AbstractBuffer(mode, usage, capacity), ITexPosBuffer

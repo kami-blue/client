@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.util.graphics.vbo
 
-import org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW
-
 fun newBufferGroup(
     mode: Int,
-    usage: Int = GL_DYNAMIC_DRAW,
-    capacity: Int = 4096,
+    usage: Int,
+    capacity: Int = 0x10000,
     block: BufferGroupBuilder.() -> Unit
 ) =
     BufferGroupBuilder(mode, usage, capacity).apply(block).build()
@@ -13,7 +11,7 @@ fun newBufferGroup(
 class BufferGroupBuilder(
     private val mode: Int,
     private val usage: Int,
-    private val capacity: Int = 4096
+    private val capacity: Int = 0x10000
 ) {
     private var posBuffer: IPosBuffer? = null
     private var colorBuffer: IColorBuffer? = null
