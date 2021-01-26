@@ -12,7 +12,7 @@ internal object CustomFont : Module(
     category = Category.CLIENT,
     enabledByDefault = true
 ) {
-    private const val DEFAULT_FONT_NAME = "Source Sans Pro"
+    private const val DEFAULT_FONT_NAME = "Lato"
 
     val fontName = setting("FontName", DEFAULT_FONT_NAME, consumer = { prev, value ->
         getMatchingFontName(value) ?: prev
@@ -26,7 +26,7 @@ internal object CustomFont : Module(
     val isDefaultFont get() = fontName.value.equals(DEFAULT_FONT_NAME, true)
     val size get() = sizeSetting.value * 0.15f
     val gap get() = gapSetting.value * 0.5f - 0.8f
-    val lineSpace get() = size * (lineSpaceSetting.value * 0.05f + 0.8f)
+    val lineSpace get() = size * (lineSpaceSetting.value * 0.05f + 0.77f)
     val lodBias get() = lodBiasSetting.value - 0.5f
     val baselineOffset get() = baselineOffsetSetting.value * 2.0f - 4.0f
 
