@@ -5,7 +5,6 @@ import org.kamiblue.commons.tuples.operations.Vec2f
 import org.kamiblue.commons.tuples.operations.Vec3f
 import org.kamiblue.commons.tuples.operations.Vec4f
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GL15.*
 import java.nio.FloatBuffer
 
 interface IBuffer {
