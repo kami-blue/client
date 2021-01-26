@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.text.TextFormatting
 import org.lwjgl.opengl.GL11.*
 import java.awt.Font
-import java.awt.GraphicsEnvironment
 
 /**
  * Adapted from Bobjob's edited version of Slick's TrueTypeFont.
@@ -72,9 +71,6 @@ object KamiFontRenderer {
     /** For Minecraft color code only */
     private var currentColor = ColorHolder(255, 255, 255)
 
-    /** Available fonts on in the system */
-    val availableFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().allFonts.map { it.name }.toHashSet()
-
     /** All for the KAMI Blue kanji */
     private val fallbackFonts = arrayOf(
         "Noto Sans JP", "Noto Sans CJK JP", "Noto Sans CJK JP", "Noto Sans CJK KR", "Noto Sans CJK SC", "Noto Sans CJK TC", // Noto Sans
@@ -125,7 +121,7 @@ object KamiFontRenderer {
         return FontGlyphs(font, fallbackFont)
     }
 
-    private fun getFallbackFont() = fallbackFonts.firstOrNull { availableFonts.contains(it) }
+    private fun getFallbackFont() = fallbackFonts.firstOrNull { CustomFont.availableFonts.contains(it) }
 
     private fun getSansSerifFont(style: Int) = Font("SansSerif", style, 64)
 

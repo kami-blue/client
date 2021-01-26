@@ -2,8 +2,13 @@ package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.AsyncCachedValue
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 import me.zeroeightsix.kami.util.threads.onMainThread
+import java.awt.GraphicsEnvironment
+import java.util.*
+import kotlin.collections.HashMap
 
 internal object CustomFont : Module(
     name = "CustomFont",
@@ -15,7 +20,7 @@ internal object CustomFont : Module(
     private const val DEFAULT_FONT_NAME = "Lato"
 
     val fontName = setting("FontName", DEFAULT_FONT_NAME, consumer = { prev, value ->
-        getMatchingFontName(value) ?: prev
+        getMatchingFontName(value) ?: getMatchingFontName(prev) ?: DEFAULT_FONT_NAME
     })
     private val sizeSetting = setting("Size", 1.0f, 0.5f..2.0f, 0.05f)
     private val gapSetting = setting("Gap", 0.0f, -10f..10f, 0.5f)
@@ -30,9 +35,24 @@ internal object CustomFont : Module(
     val lodBias get() = lodBiasSetting.value * 0.25f - 0.5f
     val baselineOffset get() = baselineOffsetSetting.value * 2.0f - 4.5f
 
+    /** Available fonts on in the system */
+    val availableFonts : Map<String, String> by AsyncCachedValue(5L, TimeUnit.SECONDS) {
+        HashMap<String, String>().apply {
+            val environment = GraphicsEnvironment.getLocalGraphicsEnvironment()
+
+            environment.availableFontFamilyNames.forEach {
+                this[it.toLowerCase(Locale.ROOT)] = it
+            }
+
+            environment.allFonts.forEach {
+                this[it.name.toLowerCase(Locale.ROOT)] = it.family
+            }
+        }
+    }
+
     private fun getMatchingFontName(name: String): String? {
         return if (name.equals(DEFAULT_FONT_NAME, true)) DEFAULT_FONT_NAME
-        else KamiFontRenderer.availableFonts.firstOrNull { it.equals(name, true) }
+        else availableFonts[name.toLowerCase(Locale.ROOT)]
     }
 
     init {
