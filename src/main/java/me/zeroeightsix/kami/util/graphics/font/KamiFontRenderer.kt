@@ -10,8 +10,6 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.text.TextFormatting
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
-import org.lwjgl.opengl.GL14.GL_TEXTURE_LOD_BIAS
 import java.awt.Font
 import java.awt.GraphicsEnvironment
 
@@ -148,8 +146,7 @@ object KamiFontRenderer {
                 Font(CustomFont.fontName.value, style.styleConst, 64)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
-            KamiMod.LOG.error("Failed loading main font. Using Sans Serif font.")
+            KamiMod.LOG.error("Failed loading main font. Using Sans Serif font.", e)
             getSansSerifFont(style.styleConst)
         }
 
@@ -157,8 +154,7 @@ object KamiFontRenderer {
         val fallbackFont = try {
             Font(getFallbackFont(), style.styleConst, 64)
         } catch (e: Exception) {
-            e.printStackTrace()
-            KamiMod.LOG.error("Failed loading fallback font. Using Sans Serif font")
+            KamiMod.LOG.error("Failed loading fallback font. Using Sans Serif font", e)
             getSansSerifFont(style.styleConst)
         }
         return FontGlyphs(style, font, fallbackFont)
@@ -179,22 +175,19 @@ object KamiFontRenderer {
         glPushMatrix()
         glTranslatef(posXIn, posYIn, 0.0f)
         glScalef(CustomFont.size * scale, CustomFont.size * scale, 1.0f)
-        glTranslatef(0f, CustomFont.baselineOffset, 0f)
+        glTranslatef(0.0f, CustomFont.baselineOffset, 0.0f)
 
         resetStyle()
 
         for ((index, char) in text.withIndex()) {
             if (checkStyleCode(text, index)) continue
+
             val chunk = currentVariant.getChunk(char)
             val charInfo = currentVariant.getCharInfo(char)
             val color = if (currentColor == DyeColors.WHITE.color) colorIn else currentColor
 
-            GlStateManager.bindTexture(chunk.textureId)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, CustomFont.lodBias)
+            chunk.texture.bindTexture()
+            chunk.updateLodBias(CustomFont.lodBias)
 
             if (char == '\n') {
                 posY += currentVariant.fontHeight * CustomFont.lineSpace
@@ -204,17 +197,16 @@ object KamiFontRenderer {
                     getShadowColor(color).setGLColor()
                     drawQuad(posX + 4.5, posY + 4.5, charInfo)
                 }
-
                 color.setGLColor()
                 drawQuad(posX, posY, charInfo)
                 posX += charInfo.width + CustomFont.gap
             }
         }
+
         resetStyle()
 
         glPopMatrix()
         GlStateUtils.alpha(true)
-        GlStateUtils.resetTexParam()
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
     }
 

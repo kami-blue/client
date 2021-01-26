@@ -11,11 +11,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.Manager
-import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.graphics.TextureUtils
+import me.zeroeightsix.kami.util.graphics.texture.MipmapTexture
 import me.zeroeightsix.kami.util.threads.defaultScope
-import net.minecraft.util.ResourceLocation
-import org.lwjgl.opengl.GL11.GL_RGBA
+import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
+import org.lwjgl.opengl.GL14.GL_TEXTURE_LOD_BIAS
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -31,7 +31,7 @@ object KamiMojiManager : Manager {
     private const val zipUrl = "https://github.com/2b2t-Utilities/emojis/archive/master.zip"
 
     private val parser = JsonParser()
-    private val emojiMap = HashMap<String, ResourceLocation>()
+    private val emojiMap = HashMap<String, MipmapTexture>()
     private val fileMap = HashMap<String, File>()
 
     private val job = defaultScope.launch(Dispatchers.IO) {
@@ -48,7 +48,7 @@ object KamiMojiManager : Manager {
         }
 
         directory.listFiles()?.forEach {
-            if (it.isFile && it.extension == "png" ) {
+            if (it.isFile && it.extension == "png") {
                 fileMap[it.nameWithoutExtension] = it
             }
         }
@@ -104,7 +104,7 @@ object KamiMojiManager : Manager {
         zip.close()
     }
 
-    fun getEmoji(name: String?): ResourceLocation? {
+    fun getEmoji(name: String?): MipmapTexture? {
         if (name == null) return null
 
         // Returns null if still loading
@@ -128,10 +128,17 @@ object KamiMojiManager : Manager {
 
         try {
             val image = ImageIO.read(file)
-            val dynamicTexture = TextureUtils.genTextureWithMipmaps(image, 3, GL_RGBA)
-            val resourceLocation = Wrapper.minecraft.textureManager.getDynamicTextureLocation(name, dynamicTexture)
+            val texture = MipmapTexture(image, GL_RGBA, 3)
 
-            emojiMap[name] = resourceLocation
+            texture.bindTexture()
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0.0f)
+            texture.unbindTexture()
+
+            emojiMap[name] = texture
         } catch (e: IOException) {
             KamiMod.LOG.warn("Failed to load emoji", e)
         }
