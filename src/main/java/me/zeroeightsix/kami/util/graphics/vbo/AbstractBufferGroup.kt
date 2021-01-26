@@ -1,7 +1,10 @@
 package me.zeroeightsix.kami.util.graphics.vbo
 
+import me.zeroeightsix.kami.util.graphics.compat.glBindBuffer
+import me.zeroeightsix.kami.util.graphics.compat.glBufferData
 import me.zeroeightsix.kami.util.graphics.compat.glGenBuffers
 import org.lwjgl.BufferUtils
+import org.lwjgl.opengl.GL15
 import java.nio.FloatBuffer
 
 abstract class AbstractBufferGroup(
@@ -22,7 +25,17 @@ abstract class AbstractBufferGroup(
         size++
     }
 
-    abstract fun upload()
+    fun upload() {
+        buffer.flip()
+
+        glBindBuffer(GL15.GL_ARRAY_BUFFER, id)
+        glBufferData(GL15.GL_ARRAY_BUFFER, buffer, usage)
+        glBindBuffer(GL15.GL_ARRAY_BUFFER, 0)
+
+        buffer.clear()
+        renderSize = size
+        size = 0
+    }
 
     abstract fun render()
 
