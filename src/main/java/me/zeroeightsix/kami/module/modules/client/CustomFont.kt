@@ -27,8 +27,8 @@ internal object CustomFont : Module(
     val size get() = sizeSetting.value * 0.15f
     val gap get() = gapSetting.value * 0.5f - 0.8f
     val lineSpace get() = size * (lineSpaceSetting.value * 0.05f + 0.77f)
-    val lodBias get() = lodBiasSetting.value - 0.5f
-    val baselineOffset get() = baselineOffsetSetting.value * 2.0f - 4.0f
+    val lodBias get() = lodBiasSetting.value * 0.25f - 0.5f
+    val baselineOffset get() = baselineOffsetSetting.value * 2.0f - 4.5f
 
     private fun getMatchingFontName(name: String): String? {
         return if (name.equals(DEFAULT_FONT_NAME, true)) DEFAULT_FONT_NAME

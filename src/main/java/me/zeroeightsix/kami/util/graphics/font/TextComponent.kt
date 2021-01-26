@@ -92,19 +92,23 @@ class TextComponent(val separator: String = " ") {
              customFont: Boolean = FontRenderAdapter.useCustomFont
     ) {
         if (isEmpty()) return
+
         glPushMatrix()
-        glTranslated(pos.x, pos.y, 0.0) // Rounding it to int so stupid Minecraftia doesn't fucked up
+        glTranslated(pos.x, pos.y - 1.0, 0.0)
         glScalef(scale, scale, 1f)
+
         if (verticalAlign != VAlign.TOP) {
             var height = getHeight(lineSpace, customFont)
             if (verticalAlign == VAlign.CENTER) height /= 2
             glTranslatef(0f, -height, 0f)
         }
+
         for (line in textLines) {
             if (skipEmptyLine && (line == null || line.isEmpty())) continue
             line?.drawLine(alpha, drawShadow, horizontalAlign, customFont)
             glTranslatef(0f, (FontRenderAdapter.getFontHeight(customFont = customFont) + lineSpace), 0f)
         }
+
         glPopMatrix()
     }
 
@@ -120,7 +124,7 @@ class TextComponent(val separator: String = " ") {
 
     override fun toString() = textLines.joinToString(separator = "\n")
 
-    class TextLine(val separator: String) {
+    class TextLine(private val separator: String) {
         private val textElementList = ArrayList<TextElement>()
 
         fun isEmpty() = textElementList.size == 0
@@ -131,11 +135,13 @@ class TextComponent(val separator: String = " ") {
 
         fun drawLine(alpha: Float, drawShadow: Boolean, horizontalAlign: HAlign, customFont: Boolean) {
             glPushMatrix()
+
             if (horizontalAlign != HAlign.LEFT) {
                 var width = getWidth(customFont)
                 if (horizontalAlign == HAlign.CENTER) width /= 2
                 glTranslatef(-width, 0f, 0f)
             }
+
             for (textElement in textElementList) {
                 val color = textElement.color.clone()
                 color.a = (color.a * alpha).toInt()
@@ -143,6 +149,7 @@ class TextComponent(val separator: String = " ") {
                 val adjustedSeparator = if (separator == " " && customFont) "  " else " "
                 glTranslatef(FontRenderAdapter.getStringWidth(textElement.text + adjustedSeparator, customFont = customFont), 0f, 0f)
             }
+
             glPopMatrix()
         }
 

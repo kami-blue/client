@@ -34,7 +34,7 @@ abstract class LabelHud(
     override fun renderHud(vertexHelper: VertexHelper) {
         super.renderHud(vertexHelper)
         displayText.draw(
-            Vec2d((width * dockingH.multiplier).toDouble(), (height * dockingV.multiplier).toDouble()),
+            Vec2d(width * dockingH.multiplier - 1.0 * dockingH.offset, (height * dockingV.multiplier).toDouble()),
             horizontalAlign = dockingH,
             verticalAlign = dockingV
         )
