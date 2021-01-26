@@ -13,9 +13,8 @@ abstract class AbstractBufferGroup(
     protected val texPosBuffer: ITexPosBuffer?
 ) {
 
-    var size = 0; protected set
-
     protected val id by lazy { glGenBuffers() }
+    protected var size = 0
     protected var renderSize = 0
 
     fun put(block: VertexBuilder.() -> Unit) {

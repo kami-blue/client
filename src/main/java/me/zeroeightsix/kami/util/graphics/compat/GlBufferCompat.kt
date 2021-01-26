@@ -3,8 +3,7 @@ package me.zeroeightsix.kami.util.graphics.compat
 import org.lwjgl.opengl.ARBVertexBufferObject
 import org.lwjgl.opengl.GL15
 import java.nio.FloatBuffer
-
-const val GL_ARRAY_BUFFER = 0x8892
+import java.nio.IntBuffer
 
 fun glGenBuffers(): Int {
     return if (GlCompatFlags.arbVbo) ARBVertexBufferObject.glGenBuffersARB()
@@ -19,7 +18,15 @@ fun glBindBuffer(target: Int, buffer: Int) {
     }
 }
 
-fun glBufferData(target: Int, data: FloatBuffer?, usage: Int) {
+fun glBufferData(target: Int, data: FloatBuffer, usage: Int) {
+    if (GlCompatFlags.arbVbo) {
+        ARBVertexBufferObject.glBufferDataARB(target, data, usage)
+    } else {
+        GL15.glBufferData(target, data, usage)
+    }
+}
+
+fun glBufferData(target: Int, data: IntBuffer, usage: Int) {
     if (GlCompatFlags.arbVbo) {
         ARBVertexBufferObject.glBufferDataARB(target, data, usage)
     } else {

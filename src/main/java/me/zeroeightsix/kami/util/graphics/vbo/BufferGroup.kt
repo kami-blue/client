@@ -1,11 +1,12 @@
 package me.zeroeightsix.kami.util.graphics.vbo
 
-import me.zeroeightsix.kami.util.graphics.compat.GL_ARRAY_BUFFER
 import me.zeroeightsix.kami.util.graphics.compat.glBindBuffer
 import me.zeroeightsix.kami.util.graphics.compat.glBufferData
 import me.zeroeightsix.kami.util.graphics.compat.glGenBuffers
 import org.lwjgl.BufferUtils
-import org.lwjgl.opengl.GL11.glDrawArrays
+import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER
+import org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER
 import java.nio.FloatBuffer
 
 class BufferGroup private constructor(
@@ -31,7 +32,6 @@ class BufferGroup private constructor(
 
     override fun render() {
         glBindBuffer(GL_ARRAY_BUFFER, id)
-
         posBuffer?.preRender()
         colorBuffer?.preRender()
         texPosBuffer?.preRender()
@@ -41,7 +41,6 @@ class BufferGroup private constructor(
         posBuffer?.postRender()
         colorBuffer?.postRender()
         texPosBuffer?.postRender()
-
         glBindBuffer(GL_ARRAY_BUFFER, 0)
     }
 
@@ -76,6 +75,11 @@ class IndexedBufferGroup private constructor(
     texPosBuffer: ITexPosBuffer?
 ) : AbstractBufferGroup(mode, usage, buffer, posBuffer, colorBuffer, texPosBuffer) {
 
+    private val indexBuffer = BufferUtils.createIntBuffer(buffer.capacity())
+    private val indexBufferID by lazy { glGenBuffers() }
+
+    private var indexSize = 0
+
     override fun upload() {
         buffer.flip()
 
@@ -88,19 +92,47 @@ class IndexedBufferGroup private constructor(
         size = 0
     }
 
+    fun uploadIndex(vararg indices: Int) {
+        indexBuffer.put(indices)
+        uploadIndex()
+    }
+
+    fun uploadIndex(indices: Array<Int>) {
+        indices.forEach(indexBuffer::put)
+        uploadIndex()
+    }
+
+    fun uploadIndex(indices: Iterable<Int>) {
+        indices.forEach(indexBuffer::put)
+        uploadIndex()
+    }
+
+    private fun uploadIndex() {
+        indexBuffer.flip()
+        indexSize = indexBuffer.limit()
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID)
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, usage)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+
+        indexBuffer.clear()
+    }
+
     override fun render() {
         glBindBuffer(GL_ARRAY_BUFFER, id)
-
         posBuffer?.preRender()
         colorBuffer?.preRender()
         texPosBuffer?.preRender()
 
-        glDrawArrays(mode, 0, renderSize)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID)
+
+        glDrawElements(mode, indexSize, GL_UNSIGNED_INT, 0)
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
 
         posBuffer?.postRender()
         colorBuffer?.postRender()
         texPosBuffer?.postRender()
-
         glBindBuffer(GL_ARRAY_BUFFER, 0)
     }
 
