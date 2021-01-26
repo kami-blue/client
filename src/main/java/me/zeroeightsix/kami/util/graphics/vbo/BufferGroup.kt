@@ -9,25 +9,17 @@ import org.lwjgl.opengl.GL11.glDrawArrays
 import java.nio.FloatBuffer
 
 class BufferGroup private constructor(
-    private val mode: Int,
-    private val usage: Int,
-    private val buffer: FloatBuffer,
-    private val posBuffer: IPosBuffer?,
-    private val colorBuffer: IColorBuffer?,
-    private val texPosBuffer: ITexPosBuffer?
-) {
-    private val id by lazy { glGenBuffers() }
+    mode: Int,
+    usage: Int,
+    buffer: FloatBuffer,
+    posBuffer: IPosBuffer?,
+    colorBuffer: IColorBuffer?,
+    texPosBuffer: ITexPosBuffer?
+) : AbstractBufferGroup(mode, usage, buffer, posBuffer, colorBuffer, texPosBuffer) {
 
-    var size = 0; private set
-    private var renderSize = 0
-
-    fun put(block: VertexBuilder.() -> Unit) {
-        VertexBuilder(posBuffer, colorBuffer, texPosBuffer).apply(block).build()
-        size++
-    }
-
-    fun upload() {
+    override fun upload() {
         buffer.flip()
+
         glBindBuffer(GL_ARRAY_BUFFER, id)
         glBufferData(GL_ARRAY_BUFFER, buffer, usage)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
@@ -37,7 +29,7 @@ class BufferGroup private constructor(
         size = 0
     }
 
-    fun render() {
+    override fun render() {
         glBindBuffer(GL_ARRAY_BUFFER, id)
 
         posBuffer?.preRender()
@@ -54,73 +46,18 @@ class BufferGroup private constructor(
     }
 
     class Builder(
-        private val mode: Int,
-        private val usage: Int,
+        mode: Int,
+        usage: Int,
         capacity: Int = 0x10000
-    ) {
-        private val buffer = BufferUtils.createFloatBuffer(capacity)
+    ) : AbstractBufferGroup.AbstractBuilder<BufferGroup>(mode, usage, capacity) {
 
-        private var posBuffer: IPosBuffer? = null
-        private var colorBuffer: IColorBuffer? = null
-        private var texPosBuffer: ITexPosBuffer? = null
-
-        fun pos2Buffer() {
-            posBuffer = Pos2Buffer(mode, usage, buffer)
-        }
-
-        fun pos3Buffer() {
-            posBuffer = Pos3Buffer(mode, usage, buffer)
-        }
-
-        fun color3Buffer() {
-            colorBuffer = Color3Buffer(mode, usage, buffer)
-        }
-
-        fun color4Buffer() {
-            colorBuffer = Color4Buffer(mode, usage, buffer)
-        }
-
-        fun texPosBuffer() {
-            texPosBuffer = TexPosBuffer(mode, usage, buffer)
-        }
-
-        fun build(): BufferGroup {
-            val stride = calcStride()
-            var offset = 0L
-
-            posBuffer?.stride = stride
-            colorBuffer?.stride = stride
-            texPosBuffer?.stride = stride
-
-            posBuffer?.offset = offset
-            offset += posBuffer?.vertexSize * 4
-
-            colorBuffer?.offset = offset
-            offset += colorBuffer?.vertexSize * 4
-
-            texPosBuffer?.offset = offset
-
+        override fun build(): BufferGroup {
+            prebuild()
             return BufferGroup(mode, usage, buffer, posBuffer, colorBuffer, texPosBuffer)
         }
 
-        private fun calcStride(): Int {
-            var stride = 0
-
-            stride += posBuffer?.vertexSize
-            stride += colorBuffer?.vertexSize
-            stride += texPosBuffer?.vertexSize
-
-            return stride * 4
-        }
-
-        private infix operator fun Int.plus(other: Int?) =
-            if (other != null) this + other
-            else this
-
-        private infix operator fun Int?.times(other: Long) =
-            if (this != null) this * other
-            else 0L
     }
+
 }
 
 fun newBufferGroup(
@@ -129,3 +66,62 @@ fun newBufferGroup(
     capacity: Int = 0x10000,
     block: BufferGroup.Builder.() -> Unit
 ) = BufferGroup.Builder(mode, usage, capacity).apply(block).build()
+
+class IndexedBufferGroup private constructor(
+    mode: Int,
+    usage: Int,
+    buffer: FloatBuffer,
+    posBuffer: IPosBuffer?,
+    colorBuffer: IColorBuffer?,
+    texPosBuffer: ITexPosBuffer?
+) : AbstractBufferGroup(mode, usage, buffer, posBuffer, colorBuffer, texPosBuffer) {
+
+    override fun upload() {
+        buffer.flip()
+
+        glBindBuffer(GL_ARRAY_BUFFER, id)
+        glBufferData(GL_ARRAY_BUFFER, buffer, usage)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+        buffer.clear()
+        renderSize = size
+        size = 0
+    }
+
+    override fun render() {
+        glBindBuffer(GL_ARRAY_BUFFER, id)
+
+        posBuffer?.preRender()
+        colorBuffer?.preRender()
+        texPosBuffer?.preRender()
+
+        glDrawArrays(mode, 0, renderSize)
+
+        posBuffer?.postRender()
+        colorBuffer?.postRender()
+        texPosBuffer?.postRender()
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+    }
+
+    class Builder(
+        mode: Int,
+        usage: Int,
+        capacity: Int = 0x10000
+    ) : AbstractBufferGroup.AbstractBuilder<IndexedBufferGroup>(mode, usage, capacity) {
+
+        override fun build(): IndexedBufferGroup {
+            prebuild()
+            return IndexedBufferGroup(mode, usage, buffer, posBuffer, colorBuffer, texPosBuffer)
+        }
+
+    }
+
+}
+
+fun newIndexedBufferGroup(
+    mode: Int,
+    usage: Int,
+    capacity: Int = 0x10000,
+    block: IndexedBufferGroup.Builder.() -> Unit
+) = IndexedBufferGroup.Builder(mode, usage, capacity).apply(block).build()
