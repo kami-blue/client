@@ -10,6 +10,9 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.MovementUtils.speed
+import me.zeroeightsix.kami.util.WorldUtils.buildStructure
+import me.zeroeightsix.kami.util.WorldUtils.getPlaceInfo
+import me.zeroeightsix.kami.util.WorldUtils.isPlaceable
 import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.items.firstBlock
 import me.zeroeightsix.kami.util.items.hotbarSlots
@@ -66,7 +69,7 @@ internal object Surround : Module(
 
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (getObby() == -1) return@safeListener
+            if (getObby() == null) return@safeListener
             if (isDisabled) {
                 enableInHoleCheck()
                 return@safeListener
@@ -88,7 +91,7 @@ internal object Surround : Module(
             }
 
             // Placeable & Centered check
-            if (!isPlaceable() || !centerPlayer()) {
+            if (!canRun() || !centerPlayer()) {
                 if (autoDisable.value == AutoDisableMode.ONE_TIME) disable()
                 return@safeListener
             }
@@ -105,7 +108,7 @@ internal object Surround : Module(
         }
     }
 
-    private fun enableInHoleCheck() {
+    private fun SafeClientEvent.enableInHoleCheck() {
         if (enableInHole.value && inHoleCheck()) {
             if (toggleTimer.stop() > inHoleTimeout.value) {
                 MessageSendHelper.sendChatMessage("$chatName You are in hole for longer than ${inHoleTimeout.value} ticks, enabling")
@@ -116,7 +119,7 @@ internal object Surround : Module(
         }
     }
 
-    private fun inHoleCheck() = mc.player.onGround && mc.player.speed < 0.15 && SurroundUtils.checkHole(mc.player) == SurroundUtils.HoleType.OBBY
+    private fun SafeClientEvent.inHoleCheck() = player.onGround && player.speed < 0.15 && SurroundUtils.checkHole(player) == SurroundUtils.HoleType.OBBY
 
     private fun outOfHoleCheck() {
         if (autoDisable.value == AutoDisableMode.OUT_OF_HOLE) {
@@ -145,11 +148,11 @@ internal object Surround : Module(
         return slots.hotbarSlot
     }
 
-    private fun isPlaceable(): Boolean {
-        val playerPos = mc.player.positionVector.toBlockPos()
+    private fun SafeClientEvent.canRun(): Boolean {
+        val playerPos = player.positionVector.toBlockPos()
         for (offset in SurroundUtils.surroundOffset) {
             val pos = playerPos.add(offset)
-            if (WorldUtils.isPlaceable(pos, true)) return true
+            if (isPlaceable(pos, true)) return true
         }
         return false
     }
@@ -165,9 +168,10 @@ internal object Surround : Module(
 
     private fun SafeClientEvent.runSurround() = defaultScope.launch {
         spoofHotbar()
-        WorldUtils.buildStructure(placeSpeed.value) {
+
+        buildStructure(placeSpeed.value) {
             if (isEnabled && CombatManager.isOnTopPriority(this@Surround)) {
-                WorldUtils.getPlaceInfo(mc.player.positionVector.toBlockPos(), SurroundUtils.surroundOffset, it, 2)
+                getPlaceInfo(player.positionVector.toBlockPos(), SurroundUtils.surroundOffset, it, 2)
             } else {
                 null
             }

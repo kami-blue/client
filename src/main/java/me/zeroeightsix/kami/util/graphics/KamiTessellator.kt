@@ -53,7 +53,6 @@ object KamiTessellator : Tessellator(0x200000) {
      * Reverts Gl states
      */
     fun releaseGL() {
-        GlStateManager.enableLighting()
         GlStateManager.enableTexture2D()
         GlStateManager.enableDepth()
         GlStateManager.disableBlend()

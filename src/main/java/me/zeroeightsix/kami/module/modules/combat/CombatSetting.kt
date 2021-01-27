@@ -15,12 +15,13 @@ import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils.calcCrystalDamage
 import me.zeroeightsix.kami.util.combat.CrystalUtils.getPlacePos
 import me.zeroeightsix.kami.util.graphics.*
-import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.RotationUtils.getRelativeRotation
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.isActiveOrFalse
+import me.zeroeightsix.kami.util.threads.runSafeR
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -102,10 +103,11 @@ internal object CombatSetting : Module(
     )
 
     val pause
-        get() = mc.player.ticksExisted < 10
-            || pauseForDigging.value && mc.player.heldItemMainhand.item is ItemPickaxe && mc.playerController.isHittingBlock
-            || pauseForEating.value && mc.player.isHandActive && mc.player.activeItemStack.item is ItemFood && (mc.player.activeHand != EnumHand.OFF_HAND || !ignoreOffhandEating.value)
-
+        get() = runSafeR {
+            player.ticksExisted < 10
+                || pauseForDigging.value && player.heldItemMainhand.item is ItemPickaxe && playerController.isHittingBlock
+                || pauseForEating.value && player.isHandActive && player.activeItemStack.item is ItemFood && (player.activeHand != EnumHand.OFF_HAND || !ignoreOffhandEating.value)
+        } ?: false
 
     override fun isActive() = KillAura.isActive() || BedAura.isActive() || CrystalAura.isActive() || Surround.isActive()
 
@@ -264,7 +266,7 @@ internal object CombatSetting : Module(
     private fun SafeClientEvent.filterByFilter(listIn: LinkedList<EntityLivingBase>): LinkedList<EntityLivingBase> {
         when (filter.value) {
             TargetFilter.FOV -> {
-                listIn.removeIf { RotationUtils.getRelativeRotation(it) > fov.value }
+                listIn.removeIf { getRelativeRotation(it) > fov.value }
             }
 
             TargetFilter.MANUAL -> {
@@ -327,9 +329,9 @@ internal object CombatSetting : Module(
         listIn.removeIf { !toKeep.contains(it) }
     }
 
-    private fun filterByCrossHair(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
+    private fun SafeClientEvent.filterByCrossHair(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
         if (listIn.isEmpty()) return null
-        return listIn.sortedBy { RotationUtils.getRelativeRotation(it) }[0]
+        return listIn.sortedBy { getRelativeRotation(it) }[0]
     }
 
     private fun SafeClientEvent.filterByDistance(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {

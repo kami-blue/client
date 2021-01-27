@@ -1,10 +1,11 @@
 package me.zeroeightsix.kami.util.graphics.font
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.util.graphics.TextureUtils
-import net.minecraft.client.renderer.texture.DynamicTexture
+import me.zeroeightsix.kami.util.graphics.texture.MipmapTexture
 import org.kamiblue.commons.utils.MathUtils
-import org.lwjgl.opengl.GL11.GL_ALPHA
+import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
+import org.lwjgl.opengl.GL14.GL_TEXTURE_LOD_BIAS
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics2D
@@ -56,7 +57,7 @@ import kotlin.math.min
  *
  * @new version edited by David Aaron Muhar (bobjob)
  */
-class FontGlyphs(val style: Style, private val font: Font, private val fallbackFont: Font) {
+class FontGlyphs(private val font: Font, private val fallbackFont: Font) {
 
     /** HashMap for storing all the glyph chunks, each chunk contains 256 glyphs mapping to characters */
     private val chunkMap = HashMap<Int, GlyphChunk>()
@@ -94,7 +95,7 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
     /** Delete all textures */
     fun destroy() {
         for (chunk in chunkMap.values) {
-            chunk.dynamicTexture.deleteGlTexture()
+            chunk.texture.deleteTexture()
         }
         chunkMap.clear()
     }
@@ -132,12 +133,12 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
             val textureImage = BufferedImage(TEXTURE_WIDTH, textureHeight, BufferedImage.TYPE_INT_ARGB)
             (textureImage.graphics as Graphics2D).drawImage(bufferedImage, 0, 0, null)
 
-            val dynamicTexture = createTexture(textureImage) ?: throw Exception()
+            val texture = createTexture(textureImage)
             val charInfoArray = builderArray.map { it.build(textureHeight.toDouble()) }.toTypedArray()
-            GlyphChunk(chunk, dynamicTexture.glTextureId, dynamicTexture, charInfoArray)
+            GlyphChunk(chunk, texture, charInfoArray)
+
         } catch (e: Exception) {
-            KamiMod.LOG.error("Failed to load glyph chunk $chunk.")
-            e.printStackTrace()
+            KamiMod.LOG.error("Failed to load glyph chunk $chunk.", e)
             null
         }
     }
@@ -150,8 +151,7 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
         }
 
         // Create a temporary image to extract the character's size
-        val tempGraphics2D = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).graphics as Graphics2D
-        tempGraphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        val tempGraphics2D = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics()
         tempGraphics2D.font = font
         val fontMetrics = tempGraphics2D.fontMetrics
         tempGraphics2D.dispose()
@@ -161,30 +161,30 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
 
         // Create another image holding the character we are creating
         val charImage = BufferedImage(charWidth, charHeight, BufferedImage.TYPE_INT_ARGB)
-        val graphics2D = charImage.graphics as Graphics2D
+        val graphics2D = charImage.createGraphics()
 
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         graphics2D.font = font
         graphics2D.color = Color.WHITE
         graphics2D.drawString(char.toString(), 0, fontMetrics.ascent)
+        graphics2D.dispose()
+
         return charImage
     }
 
-    private fun createTexture(bufferedImage: BufferedImage): DynamicTexture? {
-        return try {
-            TextureUtils.genTextureWithMipmaps(bufferedImage, 4, GL_ALPHA)
-        } catch (e: Exception) {
-            KamiMod.LOG.error("Failed to create font texture.")
-            e.printStackTrace()
-            null
-        }
+    private fun createTexture(bufferedImage: BufferedImage) = MipmapTexture(bufferedImage, GL_ALPHA, 4).apply {
+        bindTexture()
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0.0f)
+        unbindTexture()
     }
 
     class CharInfoBuilder(val posX: Int, val posY: Int, val width: Int, val height: Int) {
         fun build(textureHeight: Double): CharInfo {
             return CharInfo(
-                posX.toDouble(),
-                posY.toDouble(),
                 width.toDouble(),
                 height.toDouble(),
                 posX / TEXTURE_WIDTH_DOUBLE,
@@ -192,64 +192,6 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
                 (posX + width) / TEXTURE_WIDTH_DOUBLE,
                 (posY + height) / textureHeight
             )
-        }
-    }
-
-    data class CharInfo(
-        /** Character's stored x position  */
-        val posX1: Double,
-
-        /** Character's stored y position  */
-        val posY1: Double,
-
-        /** Character's width  */
-        val width: Double,
-
-        /** Character's height  */
-        val height: Double,
-
-        /** Upper left u */
-        val u1: Double,
-
-        /** Upper left v */
-        val v1: Double,
-
-        /** Lower right u */
-        val u2: Double,
-
-        /** Lower right v */
-        val v2: Double
-    )
-
-    data class GlyphChunk(
-        /** Id of this chunk */
-        val chunk: Int,
-
-        /** Texture id of the chunk texture */
-        val textureId: Int,
-
-        /** Dynamic texture object */
-        val dynamicTexture: DynamicTexture,
-
-        /** Array for all characters' info in this chunk */
-        val charInfoArray: Array<CharInfo>
-    ) {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other !is GlyphChunk) return false
-
-            if (chunk != other.chunk) return false
-            if (textureId != other.textureId) return false
-            if (!charInfoArray.contentEquals(other.charInfoArray)) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var result = chunk
-            result = 31 * result + textureId
-            result = 31 * result + charInfoArray.contentHashCode()
-            return result
         }
     }
 

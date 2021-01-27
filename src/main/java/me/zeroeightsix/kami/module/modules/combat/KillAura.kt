@@ -1,6 +1,8 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.SafeClientEvent
+import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Category
@@ -9,12 +11,12 @@ import me.zeroeightsix.kami.util.TpsCalculator
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils.equipBestWeapon
 import me.zeroeightsix.kami.util.items.isWeapon
-import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.RotationUtils.faceEntityClosest
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationToEntityClosest
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.EnumHand
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
 internal object KillAura : Module(
@@ -47,8 +49,8 @@ internal object KillAura : Module(
     }
 
     init {
-        safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase != TickEvent.Phase.START) return@safeListener
+        safeListener<OnUpdateWalkingPlayerEvent> {
+            if (it.phase != Phase.PRE) return@safeListener
 
             inactiveTicks++
 
@@ -75,12 +77,12 @@ internal object KillAura : Module(
         }
     }
 
-    private fun rotate(target: EntityLivingBase) {
+    private fun SafeClientEvent.rotate(target: EntityLivingBase) {
         if (lockView.value) {
-            RotationUtils.faceEntityClosest(target)
+            faceEntityClosest(target)
         } else if (spoofRotation.value) {
-            val rotation = RotationUtils.getRotationToEntityClosest(target)
-            PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
+            val rotation = getRotationToEntityClosest(target)
+            PlayerPacketManager.addPacket(this@KillAura, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
         }
     }
 

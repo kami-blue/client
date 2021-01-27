@@ -10,11 +10,14 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.MovementUtils.calcMoveYawRad
 import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
-import me.zeroeightsix.kami.util.threads.runSafe
+import me.zeroeightsix.kami.util.threads.onMainThreadSafe
+import me.zeroeightsix.kami.util.threads.runSafeR
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.multiplayer.WorldClient
 import net.minecraft.entity.MoverType
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
@@ -98,7 +101,7 @@ internal object Freecam : Module(
                 return@safeListener
             }
 
-            if (cameraGuy == null && player.ticksExisted > 20) spawnCameraGuy()
+            if (cameraGuy == null && player.ticksExisted > 5) spawnCameraGuy()
         }
 
         safeListener<InputUpdateEvent>(9999) {
@@ -128,11 +131,13 @@ internal object Freecam : Module(
 
     @JvmStatic
     val renderChunkOffset
-        get() = BlockPos(
-            (mc.player.posX / 16).floorToInt() * 16,
-            (mc.player.posY / 16).floorToInt() * 16,
-            (mc.player.posZ / 16).floorToInt() * 16
-        )
+        get() = runSafeR {
+            BlockPos(
+                (player.posX / 16).floorToInt() * 16,
+                (player.posY / 16).floorToInt() * 16,
+                (player.posZ / 16).floorToInt() * 16
+            )
+        }
 
     @JvmStatic
     fun getRenderViewEntity(renderViewEntity: EntityPlayer): EntityPlayer {
@@ -158,17 +163,17 @@ internal object Freecam : Module(
         }
     }
 
-    private fun spawnCameraGuy() {
+    private fun SafeClientEvent.spawnCameraGuy() {
         // Create a cloned player
-        cameraGuy = FakeCamera(mc.player).also {
+        cameraGuy = FakeCamera(world, player).also {
             // Add it to the world
-            mc.world?.addEntityToWorld(ENTITY_ID, it)
+            world.addEntityToWorld(ENTITY_ID, it)
 
             // Set the render view entity to our camera guy
             mc.renderViewEntity = it
 
             // Reset player movement input
-            resetMovementInput(mc.player?.movementInput)
+            resetMovementInput(player.movementInput)
 
             // Stores prev third person view setting
             prevThirdPersonViewSetting = mc.gameSettings.thirdPersonView
@@ -180,7 +185,7 @@ internal object Freecam : Module(
         mc.objectMouseOver?.let {
             val hitVec = it.hitVec
             if (it.typeOfHit == RayTraceResult.Type.MISS || hitVec == null) return
-            val rotation = RotationUtils.getRotationTo(hitVec)
+            val rotation = getRotationTo(hitVec)
             player.apply {
                 rotationYaw = rotation.x
                 rotationPitch = rotation.y
@@ -213,20 +218,18 @@ internal object Freecam : Module(
     }
 
     private fun resetCameraGuy() {
-        mc.addScheduledTask {
-            runSafe {
-                world.removeEntityFromWorld(ENTITY_ID)
-                mc.renderViewEntity = player
-                cameraGuy = null
-                mc.renderGlobal.loadRenderers()
-                if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
-            }
+        cameraGuy = null
+        onMainThreadSafe {
+            world.removeEntityFromWorld(ENTITY_ID)
+            mc.renderViewEntity = player
+            mc.renderGlobal.loadRenderers()
+            if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
         }
     }
 
-    private class FakeCamera(val player: EntityPlayerSP) : EntityOtherPlayerMP(mc.world, mc.session.profile) {
+    private class FakeCamera(world: WorldClient, val player: EntityPlayerSP) : EntityOtherPlayerMP(world, mc.session.profile) {
         init {
-            copyLocationAndAnglesFrom(mc.player)
+            copyLocationAndAnglesFrom(player)
             capabilities.allowFlying = true
             capabilities.isFlying = true
         }

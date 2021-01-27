@@ -18,6 +18,7 @@ import net.minecraft.util.MovementInputFromOptions
 import net.minecraftforge.client.event.InputUpdateEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.floorToInt
+import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
 
 internal object AutoWalk : Module(
@@ -28,8 +29,10 @@ internal object AutoWalk : Module(
     private val mode = setting("Direction", AutoWalkMode.BARITONE)
     private val disableOnDisconnect by setting("DisableOnDisconnect", true)
 
-    private enum class AutoWalkMode {
-        FORWARD, BACKWARDS, BARITONE
+    private enum class AutoWalkMode(override val displayName: String): DisplayEnum {
+        FORWARD("Forward"),
+        BACKWARD("Backward"),
+        BARITONE("Baritone")
     }
 
     val baritoneWalk get() = isEnabled && mode.value == AutoWalkMode.BARITONE
@@ -46,7 +49,7 @@ internal object AutoWalk : Module(
         return if (mode.value == AutoWalkMode.BARITONE && (BaritoneUtils.isActive || BaritoneUtils.isPathing)) {
             direction.displayName
         } else {
-            mode.value.name
+            mode.value.displayName
         }
     }
 
@@ -74,7 +77,7 @@ internal object AutoWalk : Module(
                 AutoWalkMode.FORWARD -> {
                     it.movementInput.moveForward = 1.0f
                 }
-                AutoWalkMode.BACKWARDS -> {
+                AutoWalkMode.BACKWARD -> {
                     it.movementInput.moveForward = -1.0f
                 }
                 else -> {
@@ -111,7 +114,7 @@ internal object AutoWalk : Module(
 
     init {
         mode.listeners.add {
-            if (mc.player == null) return@add
+            if (isDisabled || mc.player == null) return@add
             if (mode.value == AutoWalkMode.BARITONE) {
                 if (!checkBaritoneElytra()) {
                     runSafe { startPathing() }

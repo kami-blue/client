@@ -12,6 +12,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.AutoObsidianProcess
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.EntityUtils.getDroppedItem
+import me.zeroeightsix.kami.util.WorldUtils.getNeighbour
+import me.zeroeightsix.kami.util.WorldUtils.isPlaceable
 import me.zeroeightsix.kami.util.WorldUtils.placeBlock
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
@@ -233,7 +235,7 @@ internal object AutoObsidian : Module(
     private fun SafeClientEvent.isPositionValid(pos: BlockPos, blockState: IBlockState, eyePos: Vec3d) =
         !world.getBlockState(pos.down()).material.isReplaceable
             && (blockState.block.let { it == Blocks.ENDER_CHEST || it is BlockShulkerBox }
-            || WorldUtils.isPlaceable(pos))
+            || isPlaceable(pos))
             && world.isAirBlock(pos.up())
             && world.rayTraceBlocks(eyePos, pos.toVec3dCenter())?.let { it.typeOfHit == RayTraceResult.Type.MISS } ?: true
 
@@ -447,7 +449,7 @@ internal object AutoObsidian : Module(
     }
 
     private fun SafeClientEvent.placeBlock(pos: BlockPos) {
-        val pair = WorldUtils.getNeighbour(pos, 1, 6.5f)
+        val pair = getNeighbour(pos, 1, 6.5f)
             ?: run {
                 MessageSendHelper.sendChatMessage("$chatName Can't find neighbour block")
                 return

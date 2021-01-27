@@ -4,6 +4,9 @@ import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.GuiConfig.setting
+import me.zeroeightsix.kami.util.AsyncCachedValue
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.TimedFlag
 import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.color.ColorHolder
@@ -13,7 +16,7 @@ import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.graphics.font.HAlign
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import me.zeroeightsix.kami.util.graphics.font.VAlign
-import me.zeroeightsix.kami.util.threads.safeListener
+import me.zeroeightsix.kami.util.threads.safeAsyncListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.sumByFloat
@@ -31,13 +34,13 @@ object ModuleList : HudElement(
     enabledByDefault = true
 ) {
 
-    private val sortingMode by setting("SortingMode", SortingMode.LENGTH)
+    private val sortingMode = setting("SortingMode", SortingMode.LENGTH)
     private val showInvisible by setting("ShowInvisible", false)
     private val rainbow = setting("Rainbow", true)
-    private val rainbowLength = setting("RainbowLength", 10.0f, 1.0f..20.0f, 0.5f, { rainbow.value })
-    private val indexedHue = setting("IndexedHue", 0.5f, 0.0f..1.0f, 0.05f)
-    private val primary = setting("PrimaryColor", ColorHolder(155, 144, 255), false)
-    private val secondary = setting("SecondaryColor", ColorHolder(255, 255, 255), false)
+    private val rainbowLength by setting("RainbowLength", 10.0f, 1.0f..20.0f, 0.5f, { rainbow.value })
+    private val indexedHue by setting("IndexedHue", 0.5f, 0.0f..1.0f, 0.05f)
+    private val primary by setting("PrimaryColor", ColorHolder(155, 144, 255), false)
+    private val secondary by setting("SecondaryColor", ColorHolder(255, 255, 255), false)
 
     @Suppress("UNUSED")
     private enum class SortingMode(
@@ -49,44 +52,47 @@ object ModuleList : HudElement(
         CATEGORY("Category", compareBy { it.category.ordinal })
     }
 
-    override val hudWidth: Float
-        get() = sortedModuleList.maxOfOrNull {
-            if (toggleMap[it]?.value == true) it.textLine.getWidth() + 4.0f
-            else 20.0f
-        }?.let {
-            max(it, 20.0f)
-        } ?: 20.0f
+    private var cacheWidth = 20.0f
+    private var cacheHeight = 20.0f
+    override val hudWidth: Float get() = cacheWidth
+    override val hudHeight: Float get() = cacheHeight
 
-    override val hudHeight: Float
-        get() = max(toggleMap.values.sumByFloat { it.displayHeight }, 20.0f)
+    private val sortedModuleListCache = AsyncCachedValue(5L, TimeUnit.SECONDS) {
+        ModuleManager.modules.sortedWith(sortingMode.value.comparator)
+    }
 
-    private var sortedModuleList = ModuleManager.modules
+    private val sortedModuleList by sortedModuleListCache
     private val textLineMap = HashMap<AbstractModule, TextComponent.TextLine>()
-    private val toggleMap = ModuleManager.modules
+
+    private val timer = TickTimer(TimeUnit.SECONDS)
+    private var toggleMap = ModuleManager.modules
         .associateWith { TimedFlag(false) }
-        .toMutableMap()
 
     init {
-        safeListener<TickEvent.ClientTickEvent> { event ->
-            if (event.phase != TickEvent.Phase.END) return@safeListener
+        safeAsyncListener<TickEvent.ClientTickEvent> { event ->
+            if (event.phase != TickEvent.Phase.END) return@safeAsyncListener
 
-            val moduleSet = ModuleManager.modules.toSet()
-
-            for (module in moduleSet) {
-                toggleMap.computeIfAbsent(module) { TimedFlag(false) }
+            if (timer.tick(5L)) {
+                toggleMap = ModuleManager.modules
+                    .associateWith { toggleMap[it] ?: TimedFlag(false) }
             }
-
-            toggleMap.keys.removeIf { !moduleSet.contains(it) }
 
             for ((module, timedFlag) in toggleMap) {
                 val state = module.isEnabled && (module.isVisible || showInvisible)
                 if (timedFlag.value != state) timedFlag.value = state
 
                 if (timedFlag.progress <= 0.0f) continue
-                textLineMap[module] = module.newTextLine
+                textLineMap[module] = module.newTextLine()
             }
 
-            sortedModuleList = moduleSet.sortedWith(sortingMode.comparator)
+            cacheWidth = sortedModuleList.maxOfOrNull {
+                if (toggleMap[it]?.value == true) it.textLine.getWidth() + 4.0f
+                else 20.0f
+            }?.let {
+                max(it, 20.0f)
+            } ?: 20.0f
+
+            cacheHeight = max(toggleMap.values.sumByFloat { it.displayHeight }, 20.0f)
         }
     }
 
@@ -94,9 +100,9 @@ object ModuleList : HudElement(
         super.renderHud(vertexHelper)
         GlStateManager.pushMatrix()
 
-        GlStateManager.translate(renderWidth / scale * dockingH.multiplier, 0.0f, 0.0f)
+        GlStateManager.translate(width / scale * dockingH.multiplier, 0.0f, 0.0f)
         if (dockingV == VAlign.BOTTOM) {
-            GlStateManager.translate(0.0f, renderHeight / scale - (FontRenderAdapter.getFontHeight() + 2.0f), 0.0f)
+            GlStateManager.translate(0.0f, height / scale - (FontRenderAdapter.getFontHeight() + 2.0f), 0.0f)
         }
 
         drawModuleList()
@@ -105,8 +111,8 @@ object ModuleList : HudElement(
     }
 
     private fun drawModuleList() {
-        val primaryHsb = Color.RGBtoHSB(primary.value.r, primary.value.g, primary.value.b, null)
-        val lengthMs = rainbowLength.value * 1000.0f
+        val primaryHsb = Color.RGBtoHSB(primary.r, primary.g, primary.b, null)
+        val lengthMs = rainbowLength * 1000.0f
         val timedHue = System.currentTimeMillis() % lengthMs.toLong() / lengthMs
 
         var index = 0
@@ -128,17 +134,9 @@ object ModuleList : HudElement(
             GlStateManager.translate(animationXOffset - stringPosX - margin, 0.0f, 0.0f)
 
             if (rainbow.value) {
-                val hue = timedHue + indexedHue.value * 0.05f * index++
+                val hue = timedHue + indexedHue * 0.05f * index++
                 val color = ColorConverter.hexToRgb(Color.HSBtoRGB(hue, primaryHsb[1], primaryHsb[2]))
-
-                TextComponent.TextLine(" ").run {
-                    add(TextComponent.TextElement(module.name, color))
-                    module.getHudInfo().let {
-                        if (it.isNotBlank()) add(TextComponent.TextElement(it, secondary.value))
-                    }
-                    if (dockingH == HAlign.RIGHT) reverse()
-                    drawLine(progress, true, HAlign.LEFT, FontRenderAdapter.useCustomFont)
-                }
+                module.newTextLine(color).drawLine(progress, true, HAlign.LEFT, FontRenderAdapter.useCustomFont)
             } else {
                 textLine.drawLine(progress, true, HAlign.LEFT, FontRenderAdapter.useCustomFont)
             }
@@ -152,14 +150,14 @@ object ModuleList : HudElement(
 
     private val AbstractModule.textLine
         get() = textLineMap.getOrPut(this) {
-            this.newTextLine
+            this.newTextLine()
         }
 
-    private val AbstractModule.newTextLine
-        get() = TextComponent.TextLine(" ").apply {
-            add(TextComponent.TextElement(name, primary.value))
+    private fun AbstractModule.newTextLine(color: ColorHolder = primary) =
+        TextComponent.TextLine(" ").apply {
+            add(TextComponent.TextElement(name, color))
             getHudInfo().let {
-                if (it.isNotBlank()) add(TextComponent.TextElement(it, secondary.value))
+                if (it.isNotBlank()) add(TextComponent.TextElement(it, secondary))
             }
             if (dockingH == HAlign.RIGHT) reverse()
         }
@@ -178,6 +176,10 @@ object ModuleList : HudElement(
         relativePosX = -2.0f
         relativePosY = 2.0f
         dockingH = HAlign.RIGHT
+
+        sortingMode.listeners.add {
+            sortedModuleListCache.update()
+        }
     }
 
 }

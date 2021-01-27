@@ -24,7 +24,7 @@ internal object InventoryMove : Module(
     private var hasSent = false
 
     init {
-        safeListener<InputUpdateEvent> {
+        safeListener<InputUpdateEvent>(9999) {
             if (it.movementInput !is MovementInputFromOptions || isInvalidGui(mc.currentScreen)) return@safeListener
 
             if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {

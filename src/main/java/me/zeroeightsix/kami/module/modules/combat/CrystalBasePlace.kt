@@ -7,13 +7,16 @@ import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.WorldUtils.getNeighbour
+import me.zeroeightsix.kami.util.WorldUtils.hasNeighbour
+import me.zeroeightsix.kami.util.WorldUtils.isPlaceable
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CrystalUtils.calcCrystalDamage
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.items.block
 import me.zeroeightsix.kami.util.items.firstBlock
 import me.zeroeightsix.kami.util.items.hotbarSlots
-import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -96,7 +99,7 @@ internal object CrystalBasePlace : Module(
 
             if (isActive()) {
                 rotationTo?.let { hitVec ->
-                    val rotation = RotationUtils.getRotationTo(hitVec)
+                    val rotation = getRotationTo(hitVec)
                     PlayerPacketManager.addPacket(CrystalBasePlace, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
                 }
             } else {
@@ -131,7 +134,7 @@ internal object CrystalBasePlace : Module(
     private fun SafeClientEvent.getPlaceInfo(entity: EntityLivingBase): Pair<EnumFacing, BlockPos>? {
         val cacheMap = TreeMap<Float, BlockPos>(compareByDescending { it })
         val prediction = CombatSetting.getPrediction(entity)
-        val eyePos = mc.player.getPositionEyes(1.0f)
+        val eyePos = player.getPositionEyes(1.0f)
         val posList = VectorUtils.getBlockPosInSphere(eyePos, range.value)
         val maxCurrentDamage = CombatManager.placeMap.entries
             .filter { eyePos.distanceTo(it.key) < range.value }
@@ -140,10 +143,10 @@ internal object CrystalBasePlace : Module(
 
         for (pos in posList) {
             // Placeable check
-            if (!WorldUtils.isPlaceable(pos, false)) continue
+            if (!isPlaceable(pos, false)) continue
 
             // Neighbour blocks check
-            if (!WorldUtils.hasNeighbour(pos)) continue
+            if (!hasNeighbour(pos)) continue
 
             // Damage check
             val damage = calcPlaceDamage(pos, entity, prediction.first, prediction.second)
@@ -153,7 +156,7 @@ internal object CrystalBasePlace : Module(
         }
 
         for (pos in cacheMap.values) {
-            return WorldUtils.getNeighbour(pos, 1) ?: continue
+            return getNeighbour(pos, 1) ?: continue
         }
         return null
     }

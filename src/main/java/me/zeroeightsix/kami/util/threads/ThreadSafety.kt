@@ -16,11 +16,11 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 inline fun <reified T : Any> Any.safeAsyncListener(noinline function: suspend SafeClientEvent.(T) -> Unit) {
-    ListenerManager.register(this, AsyncListener(T::class.java) { runSafeSuspend { function(it) } })
+    ListenerManager.register(this, AsyncListener(this, T::class.java) { runSafeSuspend { function(it) } })
 }
 
 inline fun <reified T : Any> Any.safeListener(priority: Int = DEFAULT_PRIORITY, noinline function: SafeClientEvent.(T) -> Unit) {
-    ListenerManager.register(this, Listener(T::class.java, priority) { runSafe { function(it) } })
+    ListenerManager.register(this, Listener(this, T::class.java, priority) { runSafe { function(it) } })
 }
 
 fun ClientEvent.toSafe() =

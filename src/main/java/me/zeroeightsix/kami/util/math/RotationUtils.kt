@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.math
 
-import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.event.SafeClientEvent
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.commons.extension.toDegree
@@ -10,20 +10,18 @@ import kotlin.math.*
  * Utils for calculating angles and rotations
  */
 object RotationUtils {
-    val mc = Wrapper.minecraft
-
-    fun faceEntityClosest(entity: Entity) {
+    fun SafeClientEvent.faceEntityClosest(entity: Entity) {
         val rotation = getRotationToEntityClosest(entity)
-        mc.player.rotationYaw = rotation.x
-        mc.player.rotationPitch = rotation.y
+        player.rotationYaw = rotation.x
+        player.rotationPitch = rotation.y
     }
 
-    fun getRelativeRotation(entity: Entity): Float {
+    fun SafeClientEvent.getRelativeRotation(entity: Entity): Float {
         return getRelativeRotation(entity.entityBoundingBox.center)
     }
 
-    fun getRelativeRotation(posTo: Vec3d): Float {
-        return getRotationDiff(getRotationTo(posTo), Vec2f(mc.player))
+    fun SafeClientEvent.getRelativeRotation(posTo: Vec3d): Float {
+        return getRotationDiff(getRotationTo(posTo), Vec2f(player))
     }
 
     private fun getRotationDiff(r1: Vec2f, r2: Vec2f): Float {
@@ -32,17 +30,17 @@ object RotationUtils {
         return acos(cos(r1Radians.y) * cos(r2Radians.y) * cos(r1Radians.x - r2Radians.x) + sin(r1Radians.y) * sin(r2Radians.y)).toDegree()
     }
 
-    fun getRotationToEntityClosest(entity: Entity): Vec2f {
+    fun SafeClientEvent.getRotationToEntityClosest(entity: Entity): Vec2f {
         val box = entity.entityBoundingBox
-        val eyePos = mc.player.getPositionEyes(1f)
-        val x = eyePos.x.coerceIn(box.minX + 0.1, box.maxX - 0.1)
-        val y = eyePos.y.coerceIn(box.minY + 0.1, box.maxY - 0.1)
-        val z = eyePos.z.coerceIn(box.minZ + 0.1, box.maxZ - 0.1)
+        val eyePos = player.getPositionEyes(1f)
+        val x = eyePos.x.coerceIn(box.minX, box.maxX)
+        val y = eyePos.y.coerceIn(box.minY, box.maxY)
+        val z = eyePos.z.coerceIn(box.minZ, box.maxZ)
         val hitVec = Vec3d(x, y, z)
         return getRotationTo(hitVec)
     }
 
-    fun getRotationToEntity(entity: Entity): Vec2f {
+    fun SafeClientEvent.getRotationToEntity(entity: Entity): Vec2f {
         return getRotationTo(entity.positionVector)
     }
 
@@ -50,11 +48,9 @@ object RotationUtils {
      * Get rotation from a player position to another position vector
      *
      * @param posTo Calculate rotation to this position vector
-     * @param eyeHeight Use player eye position to calculate
-     * @return [Pair]<Yaw, Pitch>
      */
-    fun getRotationTo(posTo: Vec3d): Vec2f {
-        return getRotationTo(mc.player.getPositionEyes(1f), posTo)
+    fun SafeClientEvent.getRotationTo(posTo: Vec3d): Vec2f {
+        return getRotationTo(player.getPositionEyes(1f), posTo)
     }
 
     /**
@@ -62,7 +58,6 @@ object RotationUtils {
      *
      * @param posFrom Calculate rotation from this position vector
      * @param posTo Calculate rotation to this position vector
-     * @return [Pair]<Yaw, Pitch>
      */
     fun getRotationTo(posFrom: Vec3d, posTo: Vec3d): Vec2f {
         return getRotationFromVec(posTo.subtract(posFrom))

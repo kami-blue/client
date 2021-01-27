@@ -13,6 +13,7 @@ import me.zeroeightsix.kami.mixin.extension.packetAction
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.WorldUtils.getHitSide
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils.equipBestWeapon
 import me.zeroeightsix.kami.util.combat.CrystalUtils.calcCrystalDamage
@@ -21,6 +22,8 @@ import me.zeroeightsix.kami.util.combat.CrystalUtils.getCrystalBB
 import me.zeroeightsix.kami.util.combat.CrystalUtils.getCrystalList
 import me.zeroeightsix.kami.util.items.*
 import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationToEntity
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
@@ -147,10 +150,7 @@ internal object CrystalAura : Module(
     val minDamage get() = max(minDamageP, minDamageE)
     val maxSelfDamage get() = min(maxSelfDamageP, maxSelfDamageE)
 
-    override fun isActive() =
-        isEnabled
-            && (mc.player?.allSlots?.countItem(Items.END_CRYSTAL) ?: 0) > 0
-            && inactiveTicks <= 20
+    override fun isActive() = isEnabled && inactiveTicks <= 20
 
     init {
         onEnable {
@@ -368,8 +368,8 @@ internal object CrystalAura : Module(
         sendOrQueuePacket(CPacketAnimation(getHand() ?: EnumHand.OFF_HAND))
     }
 
-    private fun getPlacePacket(pos: BlockPos, hand: EnumHand) =
-        CPacketPlayerTryUseItemOnBlock(pos, WorldUtils.getHitSide(pos), hand, 0.5f, placeOffset, 0.5f)
+    private fun SafeClientEvent.getPlacePacket(pos: BlockPos, hand: EnumHand) =
+        CPacketPlayerTryUseItemOnBlock(pos, getHitSide(pos), hand, 0.5f, placeOffset, 0.5f)
 
     private fun SafeClientEvent.sendOrQueuePacket(packet: Packet<*>) {
         val yawDiff = abs(RotationUtils.normalizeAngle(PlayerPacketManager.serverSideRotation.x - getLastRotation().x))
@@ -420,7 +420,7 @@ internal object CrystalAura : Module(
 
             // Yaw speed check
             val hitVec = pos.toVec3d().add(0.5, placeOffset.toDouble(), 0.5)
-            if (!checkYawSpeed(RotationUtils.getRotationTo(hitVec).x)) continue
+            if (!checkYawSpeed(getRotationTo(hitVec).x)) continue
 
             return pos
         }
@@ -442,7 +442,7 @@ internal object CrystalAura : Module(
             !ignoredList.contains(crystal)
                 && !crystal.isDead
                 && checkDamageExplode(triple.first, triple.second)
-                && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
+                && checkYawSpeed(getRotationToEntity(crystal).x)
         }
 
         return (filteredCrystal.firstOrNull { (crystal, triple) ->
@@ -518,7 +518,7 @@ internal object CrystalAura : Module(
                 if (ignoredList.contains(crystal)) continue
                 if (!checkDamagePlace(pair.first, pair.second)) continue
                 if (crystal.positionVector.distanceTo(eyePos) > placeRange) continue
-                if (!checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)) continue
+                if (!checkYawSpeed(getRotationToEntity(crystal).x)) continue
                 count++
             }
         }
@@ -532,8 +532,8 @@ internal object CrystalAura : Module(
         return yawDiffList.sum() + yawDiff <= maxYawSpeed
     }
 
-    private fun getLastRotation() =
-        RotationUtils.getRotationTo(lastLookAt)
+    private fun SafeClientEvent.getLastRotation() =
+        getRotationTo(lastLookAt)
 
     private fun resetRotation() {
         lastLookAt = CombatManager.target?.positionVector ?: Vec3d.ZERO

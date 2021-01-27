@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.onMainThread
 import me.zeroeightsix.kami.util.threads.onMainThreadSafe
 import me.zeroeightsix.kami.util.threads.runSafeR
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -42,8 +43,8 @@ internal object FakePlayer : Module(
             runSafeR {
                 if (playerName == "Player") {
                     MessageSendHelper.sendChatMessage("You can use ${formatValue("${CommandManager.prefix}set FakePlayer PlayerName <name>")} to set a custom name")
-                    spawnFakePlayer()
                 }
+                spawnFakePlayer()
             } ?: disable()
         }
 
@@ -74,7 +75,7 @@ internal object FakePlayer : Module(
             if (maxArmor) addMaxArmor()
             if (gappleEffects) addGappleEffects()
         }.also {
-            onMainThreadSafe {
+            onMainThread {
                 world.addEntityToWorld(ENTITY_ID, it)
             }
         }

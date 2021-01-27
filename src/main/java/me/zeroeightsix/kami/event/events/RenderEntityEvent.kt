@@ -11,7 +11,10 @@ class RenderEntityEvent(
     val yaw: Float,
     val partialTicks: Float,
     override val phase: Phase
-) : Event, ICancellable by Cancellable(), IMultiPhase<RenderEntityEvent> {
+) : Event, ICancellable by Cancellable(), IMultiPhase<RenderEntityEvent>, ProfilerEvent {
+
+    override val profilerName: String get() = "kbRenderEntity${phase.displayName}"
+
     override fun nextPhase(): RenderEntityEvent {
         throw UnsupportedOperationException()
     }

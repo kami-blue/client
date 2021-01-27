@@ -3,11 +3,10 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.onGround
-import me.zeroeightsix.kami.mixin.extension.rightClickMouse
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.WorldUtils
+import me.zeroeightsix.kami.util.WorldUtils.getGroundPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items
@@ -49,8 +48,8 @@ internal object NoFall : Module(
     private var last: Long = 0
 
     init {
-        listener<PacketEvent.Send> {
-            if (it.packet !is CPacketPlayer || mc.player.isElytraFlying) return@listener
+        safeListener<PacketEvent.Send> {
+            if (it.packet !is CPacketPlayer || player.isElytraFlying) return@safeListener
             if ((mode.value == Mode.FALL && fallModeSetting.value == FallMode.PACKET || mode.value == Mode.CATCH)) {
                 it.packet.onGround = true
             }
@@ -66,7 +65,7 @@ internal object NoFall : Module(
         }
     }
 
-    private fun SafeClientEvent.fallDistCheck() = (!voidOnly.value && player.fallDistance >= distance.value) || WorldUtils.getGroundPos().y == -999.0
+    private fun SafeClientEvent.fallDistCheck() = (!voidOnly.value && player.fallDistance >= distance.value) || getGroundPos().y == -69420.0
 
     // TODO: This really needs a rewrite to spoof placing and the such instead of manual rotations
     private fun SafeClientEvent.fallMode() {

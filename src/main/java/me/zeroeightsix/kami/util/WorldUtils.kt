@@ -3,10 +3,9 @@ package me.zeroeightsix.kami.util
 import kotlinx.coroutines.delay
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
-import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
 import me.zeroeightsix.kami.util.math.corners
 import me.zeroeightsix.kami.util.threads.runSafeSuspend
-import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
@@ -56,9 +55,7 @@ object WorldUtils {
         Blocks.BLACK_SHULKER_BOX
     )
 
-    private val mc = Minecraft.getMinecraft()
-
-    fun isLiquidBelow(entity: Entity = mc.player): Boolean {
+    fun SafeClientEvent.isLiquidBelow(entity: Entity = player): Boolean {
         val results = rayTraceBoundingBoxToGround(entity, true)
         if (results.all { it.typeOfHit == RayTraceResult.Type.MISS || it.hitVec?.y ?: 911.0 < 0.0 }) {
             return true
@@ -68,16 +65,16 @@ object WorldUtils {
         return isLiquid(pos)
     }
 
-    fun getGroundPos(entity: Entity = mc.player): Vec3d {
+    fun SafeClientEvent.getGroundPos(entity: Entity = player): Vec3d {
         val results = rayTraceBoundingBoxToGround(entity, false)
         if (results.all { it.typeOfHit == RayTraceResult.Type.MISS || it.hitVec?.y ?: 911.0 < 0.0 }) {
             return Vec3d(0.0, -999.0, 0.0)
         }
 
-        return results.maxByOrNull { it.hitVec?.y ?: -69420.0 }?.hitVec ?: entity.positionVector
+        return results.maxByOrNull { it.hitVec?.y ?: -69420.0 }?.hitVec ?: Vec3d(0.0, -69420.0, 0.0)
     }
 
-    private fun rayTraceBoundingBoxToGround(entity: Entity, stopOnLiquid: Boolean): List<RayTraceResult> {
+    private fun SafeClientEvent.rayTraceBoundingBoxToGround(entity: Entity, stopOnLiquid: Boolean): List<RayTraceResult> {
         val boundingBox = entity.entityBoundingBox
         val xArray = arrayOf(floor(boundingBox.minX), floor(boundingBox.maxX))
         val zArray = arrayOf(floor(boundingBox.minZ), floor(boundingBox.maxZ))
@@ -94,16 +91,16 @@ object WorldUtils {
         return results
     }
 
-    private fun rayTraceToGround(vec3d: Vec3d, stopOnLiquid: Boolean): RayTraceResult? {
-        return mc.world.rayTraceBlocks(vec3d, Vec3d(vec3d.x, -1.0, vec3d.z), stopOnLiquid, true, false)
+    private fun SafeClientEvent.rayTraceToGround(vec3d: Vec3d, stopOnLiquid: Boolean): RayTraceResult? {
+        return world.rayTraceBlocks(vec3d, Vec3d(vec3d.x, -1.0, vec3d.z), stopOnLiquid, true, false)
     }
 
-    fun isLiquid(pos: BlockPos): Boolean {
-        return mc.world.getBlockState(pos).material.isLiquid
+    fun SafeClientEvent.isLiquid(pos: BlockPos): Boolean {
+        return world.getBlockState(pos).material.isLiquid
     }
 
-    fun isWater(pos: BlockPos): Boolean {
-        return mc.world.getBlockState(pos).block == Blocks.WATER
+    fun SafeClientEvent.isWater(pos: BlockPos): Boolean {
+        return world.getBlockState(pos).block == Blocks.WATER
     }
 
     /**
@@ -111,15 +108,15 @@ object WorldUtils {
      *
      * @return true playing is not colliding with [pos] and there is block below it
      */
-    fun isPlaceable(pos: BlockPos, ignoreSelfCollide: Boolean = false) = mc.world.getBlockState(pos).material.isReplaceable
-        && mc.world.checkNoEntityCollision(AxisAlignedBB(pos), if (ignoreSelfCollide) mc.player else null)
+    fun SafeClientEvent.isPlaceable(pos: BlockPos, ignoreSelfCollide: Boolean = false) = world.getBlockState(pos).material.isReplaceable
+        && world.checkNoEntityCollision(AxisAlignedBB(pos), if (ignoreSelfCollide) player else null)
 
-    fun rayTraceTo(blockPos: BlockPos): RayTraceResult? {
-        return mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), Vec3d(blockPos).add(0.5, 0.5, 0.5))
+    fun SafeClientEvent.getHitSide(blockPos: BlockPos): EnumFacing {
+        return rayTraceTo(blockPos)?.sideHit ?: EnumFacing.UP
     }
 
-    fun getHitSide(blockPos: BlockPos): EnumFacing {
-        return rayTraceTo(blockPos)?.sideHit ?: EnumFacing.UP
+    fun SafeClientEvent.rayTraceTo(blockPos: BlockPos): RayTraceResult? {
+        return world.rayTraceBlocks(player.getPositionEyes(1f), Vec3d(blockPos).add(0.5, 0.5, 0.5))
     }
 
     fun getHitVec(pos: BlockPos, facing: EnumFacing): Vec3d {
@@ -147,9 +144,9 @@ object WorldUtils {
 
     private fun RayTraceResult.isEqualTo(pos: BlockPos) = typeOfHit == RayTraceResult.Type.BLOCK && blockPos == pos
 
-    suspend fun buildStructure(
+    suspend fun SafeClientEvent.buildStructure(
         placeSpeed: Float,
-        getPlaceInfo: (HashSet<BlockPos>) -> Pair<EnumFacing, BlockPos>?
+        getPlaceInfo: SafeClientEvent.(HashSet<BlockPos>) -> Pair<EnumFacing, BlockPos>?
     ) {
         val emptyHashSet = HashSet<BlockPos>()
         val placed = HashSet<BlockPos>()
@@ -169,13 +166,13 @@ object WorldUtils {
         }
     }
 
-    fun hasNeighbour(blockPos: BlockPos): Boolean {
+    fun SafeClientEvent.hasNeighbour(blockPos: BlockPos): Boolean {
         return EnumFacing.values().any {
-            !mc.world.getBlockState(blockPos.offset(it)).material.isReplaceable
+            !world.getBlockState(blockPos.offset(it)).material.isReplaceable
         }
     }
 
-    fun getPlaceInfo(
+    fun SafeClientEvent.getPlaceInfo(
         center: BlockPos?,
         structureOffset: Array<BlockPos>,
         toIgnore: HashSet<BlockPos>,
@@ -194,7 +191,7 @@ object WorldUtils {
         return null
     }
 
-    fun getNeighbour(
+    fun SafeClientEvent.getNeighbour(
         blockPos: BlockPos,
         attempts: Int = 3,
         range: Float = 4.25f,
@@ -204,8 +201,8 @@ object WorldUtils {
         for (side in sides) {
             val pos = blockPos.offset(side)
             if (!toIgnore.add(pos)) continue
-            if (mc.world.getBlockState(pos).material.isReplaceable) continue
-            if (mc.player.getPositionEyes(1f).distanceTo(Vec3d(pos).add(getHitVecOffset(side))) > range) continue
+            if (world.getBlockState(pos).material.isReplaceable) continue
+            if (player.getPositionEyes(1f).distanceTo(Vec3d(pos).add(getHitVecOffset(side))) > range) continue
             return Pair(side.opposite, pos)
         }
         if (attempts > 1) {
@@ -228,8 +225,8 @@ object WorldUtils {
         placeSpeed: Float
     ) {
         val hitVecOffset = getHitVecOffset(facing)
-        val rotation = RotationUtils.getRotationTo(Vec3d(pos).add(hitVecOffset))
-        val rotationPacket = CPacketPlayer.PositionRotation(mc.player.posX, mc.player.posY, mc.player.posZ, rotation.x.toFloat(), rotation.y.toFloat(), mc.player.onGround)
+        val rotation = getRotationTo(Vec3d(pos).add(hitVecOffset))
+        val rotationPacket = CPacketPlayer.PositionRotation(player.posX, player.posY, player.posZ, rotation.x, rotation.y, player.onGround)
         val placePacket = CPacketPlayerTryUseItemOnBlock(pos, facing, EnumHand.MAIN_HAND, hitVecOffset.x.toFloat(), hitVecOffset.y.toFloat(), hitVecOffset.z.toFloat())
 
         connection.sendPacket(rotationPacket)

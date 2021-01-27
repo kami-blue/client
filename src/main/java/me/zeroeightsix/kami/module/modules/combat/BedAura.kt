@@ -7,9 +7,12 @@ import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.WorldUtils.getHitSide
+import me.zeroeightsix.kami.util.WorldUtils.rayTraceTo
 import me.zeroeightsix.kami.util.combat.CrystalUtils.calcCrystalDamage
 import me.zeroeightsix.kami.util.items.*
 import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
@@ -26,7 +29,6 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -73,14 +75,16 @@ internal object BedAura : Module(
             inactiveTicks = 6
         }
 
-        listener<PacketEvent.PostSend> {
-            if (!CombatManager.isOnTopPriority(this) || it.packet !is CPacketPlayer || state == State.NONE || CombatSetting.pause) return@listener
+        safeListener<PacketEvent.PostSend> {
+            if (!CombatManager.isOnTopPriority(this@BedAura) || it.packet !is CPacketPlayer || state == State.NONE || CombatSetting.pause) return@safeListener
+
             val hand = getBedHand() ?: EnumHand.MAIN_HAND
-            val facing = if (state == State.PLACE) EnumFacing.UP else WorldUtils.getHitSide(clickPos)
+            val facing = if (state == State.PLACE) EnumFacing.UP else getHitSide(clickPos)
             val hitVecOffset = WorldUtils.getHitVecOffset(facing)
             val packet = CPacketPlayerTryUseItemOnBlock(clickPos, facing, hand, hitVecOffset.x.toFloat(), hitVecOffset.y.toFloat(), hitVecOffset.z.toFloat())
-            mc.connection!!.sendPacket(packet)
-            mc.player.swingArm(hand)
+
+            connection.sendPacket(packet)
+            player.swingArm(hand)
             state = State.NONE
         }
 
@@ -124,9 +128,9 @@ internal object BedAura : Module(
             val damagePosMap = HashMap<Pair<Float, Float>, BlockPos>()
             for (pos in posList) {
                 val dist = player.distanceTo(pos)
-                if (WorldUtils.rayTraceTo(pos) == null && dist > wallRange.value) continue
+                if (rayTraceTo(pos) == null && dist > wallRange.value) continue
                 val topSideVec = Vec3d(pos).add(0.5, 1.0, 0.5)
-                val rotation = RotationUtils.getRotationTo(topSideVec)
+                val rotation = getRotationTo(topSideVec)
                 val facing = EnumFacing.fromAngle(rotation.x.toDouble())
                 if (!canPlaceBed(pos)) continue
                 val targetDamage = calcCrystalDamage(pos.offset(facing), it)
@@ -163,7 +167,7 @@ internal object BedAura : Module(
                 if (!tileEntity.isHeadPiece) continue
                 val dist = player.distanceTo(tileEntity.pos).toFloat()
                 if (dist > range.value) continue
-                if (WorldUtils.rayTraceTo(tileEntity.pos) == null && dist > wallRange.value) continue
+                if (rayTraceTo(tileEntity.pos) == null && dist > wallRange.value) continue
                 damagePosMap[dist] = tileEntity.pos
             }
             damagePosMap
@@ -184,29 +188,29 @@ internal object BedAura : Module(
 
     private fun getExplodePos() = bedMap.values.firstOrNull()
 
-    private fun preExplode(pos: BlockPos) {
+    private fun SafeClientEvent.preExplode(pos: BlockPos) {
         hitTickCount = 0
         preClick(pos, Vec3d(0.5, 0.0, 0.5))
         state = State.EXPLODE
     }
 
-    private fun preClick(pos: BlockPos, hitOffset: Vec3d) {
+    private fun SafeClientEvent.preClick(pos: BlockPos, hitOffset: Vec3d) {
         inactiveTicks = 0
         clickPos = pos
-        lastRotation = RotationUtils.getRotationTo(Vec3d(pos).add(hitOffset))
+        lastRotation = getRotationTo(Vec3d(pos).add(hitOffset))
     }
 
-    private fun getSecondBedPos(pos: BlockPos): BlockPos {
+    private fun SafeClientEvent.getSecondBedPos(pos: BlockPos): BlockPos {
         val vec3d = Vec3d(pos).add(0.5, 0.0, 0.5)
-        val rotation = RotationUtils.getRotationTo(vec3d)
+        val rotation = getRotationTo(vec3d)
         val facing = EnumFacing.fromAngle(rotation.x.toDouble())
         return pos.offset(facing)
     }
 
-    private fun getBedHand(): EnumHand? {
+    private fun SafeClientEvent.getBedHand(): EnumHand? {
         return when (Items.BED) {
-            mc.player.heldItemMainhand.item -> EnumHand.MAIN_HAND
-            mc.player.heldItemOffhand.item -> EnumHand.OFF_HAND
+            player.heldItemMainhand.item -> EnumHand.MAIN_HAND
+            player.heldItemOffhand.item -> EnumHand.OFF_HAND
             else -> null
         }
     }

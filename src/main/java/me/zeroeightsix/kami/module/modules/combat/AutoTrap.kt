@@ -9,6 +9,9 @@ import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.WorldUtils.buildStructure
+import me.zeroeightsix.kami.util.WorldUtils.getPlaceInfo
+import me.zeroeightsix.kami.util.WorldUtils.isPlaceable
 import me.zeroeightsix.kami.util.items.HotbarSlot
 import me.zeroeightsix.kami.util.items.firstBlock
 import me.zeroeightsix.kami.util.items.hotbarSlots
@@ -49,12 +52,12 @@ internal object AutoTrap : Module(
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (!job.isActiveOrFalse && isPlaceable()) job = runAutoTrap()
+            if (!job.isActiveOrFalse && canRun()) job = runAutoTrap()
 
             if (job.isActiveOrFalse) {
                 getObby()?.let {
                     PlayerPacketManager.spoofHotbar(it.hotbarSlot)
-                }
+                } ?: return@safeListener
                 PlayerPacketManager.addPacket(AutoTrap, PlayerPacketManager.PlayerPacket(rotating = false))
             } else if (CombatManager.isOnTopPriority(AutoTrap)) {
                 PlayerPacketManager.resetHotbar()
@@ -71,10 +74,10 @@ internal object AutoTrap : Module(
 
     private fun BooleanSetting.toggleMsg() = "$chatName Turned ${this.name} ${if (this.value) "&aon" else "&coff"}&f!"
 
-    private fun isPlaceable(): Boolean {
-        (if (selfTrap.value) mc.player else CombatManager.target)?.positionVector?.toBlockPos()?.let {
+    private fun SafeClientEvent.canRun(): Boolean {
+        (if (selfTrap.value) player else CombatManager.target)?.positionVector?.toBlockPos()?.let {
             for (offset in trapMode.value.offset) {
-                if (!WorldUtils.isPlaceable(it.add(offset))) continue
+                if (!isPlaceable(it.add(offset))) continue
                 return true
             }
         }
@@ -93,11 +96,11 @@ internal object AutoTrap : Module(
         return slots
     }
 
-    private fun runAutoTrap() = defaultScope.launch {
-        WorldUtils.buildStructure(placeSpeed.value) {
+    private fun SafeClientEvent.runAutoTrap() = defaultScope.launch {
+        buildStructure(placeSpeed.value) {
             if (isEnabled && CombatManager.isOnTopPriority(this@AutoTrap)) {
-                val center = (if (selfTrap.value) mc.player else CombatManager.target)?.positionVector?.toBlockPos()
-                WorldUtils.getPlaceInfo(center, trapMode.value.offset, it, 3)
+                val center = (if (selfTrap.value) player else CombatManager.target)?.positionVector?.toBlockPos()
+                getPlaceInfo(center, trapMode.value.offset, it, 3)
             } else {
                 null
             }

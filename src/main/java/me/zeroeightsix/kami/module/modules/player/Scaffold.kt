@@ -9,16 +9,18 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.client.entity.MixinEntity
+import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.EntityUtils.prevPosVector
+import me.zeroeightsix.kami.util.WorldUtils.getNeighbour
 import me.zeroeightsix.kami.util.WorldUtils.placeBlock
 import me.zeroeightsix.kami.util.items.HotbarSlot
 import me.zeroeightsix.kami.util.items.firstItem
 import me.zeroeightsix.kami.util.items.hotbarSlots
 import me.zeroeightsix.kami.util.items.swapToSlot
-import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.threads.defaultScope
@@ -96,13 +98,13 @@ internal object Scaffold : Module(
 
             inactiveTicks++
             placeInfo = calcNextPos()?.let {
-                WorldUtils.getNeighbour(it, 1, sides = arrayOf(EnumFacing.DOWN))
-                    ?: WorldUtils.getNeighbour(it, 3, sides = EnumFacing.HORIZONTALS)
+                getNeighbour(it, 1, sides = arrayOf(EnumFacing.DOWN))
+                    ?: getNeighbour(it, 3, sides = EnumFacing.HORIZONTALS)
             }
 
             placeInfo?.let {
                 val hitVec = WorldUtils.getHitVec(it.second, it.first)
-                lastRotation = RotationUtils.getRotationTo(hitVec)
+                lastRotation = getRotationTo(hitVec)
                 swapAndPlace(it.second, it.first)
             }
 
@@ -169,7 +171,7 @@ internal object Scaffold : Module(
     }
 
     private fun SafeClientEvent.getBlockSlot(): HotbarSlot? {
-        playerController.updateController()
+        playerController.syncCurrentPlayItem()
         return player.hotbarSlots.firstItem<ItemBlock, HotbarSlot>()
     }
 

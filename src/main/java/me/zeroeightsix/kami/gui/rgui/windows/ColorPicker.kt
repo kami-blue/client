@@ -82,12 +82,14 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
 
     override fun onTick() {
         super.onTick()
-        prevHue = hue
-        prevSaturation = saturation
-        prevBrightness = brightness
-        for (component in components) component.onTick()
-        if (hoveredChild != null) updateHSBFromRGB()
-        if (listeningChild?.listening == false) listeningChild = null
+        if (visible) {
+            prevHue = hue
+            prevSaturation = saturation
+            prevBrightness = brightness
+            for (component in components) component.onTick()
+            if (hoveredChild != null) updateHSBFromRGB()
+            if (listeningChild?.listening == false) listeningChild = null
+        }
     }
 
     override fun onMouseInput(mousePos: Vec2f) {

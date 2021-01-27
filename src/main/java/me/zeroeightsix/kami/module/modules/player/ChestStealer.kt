@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiMerchant
 import net.minecraft.client.gui.GuiRepair
 import net.minecraft.client.gui.inventory.*
 import net.minecraft.init.Items
+import net.minecraft.item.ItemShulkerBox
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 internal object ChestStealer : Module(
@@ -24,6 +25,7 @@ internal object ChestStealer : Module(
     private val movingMode = setting("MovingMode", MovingMode.QUICK_MOVE)
     private val ignoreEjectItem = setting("IgnoresEjectItem", false, description = "Ignore AutoEject items in InventoryManager")
     private val delay = setting("Delay", 250, 0..1000, 25, description = "Move stack delay in ms")
+    private val onlyShulkers = setting("OnlyShulkers", false, description = "Only move shulker boxes")
 
     enum class Mode {
         ALWAYS, TOGGLE, MANUAL
@@ -142,7 +144,9 @@ internal object ChestStealer : Module(
             val item = container[slot].item
             if (item == Items.AIR) continue
             if (ignoreEjectItem.value && InventoryManager.ejectList.contains(item.registryName.toString())) continue
-            return slot
+            if (!onlyShulkers.value || item is ItemShulkerBox) {
+                return slot
+            }
         }
 
         return null
@@ -155,7 +159,9 @@ internal object ChestStealer : Module(
         for (slot in size until size + 36) {
             val item = container[slot].item
             if (item == Items.AIR) continue
-            return slot
+            if (!onlyShulkers.value || item is ItemShulkerBox) {
+                return slot
+            }
         }
 
         return null

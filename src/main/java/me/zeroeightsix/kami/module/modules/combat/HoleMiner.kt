@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlace
 import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlaceOn
 import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.items.swapToItem
-import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
@@ -86,7 +86,7 @@ internal object HoleMiner : Module(
                 }
 
                 val action = if (start) CPacketPlayerDigging.Action.START_DESTROY_BLOCK else CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK
-                val rotation = RotationUtils.getRotationTo(pos.toVec3dCenter())
+                val rotation = getRotationTo(pos.toVec3dCenter())
                 val diff = player.getPositionEyes(1f).subtract(pos.toVec3dCenter())
                 val normalizedVec = diff.scale(1.0 / diff.length())
                 val facing = EnumFacing.getFacingFromVector(normalizedVec.x.toFloat(), normalizedVec.y.toFloat(), normalizedVec.z.toFloat())
