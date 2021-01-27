@@ -122,12 +122,7 @@ dependencies {
         exclude module: 'jna'
     }
 
-    jarLibs('com.github.MrPowerGamerBR:TemmieWebhook:-SNAPSHOT') {
-        exclude module: 'gson'
-    }
-
-    jarLibs 'com.github.kevinsawicki:http-request:6.0'
-
+    jarLibs('com.squareup.okhttp3:okhttp:4.9.0')
 
     // Kotlin libs
     // kotlin-stdlib-common and annotations aren't required at runtime

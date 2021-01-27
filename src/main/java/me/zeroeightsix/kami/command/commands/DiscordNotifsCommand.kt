@@ -42,7 +42,7 @@ object DiscordNotifsCommand : ClientCommand(
                     return@execute
                 }
 
-                DiscordNotifs.url.value = urlArg.value
+                DiscordNotifs.url = urlArg.value
                 MessageSendHelper.sendChatMessage("Set Webhook URL to ${formatValue(urlArg.value)}!")
             }
         }
