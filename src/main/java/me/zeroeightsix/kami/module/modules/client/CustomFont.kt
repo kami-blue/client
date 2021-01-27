@@ -35,7 +35,7 @@ internal object CustomFont : Module(
     val lodBias get() = lodBiasSetting.value * 0.25f - 0.5f
     val baselineOffset get() = baselineOffsetSetting.value * 2.0f - 4.5f
 
-    /** Available fonts on in the system */
+    /** Available fonts on the system */
     val availableFonts : Map<String, String> by AsyncCachedValue(5L, TimeUnit.SECONDS) {
         HashMap<String, String>().apply {
             val environment = GraphicsEnvironment.getLocalGraphicsEnvironment()
