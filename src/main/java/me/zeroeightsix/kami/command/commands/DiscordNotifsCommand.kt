@@ -16,7 +16,7 @@ object DiscordNotifsCommand : ClientCommand(
         literal("id") {
             long("discord user id") { idArg ->
                 execute("Set the ID of the user to be pinged") {
-                    DiscordNotifs.pingID.value = idArg.value.toString()
+                    DiscordNotifs.pingID = idArg.value.toString()
                     MessageSendHelper.sendChatMessage("Set Discord User ID to ${formatValue(idArg.value.toString())}!")
                 }
             }
@@ -25,7 +25,7 @@ object DiscordNotifsCommand : ClientCommand(
         literal("avatar") {
             greedy("url") { urlArg ->
                 execute("Set the webhook icon") {
-                    DiscordNotifs.avatar.value = urlArg.value
+                    DiscordNotifs.avatar = urlArg.value
                     MessageSendHelper.sendChatMessage("Set Webhook Avatar to ${formatValue(urlArg.value)}!")
                 }
             }
