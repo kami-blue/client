@@ -32,9 +32,9 @@ internal object DiscordNotifs : Module(
     private val queue by setting("QueuePosition", true, { !all })
     private val restart by setting("Restart", true, { !all }, description = "Server restart notifications")
 
-    val url by setting("URL", "unchanged")
-    val pingID by setting("PingID", "unchanged")
-    val avatar by setting("Avatar", "${KamiMod.GITHUB_LINK}/assets/raw/assets/assets/icons/kamiGithub.png")
+    val url = setting("URL", "unchanged")
+    val pingID = setting("PingID", "unchanged")
+    val avatar = setting("Avatar", "${KamiMod.GITHUB_LINK}/assets/raw/assets/assets/icons/kamiGithub.png")
 
     private const val username = "${KamiMod.NAME} ${KamiMod.VERSION}"
     private val server: String get() = mc.currentServerData?.serverIP ?: "the server"
@@ -62,12 +62,12 @@ internal object DiscordNotifs : Module(
 
         /* Always on status code */
         safeListener<TickEvent.ClientTickEvent> {
-            if (url == "unchanged") {
+            if (url.value == "unchanged") {
                 MessageSendHelper.sendErrorMessage(chatName + " You must first set a webhook url with the " +
                     formatValue("${CommandManager.prefix}discordnotifs") +
                     " command")
                 disable()
-            } else if (pingID == "unchanged" && importantPings) {
+            } else if (pingID.value == "unchanged" && importantPings) {
                 MessageSendHelper.sendErrorMessage(chatName + " For Pings to work, you must set a Discord ID with the " +
                     formatValue("${CommandManager.prefix}discordnotifs") +
                     " command")
@@ -104,7 +104,7 @@ internal object DiscordNotifs : Module(
     else ""
 
     private fun formatPingID(): String {
-        return if (!importantPings) "" else "<@!$pingID>: "
+        return if (!importantPings) "" else "<@!${pingID.value}>: "
     }
 
     private fun getTime() =
@@ -115,9 +115,9 @@ internal object DiscordNotifs : Module(
         val jsonType = "application/json; charset=utf-8".toMediaType()
 
         // todo json dsl
-        val body = RequestBody.create(jsonType, "{\"username\": \"$username\", \"content\": \"$content\", \"avatar_url\": \"$avatar\"}")
+        val body = RequestBody.create(jsonType, "{\"username\": \"$username\", \"content\": \"$content\", \"avatar_url\": \"${avatar.value}\"}")
         val request: Request = Request.Builder()
-            .url(url)
+            .url(url.value)
             .addHeader("Content-Type", "application/json")
             .post(body)
             .build()
