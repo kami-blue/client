@@ -44,7 +44,7 @@ public class KamiMod {
     @Mod.Instance
     public static KamiMod INSTANCE;
 
-    public static OkHttpClient httpClient = new OkHttpClient();
+    private static final OkHttpClient httpClient = new OkHttpClient();
 
     private static boolean ready = false;
 
@@ -81,6 +81,10 @@ public class KamiMod {
 
     public static boolean isReady() {
         return ready;
+    }
+
+    public static OkHttpClient getHttpClient() {
+        return httpClient;
     }
 
 }

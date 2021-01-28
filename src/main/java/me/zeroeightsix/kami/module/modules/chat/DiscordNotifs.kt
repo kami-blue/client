@@ -127,7 +127,7 @@ internal object DiscordNotifs : Module(
 
         defaultScope.launch(Dispatchers.IO) {
             // todo probably make some DSL for this lol
-            KamiMod.httpClient.newCall(request).execute().use { response ->
+            KamiMod.getHttpClient().newCall(request).execute().use { response ->
                 val responseBody = response.body?.string().toString()
                 if (responseBody.isBlank()) return@launch // Returns 204 empty normally. We want to warn log any non-empty responses.
                 KamiMod.LOG.warn("DiscordNotifs OkHttp Request\n${responseBody}")
