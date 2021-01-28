@@ -1,5 +1,8 @@
 package me.zeroeightsix.kami.module.modules.chat
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.ConnectionEvent
@@ -9,12 +12,14 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.*
+import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.kamiblue.event.listener.listener
 
 internal object DiscordNotifs : Module(
@@ -115,18 +120,20 @@ internal object DiscordNotifs : Module(
         val jsonType = "application/json; charset=utf-8".toMediaType()
 
         // todo json dsl
-        val body = RequestBody.create(jsonType, "{\"username\": \"$username\", \"content\": \"$content\", \"avatar_url\": \"${avatar.value}\"}")
+        val body = "{\"username\": \"$username\", \"content\": \"$content\", \"avatar_url\": \"${avatar.value}\"}".toRequestBody(jsonType)
         val request: Request = Request.Builder()
             .url(url.value)
             .addHeader("Content-Type", "application/json")
             .post(body)
             .build()
 
-        // todo probably make some DSL for this lol
-        KamiMod.httpClient.newCall(request).execute().use { response ->
-            val responseBody = response.body?.string().toString()
-            if (responseBody.isBlank()) return // Returns 204 empty normally. We want to warn log any non-empty responses.
-            KamiMod.LOG.warn("DiscordNotifs OkHttp Request\n${responseBody}")
+        defaultScope.launch(Dispatchers.IO) {
+            // todo probably make some DSL for this lol
+            KamiMod.httpClient.newCall(request).execute().use { response ->
+                val responseBody = response.body?.string().toString()
+                if (responseBody.isBlank()) return@launch // Returns 204 empty normally. We want to warn log any non-empty responses.
+                KamiMod.LOG.warn("DiscordNotifs OkHttp Request\n${responseBody}")
+            }
         }
     }
 }
