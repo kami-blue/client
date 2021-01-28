@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.CommandManager
@@ -18,7 +17,6 @@ import net.minecraft.network.play.server.SPacketChat
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.kamiblue.event.listener.listener
 
@@ -116,7 +114,7 @@ internal object DiscordNotifs : Module(
         if (!time) ""
         else ChatTimestamp.time
 
-    fun sendMessage(content: String) {
+    private fun sendMessage(content: String) {
         val jsonType = "application/json; charset=utf-8".toMediaType()
 
         // todo json dsl
