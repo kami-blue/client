@@ -26,8 +26,9 @@ interface SettingRegister<T : Any> {
         step: Int,
         visibility: () -> Boolean = { true },
         consumer: (prev: Int, input: Int) -> Int = { _, input -> input },
-        description: String = ""
-    ) = setting(IntegerSetting(name, value, range, step, visibility, consumer, description))
+        description: String = "",
+        fineStep: Int = step,
+    ) = setting(IntegerSetting(name, value, range, step, visibility, consumer, description, fineStep))
 
     /** Double Setting */
     fun T.setting(
@@ -37,8 +38,9 @@ interface SettingRegister<T : Any> {
         step: Double,
         visibility: () -> Boolean = { true },
         consumer: (prev: Double, input: Double) -> Double = { _, input -> input },
-        description: String = ""
-    ) = setting(DoubleSetting(name, value, range, step, visibility, consumer, description))
+        description: String = "",
+        fineStep: Double = step,
+    ) = setting(DoubleSetting(name, value, range, step, visibility, consumer, description, fineStep))
 
     /** Float Setting */
     fun T.setting(
@@ -48,8 +50,9 @@ interface SettingRegister<T : Any> {
         step: Float,
         visibility: () -> Boolean = { true },
         consumer: (prev: Float, input: Float) -> Float = { _, input -> input },
-        description: String = ""
-    ) = setting(FloatSetting(name, value, range, step, visibility, consumer, description))
+        description: String = "",
+        fineStep: Float = step,
+    ) = setting(FloatSetting(name, value, range, step, visibility, consumer, description, fineStep))
 
     /** Bind Setting */
     fun T.setting(

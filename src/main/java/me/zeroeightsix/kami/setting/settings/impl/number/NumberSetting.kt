@@ -10,7 +10,8 @@ abstract class NumberSetting<T>(
     val step: T,
     visibility: () -> Boolean,
     consumer: (prev: T, input: T) -> T,
-    description: String = ""
+    description: String = "",
+    val fineStep: T
 ) : MutableSetting<T>(name, value, visibility, consumer, description)
     where T : Number, T : Comparable<T> {
 

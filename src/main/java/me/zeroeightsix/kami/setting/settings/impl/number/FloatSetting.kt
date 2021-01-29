@@ -9,8 +9,9 @@ class FloatSetting(
     step: Float,
     visibility: () -> Boolean = { true },
     consumer: (prev: Float, input: Float) -> Float = { _, input -> input },
-    description: String = ""
-) : NumberSetting<Float>(name, value, range, step, visibility, consumer, description) {
+    description: String = "",
+    fineStep: Float = step
+) : NumberSetting<Float>(name, value, range, step, visibility, consumer, description, fineStep) {
 
     init {
         consumers.add(0) { _, it ->
