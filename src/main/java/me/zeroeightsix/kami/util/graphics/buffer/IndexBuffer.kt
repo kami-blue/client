@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.graphics.vbo
+package me.zeroeightsix.kami.util.graphics.buffer
 
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11.*

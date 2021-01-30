@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.util.graphics.render
 
-import me.zeroeightsix.kami.util.graphics.vbo.VertexBuffer
-import me.zeroeightsix.kami.util.graphics.vbo.ShortIndexBuffer
-import me.zeroeightsix.kami.util.graphics.vbo.newBufferGroup
+import me.zeroeightsix.kami.util.graphics.buffer.VertexBuffer
+import me.zeroeightsix.kami.util.graphics.buffer.ShortIndexBuffer
+import me.zeroeightsix.kami.util.graphics.buffer.newBufferGroup
 import me.zeroeightsix.kami.util.math.corners
 import net.minecraft.util.math.AxisAlignedBB
 import org.kamiblue.commons.tuples.operations.VEC3D_ZERO

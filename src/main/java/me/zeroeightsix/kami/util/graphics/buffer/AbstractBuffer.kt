@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.graphics.vbo
+package me.zeroeightsix.kami.util.graphics.buffer
 
 import me.zeroeightsix.kami.util.graphics.compat.bindBuffer
 import me.zeroeightsix.kami.util.graphics.compat.bufferData

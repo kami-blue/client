@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.graphics.vbo
+package me.zeroeightsix.kami.util.graphics.buffer
 
 import org.kamiblue.commons.tuples.*
 import org.kamiblue.commons.tuples.operations.Vec2f
