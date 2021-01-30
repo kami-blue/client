@@ -1,9 +1,5 @@
 package me.zeroeightsix.kami.util.graphics.vbo
 
-import me.zeroeightsix.kami.util.graphics.compat.bindBuffer
-import me.zeroeightsix.kami.util.graphics.compat.bufferData
-import me.zeroeightsix.kami.util.graphics.compat.bufferSubData
-import me.zeroeightsix.kami.util.graphics.compat.genBuffers
 import org.kamiblue.commons.tuples.operations.Vec3f
 import org.kamiblue.commons.tuples.z
 import org.lwjgl.BufferUtils
@@ -11,19 +7,17 @@ import org.lwjgl.opengl.GL11.glDrawArrays
 import org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER
 import java.nio.ByteBuffer
 
-class BufferGroup private constructor(
-    private val usage: Int,
-    private val buffer: ByteBuffer,
+class VertexBuffer private constructor(
+    override val usage: Int,
+    override val buffer: ByteBuffer,
     private val posBuffer: PosVertexElement?,
     private val colorBuffer: ColorVertexElement?,
     private val texPosBuffer: TexVertexElement?
-) {
+) : AbstractBuffer() {
 
-    private val id by lazy { genBuffers() }
+    override val target: Int get() = GL_ARRAY_BUFFER
+
     private var size = 0
-
-    var renderSize = 0; private set
-    var bufferSize = 0; private set
 
     fun put(block: VertexBuilder.() -> Unit) {
         VertexBuilder(buffer, posBuffer, colorBuffer, texPosBuffer).apply(block).build()
@@ -31,22 +25,8 @@ class BufferGroup private constructor(
     }
 
     fun upload() {
-        bindBuffer()
-        buffer.flip()
-        val newSize = buffer.limit()
-
-        if (newSize > bufferSize || bufferSize - newSize > 128) {
-            bufferData(GL_ARRAY_BUFFER, buffer, usage)
-            bufferSize = newSize
-        } else {
-            bufferSubData(GL_ARRAY_BUFFER, 0L, buffer)
-        }
-
-        renderSize = size
+        upload(size)
         size = 0
-
-        unbindBuffer()
-        buffer.clear()
     }
 
     fun render(mode: Int) {
@@ -54,17 +34,9 @@ class BufferGroup private constructor(
     }
 
     fun render(mode: Int, start: Int, size: Int) {
-        bindBuffer()
-        posBuffer?.preRender()
-        colorBuffer?.preRender()
-        texPosBuffer?.preRender()
-
+        preRender()
         glDrawArrays(mode, start, size)
-
-        posBuffer?.postRender()
-        colorBuffer?.postRender()
-        texPosBuffer?.postRender()
-        unbindBuffer()
+        postRender()
     }
 
     fun render(indexBuffer: AbstractIndexBuffer<*>, mode: Int) {
@@ -72,25 +44,23 @@ class BufferGroup private constructor(
     }
 
     fun render(indexBuffer: AbstractIndexBuffer<*>, mode: Int, start: Int, size: Int) {
+        preRender()
+        indexBuffer.render(mode, start, size)
+        postRender()
+    }
+
+    fun preRender() {
         bindBuffer()
         posBuffer?.preRender()
         colorBuffer?.preRender()
         texPosBuffer?.preRender()
+    }
 
-        indexBuffer.render(mode, start, size)
-
+    fun postRender() {
         posBuffer?.postRender()
         colorBuffer?.postRender()
         texPosBuffer?.postRender()
         unbindBuffer()
-    }
-
-    fun bindBuffer() {
-        bindBuffer(GL_ARRAY_BUFFER, id)
-    }
-
-    fun unbindBuffer() {
-        bindBuffer(GL_ARRAY_BUFFER, 0)
     }
 
     class Builder(private val usage: Int, private val capacity: Int = 0x10000) {
@@ -126,9 +96,9 @@ class BufferGroup private constructor(
             texPosBuffer = object : TexVertexElement() {}
         }
 
-        fun build(): BufferGroup {
+        fun build(): VertexBuffer {
             val buffer = prebuild()
-            return BufferGroup(usage, buffer, posBuffer, colorBuffer, texPosBuffer)
+            return VertexBuffer(usage, buffer, posBuffer, colorBuffer, texPosBuffer)
         }
 
         private fun prebuild() : ByteBuffer {
@@ -169,5 +139,5 @@ class BufferGroup private constructor(
 fun newBufferGroup(
     usage: Int,
     capacity: Int = 0x10000,
-    block: BufferGroup.Builder.() -> Unit
-) = BufferGroup.Builder(usage, capacity).apply(block).build()
+    block: VertexBuffer.Builder.() -> Unit
+) = VertexBuffer.Builder(usage, capacity).apply(block).build()

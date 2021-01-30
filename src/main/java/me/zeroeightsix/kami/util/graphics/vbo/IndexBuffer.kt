@@ -1,12 +1,9 @@
 package me.zeroeightsix.kami.util.graphics.vbo
 
-import me.zeroeightsix.kami.util.graphics.compat.*
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER
-import org.lwjgl.opengl.GL15.GL_WRITE_ONLY
 import java.nio.ByteBuffer
-import kotlin.math.max
 
 class ByteIndexBuffer(
     override val usage: Int,
@@ -28,7 +25,7 @@ class ByteIndexBuffer(
 
 class ShortIndexBuffer(
     override val usage: Int,
-    override val capacity: Int
+    override val capacity: Int = 0x10000
 ) : AbstractIndexBuffer<Short>() {
 
     override val type: Int = GL_UNSIGNED_SHORT
@@ -46,7 +43,7 @@ class ShortIndexBuffer(
 
 class IntIndexBuffer(
     override val usage: Int,
-    override val capacity: Int
+    override val capacity: Int = 0x10000
 ) : AbstractIndexBuffer<Int>() {
 
     override val type: Int = GL_UNSIGNED_INT
@@ -62,18 +59,14 @@ class IntIndexBuffer(
     }
 }
 
-abstract class AbstractIndexBuffer<T : Number> {
+abstract class AbstractIndexBuffer<T : Number> : AbstractBuffer() {
 
-    abstract val usage: Int
     abstract val type: Int
     abstract val indexSize: Int
     abstract val capacity: Int
 
-    protected val buffer: ByteBuffer by lazy { BufferUtils.createByteBuffer(capacity * indexSize) }
-    private val bufferID by lazy { genBuffers() }
-
-    var bufferSize = 0; private set
-    var renderSize = 0; private set
+    override val buffer: ByteBuffer by lazy { BufferUtils.createByteBuffer(capacity * indexSize) }
+    override val target: Int get() = GL_ELEMENT_ARRAY_BUFFER
 
     abstract fun put(input: T)
 
@@ -86,33 +79,12 @@ abstract class AbstractIndexBuffer<T : Number> {
     }
 
     fun upload() {
-        buffer.flip()
-        bindBuffer()
-        val newSize = buffer.limit()
-
-        if (newSize > bufferSize || bufferSize - newSize > 128) {
-            bufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, usage)
-            bufferSize = newSize
-        } else {
-            bufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0L, buffer)
-        }
-
-        renderSize = newSize
-        unbindBuffer()
-        buffer.clear()
+        upload(buffer.position())
     }
 
     fun render(mode: Int, start: Int, size: Int) {
         bindBuffer()
         glDrawElements(mode, size, type, (start * indexSize).toLong())
         unbindBuffer()
-    }
-
-    fun bindBuffer() {
-        bindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID)
-    }
-
-    fun unbindBuffer() {
-        bindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
     }
 }

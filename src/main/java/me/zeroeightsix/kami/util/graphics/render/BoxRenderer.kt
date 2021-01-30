@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.graphics.render
 
-import me.zeroeightsix.kami.util.graphics.vbo.BufferGroup
+import me.zeroeightsix.kami.util.graphics.vbo.VertexBuffer
 import me.zeroeightsix.kami.util.graphics.vbo.ShortIndexBuffer
 import me.zeroeightsix.kami.util.graphics.vbo.newBufferGroup
 import me.zeroeightsix.kami.util.math.corners
@@ -15,7 +15,11 @@ import org.kamiblue.commons.tuples.z
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW
 
-class BoxRenderer(private val capacity: Int, block: BufferGroup.Builder.() -> Unit) {
+class BoxRenderer(
+    private val capacity: Int,
+    block: VertexBuffer.Builder.() -> Unit
+) {
+
     private val vertexBuffer = newBufferGroup(GL_DYNAMIC_DRAW, capacity * 16, block)
     private val indexBuffer = ShortIndexBuffer(GL_DYNAMIC_DRAW, capacity * 60)
 
