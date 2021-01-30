@@ -21,7 +21,7 @@ class BufferGroup private constructor(
     var bufferSize = 0; private set
 
     fun put(block: VertexBuilder.() -> Unit) {
-        VertexBuilder(posBuffer, colorBuffer, texPosBuffer).apply(block).build()
+        VertexBuilder(buffer, posBuffer, colorBuffer, texPosBuffer).apply(block).build()
         size++
     }
 
@@ -34,7 +34,7 @@ class BufferGroup private constructor(
             bufferData(GL_ARRAY_BUFFER, buffer, usage)
             bufferSize = newSize
         } else {
-            bufferSubData(GL_ARRAY_BUFFER, buffer)
+            bufferSubData(GL_ARRAY_BUFFER, 0L, buffer)
         }
 
         renderSize = size
@@ -88,35 +88,34 @@ class BufferGroup private constructor(
         bindBuffer(GL_ARRAY_BUFFER, 0)
     }
 
-    class Builder(private val usage: Int, capacity: Int = 0x10000) {
-        private val buffer: ByteBuffer = BufferUtils.createByteBuffer(capacity * 4)
+    class Builder(private val usage: Int, private val capacity: Int = 0x10000) {
 
         private var posBuffer: IPosBuffer? = null
         private var colorBuffer: IColorBuffer? = null
         private var texPosBuffer: ITexPosBuffer? = null
 
         fun pos2Buffer() {
-            posBuffer = Pos2Buffer(buffer)
+            posBuffer = Pos2Buffer()
         }
 
         fun pos3Buffer() {
-            posBuffer = Pos3Buffer(buffer)
+            posBuffer = Pos3Buffer()
         }
 
         fun color4Buffer() {
-            colorBuffer = Color4Buffer(buffer)
+            colorBuffer = Color4Buffer()
         }
 
         fun texPosBuffer() {
-            texPosBuffer = TexPosBuffer(buffer)
+            texPosBuffer = TexPosBuffer()
         }
 
         fun build(): BufferGroup {
-            prebuild()
+            val buffer = prebuild()
             return BufferGroup(usage, buffer, posBuffer, colorBuffer, texPosBuffer)
         }
 
-        private fun prebuild() {
+        private fun prebuild() : ByteBuffer {
             val stride = calcStride()
             var offset = 0L
 
@@ -131,6 +130,8 @@ class BufferGroup private constructor(
             offset += colorBuffer?.vertexSize ?: 0
 
             texPosBuffer?.offset = offset
+
+            return BufferUtils.createByteBuffer(capacity * stride)
         }
 
         private fun calcStride(): Int {

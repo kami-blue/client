@@ -2,8 +2,10 @@ package me.zeroeightsix.kami.util.graphics.vbo
 
 import org.kamiblue.commons.tuples.*
 import org.kamiblue.commons.tuples.operations.*
+import java.nio.ByteBuffer
 
 class VertexBuilder(
+    private val buffer: ByteBuffer,
     private val posBuffer: IPosBuffer?,
     private val colorBuffer: IColorBuffer?,
     private val texPosBuffer: ITexPosBuffer?
@@ -29,8 +31,8 @@ class VertexBuilder(
     }
 
     fun build() {
-        builderPos?.let { posBuffer?.pos(it) }
-        builderColor?.let { colorBuffer?.color(it) }
-        builderUV?.let { texPosBuffer?.uv(it) }
+        builderPos?.let { posBuffer?.pos(buffer, it) }
+        builderColor?.let { colorBuffer?.color(buffer, it) }
+        builderUV?.let { texPosBuffer?.uv(buffer, it) }
     }
 }

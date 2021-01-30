@@ -26,7 +26,7 @@ fun bufferData(target: Int, data: ByteBuffer, usage: Int) {
     }
 }
 
-fun bufferSubData(target: Int, data: ByteBuffer) {
+fun bufferSubData(target: Int, offset: Long, data: ByteBuffer) {
     if (GlCompatFlags.arbVbo) {
         ARBVertexBufferObject.glBufferSubDataARB(target,0L, data)
     } else {

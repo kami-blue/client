@@ -94,7 +94,7 @@ abstract class AbstractIndexBuffer<T : Number> {
             bufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, usage)
             bufferSize = newSize
         } else {
-            bufferSubData(GL_ELEMENT_ARRAY_BUFFER, buffer)
+            bufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0L, buffer)
         }
 
         renderSize = newSize
