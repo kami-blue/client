@@ -136,7 +136,7 @@ class VertexBuffer private constructor(
     }
 }
 
-fun newBufferGroup(
+fun newVertexBuffer(
     usage: Int,
     capacity: Int = 0x10000,
     block: VertexBuffer.Builder.() -> Unit
