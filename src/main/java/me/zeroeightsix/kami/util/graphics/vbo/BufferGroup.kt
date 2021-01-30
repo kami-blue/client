@@ -1,17 +1,22 @@
 package me.zeroeightsix.kami.util.graphics.vbo
 
-import me.zeroeightsix.kami.util.graphics.compat.*
+import me.zeroeightsix.kami.util.graphics.compat.bindBuffer
+import me.zeroeightsix.kami.util.graphics.compat.bufferData
+import me.zeroeightsix.kami.util.graphics.compat.bufferSubData
+import me.zeroeightsix.kami.util.graphics.compat.genBuffers
+import org.kamiblue.commons.tuples.operations.Vec3f
+import org.kamiblue.commons.tuples.z
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11.glDrawArrays
-import org.lwjgl.opengl.GL15.*
+import org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER
 import java.nio.ByteBuffer
 
 class BufferGroup private constructor(
     private val usage: Int,
     private val buffer: ByteBuffer,
-    private val posBuffer: IPosBuffer?,
-    private val colorBuffer: IColorBuffer?,
-    private val texPosBuffer: ITexPosBuffer?
+    private val posBuffer: PosVertexElement?,
+    private val colorBuffer: ColorVertexElement?,
+    private val texPosBuffer: TexVertexElement?
 ) {
 
     private val id by lazy { genBuffers() }
@@ -90,24 +95,35 @@ class BufferGroup private constructor(
 
     class Builder(private val usage: Int, private val capacity: Int = 0x10000) {
 
-        private var posBuffer: IPosBuffer? = null
-        private var colorBuffer: IColorBuffer? = null
-        private var texPosBuffer: ITexPosBuffer? = null
+        private var posBuffer: PosVertexElement? = null
+        private var colorBuffer: ColorVertexElement? = null
+        private var texPosBuffer: TexVertexElement? = null
 
-        fun pos2Buffer() {
-            posBuffer = Pos2Buffer()
+        fun pos2f() {
+            posBuffer = object : PosVertexElement() {
+                override val vertexSize: Int
+                    get() = 2
+            }
         }
 
-        fun pos3Buffer() {
-            posBuffer = Pos3Buffer()
+        fun pos3f() {
+            posBuffer = object : PosVertexElement() {
+                override val vertexSize: Int
+                    get() = 3
+
+                override fun pos(buffer: ByteBuffer, pos: Vec3f) {
+                    super.pos(buffer, pos)
+                    buffer.putFloat(pos.z)
+                }
+            }
         }
 
-        fun color4Buffer() {
-            colorBuffer = Color4Buffer()
+        fun color4b() {
+            colorBuffer = object : ColorVertexElement() {}
         }
 
-        fun texPosBuffer() {
-            texPosBuffer = TexPosBuffer()
+        fun tex2f() {
+            texPosBuffer = object : TexVertexElement() {}
         }
 
         fun build(): BufferGroup {
@@ -124,10 +140,10 @@ class BufferGroup private constructor(
             texPosBuffer?.stride = stride
 
             posBuffer?.offset = offset
-            offset += posBuffer?.vertexSize * 4
+            offset += posBuffer?.byteSize ?: 0
 
             colorBuffer?.offset = offset
-            offset += colorBuffer?.vertexSize ?: 0
+            offset += colorBuffer?.byteSize ?: 0
 
             texPosBuffer?.offset = offset
 
@@ -137,9 +153,9 @@ class BufferGroup private constructor(
         private fun calcStride(): Int {
             var stride = 0
 
-            stride += posBuffer?.vertexSize * 4
-            stride += colorBuffer?.vertexSize
-            stride += texPosBuffer?.vertexSize * 4
+            stride += posBuffer?.byteSize
+            stride += colorBuffer?.byteSize
+            stride += texPosBuffer?.byteSize
 
             return stride
         }
@@ -147,10 +163,6 @@ class BufferGroup private constructor(
         private infix operator fun Int.plus(other: Int?) =
             if (other != null) this + other
             else this
-
-        private infix operator fun Int?.times(other: Int) =
-            if (this != null) this * other
-            else 0
     }
 }
 

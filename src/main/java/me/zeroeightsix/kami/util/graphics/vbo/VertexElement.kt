@@ -7,14 +7,15 @@ import org.kamiblue.commons.tuples.operations.Vec4i
 import org.lwjgl.opengl.GL11.*
 import java.nio.ByteBuffer
 
-interface IBuffer {
-    val dataType: Int
-    val vertexSize: Int
+abstract class AbstractVertexElement {
+    protected abstract val dataType: Int
+    abstract val vertexSize: Int
+    abstract val byteSize: Int
 
-    var stride: Int
-    var offset: Long
+    var stride: Int = 0
+    var offset: Long = 0L
 
-    fun preRender() {
+    open fun preRender() {
         glEnableClientState(dataType)
     }
 
@@ -23,29 +24,35 @@ interface IBuffer {
     }
 }
 
-interface IPosBuffer : IBuffer {
-    override val dataType: Int
+abstract class PosVertexElement : AbstractVertexElement() {
+    final override val dataType: Int
         get() = GL_VERTEX_ARRAY
 
-    override fun preRender() {
+    final override val byteSize: Int
+        get() = vertexSize * 4
+
+    final override fun preRender() {
         glVertexPointer(vertexSize, GL_FLOAT, stride, offset)
         super.preRender()
     }
 
-    fun pos(buffer: ByteBuffer, pos: Vec3f) {
+    open fun pos(buffer: ByteBuffer, pos: Vec3f) {
         buffer.putFloat(pos.x)
         buffer.putFloat(pos.y)
     }
 }
 
-interface IColorBuffer : IBuffer {
-    override val dataType: Int
+abstract class ColorVertexElement : AbstractVertexElement() {
+    final override val dataType: Int
         get() = GL_COLOR_ARRAY
 
-    override val vertexSize: Int
+    final override val vertexSize: Int
         get() = 4
 
-    override fun preRender() {
+    final override val byteSize: Int
+        get() = 4
+
+    final override fun preRender() {
         glColorPointer(vertexSize, GL_UNSIGNED_BYTE, stride, offset)
         super.preRender()
     }
@@ -58,20 +65,23 @@ interface IColorBuffer : IBuffer {
     }
 }
 
-interface ITexPosBuffer : IBuffer {
-    override val dataType: Int
+abstract class TexVertexElement : AbstractVertexElement() {
+    final override val dataType: Int
         get() = GL_TEXTURE_COORD_ARRAY
 
-    override val vertexSize: Int
+    final override val vertexSize: Int
         get() = 2
 
-    override fun preRender() {
+    final override val byteSize: Int
+        get() = 8
+
+    final override fun preRender() {
         glTexCoordPointer(vertexSize, GL_FLOAT, stride, offset)
         super.preRender()
     }
 
-    fun uv(buffer: ByteBuffer, color: Vec2f) {
-        buffer.putFloat(color.u)
-        buffer.putFloat(color.v)
+    fun uv(buffer: ByteBuffer, uv: Vec2f) {
+        buffer.putFloat(uv.u)
+        buffer.putFloat(uv.v)
     }
 }

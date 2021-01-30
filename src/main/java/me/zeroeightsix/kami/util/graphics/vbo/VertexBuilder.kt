@@ -6,9 +6,9 @@ import java.nio.ByteBuffer
 
 class VertexBuilder(
     private val buffer: ByteBuffer,
-    private val posBuffer: IPosBuffer?,
-    private val colorBuffer: IColorBuffer?,
-    private val texPosBuffer: ITexPosBuffer?
+    private val posBuffer: PosVertexElement?,
+    private val colorBuffer: ColorVertexElement?,
+    private val texPosBuffer: TexVertexElement?
 ) {
     private var builderPos: Vec3f? = null
     private var builderColor: Vec4i? = null
