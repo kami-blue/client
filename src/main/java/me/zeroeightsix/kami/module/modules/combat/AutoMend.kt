@@ -3,10 +3,15 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.GuiEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.manager.managers.PlayerPacketManager.PlayerPacket
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.EntityUtils.isFakeOrSelf
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.items.swapToSlot
+import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -14,7 +19,6 @@ import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Enchantments
 import net.minecraft.init.Items
-import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -27,6 +31,7 @@ internal object AutoMend : Module(
     description = "Automatically mends armour"
 ) {
     private val autoThrow by setting("AutoThrow", true)
+    private val throwDelay = setting("ThrowDelay", 2, 0..5, 1, description = "Number of ticks between throws to allow absorption")
     private val autoSwitch by setting("AutoSwitch", true)
     private val autoDisable by setting("AutoDisable", false, { autoSwitch })
     private val cancelNearby by setting("CancelNearby", NearbyMode.OFF, description = "Don't mend when an enemy is nearby")
@@ -37,6 +42,8 @@ internal object AutoMend : Module(
     private var initHotbarSlot = -1
     private var isGuiOpened = false
     private var paused = false
+
+    private val throwDelayTimer = TickTimer(TimeUnit.TICKS)
 
     @Suppress("unused")
     private enum class NearbyMode {
@@ -80,7 +87,9 @@ internal object AutoMend : Module(
             }
             paused = false
 
-            if (hasBlockUnder() && (shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3))) {
+            if ((autoSwitch || autoThrow) // avoid checking if no actions are going to be done
+                && hasBlockUnder()
+                && (shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3))) {
                 if (autoSwitch && player.heldItemMainhand.item !== Items.EXPERIENCE_BOTTLE) {
                     val xpSlot = findXpPots()
 
@@ -93,10 +102,16 @@ internal object AutoMend : Module(
                     }
                     player.inventory.currentItem = xpSlot
                 }
-                if (autoThrow && player.heldItemMainhand.item === Items.EXPERIENCE_BOTTLE) {
-                    // This might trigger "too many packets"
-                    connection.sendPacket(CPacketPlayer.Rotation(player.rotationYaw, 90.0f, player.onGround))
-                    playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
+                if (autoThrow
+                    && throwDelayTimer.tick(throwDelay.value.toLong(), false)
+                    && player.heldItemMainhand.item === Items.EXPERIENCE_BOTTLE) {
+                    if (needsRotationPacket()) {
+                        val packet = PlayerPacket(rotating = true, rotation = Vec2f(player.rotationYaw, 90.0f))
+                        PlayerPacketManager.addPacket(AutoMend, packet)
+                    } else {
+                        playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
+                        throwDelayTimer.reset() // manually reset after every throw only
+                    }
                 }
             }
         }
@@ -139,6 +154,11 @@ internal object AutoMend : Module(
             return true
         }
         return false
+    }
+
+    private fun needsRotationPacket(): Boolean {
+        val pitch = PlayerPacketManager.serverSideRotation.y
+        return pitch !in 80.0f..90.0f
     }
 
     private fun SafeClientEvent.hasBlockUnder(): Boolean {
