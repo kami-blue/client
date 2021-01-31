@@ -102,15 +102,11 @@ internal object AutoMend : Module(
                     }
                     player.inventory.currentItem = xpSlot
                 }
-                if (autoThrow
-                    && throwDelayTimer.tick(throwDelay.value.toLong(), false)
-                    && player.heldItemMainhand.item === Items.EXPERIENCE_BOTTLE) {
-                    if (needsRotationPacket()) {
-                        val packet = PlayerPacket(rotating = true, rotation = Vec2f(player.rotationYaw, 90.0f))
-                        PlayerPacketManager.addPacket(AutoMend, packet)
-                    } else {
+                if (autoThrow && player.heldItemMainhand.item === Items.EXPERIENCE_BOTTLE) {
+                    val packet = PlayerPacket(rotating = true, rotation = Vec2f(player.rotationYaw, 90.0f))
+                    PlayerPacketManager.addPacket(AutoMend, packet)
+                    if (validServerSideRotation() && throwDelayTimer.tick(throwDelay.value.toLong())) {
                         playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
-                        throwDelayTimer.reset() // manually reset after every throw only
                     }
                 }
             }
@@ -156,9 +152,9 @@ internal object AutoMend : Module(
         return false
     }
 
-    private fun needsRotationPacket(): Boolean {
+    private fun validServerSideRotation(): Boolean {
         val pitch = PlayerPacketManager.serverSideRotation.y
-        return pitch !in 80.0f..90.0f
+        return pitch in 80.0f..90.0f
     }
 
     private fun SafeClientEvent.hasBlockUnder(): Boolean {
