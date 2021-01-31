@@ -36,7 +36,7 @@ internal object Surround : Module(
     private val placeSpeed = setting("PlacesPerTick", 4f, 0.25f..5f, 0.25f)
     private val autoDisable = setting("AutoDisable", AutoDisableMode.OUT_OF_HOLE)
     private val outOfHoleTimeout = setting("OutOfHoleTimeout(t)", 10, 1..50, 5, { autoDisable.value == AutoDisableMode.OUT_OF_HOLE })
-    private val enableInHole = setting("EnableInHole", true)
+    private val enableInHole = setting("EnableInHole", false)
     private val inHoleTimeout = setting("InHoleTimeout(t)", 50, 1..100, 5, { enableInHole.value })
     private val disableStrafe = setting("DisableStrafe", true)
 
