@@ -15,9 +15,8 @@ import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashSet
 
 object FriendManager : Manager {
-    private const val configName = "KAMIBlueFriends.json"
     private val gson = GsonBuilder().setPrettyPrinting().create()
-    private val file = File(configName)
+    private val file = File("kamiblue/friends.json")
 
     private var friendFile = FriendFile()
     val friends: MutableMap<String, PlayerProfile> = Collections.synchronizedMap(HashMap<String, PlayerProfile>())
@@ -44,9 +43,6 @@ object FriendManager : Manager {
         friendFile.friends.clear()
     }
 
-    /**
-     * Reads friends from KAMIBlueFriends.json into the friends ArrayList
-     */
     fun loadFriends(): Boolean {
         ConfigUtils.fixEmptyJson(file)
 
@@ -62,9 +58,6 @@ object FriendManager : Manager {
         }
     }
 
-    /**
-     * Saves friends from the friends ArrayList into KAMIBlueFriends.json
-     */
     fun saveFriends(): Boolean {
         return try {
             FileWriter(file, false).buffered().use {

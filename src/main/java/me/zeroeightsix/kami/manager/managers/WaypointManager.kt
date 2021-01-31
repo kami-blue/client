@@ -19,32 +19,21 @@ import java.util.concurrent.ConcurrentSkipListSet
 
 object WaypointManager : Manager {
     private val gson = GsonBuilder().setPrettyPrinting().create()
-    private const val oldConfigName = "KAMIBlueCoords.json" /* maintain backwards compat with old format */
-    private const val configName = "KAMIBlueWaypoints.json"
-    private val oldFile = File(oldConfigName)
-    private val file = File(configName)
+    private val file = File("kamiblue/waypoints.json")
     private val sdf = SimpleDateFormat("HH:mm:ss dd/MM/yyyy")
 
     val waypoints = ConcurrentSkipListSet<Waypoint>(compareBy { it.id })
 
-    /**
-     * Reads waypoints from KAMIBlueWaypoints.json into the waypoints ArrayList
-     */
     fun loadWaypoints(): Boolean {
         ConfigUtils.fixEmptyJson(file, true)
 
-        /* backwards compatibility for older configs */
         val success = try {
-            val legacy = legacyFormat()
-            val localFile = if (legacy) oldFile else file
-
-            val cacheArray = FileReader(localFile).buffered().use {
+            val cacheArray = FileReader(file).buffered().use {
                 gson.fromJson(it, Array<Waypoint>::class.java)
             }
 
             waypoints.clear()
             waypoints.addAll(cacheArray)
-            if (legacy) oldFile.delete()
 
             KamiMod.LOG.info("Waypoint loaded")
             true
@@ -57,9 +46,6 @@ object WaypointManager : Manager {
         return success
     }
 
-    /**
-     * Saves waypoints from the waypoints ArrayList into KAMIBlueWaypoints.json
-     */
     fun saveWaypoints(): Boolean {
         return try {
             FileWriter(file, false).buffered().use {
@@ -71,14 +57,6 @@ object WaypointManager : Manager {
             KamiMod.LOG.warn("Failed saving waypoint", e)
             false
         }
-    }
-
-    /**
-     * file deletion does not work on OSX, issue #1044
-     * because of this, we must also check if they've used the new format
-     */
-    private fun legacyFormat(): Boolean {
-        return oldFile.exists() && !file.exists()
     }
 
     fun get(id: Int): Waypoint? {

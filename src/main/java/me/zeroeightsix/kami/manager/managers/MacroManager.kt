@@ -21,8 +21,7 @@ object MacroManager : Manager {
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
     private val type = object : TypeToken<LinkedHashMap<Int, List<String>>>() {}.type
-    private const val configName = "KAMIBlueMacros.json"
-    private val file get() = File(configName)
+    private val file get() = File("kamiblue/macros.json")
 
     init {
         listener<InputEvent.KeyInputEvent> {
@@ -30,9 +29,6 @@ object MacroManager : Manager {
         }
     }
 
-    /**
-     * Reads macros from KAMIBlueMacros.json into the macros Map
-     */
     fun loadMacros(): Boolean {
         ConfigUtils.fixEmptyJson(file)
 
@@ -48,9 +44,6 @@ object MacroManager : Manager {
         }
     }
 
-    /**
-     * Saves macros from the macros Map into KAMIBlueMacros.json
-     */
     fun saveMacros(): Boolean {
         return try {
             FileWriter(file, false).buffered().use {

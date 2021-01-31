@@ -69,9 +69,14 @@ object ConfigUtils {
         }
     }
 
+    // TODO: Introduce a version helper for KamiMod.BUILD_NUMBER for version-specific configs. This should be theoritically fine for now
     fun moveAllLegacyConfigs() {
         moveLegacyConfig("kamiblue/generic.json", "kamiblue/generic.bak", GenericConfig)
         moveLegacyConfig("kamiblue/modules/default.json", "kamiblue/modules/default.bak", ModuleConfig)
+        moveLegacyConfig("KAMIBlueCoords.json", "kamiblue/waypoints.json")
+        moveLegacyConfig("KAMIBlueWaypoints.json", "kamiblue/waypoints.json")
+        moveLegacyConfig("KAMIBlueMacros.json", "kamiblue/macros.json")
+        moveLegacyConfig("KAMIBlueFriends.json", "kamiblue/friends.json")
     }
 
     private fun moveLegacyConfig(oldConfigIn: String, oldConfigBakIn: String, newConfig: IConfig) {
@@ -92,6 +97,21 @@ object ConfigUtils {
         try {
             newConfig.backup.parentFile.mkdirs()
             Files.move(oldConfigBak.absoluteFile.toPath(), newConfig.backup.absoluteFile.toPath())
+        } catch (e: Exception) {
+            KamiMod.LOG.warn("Error moving legacy config", e)
+        }
+    }
+
+    private fun moveLegacyConfig(oldConfigIn: String, newConfigIn: String) {
+        val newConfig = File(newConfigIn)
+        if (newConfig.exists()) return
+
+        val oldConfig = File(oldConfigIn)
+        if (!oldConfig.exists()) return
+
+        try {
+            newConfig.parentFile.mkdirs()
+            Files.move(oldConfig.absoluteFile.toPath(), newConfig.absoluteFile.toPath())
         } catch (e: Exception) {
             KamiMod.LOG.warn("Error moving legacy config", e)
         }
