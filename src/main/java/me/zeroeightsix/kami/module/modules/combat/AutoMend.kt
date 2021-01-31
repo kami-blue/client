@@ -10,9 +10,14 @@ import me.zeroeightsix.kami.util.items.swapToSlot
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraft.enchantment.Enchantment
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.Enchantments
 import net.minecraft.init.Items
+import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.EnumHand
+import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils.reverseNumber
 import org.kamiblue.event.listener.listener
@@ -76,7 +81,7 @@ internal object AutoMend : Module(
             }
             paused = false
 
-            if (shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3)) {
+            if (hasBlockUnder() && (shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3))) {
                 if (autoSwitch && player.heldItemMainhand.item !== Items.EXPERIENCE_BOTTLE) {
                     val xpSlot = findXpPots()
 
@@ -90,6 +95,8 @@ internal object AutoMend : Module(
                     player.inventory.currentItem = xpSlot
                 }
                 if (autoThrow && player.heldItemMainhand.item === Items.EXPERIENCE_BOTTLE) {
+                    // This might trigger "too many packets"
+                    connection.sendPacket(CPacketPlayer.Rotation(player.rotationYaw, 90.0f, player.onGround))
                     playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
                 }
             }
@@ -107,9 +114,16 @@ internal object AutoMend : Module(
         return slot
     }
 
+    private const val COMPOUND_BYTE_ID: Byte = 10
+    private val MENDING_ID by lazy { Enchantment.getEnchantmentID(Enchantments.MENDING) }
     private fun SafeClientEvent.shouldMend(i: Int): Boolean { // (100 * damage / max damage) >= (100 - 70)
         val stack = player.inventory.armorInventory[i]
-        return stack.isItemDamaged && 100 * stack.itemDamage / stack.maxDamage > reverseNumber(threshold, 1, 100)
+        val hasMending = stack.enchantmentTagList.filter { it.id == COMPOUND_BYTE_ID }.map { it as NBTTagCompound }
+            .any {
+                val id = it.getShort("id").toInt()
+                return@any MENDING_ID == id
+            }
+        return hasMending && stack.isItemDamaged && 100 * stack.itemDamage / stack.maxDamage > reverseNumber(threshold, 1, 100)
     }
 
     private fun switchback() {
@@ -132,5 +146,11 @@ internal object AutoMend : Module(
             return true
         }
         return false
+    }
+
+    private fun SafeClientEvent.hasBlockUnder(): Boolean {
+        val posVec = player.positionVector
+        val result = world.rayTraceBlocks(posVec, posVec.add(0.0, -5.33, 0.0), false, true, false)
+        return result != null && result.typeOfHit == RayTraceResult.Type.BLOCK
     }
 }
