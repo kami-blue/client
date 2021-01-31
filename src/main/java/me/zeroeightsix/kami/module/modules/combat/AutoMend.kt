@@ -10,11 +10,10 @@ import me.zeroeightsix.kami.util.items.swapToSlot
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
-import net.minecraft.enchantment.Enchantment
+import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Enchantments
 import net.minecraft.init.Items
-import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.RayTraceResult
@@ -114,15 +113,9 @@ internal object AutoMend : Module(
         return slot
     }
 
-    private const val COMPOUND_BYTE_ID: Byte = 10
-    private val MENDING_ID by lazy { Enchantment.getEnchantmentID(Enchantments.MENDING) }
     private fun SafeClientEvent.shouldMend(i: Int): Boolean { // (100 * damage / max damage) >= (100 - 70)
         val stack = player.inventory.armorInventory[i]
-        val hasMending = stack.enchantmentTagList.filter { it.id == COMPOUND_BYTE_ID }.map { it as NBTTagCompound }
-            .any {
-                val id = it.getShort("id").toInt()
-                return@any MENDING_ID == id
-            }
+        val hasMending = EnchantmentHelper.getEnchantmentLevel(Enchantments.MENDING, stack) > 0
         return hasMending && stack.isItemDamaged && 100 * stack.itemDamage / stack.maxDamage > reverseNumber(threshold, 1, 100)
     }
 
