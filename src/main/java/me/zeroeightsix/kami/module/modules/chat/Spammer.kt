@@ -27,7 +27,7 @@ internal object Spammer : Module(
     private val modeSetting = setting("Order", Mode.RANDOM_ORDER)
     private val delay = setting("Delay", 10, 1..180, 1, description = "Delay between messages, in seconds")
     private val loadRemote = setting("LoadFromURL", false)
-    private val remoteURL = setting("RemoteURL", "Unchanged")
+    private val remoteURL = setting("RemoteURL", "Unchanged", { loadRemote.value })
 
     private val file = File(KamiMod.DIRECTORY + "spammer.txt")
     private val spammer = Collections.synchronizedList(ArrayList<String>())

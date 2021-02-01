@@ -20,6 +20,7 @@ internal object ChatFilter : Module(
     private var hasRunInfo by setting("Info", false, { false })
 
     private val chatFilter = ArrayList<Regex>()
+    private val file = File("kamiblue/chat_filter.txt")
 
     init {
         onEnable {
@@ -27,7 +28,7 @@ internal object ChatFilter : Module(
                 MessageSendHelper.sendChatMessage("$chatName Trying to find '&7chat_filter.txt&f'")
                 chatFilter.clear()
 
-                File("chat_filter.txt").bufferedReader().forEachLine {
+                file.bufferedReader().forEachLine {
                     val string = it.trim()
                     if (string.isEmpty()) return@forEachLine
 

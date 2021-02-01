@@ -77,6 +77,7 @@ object ConfigUtils {
         moveLegacyConfig("KAMIBlueWaypoints.json", "kamiblue/waypoints.json")
         moveLegacyConfig("KAMIBlueMacros.json", "kamiblue/macros.json")
         moveLegacyConfig("KAMIBlueFriends.json", "kamiblue/friends.json")
+        moveLegacyConfig("chat_filter.json", "kamiblue/chat_filter.json")
     }
 
     private fun moveLegacyConfig(oldConfigIn: String, oldConfigBakIn: String, newConfig: IConfig) {
