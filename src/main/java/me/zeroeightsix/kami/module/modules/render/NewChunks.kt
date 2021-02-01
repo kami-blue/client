@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Category
@@ -18,13 +17,13 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.network.play.server.SPacketChunkData
 import net.minecraft.world.chunk.Chunk
+import net.minecraftforge.event.world.ChunkEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.io.*
 import java.util.*
 import kotlin.collections.LinkedHashSet
-import net.minecraftforge.event.world.ChunkEvent
 
 internal object NewChunks : Module(
     name = "NewChunks",
@@ -33,14 +32,15 @@ internal object NewChunks : Module(
 ) {
     private val relative by setting("Relative", false, description = "Renders the chunks at relative Y level to player")
     private val yOffset by setting("YOffset", 0, -256..256, 4, fineStep = 1, description = "Render offset in Y axis")
-    private val color by setting("Color", ColorHolder(255, 32, 32), description = "Highlighting color")
+    private val color by setting("Color", ColorHolder(255, 64, 64, 200), description = "Highlighting color")
+    private val thickness by setting("Thickness", 1.5f, 0.1f..4.0f, 0.1f, description = "Thickness of the highlighting square")
     private val range by setting("Render Range", 512, 64..2048, 32, description = "Maximum range for chunks to be highlighted")
     private val autoClear by setting("Auto Clear", false, description = "Clears the new chunks every 10 minutes")
     private val removeMode by setting("Remove Mode", RemoveMode.MAX_NUMBER, description = "Mode to use for removing chunks")
     private val maxNumber by setting("Max Number", 5000, 1000..10000, 500, { removeMode == RemoveMode.MAX_NUMBER }, description = "Maximum number of chunks to keep")
 
     @Suppress("unused")
-    private enum class RemoveMode  {
+    private enum class RemoveMode {
         NEVER, UNLOAD, MAX_NUMBER
     }
 
@@ -68,7 +68,7 @@ internal object NewChunks : Module(
         safeListener<RenderWorldEvent> {
             val y = yOffset.toDouble() + if (relative) getInterpolatedPos(player, KamiTessellator.pTicks()).y else 0.0
 
-            glLineWidth(2.0f)
+            glLineWidth(thickness)
             GlStateUtils.depth(false)
 
             val buffer = KamiTessellator.buffer
@@ -84,6 +84,7 @@ internal object NewChunks : Module(
                 KamiTessellator.render()
             }
 
+            glLineWidth(1.0f)
             GlStateUtils.depth(true)
         }
 
