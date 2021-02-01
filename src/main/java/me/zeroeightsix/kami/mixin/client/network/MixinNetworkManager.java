@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinNetworkManager {
 
     @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("HEAD"), cancellable = true)
-    private void onSendPacket(Packet<?> packet, CallbackInfo callbackInfo) {
+    private void sendPacketPre(Packet<?> packet, CallbackInfo callbackInfo) {
         PacketEvent event = new PacketEvent.Send(packet);
         KamiEventBus.INSTANCE.post(event);
 
@@ -24,8 +24,18 @@ public class MixinNetworkManager {
         }
     }
 
+    @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("RETURN"), cancellable = true)
+    private void sendPacketPost(Packet<?> packet, CallbackInfo callbackInfo) {
+        PacketEvent event = new PacketEvent.PostSend(packet);
+        KamiEventBus.INSTANCE.post(event);
+
+        if (event.getCancelled()) {
+            callbackInfo.cancel();
+        }
+    }
+
     @Inject(method = "channelRead0", at = @At("HEAD"), cancellable = true)
-    private void onChannelRead(ChannelHandlerContext context, Packet<?> packet, CallbackInfo callbackInfo) {
+    private void channelReadPre(ChannelHandlerContext context, Packet<?> packet, CallbackInfo callbackInfo) {
         PacketEvent event = new PacketEvent.Receive(packet);
         KamiEventBus.INSTANCE.post(event);
 
@@ -34,14 +44,10 @@ public class MixinNetworkManager {
         }
     }
 
-    @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("RETURN"), cancellable = true)
-    private void afterSendPacket(Packet<?> packet, CallbackInfo callbackInfo) {
-        PacketEvent event = new PacketEvent.PostSend(packet);
+    @Inject(method = "channelRead0", at = @At("RETURN"))
+    private void channelReadPost(ChannelHandlerContext context, Packet<?> packet, CallbackInfo callbackInfo) {
+        PacketEvent event = new PacketEvent.PostReceive(packet);
         KamiEventBus.INSTANCE.post(event);
-
-        if (event.getCancelled()) {
-            callbackInfo.cancel();
-        }
     }
 
     @Inject(method = "exceptionCaught", at = @At("HEAD"), cancellable = true)

@@ -1,11 +1,11 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.Phase
-import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.BlockSnow
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -18,11 +18,10 @@ import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.*
 import net.minecraft.tileentity.*
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.registries.GameData
 import org.kamiblue.event.listener.listener
-import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.GL_QUADS
 
 internal object NoRender : Module(
     name = "NoRender",
@@ -96,25 +95,31 @@ internal object NoRender : Module(
                 particles.value && it.packet is SPacketParticles ||
                 packets.value && xp.value && it.packet is SPacketSpawnExperienceOrb ||
                 packets.value && paint.value && it.packet is SPacketSpawnPainting
-            ) it.cancel()
-
-            if (it.packet is SPacketSpawnObject) {
-                it.cancelled = when (it.packet.type) {
-                    71 -> packets.value && itemFrame.value
-                    78 -> packets.value && armorStand.value
-                    51 -> packets.value && crystal.value
-                    2 -> packets.value && items.value
-                    70 -> packets.value && falling.value
-                    else -> projectiles.value
-                }
+            ) {
+                it.cancel()
+                return@listener
             }
 
-            if (packets.value && it.packet is SPacketSpawnMob) {
-                val entityClass = GameData.getEntityRegistry().getValue(it.packet.entityType).entityClass
-                if (EntityMob::class.java.isAssignableFrom(entityClass)) {
-                    if (mobs.value) it.cancel()
-                } else if (IAnimals::class.java.isAssignableFrom(entityClass)) {
-                    if (animals.value) it.cancel()
+            when (it.packet) {
+                is SPacketSpawnObject -> {
+                    it.cancelled = when (it.packet.type) {
+                        71 -> packets.value && itemFrame.value
+                        78 -> packets.value && armorStand.value
+                        51 -> packets.value && crystal.value
+                        2 -> packets.value && items.value
+                        70 -> packets.value && falling.value
+                        else -> projectiles.value
+                    }
+                }
+                is SPacketSpawnMob -> {
+                    if (packets.value) {
+                        val entityClass = GameData.getEntityRegistry().getValue(it.packet.entityType).entityClass
+                        if (EntityMob::class.java.isAssignableFrom(entityClass)) {
+                            if (mobs.value) it.cancel()
+                        } else if (IAnimals::class.java.isAssignableFrom(entityClass)) {
+                            if (animals.value) it.cancel()
+                        }
+                    }
                 }
             }
         }
@@ -129,21 +134,6 @@ internal object NoRender : Module(
             }
         }
 
-        listener<ChunkEvent> {
-            if (enchantingTableSnow.value) { // replaces enchanting tables with snow
-                val blockState = Blocks.SNOW_LAYER.defaultState.withProperty(BlockSnow.LAYERS, 7)
-                val xRange = it.chunk.x * 16..it.chunk.x * 16 + 15
-                val zRange = it.chunk.z * 16..it.chunk.z * 16 + 15
-
-                for (y in 0..256) for (x in xRange) for (z in zRange) {
-                    val blockPos = BlockPos(it.chunk.x * 16 + x, y, it.chunk.z * 16 + z)
-                    if (it.chunk.getBlockState(blockPos).block == Blocks.ENCHANTING_TABLE) {
-                        it.chunk.setBlockState(blockPos, blockState)
-                    }
-                }
-            }
-        }
-
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase == TickEvent.Phase.END && items.value) {
                 for (entity in world.loadedEntityList) {
@@ -153,13 +143,25 @@ internal object NoRender : Module(
             }
         }
     }
+    
+    fun tryReplaceEnchantingTable(tileEntity: TileEntity) : Boolean {
+        if (!enchantingTableSnow.value || tileEntity !is TileEntityEnchantmentTable) return false
+
+        runSafe {
+            val blockState = Blocks.SNOW_LAYER.defaultState.withProperty(BlockSnow.LAYERS, 7)
+            world.setBlockState(tileEntity.pos, blockState)
+            world.markTileEntityForRemoval(tileEntity)
+        }
+
+        return true
+    }
 
     fun renderFakeMap() {
         val tessellator = Tessellator.getInstance()
         val bufBuilder = tessellator.buffer
         mc.textureManager.bindTexture(kamiMap)
 
-        bufBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+        bufBuilder.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX)
         bufBuilder.pos(0.0, 128.0, -0.009999999776482582).tex(0.0, 1.0).endVertex()
         bufBuilder.pos(128.0, 128.0, -0.009999999776482582).tex(1.0, 1.0).endVertex()
         bufBuilder.pos(128.0, 0.0, -0.009999999776482582).tex(1.0, 0.0).endVertex()

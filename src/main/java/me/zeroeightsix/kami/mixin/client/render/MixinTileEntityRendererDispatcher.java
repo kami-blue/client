@@ -12,8 +12,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinTileEntityRendererDispatcher {
     @Inject(method = "render(Lnet/minecraft/tileentity/TileEntity;FI)V", at = @At("HEAD"), cancellable = true)
     public void render(TileEntity entity, float partialTicks, int destroyStage, CallbackInfo ci) {
-        if (NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.getEntityList().contains(entity.getClass())) {
-            ci.cancel();
+        if (NoRender.INSTANCE.isEnabled()) {
+            if (NoRender.INSTANCE.tryReplaceEnchantingTable(entity) || NoRender.INSTANCE.getEntityList().contains(entity.getClass())) {
+                ci.cancel();
+            }
         }
     }
 }

@@ -41,7 +41,6 @@
     "gui.MixinGuiPlayerTabOverlay",
     "gui.MixinGuiScreen",
     "network.MixinC00Handshake",
-    "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
     "optifine.MixinConfig",
     "player.MixinEntityPlayer",
