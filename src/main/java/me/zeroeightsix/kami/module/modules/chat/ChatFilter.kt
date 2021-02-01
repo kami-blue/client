@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
+import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageDetection
@@ -20,7 +21,7 @@ internal object ChatFilter : Module(
     private var hasRunInfo by setting("Info", false, { false })
 
     private val chatFilter = ArrayList<Regex>()
-    private val file = File("kamiblue/chat_filter.txt")
+    private val file = File(KamiMod.DIRECTORY + "chat_filter.txt")
 
     init {
         onEnable {

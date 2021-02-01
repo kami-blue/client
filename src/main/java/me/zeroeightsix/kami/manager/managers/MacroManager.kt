@@ -21,7 +21,7 @@ object MacroManager : Manager {
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
     private val type = object : TypeToken<LinkedHashMap<Int, List<String>>>() {}.type
-    private val file get() = File("kamiblue/macros.json")
+    private val file get() = File(KamiMod.DIRECTORY + "macros.json")
 
     init {
         listener<InputEvent.KeyInputEvent> {

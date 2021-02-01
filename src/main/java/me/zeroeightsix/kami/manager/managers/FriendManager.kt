@@ -16,7 +16,7 @@ import kotlin.collections.LinkedHashSet
 
 object FriendManager : Manager {
     private val gson = GsonBuilder().setPrettyPrinting().create()
-    private val file = File("kamiblue/friends.json")
+    private val file = File(KamiMod.DIRECTORY + "friends.json")
 
     private var friendFile = FriendFile()
     val friends: MutableMap<String, PlayerProfile> = Collections.synchronizedMap(HashMap<String, PlayerProfile>())

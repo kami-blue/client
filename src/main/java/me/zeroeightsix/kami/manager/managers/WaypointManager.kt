@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentSkipListSet
 
 object WaypointManager : Manager {
     private val gson = GsonBuilder().setPrettyPrinting().create()
-    private val file = File("kamiblue/waypoints.json")
+    private val file = File(KamiMod.DIRECTORY + "waypoints.json")
     private val sdf = SimpleDateFormat("HH:mm:ss dd/MM/yyyy")
 
     val waypoints = ConcurrentSkipListSet<Waypoint>(compareBy { it.id })
