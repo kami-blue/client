@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
+import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
@@ -15,9 +16,8 @@ import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
+import org.apache.commons.io.IOUtils
+import org.kamiblue.commons.utils.ConnectionUtils
 import org.kamiblue.event.listener.listener
 
 internal object DiscordNotifs : Module(
@@ -45,9 +45,10 @@ internal object DiscordNotifs : Module(
 
     /* Listeners to send the messages */
     init {
-        listener<PacketEvent.Receive> {
-            if (mc.player == null || it.packet !is SPacketChat) return@listener
+        safeListener<PacketEvent.Receive> {
+            if (it.packet !is SPacketChat) return@safeListener
             val message = it.packet.chatComponent.unformattedText
+
             if (timeout(message) && shouldSend(message)) {
                 sendMessage(getPingID(message) + getMessageType(message, server) + getTime() + message)
             }
@@ -115,23 +116,39 @@ internal object DiscordNotifs : Module(
         else ChatTimestamp.time
 
     private fun sendMessage(content: String) {
-        val jsonType = "application/json; charset=utf-8".toMediaType()
-
-        // todo json dsl
-        val body = "{\"username\": \"$username\", \"content\": \"$content\", \"avatar_url\": \"${avatar.value}\"}".toRequestBody(jsonType)
-        val request: Request = Request.Builder()
-            .url(url.value)
-            .addHeader("Content-Type", "application/json")
-            .post(body)
-            .build()
-
         defaultScope.launch(Dispatchers.IO) {
-            // todo probably make some DSL for this lol
-            KamiMod.getHttpClient().newCall(request).execute().use { response ->
-                val responseBody = response.body?.string().toString()
-                if (responseBody.isBlank()) return@launch // Returns 204 empty normally. We want to warn log any non-empty responses.
-                KamiMod.LOG.warn("DiscordNotifs OkHttp Request\n${responseBody}")
-            }
+            ConnectionUtils.runConnection(
+                url.value,
+                { connection ->
+                    val bytes = JsonObject().run {
+                        addProperty("username", username)
+                        addProperty("content", content)
+                        addProperty("avatar_url", avatar.value)
+                        toString().toByteArray(Charsets.UTF_8)
+                    }
+
+                    connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
+                    connection.setRequestProperty("Accept", "application/json")
+                    connection.setRequestProperty("User-Agent", "")
+
+                    connection.requestMethod = "POST"
+                    connection.outputStream.use {
+                        it.write(bytes)
+                    }
+
+                    val response = connection.inputStream.use {
+                        IOUtils.toString(it, Charsets.UTF_8)
+                    }
+
+                    if (response.isNotEmpty()) {
+                        KamiMod.LOG.info("Unexpected response from DiscordNotifs http request: $response")
+                    }
+                },
+                {
+                    KamiMod.LOG.warn("Error while sending webhook", it)
+                },
+            )
         }
     }
+
 }

@@ -122,8 +122,6 @@ dependencies {
         exclude module: 'jna'
     }
 
-    jarLibs('com.squareup.okhttp3:okhttp:4.9.0')
-
     // Kotlin libs
     // kotlin-stdlib-common and annotations aren't required at runtime
     jarLibs("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version") {
