@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.graphics.buffer
 
-import org.kamiblue.commons.tuples.operations.Vec3f
+import org.kamiblue.commons.tuples.floats.Vec3f
 import org.kamiblue.commons.tuples.z
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11.glDrawArrays

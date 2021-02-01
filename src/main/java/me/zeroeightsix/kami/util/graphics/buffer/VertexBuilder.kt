@@ -1,7 +1,8 @@
 package me.zeroeightsix.kami.util.graphics.buffer
 
 import org.kamiblue.commons.tuples.*
-import org.kamiblue.commons.tuples.operations.*
+import org.kamiblue.commons.tuples.floats.*
+import org.kamiblue.commons.tuples.ints.Vec4i
 import java.nio.ByteBuffer
 
 class VertexBuilder(

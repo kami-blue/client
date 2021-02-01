@@ -5,10 +5,9 @@ import me.zeroeightsix.kami.util.graphics.buffer.ShortIndexBuffer
 import me.zeroeightsix.kami.util.graphics.buffer.newBufferGroup
 import me.zeroeightsix.kami.util.math.corners
 import net.minecraft.util.math.AxisAlignedBB
-import org.kamiblue.commons.tuples.operations.VEC3D_ZERO
-import org.kamiblue.commons.tuples.operations.Vec3d
-import org.kamiblue.commons.tuples.operations.Vec4i
-import org.kamiblue.commons.tuples.operations.toFloat
+import org.kamiblue.commons.tuples.floats.VEC3D_ZERO
+import org.kamiblue.commons.tuples.floats.Vec3d
+import org.kamiblue.commons.tuples.ints.Vec4i
 import org.kamiblue.commons.tuples.x
 import org.kamiblue.commons.tuples.y
 import org.kamiblue.commons.tuples.z

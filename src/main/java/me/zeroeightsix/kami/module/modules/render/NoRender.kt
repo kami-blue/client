@@ -24,7 +24,7 @@ import net.minecraftforge.registries.GameData
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11
 
-internal object NoRender : Module(
+internal object     NoRender : Module(
     name = "NoRender",
     category = Category.RENDER,
     description = "Ignore entity spawn packets"

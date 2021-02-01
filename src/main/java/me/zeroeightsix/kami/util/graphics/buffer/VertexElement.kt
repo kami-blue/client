@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.util.graphics.buffer
 
 import org.kamiblue.commons.tuples.*
-import org.kamiblue.commons.tuples.operations.Vec2f
-import org.kamiblue.commons.tuples.operations.Vec3f
-import org.kamiblue.commons.tuples.operations.Vec4i
+import org.kamiblue.commons.tuples.floats.Vec2f
+import org.kamiblue.commons.tuples.floats.Vec3f
+import org.kamiblue.commons.tuples.ints.Vec4i
 import org.lwjgl.opengl.GL11.*
 import java.nio.ByteBuffer
 
