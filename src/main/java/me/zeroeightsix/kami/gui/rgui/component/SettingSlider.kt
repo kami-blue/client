@@ -20,6 +20,7 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
     private val settingValueDouble get() = setting.value.toDouble()
     private val settingStep = if (setting.step.toDouble() > 0.0) setting.step else getDefaultStep()
     private val stepDouble = settingStep.toDouble()
+    private val fineStepDouble = setting.fineStep.toDouble()
     private val places = when (setting) {
         is IntegerSetting -> 1
         is FloatSetting -> MathUtils.decimalPlaces(settingStep.toFloat())
@@ -32,6 +33,12 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         is IntegerSetting -> range / 20
         is FloatSetting -> range / 20.0f
         else -> range / 20.0
+    }
+
+    private fun getStepValue() = if (Keyboard.isKeyDown(Keyboard.KEY_LMENU)) {
+        fineStepDouble
+    } else {
+        stepDouble
     }
 
     override fun onStopListening(success: Boolean) {
@@ -75,7 +82,8 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         value = if (!Keyboard.isKeyDown(Keyboard.KEY_LMENU)) mousePos.x.toDouble() / width.toDouble()
         else (preDragMousePos.x + (mousePos.x - preDragMousePos.x) * 0.1) / width.toDouble()
 
-        var roundedValue = MathUtils.round(round((value * range + setting.range.start.toDouble()) / stepDouble) * stepDouble, places)
+        val step = getStepValue()
+        var roundedValue = MathUtils.round(round((value * range + setting.range.start.toDouble()) / step) * step, places)
         if (abs(roundedValue) == 0.0) roundedValue = 0.0
         setting.setValue(roundedValue.toString())
     }
@@ -112,8 +120,9 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         super.onTick()
         if (mouseState != MouseState.DRAG && !listening) {
             val min = setting.range.start.toDouble()
-            val flooredSettingValue = floor((settingValueDouble - min) / stepDouble) * stepDouble
-            if (value * range + min !in (flooredSettingValue - stepDouble)..flooredSettingValue) {
+            val step = getStepValue()
+            val flooredSettingValue = floor((settingValueDouble - min) / step) * step
+            if (value * range + min !in (flooredSettingValue - step)..flooredSettingValue) {
                 value = (setting.value.toDouble() - min) / range
             }
         }

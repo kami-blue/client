@@ -11,7 +11,7 @@ object TPS : LabelHud(
     description = "Server TPS"
 ) {
 
-    private val tpsList = FloatArray(100) { 20.0f }
+    private val tpsList = FloatArray(20) { 20.0f }
     private var tpsIndex = 0
 
     override fun SafeClientEvent.updateText() {

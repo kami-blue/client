@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.SafeClientEvent
+import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
@@ -11,10 +12,12 @@ import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
 import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraft.network.play.server.SPacketPlayerPosLook
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.toRadian
+import org.kamiblue.event.listener.listener
 import kotlin.math.*
 
 internal object HoleSnap : Module(
@@ -26,6 +29,10 @@ internal object HoleSnap : Module(
     private val range by setting("Range", 2.5f, 0.5f..4.0f, 0.25f)
 
     init {
+        listener<PacketEvent.Receive> {
+            if (it.packet is SPacketPlayerPosLook) disable()
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (SurroundUtils.checkHole(player) != SurroundUtils.HoleType.NONE) {
                 disable()

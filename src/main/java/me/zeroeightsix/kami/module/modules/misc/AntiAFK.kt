@@ -37,7 +37,7 @@ internal object AntiAFK : Module(
     private val jump = setting("Jump", true)
     private val turn = setting("Turn", true)
     private val walk = setting("Walk", true)
-    private val radius by setting("Radius", 64, 8..128, 8)
+    private val radius by setting("Radius", 64, 8..128, 8, fineStep = 1)
     private val inputTimeout by setting("InputTimeout(m)", 0, 0..15, 1)
     private val allowBreak by setting("AllowBreakingBlocks", false, { walk.value })
 

@@ -33,8 +33,12 @@ abstract class LabelHud(
 
     override fun renderHud(vertexHelper: VertexHelper) {
         super.renderHud(vertexHelper)
+
+        val textPosX = width * dockingH.multiplier / scale - dockingH.offset
+        val textPosY = height * dockingV.multiplier / scale
+
         displayText.draw(
-            Vec2d(width * dockingH.multiplier - 1.0 * dockingH.offset, (height * dockingV.multiplier).toDouble()),
+            Vec2d(textPosX.toDouble(), textPosY.toDouble()),
             horizontalAlign = dockingH,
             verticalAlign = dockingV
         )

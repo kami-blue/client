@@ -3,16 +3,24 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.GuiEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.manager.managers.PlayerPacketManager.PlayerPacket
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.EntityUtils.isFakeOrSelf
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.items.swapToSlot
+import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.Enchantments
 import net.minecraft.init.Items
 import net.minecraft.util.EnumHand
+import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils.reverseNumber
 import org.kamiblue.event.listener.listener
@@ -23,6 +31,7 @@ internal object AutoMend : Module(
     description = "Automatically mends armour"
 ) {
     private val autoThrow by setting("AutoThrow", true)
+    private val throwDelay = setting("ThrowDelay", 2, 0..5, 1, description = "Number of ticks between throws to allow absorption")
     private val autoSwitch by setting("AutoSwitch", true)
     private val autoDisable by setting("AutoDisable", false, { autoSwitch })
     private val cancelNearby by setting("CancelNearby", NearbyMode.OFF, description = "Don't mend when an enemy is nearby")
@@ -33,6 +42,8 @@ internal object AutoMend : Module(
     private var initHotbarSlot = -1
     private var isGuiOpened = false
     private var paused = false
+
+    private val throwDelayTimer = TickTimer(TimeUnit.TICKS)
 
     @Suppress("unused")
     private enum class NearbyMode {
@@ -76,7 +87,9 @@ internal object AutoMend : Module(
             }
             paused = false
 
-            if (shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3)) {
+            if ((autoSwitch || autoThrow) // avoid checking if no actions are going to be done
+                && hasBlockUnder()
+                && (shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3))) {
                 if (autoSwitch && player.heldItemMainhand.item !== Items.EXPERIENCE_BOTTLE) {
                     val xpSlot = findXpPots()
 
@@ -90,7 +103,11 @@ internal object AutoMend : Module(
                     player.inventory.currentItem = xpSlot
                 }
                 if (autoThrow && player.heldItemMainhand.item === Items.EXPERIENCE_BOTTLE) {
-                    playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
+                    val packet = PlayerPacket(rotating = true, rotation = Vec2f(player.rotationYaw, 90.0f))
+                    PlayerPacketManager.addPacket(AutoMend, packet)
+                    if (validServerSideRotation() && throwDelayTimer.tick(throwDelay.value.toLong())) {
+                        playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
+                    }
                 }
             }
         }
@@ -109,7 +126,8 @@ internal object AutoMend : Module(
 
     private fun SafeClientEvent.shouldMend(i: Int): Boolean { // (100 * damage / max damage) >= (100 - 70)
         val stack = player.inventory.armorInventory[i]
-        return stack.isItemDamaged && 100 * stack.itemDamage / stack.maxDamage > reverseNumber(threshold, 1, 100)
+        val hasMending = EnchantmentHelper.getEnchantmentLevel(Enchantments.MENDING, stack) > 0
+        return hasMending && stack.isItemDamaged && 100 * stack.itemDamage / stack.maxDamage > reverseNumber(threshold, 1, 100)
     }
 
     private fun switchback() {
@@ -132,5 +150,16 @@ internal object AutoMend : Module(
             return true
         }
         return false
+    }
+
+    private fun validServerSideRotation(): Boolean {
+        val pitch = PlayerPacketManager.serverSideRotation.y
+        return pitch in 80.0f..90.0f
+    }
+
+    private fun SafeClientEvent.hasBlockUnder(): Boolean {
+        val posVec = player.positionVector
+        val result = world.rayTraceBlocks(posVec, posVec.add(0.0, -5.33, 0.0), false, true, false)
+        return result != null && result.typeOfHit == RayTraceResult.Type.BLOCK
     }
 }

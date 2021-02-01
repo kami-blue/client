@@ -9,8 +9,9 @@ class IntegerSetting(
     step: Int,
     visibility: () -> Boolean = { true },
     consumer: (prev: Int, input: Int) -> Int = { _, input -> input },
-    description: String = ""
-) : NumberSetting<Int>(name, value, range, step, visibility, consumer, description) {
+    description: String = "",
+    fineStep: Int = step
+) : NumberSetting<Int>(name, value, range, step, visibility, consumer, description, fineStep) {
 
     init {
         consumers.add(0) { _, it ->

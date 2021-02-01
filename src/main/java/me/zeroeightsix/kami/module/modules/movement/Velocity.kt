@@ -17,6 +17,7 @@ import org.kamiblue.event.listener.listener
  */
 internal object Velocity : Module(
     name = "Velocity",
+    alias = arrayOf("AntiKB", "Knockback"),
     description = "Modify knock back impact",
     category = Category.MOVEMENT
 ) {
