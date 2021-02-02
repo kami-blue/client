@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.util.combat
 
-import me.zeroeightsix.kami.event.ClientEvent
-import me.zeroeightsix.kami.event.SafeClientEvent
+import org.kamiblue.client.event.ClientEvent
+import org.kamiblue.client.event.SafeClientEvent
 import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.threads.toSafe

@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.manager.managers
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.event.KamiEventBus
-import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
+import org.kamiblue.client.event.KamiEventBus
+import org.kamiblue.client.event.events.WaypointUpdateEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.Wrapper

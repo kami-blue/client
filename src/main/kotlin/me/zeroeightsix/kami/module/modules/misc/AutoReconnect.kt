@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.GuiEvent
+import org.kamiblue.client.event.events.GuiEvent
 import org.kamiblue.client.mixin.extension.message
 import org.kamiblue.client.mixin.extension.parentScreen
 import org.kamiblue.client.mixin.extension.reason

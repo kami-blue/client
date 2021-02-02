@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client;
 
-import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.event.events.AddCollisionBoxToListEvent;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.AddCollisionBoxToListEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;

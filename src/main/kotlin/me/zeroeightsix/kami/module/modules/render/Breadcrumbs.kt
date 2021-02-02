@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.ConnectionEvent
+import org.kamiblue.client.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos

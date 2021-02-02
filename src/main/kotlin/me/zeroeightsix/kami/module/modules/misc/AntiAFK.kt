@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import baritone.api.pathing.goals.GoalXZ
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.BaritoneSettingsInitEvent
-import me.zeroeightsix.kami.event.events.PacketEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.BaritoneSettingsInitEvent
+import org.kamiblue.client.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting

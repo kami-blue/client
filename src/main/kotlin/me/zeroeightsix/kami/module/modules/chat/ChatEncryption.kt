@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.event.events.PacketEvent
+import org.kamiblue.client.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.MessageManager
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import org.kamiblue.client.mixin.extension.textComponent

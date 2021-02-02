@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.player;
 
-import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.event.events.PlayerTravelEvent;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.PlayerTravelEvent;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;

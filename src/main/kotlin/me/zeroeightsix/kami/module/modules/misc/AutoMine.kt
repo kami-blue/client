@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import org.kamiblue.client.command.CommandManager
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
-import me.zeroeightsix.kami.event.events.ConnectionEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.BaritoneCommandEvent
+import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.mixin.extension.sendClickBlockToController
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module

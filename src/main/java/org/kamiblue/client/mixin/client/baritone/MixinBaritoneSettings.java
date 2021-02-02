@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.baritone;
 
 import baritone.api.Settings;
-import me.zeroeightsix.kami.event.events.BaritoneSettingsInitEvent;
+import org.kamiblue.client.event.events.BaritoneSettingsInitEvent;
 import me.zeroeightsix.kami.util.BaritoneUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

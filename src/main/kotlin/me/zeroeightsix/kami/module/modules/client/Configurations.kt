@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.client
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.event.events.ConnectionEvent
+import org.kamiblue.client.event.events.ConnectionEvent
 import me.zeroeightsix.kami.gui.AbstractKamiGui
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.Category

@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.gui;
 
-import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.event.events.PrintChatMessageEvent;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.PrintChatMessageEvent;
 import me.zeroeightsix.kami.module.modules.chat.ExtraChatHistory;
 import me.zeroeightsix.kami.module.modules.render.CleanGUI;
 import net.minecraft.client.gui.Gui;

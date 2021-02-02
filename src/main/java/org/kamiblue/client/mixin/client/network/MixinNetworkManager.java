@@ -1,8 +1,8 @@
 package org.kamiblue.client.mixin.client.network;
 
 import io.netty.channel.ChannelHandlerContext;
-import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.event.events.PacketEvent;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.PacketEvent;
 import me.zeroeightsix.kami.module.modules.player.NoPacketKick;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;

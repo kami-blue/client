@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.client
 
-import me.zeroeightsix.kami.event.events.BaritoneSettingsInitEvent
+import org.kamiblue.client.event.events.BaritoneSettingsInitEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.BaritoneUtils

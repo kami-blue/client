@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.event
+package org.kamiblue.client.event
 
 import org.kamiblue.client.command.CommandManager
 import me.zeroeightsix.kami.util.Wrapper

@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.util.combat
 
-import me.zeroeightsix.kami.event.KamiEventBus
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.ConnectionEvent
+import org.kamiblue.client.event.KamiEventBus
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.mixin.extension.attackDamage
 import me.zeroeightsix.kami.util.items.swapToSlot
 import me.zeroeightsix.kami.util.threads.safeListener

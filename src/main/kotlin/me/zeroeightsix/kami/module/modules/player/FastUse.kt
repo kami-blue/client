@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.event.events.PacketEvent
+import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.mixin.extension.rightClickDelayTimer
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module

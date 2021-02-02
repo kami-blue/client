@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.event
+package org.kamiblue.client.event
 
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.eventbus.IEventBus

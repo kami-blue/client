@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.Phase
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
+import org.kamiblue.client.event.Phase
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Category

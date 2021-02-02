@@ -1,8 +1,8 @@
 package org.kamiblue.client.command
 
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.event.ClientExecuteEvent
-import me.zeroeightsix.kami.event.SafeExecuteEvent
+import org.kamiblue.client.event.ClientExecuteEvent
+import org.kamiblue.client.event.SafeExecuteEvent
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.Wrapper

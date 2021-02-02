@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.event.KamiEventBus
+import org.kamiblue.client.event.KamiEventBus
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity

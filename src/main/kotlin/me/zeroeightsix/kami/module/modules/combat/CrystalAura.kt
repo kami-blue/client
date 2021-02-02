@@ -2,10 +2,10 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.event.Phase
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
-import me.zeroeightsix.kami.event.events.PacketEvent
+import org.kamiblue.client.event.Phase
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
+import org.kamiblue.client.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import org.kamiblue.client.mixin.extension.id

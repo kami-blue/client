@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.manager.managers
 
-import me.zeroeightsix.kami.event.events.PacketEvent
+import org.kamiblue.client.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.Manager
 import org.kamiblue.client.mixin.extension.packetMessage
 import me.zeroeightsix.kami.module.AbstractModule

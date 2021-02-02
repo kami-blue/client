@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.items
 
-import me.zeroeightsix.kami.event.SafeClientEvent
+import org.kamiblue.client.event.SafeClientEvent
 import me.zeroeightsix.kami.util.threads.onMainThreadSafe
 import net.minecraft.block.Block
 import net.minecraft.init.Items

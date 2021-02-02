@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui
 
-import me.zeroeightsix.kami.event.KamiEventBus
+import org.kamiblue.client.event.KamiEventBus
 import me.zeroeightsix.kami.gui.rgui.windows.BasicWindow
 import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.module.modules.client.Hud

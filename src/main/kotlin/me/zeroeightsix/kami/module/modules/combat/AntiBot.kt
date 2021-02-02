@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.PlayerAttackEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.ConnectionEvent
+import org.kamiblue.client.event.events.PlayerAttackEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.FakePlayer

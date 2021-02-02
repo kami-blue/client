@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.util.items
 
 import io.netty.buffer.Unpooled
-import me.zeroeightsix.kami.event.SafeClientEvent
+import org.kamiblue.client.event.SafeClientEvent
 import net.minecraft.block.Block
 import net.minecraft.item.*
 import net.minecraft.network.PacketBuffer

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import io.netty.buffer.Unpooled
-import me.zeroeightsix.kami.event.events.PacketEvent
+import org.kamiblue.client.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import net.minecraft.network.PacketBuffer

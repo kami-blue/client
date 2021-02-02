@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.combat
 
-import me.zeroeightsix.kami.event.SafeClientEvent
+import org.kamiblue.client.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.manager.managers.CombatManager

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.PlayerTravelEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.PlayerTravelEvent
 import org.kamiblue.client.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module

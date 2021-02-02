@@ -1,8 +1,8 @@
 package org.kamiblue.client.mixin.client.render;
 
 import com.google.common.base.Predicate;
-import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.event.events.RenderOverlayEvent;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.RenderOverlayEvent;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;

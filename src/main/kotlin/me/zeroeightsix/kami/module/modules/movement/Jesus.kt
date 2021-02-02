@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.event.events.AddCollisionBoxToListEvent
-import me.zeroeightsix.kami.event.events.PacketEvent
+import org.kamiblue.client.event.events.AddCollisionBoxToListEvent
+import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.mixin.extension.y
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module

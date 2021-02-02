@@ -2,7 +2,7 @@ package org.kamiblue.client.command.commands
 
 import kotlinx.coroutines.*
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.event.SafeExecuteEvent
+import org.kamiblue.client.event.SafeExecuteEvent
 import me.zeroeightsix.kami.module.modules.client.Configurations
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.TickTimer

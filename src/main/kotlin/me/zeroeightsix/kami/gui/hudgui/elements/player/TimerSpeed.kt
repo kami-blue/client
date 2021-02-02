@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.player
 
-import me.zeroeightsix.kami.event.SafeClientEvent
+import org.kamiblue.client.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import org.kamiblue.client.mixin.extension.tickLength
 import org.kamiblue.client.mixin.extension.timer

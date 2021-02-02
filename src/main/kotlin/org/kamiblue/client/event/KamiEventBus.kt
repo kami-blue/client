@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.event
+package org.kamiblue.client.event
 
 import io.netty.util.internal.ConcurrentSet
 import kotlinx.coroutines.Dispatchers

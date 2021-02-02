@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.events.ConnectionEvent
+import org.kamiblue.client.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TickTimer

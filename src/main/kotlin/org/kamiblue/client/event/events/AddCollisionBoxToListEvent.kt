@@ -1,7 +1,7 @@
-package me.zeroeightsix.kami.event.events
+package org.kamiblue.client.event.events
 
-import me.zeroeightsix.kami.event.Cancellable
-import me.zeroeightsix.kami.event.Event
+import org.kamiblue.client.event.Cancellable
+import org.kamiblue.client.event.Event
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity

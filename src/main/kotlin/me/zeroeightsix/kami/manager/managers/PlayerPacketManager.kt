@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.manager.managers
 
-import me.zeroeightsix.kami.event.Phase
-import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
-import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.RenderEntityEvent
+import org.kamiblue.client.event.Phase
+import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
+import org.kamiblue.client.event.events.PacketEvent
+import org.kamiblue.client.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.manager.Manager
 import org.kamiblue.client.mixin.*
 import org.kamiblue.client.mixin.client.accessor.*

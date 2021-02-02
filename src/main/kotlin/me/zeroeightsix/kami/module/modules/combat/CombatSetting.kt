@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.RenderOverlayEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module

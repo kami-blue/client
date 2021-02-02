@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.math
 
-import me.zeroeightsix.kami.event.SafeClientEvent
+import org.kamiblue.client.event.SafeClientEvent
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.commons.extension.toDegree

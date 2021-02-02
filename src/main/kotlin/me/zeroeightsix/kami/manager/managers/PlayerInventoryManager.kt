@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.manager.managers
 
-import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.RenderOverlayEvent
+import org.kamiblue.client.event.events.ConnectionEvent
+import org.kamiblue.client.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.manager.Manager
 import org.kamiblue.client.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.AbstractModule

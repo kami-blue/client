@@ -2,11 +2,11 @@ package me.zeroeightsix.kami.module.modules.player
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.event.Phase
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
-import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.PlayerTravelEvent
+import org.kamiblue.client.event.Phase
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
+import org.kamiblue.client.event.events.PacketEvent
+import org.kamiblue.client.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import org.kamiblue.client.mixin.client.entity.MixinEntity
 import org.kamiblue.client.mixin.extension.syncCurrentPlayItem

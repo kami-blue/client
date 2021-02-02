@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.render;
 
-import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.event.events.BlockBreakEvent;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.BlockBreakEvent;
 import org.kamiblue.client.mixin.client.accessor.render.AccessorViewFrustum;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.render.SelectionHighlight;

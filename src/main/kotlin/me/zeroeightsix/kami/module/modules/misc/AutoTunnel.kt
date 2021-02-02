@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
-import me.zeroeightsix.kami.event.events.ConnectionEvent
+import org.kamiblue.client.event.events.BaritoneCommandEvent
+import org.kamiblue.client.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk

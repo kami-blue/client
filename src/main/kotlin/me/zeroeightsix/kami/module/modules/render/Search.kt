@@ -4,8 +4,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.kamiblue.client.command.CommandManager
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.settings.impl.collection.CollectionSetting

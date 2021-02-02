@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.GuiEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.GuiEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager.PlayerPacket

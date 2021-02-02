@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.event.events.PacketEvent
+import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.mixin.extension.rotationPitch
 import org.kamiblue.client.mixin.extension.rotationYaw
 import me.zeroeightsix.kami.module.Category

@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui
 
-import me.zeroeightsix.kami.event.events.RenderOverlayEvent
+import org.kamiblue.client.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.gui.AbstractKamiGui
 import me.zeroeightsix.kami.gui.GuiManager
 import me.zeroeightsix.kami.gui.hudgui.component.HudButton

@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import org.kamiblue.client.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module

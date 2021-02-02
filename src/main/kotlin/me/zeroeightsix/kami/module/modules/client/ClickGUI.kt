@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.client
 
-import me.zeroeightsix.kami.event.events.ShutdownEvent
+import org.kamiblue.client.event.events.ShutdownEvent
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module

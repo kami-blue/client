@@ -2,9 +2,9 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import com.mojang.authlib.GameProfile
 import org.kamiblue.client.command.CommandManager
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.GuiEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.ConnectionEvent
+import org.kamiblue.client.event.events.GuiEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper

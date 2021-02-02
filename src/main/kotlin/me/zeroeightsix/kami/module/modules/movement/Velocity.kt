@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.event.events.EntityCollisionEvent
-import me.zeroeightsix.kami.event.events.PacketEvent
+import org.kamiblue.client.event.events.EntityCollisionEvent
+import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.mixin.client.world.MixinBlockLiquid
 import org.kamiblue.client.mixin.extension.packetMotionX
 import org.kamiblue.client.mixin.extension.packetMotionY

@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.Phase
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.RenderEntityEvent
-import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import org.kamiblue.client.event.Phase
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.RenderEntityEvent
+import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.mixin.extension.entityOutlineShader
 import org.kamiblue.client.mixin.extension.listShaders
 import org.kamiblue.client.mixin.extension.renderOutlines

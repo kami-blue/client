@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.misc
 
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.RenderEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.RenderEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.TickTimer

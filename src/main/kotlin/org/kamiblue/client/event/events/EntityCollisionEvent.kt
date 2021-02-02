@@ -1,8 +1,8 @@
-package me.zeroeightsix.kami.event.events
+package org.kamiblue.client.event.events
 
-import me.zeroeightsix.kami.event.Cancellable
-import me.zeroeightsix.kami.event.Event
-import me.zeroeightsix.kami.event.ICancellable
+import org.kamiblue.client.event.Cancellable
+import org.kamiblue.client.event.Event
+import org.kamiblue.client.event.ICancellable
 import net.minecraft.entity.Entity
 
 open class EntityCollisionEvent(

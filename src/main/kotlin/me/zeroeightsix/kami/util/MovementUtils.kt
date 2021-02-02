@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.event.SafeClientEvent
+import org.kamiblue.client.event.SafeClientEvent
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import kotlin.math.cos

@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.event.events
+package org.kamiblue.client.event.events
 
-import me.zeroeightsix.kami.event.Event
+import org.kamiblue.client.event.Event
 import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
 
 class WaypointUpdateEvent(val type: Type, val waypoint: Waypoint?) : Event {

@@ -1,7 +1,7 @@
 package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.event.SafeExecuteEvent
+import org.kamiblue.client.event.SafeExecuteEvent
 import me.zeroeightsix.kami.util.items.itemPayload
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.item.ItemWritableBook

@@ -1,8 +1,8 @@
 package org.kamiblue.client.mixin.client.player;
 
 import com.mojang.authlib.GameProfile;
-import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent;
 import me.zeroeightsix.kami.gui.mc.KamiGuiBeacon;
 import me.zeroeightsix.kami.manager.managers.MessageManager;
 import me.zeroeightsix.kami.module.modules.chat.PortalChat;

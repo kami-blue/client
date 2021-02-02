@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.Phase
-import me.zeroeightsix.kami.event.events.RenderEntityEvent
+import org.kamiblue.client.event.Phase
+import org.kamiblue.client.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.EntityUtils

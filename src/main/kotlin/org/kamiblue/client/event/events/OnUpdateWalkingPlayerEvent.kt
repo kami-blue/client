@@ -1,9 +1,9 @@
-package me.zeroeightsix.kami.event.events
+package org.kamiblue.client.event.events
 
-import me.zeroeightsix.kami.event.Cancellable
-import me.zeroeightsix.kami.event.Event
-import me.zeroeightsix.kami.event.IMultiPhase
-import me.zeroeightsix.kami.event.Phase
+import org.kamiblue.client.event.Cancellable
+import org.kamiblue.client.event.Event
+import org.kamiblue.client.event.IMultiPhase
+import org.kamiblue.client.event.Phase
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.commons.extension.next

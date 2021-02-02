@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.PacketEvent
+import org.kamiblue.client.event.events.ConnectionEvent
+import org.kamiblue.client.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module

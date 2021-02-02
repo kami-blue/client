@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.entity;
 
-import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.event.events.EntityCollisionEvent;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.EntityCollisionEvent;
 import me.zeroeightsix.kami.module.modules.movement.SafeWalk;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.Scaffold;

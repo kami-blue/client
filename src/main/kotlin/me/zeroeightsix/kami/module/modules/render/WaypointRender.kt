@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.events.*
+import org.kamiblue.client.event.events.*
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
 import me.zeroeightsix.kami.module.Category

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.util
 
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.event.events.ShutdownEvent
+import org.kamiblue.client.event.events.ShutdownEvent
 import me.zeroeightsix.kami.util.ConfigUtils.saveAll
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.EntityPlayerSP

@@ -1,8 +1,8 @@
 package org.kamiblue.client.mixin.client.render;
 
-import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.event.Phase;
-import me.zeroeightsix.kami.event.events.RenderEntityEvent;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.Phase;
+import org.kamiblue.client.event.events.RenderEntityEvent;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;

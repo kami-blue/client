@@ -1,7 +1,7 @@
 package org.kamiblue.client;
 
 import me.zeroeightsix.kami.LoaderWrapper;
-import me.zeroeightsix.kami.event.ForgeEventProcessor;
+import org.kamiblue.client.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import me.zeroeightsix.kami.util.threads.BackgroundScope;

@@ -3,7 +3,7 @@ package org.kamiblue.client.command
 import kotlinx.coroutines.*
 import me.zeroeightsix.kami.AsyncLoader
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.event.ClientExecuteEvent
+import org.kamiblue.client.event.ClientExecuteEvent
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.StopTimer
 import me.zeroeightsix.kami.util.text.MessageSendHelper

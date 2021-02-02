@@ -1,10 +1,9 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.world
 
-import me.zeroeightsix.kami.event.SafeClientEvent
+import org.kamiblue.client.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.AsyncCachedValue
-import me.zeroeightsix.kami.util.CachedValue
 import me.zeroeightsix.kami.util.EntityUtils.isHostile
 import me.zeroeightsix.kami.util.EntityUtils.isNeutral
 import me.zeroeightsix.kami.util.EntityUtils.isPassive

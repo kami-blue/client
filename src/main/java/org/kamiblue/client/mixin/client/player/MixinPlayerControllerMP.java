@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.player;
 
-import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.event.events.PlayerAttackEvent;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.PlayerAttackEvent;
 import me.zeroeightsix.kami.module.modules.player.TpsSync;
 import me.zeroeightsix.kami.util.TpsCalculator;
 import net.minecraft.block.state.IBlockState;

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.events.PlayerTravelEvent
-import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import org.kamiblue.client.event.events.PlayerTravelEvent
+import org.kamiblue.client.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.FastUse

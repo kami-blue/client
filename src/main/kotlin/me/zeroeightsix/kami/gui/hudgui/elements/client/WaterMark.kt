@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.client
 
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.event.SafeClientEvent
+import org.kamiblue.client.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.module.modules.client.Capes
 import me.zeroeightsix.kami.util.graphics.VertexHelper

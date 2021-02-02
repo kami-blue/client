@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.event.events
+package org.kamiblue.client.event.events
 
-import me.zeroeightsix.kami.event.*
+import org.kamiblue.client.event.*
 import net.minecraft.entity.Entity
 
 class RenderEntityEvent(
