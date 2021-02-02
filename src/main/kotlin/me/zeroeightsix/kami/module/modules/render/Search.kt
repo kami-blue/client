@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.render
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.command.CommandManager
+import org.kamiblue.client.command.CommandManager
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Category

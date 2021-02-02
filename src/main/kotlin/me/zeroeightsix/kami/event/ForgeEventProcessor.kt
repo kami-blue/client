@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.event
 
-import me.zeroeightsix.kami.command.CommandManager
+import org.kamiblue.client.command.CommandManager
 import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent

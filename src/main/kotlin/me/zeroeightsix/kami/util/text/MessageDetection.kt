@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.text
 
-import me.zeroeightsix.kami.command.CommandManager
+import org.kamiblue.client.command.CommandManager
 import me.zeroeightsix.kami.module.modules.chat.ChatEncryption
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.Wrapper

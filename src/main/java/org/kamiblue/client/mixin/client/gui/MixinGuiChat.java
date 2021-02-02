@@ -1,6 +1,6 @@
 package org.kamiblue.client.mixin.client.gui;
 
-import me.zeroeightsix.kami.command.CommandManager;
+import org.kamiblue.client.command.CommandManager;
 import me.zeroeightsix.kami.gui.mc.KamiGuiChat;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.gui.GuiChat;

@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.event
 
-import me.zeroeightsix.kami.command.CommandManager
+import org.kamiblue.client.command.CommandManager
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.multiplayer.PlayerControllerMP

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.mc
 
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.command.CommandManager
+import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.mixin.extension.historyBuffer
 import org.kamiblue.client.mixin.extension.sentHistoryCursor
 import me.zeroeightsix.kami.module.modules.client.GuiColors

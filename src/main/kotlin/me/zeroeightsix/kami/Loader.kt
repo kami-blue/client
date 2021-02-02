@@ -3,7 +3,7 @@ package me.zeroeightsix.kami
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import me.zeroeightsix.kami.command.CommandManager
+import org.kamiblue.client.command.CommandManager
 import me.zeroeightsix.kami.gui.GuiManager
 import me.zeroeightsix.kami.manager.ManagerLoader
 import me.zeroeightsix.kami.module.ModuleManager

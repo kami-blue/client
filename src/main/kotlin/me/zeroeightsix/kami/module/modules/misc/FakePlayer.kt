@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import com.mojang.authlib.GameProfile
-import me.zeroeightsix.kami.command.CommandManager
+import org.kamiblue.client.command.CommandManager
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.GuiEvent
