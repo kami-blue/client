@@ -22,7 +22,7 @@ object ModuleManager : AsyncLoader<List<Class<out AbstractModule>>> {
     override fun preLoad0(): List<Class<out AbstractModule>> {
         val stopTimer = StopTimer()
 
-        val list = ClassUtils.findClasses("me.zeroeightsix.kami.module.modules", AbstractModule::class.java)
+        val list = ClassUtils.findClasses("org.kamiblue.client.module.modules", AbstractModule::class.java)
             .filter { Modifier.isFinal(it.modifiers) }
         val time = stopTimer.stop()
 

@@ -18,7 +18,7 @@ object GuiManager : AsyncLoader<List<Class<out HudElement>>> {
     override fun preLoad0(): List<Class<out HudElement>> {
         val stopTimer = StopTimer()
 
-        val list = ClassUtils.findClasses("me.zeroeightsix.kami.gui.hudgui.elements", HudElement::class.java)
+        val list = ClassUtils.findClasses("org.kamiblue.client.gui.hudgui.elements", HudElement::class.java)
             .filter { Modifier.isFinal(it.modifiers) }
         val time = stopTimer.stop()
 

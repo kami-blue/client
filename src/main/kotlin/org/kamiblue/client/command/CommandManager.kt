@@ -22,7 +22,7 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoade
     override fun preLoad0(): List<Class<out ClientCommand>> {
         val stopTimer = StopTimer()
 
-        val list = ClassUtils.findClasses("me.zeroeightsix.kami.command.commands", ClientCommand::class.java)
+        val list = ClassUtils.findClasses("org.kamiblue.client.command.commands", ClientCommand::class.java)
         val time = stopTimer.stop()
 
         KamiMod.LOG.info("${list.size} commands found, took ${time}ms")

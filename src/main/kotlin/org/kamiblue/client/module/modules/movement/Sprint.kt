@@ -7,7 +7,7 @@ import org.kamiblue.client.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 /**
- * @see me.zeroeightsix.kami.mixin.client.player.MixinEntityPlayerSP
+ * @see org.kamiblue.client.mixin.client.player.MixinEntityPlayerSP
  */
 internal object Sprint : Module(
     name = "Sprint",

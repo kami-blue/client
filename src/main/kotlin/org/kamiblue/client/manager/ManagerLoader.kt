@@ -13,7 +13,7 @@ internal object ManagerLoader : AsyncLoader<List<Class<out Manager>>> {
     override fun preLoad0(): List<Class<out Manager>> {
         val stopTimer = StopTimer()
 
-        val list = ClassUtils.findClasses("me.zeroeightsix.kami.manager.managers", Manager::class.java)
+        val list = ClassUtils.findClasses("org.kamiblue.client.manager.managers", Manager::class.java)
         val time = stopTimer.stop()
 
         KamiMod.LOG.info("${list.size} managers found, took ${time}ms")
