@@ -1,6 +1,6 @@
 package org.kamiblue.client.gui.rgui.component
 
-import me.zeroeightsix.kami.module.modules.client.GuiColors
+import org.kamiblue.client.module.modules.client.GuiColors
 import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter

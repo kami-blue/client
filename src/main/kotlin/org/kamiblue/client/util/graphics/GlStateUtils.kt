@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.graphics
 
-import me.zeroeightsix.kami.module.modules.client.ClickGUI
+import org.kamiblue.client.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.util.Quad
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.gui.ScaledResolution

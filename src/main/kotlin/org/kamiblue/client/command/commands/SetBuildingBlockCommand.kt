@@ -1,7 +1,7 @@
 package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.module.modules.player.InventoryManager
+import org.kamiblue.client.module.modules.player.InventoryManager
 import me.zeroeightsix.kami.util.items.block
 import me.zeroeightsix.kami.util.items.id
 import me.zeroeightsix.kami.util.text.MessageSendHelper

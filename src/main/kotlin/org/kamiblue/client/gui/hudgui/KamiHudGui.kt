@@ -8,8 +8,8 @@ import org.kamiblue.client.gui.hudgui.elements.client.WaterMark
 import org.kamiblue.client.gui.hudgui.window.HudSettingWindow
 import org.kamiblue.client.gui.rgui.Component
 import org.kamiblue.client.gui.rgui.windows.ListWindow
-import me.zeroeightsix.kami.module.modules.client.Hud
-import me.zeroeightsix.kami.module.modules.client.HudEditor
+import org.kamiblue.client.module.modules.client.Hud
+import org.kamiblue.client.module.modules.client.HudEditor
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2f

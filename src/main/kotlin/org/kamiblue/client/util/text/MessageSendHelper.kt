@@ -4,7 +4,7 @@ import baritone.api.event.events.ChatEvent
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.manager.managers.MessageManager
-import me.zeroeightsix.kami.module.AbstractModule
+import org.kamiblue.client.module.AbstractModule
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TaskState
 import me.zeroeightsix.kami.util.Wrapper

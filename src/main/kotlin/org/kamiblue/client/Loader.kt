@@ -6,7 +6,7 @@ import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.gui.GuiManager
 import org.kamiblue.client.manager.ManagerLoader
-import me.zeroeightsix.kami.module.ModuleManager
+import org.kamiblue.client.module.ModuleManager
 import me.zeroeightsix.kami.util.threads.mainScope
 
 internal object LoaderWrapper {

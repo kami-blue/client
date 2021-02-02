@@ -1,9 +1,9 @@
 package org.kamiblue.client.manager.managers
 
 import org.kamiblue.client.manager.Manager
-import me.zeroeightsix.kami.module.AbstractModule
-import me.zeroeightsix.kami.module.Category
-import me.zeroeightsix.kami.module.ModuleManager
+import org.kamiblue.client.module.AbstractModule
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.ModuleManager
 import me.zeroeightsix.kami.util.MotionTracker
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal

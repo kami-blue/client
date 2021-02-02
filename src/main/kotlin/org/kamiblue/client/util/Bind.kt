@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.module.modules.client.CommandConfig
+import org.kamiblue.client.module.modules.client.CommandConfig
 import org.lwjgl.input.Keyboard
 
 class Bind(

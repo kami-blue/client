@@ -6,7 +6,7 @@ import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.event.events.ResolutionUpdateEvent
 import org.kamiblue.client.gui.mc.KamiGuiChat
-import me.zeroeightsix.kami.module.ModuleManager
+import org.kamiblue.client.module.ModuleManager
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils

@@ -1,6 +1,6 @@
 package org.kamiblue.client.gui.mc
 
-import me.zeroeightsix.kami.module.modules.player.ChestStealer
+import org.kamiblue.client.module.modules.player.ChestStealer
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.gui.GuiButton
 

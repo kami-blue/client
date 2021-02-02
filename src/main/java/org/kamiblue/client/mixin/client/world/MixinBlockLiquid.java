@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.world;
 
-import me.zeroeightsix.kami.module.modules.movement.Velocity;
-import me.zeroeightsix.kami.module.modules.player.LiquidInteract;
+import org.kamiblue.client.module.modules.movement.Velocity;
+import org.kamiblue.client.module.modules.player.LiquidInteract;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;

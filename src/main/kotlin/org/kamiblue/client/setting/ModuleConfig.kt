@@ -1,8 +1,8 @@
 package org.kamiblue.client.setting
 
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.module.AbstractModule
-import me.zeroeightsix.kami.module.modules.client.Configurations
+import org.kamiblue.client.module.AbstractModule
+import org.kamiblue.client.module.modules.client.Configurations
 import org.kamiblue.client.setting.configs.NameableConfig
 import java.io.File
 

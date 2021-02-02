@@ -4,7 +4,7 @@ import kotlinx.coroutines.launch
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.mixin.extension.historyBuffer
 import org.kamiblue.client.mixin.extension.sentHistoryCursor
-import me.zeroeightsix.kami.module.modules.client.GuiColors
+import org.kamiblue.client.module.modules.client.GuiColors
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper

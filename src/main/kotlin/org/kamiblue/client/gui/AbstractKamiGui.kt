@@ -5,8 +5,8 @@ import org.kamiblue.client.gui.rgui.WindowComponent
 import org.kamiblue.client.gui.rgui.windows.ColorPicker
 import org.kamiblue.client.gui.rgui.windows.SettingWindow
 import org.kamiblue.client.mixin.extension.listShaders
-import me.zeroeightsix.kami.module.modules.client.ClickGUI
-import me.zeroeightsix.kami.module.modules.client.GuiColors
+import org.kamiblue.client.module.modules.client.ClickGUI
+import org.kamiblue.client.module.modules.client.GuiColors
 import me.zeroeightsix.kami.util.TimedFlag
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder

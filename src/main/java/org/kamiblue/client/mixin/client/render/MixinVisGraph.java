@@ -1,6 +1,6 @@
 package org.kamiblue.client.mixin.client.render;
 
-import me.zeroeightsix.kami.module.modules.player.Freecam;
+import org.kamiblue.client.module.modules.player.Freecam;
 import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.graphics.KamiTessellator;
 import me.zeroeightsix.kami.util.math.VectorUtils;

@@ -1,6 +1,6 @@
 package org.kamiblue.client.gui.mc
 
-import me.zeroeightsix.kami.module.modules.misc.BeaconSelector
+import org.kamiblue.client.module.modules.misc.BeaconSelector
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiBeacon

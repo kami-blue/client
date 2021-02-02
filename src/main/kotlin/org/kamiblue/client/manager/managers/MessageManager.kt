@@ -3,8 +3,8 @@ package org.kamiblue.client.manager.managers
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.mixin.extension.packetMessage
-import me.zeroeightsix.kami.module.AbstractModule
-import me.zeroeightsix.kami.module.modules.client.ChatSetting
+import org.kamiblue.client.module.AbstractModule
+import org.kamiblue.client.module.modules.client.ChatSetting
 import me.zeroeightsix.kami.util.TaskState
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.Wrapper

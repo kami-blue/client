@@ -1,6 +1,6 @@
 package org.kamiblue.client.mixin.client.network;
 
-import me.zeroeightsix.kami.module.modules.misc.FakeVanillaClient;
+import org.kamiblue.client.module.modules.misc.FakeVanillaClient;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.handshake.client.C00Handshake;

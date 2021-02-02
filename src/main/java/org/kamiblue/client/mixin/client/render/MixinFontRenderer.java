@@ -5,7 +5,7 @@
 
 package org.kamiblue.client.mixin.client.render;
 
-import me.zeroeightsix.kami.module.modules.chat.KamiMoji;
+import org.kamiblue.client.module.modules.chat.KamiMoji;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import org.spongepowered.asm.mixin.Mixin;

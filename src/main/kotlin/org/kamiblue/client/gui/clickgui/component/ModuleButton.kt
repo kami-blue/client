@@ -2,7 +2,7 @@ package org.kamiblue.client.gui.clickgui.component
 
 import org.kamiblue.client.gui.clickgui.KamiClickGui
 import org.kamiblue.client.gui.rgui.component.BooleanSlider
-import me.zeroeightsix.kami.module.AbstractModule
+import org.kamiblue.client.module.AbstractModule
 import me.zeroeightsix.kami.util.math.Vec2f
 
 class ModuleButton(val module: AbstractModule) : BooleanSlider(module.name, 0.0, module.description) {

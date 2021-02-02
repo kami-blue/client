@@ -3,7 +3,7 @@ package org.kamiblue.client.process
 import baritone.api.process.IBaritoneProcess
 import baritone.api.process.PathingCommand
 import baritone.api.process.PathingCommandType
-import me.zeroeightsix.kami.module.AbstractModule
+import org.kamiblue.client.module.AbstractModule
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit

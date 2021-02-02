@@ -3,7 +3,7 @@ package org.kamiblue.client.mixin.client.network;
 import io.netty.channel.ChannelHandlerContext;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.PacketEvent;
-import me.zeroeightsix.kami.module.modules.player.NoPacketKick;
+import org.kamiblue.client.module.modules.player.NoPacketKick;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import org.spongepowered.asm.mixin.Mixin;

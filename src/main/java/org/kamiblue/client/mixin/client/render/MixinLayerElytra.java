@@ -1,6 +1,6 @@
 package org.kamiblue.client.mixin.client.render;
 
-import me.zeroeightsix.kami.module.modules.client.Capes;
+import org.kamiblue.client.module.modules.client.Capes;
 import net.minecraft.client.model.ModelElytra;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.layers.LayerElytra;

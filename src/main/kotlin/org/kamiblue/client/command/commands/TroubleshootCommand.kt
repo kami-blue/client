@@ -2,7 +2,7 @@ package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.module.ModuleManager
+import org.kamiblue.client.module.ModuleManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper

@@ -1,6 +1,6 @@
 package org.kamiblue.client.mixin.client;
 
-import me.zeroeightsix.kami.module.modules.render.NoRender;
+import org.kamiblue.client.module.modules.render.NoRender;
 import net.minecraft.tileentity.TileEntityBeacon;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

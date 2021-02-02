@@ -1,6 +1,6 @@
 package org.kamiblue.client.mixin.client.entity;
 
-import me.zeroeightsix.kami.module.modules.movement.EntitySpeed;
+import org.kamiblue.client.module.modules.movement.EntitySpeed;
 import net.minecraft.entity.passive.EntityLlama;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

@@ -1,6 +1,6 @@
 package org.kamiblue.client.mixin.client.render;
 
-import me.zeroeightsix.kami.module.modules.render.NoRender;
+import org.kamiblue.client.module.modules.render.NoRender;
 import net.minecraft.client.gui.MapItemRenderer;
 import net.minecraft.world.storage.MapData;
 import org.spongepowered.asm.mixin.Mixin;

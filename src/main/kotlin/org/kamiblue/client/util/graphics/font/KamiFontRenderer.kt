@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.util.graphics.font
 
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.module.modules.client.CustomFont
+import org.kamiblue.client.module.modules.client.CustomFont
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.graphics.GlStateUtils

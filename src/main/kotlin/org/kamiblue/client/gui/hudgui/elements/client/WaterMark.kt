@@ -3,7 +3,7 @@ package org.kamiblue.client.gui.hudgui.elements.client
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import me.zeroeightsix.kami.module.modules.client.Capes
+import org.kamiblue.client.module.modules.client.Capes
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import org.lwjgl.opengl.GL11.glScalef
 

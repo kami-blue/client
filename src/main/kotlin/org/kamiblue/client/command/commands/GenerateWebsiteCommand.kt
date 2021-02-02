@@ -5,9 +5,9 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.module.AbstractModule
-import me.zeroeightsix.kami.module.Category
-import me.zeroeightsix.kami.module.ModuleManager
+import org.kamiblue.client.module.AbstractModule
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.ModuleManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.File
 import java.util.*

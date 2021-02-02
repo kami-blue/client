@@ -1,6 +1,6 @@
 package org.kamiblue.client.gui.mc
 
-import me.zeroeightsix.kami.module.modules.misc.AntiDisconnect
+import org.kamiblue.client.module.modules.misc.AntiDisconnect
 import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.text.format
 import net.minecraft.client.gui.*

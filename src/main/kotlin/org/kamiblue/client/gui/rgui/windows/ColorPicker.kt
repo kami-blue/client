@@ -4,7 +4,7 @@ import org.kamiblue.client.gui.AbstractKamiGui
 import org.kamiblue.client.gui.rgui.component.Button
 import org.kamiblue.client.gui.rgui.component.SettingSlider
 import org.kamiblue.client.gui.rgui.component.Slider
-import me.zeroeightsix.kami.module.modules.client.GuiColors
+import org.kamiblue.client.module.modules.client.GuiColors
 import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.setting.settings.impl.other.ColorSetting
 import me.zeroeightsix.kami.util.color.ColorHolder

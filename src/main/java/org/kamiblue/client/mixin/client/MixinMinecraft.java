@@ -4,7 +4,7 @@ import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.GuiEvent;
 import org.kamiblue.client.event.events.RenderEvent;
 import org.kamiblue.client.gui.mc.KamiGuiUpdateNotification;
-import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
+import org.kamiblue.client.module.modules.combat.CrystalAura;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;

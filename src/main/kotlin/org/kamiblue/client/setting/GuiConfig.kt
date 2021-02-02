@@ -2,7 +2,7 @@ package org.kamiblue.client.setting
 
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.gui.rgui.Component
-import me.zeroeightsix.kami.module.modules.client.Configurations
+import org.kamiblue.client.module.modules.client.Configurations
 import org.kamiblue.client.setting.configs.AbstractConfig
 import org.kamiblue.client.setting.settings.AbstractSetting
 import java.io.File

@@ -3,7 +3,7 @@ package org.kamiblue.client.gui.rgui.windows
 import org.kamiblue.client.gui.AbstractKamiGui
 import org.kamiblue.client.gui.rgui.Component
 import org.kamiblue.client.gui.rgui.InteractiveComponent
-import me.zeroeightsix.kami.module.modules.client.ClickGUI
+import org.kamiblue.client.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.VertexHelper

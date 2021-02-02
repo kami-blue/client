@@ -1,9 +1,9 @@
 package org.kamiblue.client.gui.rgui.component
 
 import org.kamiblue.client.gui.rgui.InteractiveComponent
-import me.zeroeightsix.kami.module.modules.client.ClickGUI
-import me.zeroeightsix.kami.module.modules.client.GuiColors
-import me.zeroeightsix.kami.module.modules.client.Tooltips
+import org.kamiblue.client.module.modules.client.ClickGUI
+import org.kamiblue.client.module.modules.client.GuiColors
+import org.kamiblue.client.module.modules.client.Tooltips
 import me.zeroeightsix.kami.util.TimedFlag
 import me.zeroeightsix.kami.util.graphics.AnimationUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D

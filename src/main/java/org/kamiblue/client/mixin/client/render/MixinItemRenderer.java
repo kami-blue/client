@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.render;
 
-import me.zeroeightsix.kami.module.modules.player.Freecam;
-import me.zeroeightsix.kami.module.modules.render.ItemModel;
+import org.kamiblue.client.module.modules.player.Freecam;
+import org.kamiblue.client.module.modules.render.ItemModel;
 import me.zeroeightsix.kami.util.math.Vec3f;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;

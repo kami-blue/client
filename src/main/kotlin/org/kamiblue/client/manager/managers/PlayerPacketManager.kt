@@ -9,7 +9,7 @@ import org.kamiblue.client.mixin.*
 import org.kamiblue.client.mixin.client.accessor.*
 import org.kamiblue.client.mixin.client.accessor.network.*
 import org.kamiblue.client.mixin.extension.*
-import me.zeroeightsix.kami.module.AbstractModule
+import org.kamiblue.client.module.AbstractModule
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.Wrapper

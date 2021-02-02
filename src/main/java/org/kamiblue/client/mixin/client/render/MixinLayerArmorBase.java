@@ -1,6 +1,6 @@
 package org.kamiblue.client.mixin.client.render;
 
-import me.zeroeightsix.kami.module.modules.render.ArmorHide;
+import org.kamiblue.client.module.modules.render.ArmorHide;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;

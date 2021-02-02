@@ -1,7 +1,7 @@
 package org.kamiblue.client.gui.rgui
 
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.module.modules.client.ClickGUI
+import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.VertexHelper

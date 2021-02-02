@@ -3,8 +3,8 @@ package org.kamiblue.client.command
 import kotlinx.coroutines.launch
 import org.kamiblue.client.event.ClientExecuteEvent
 import org.kamiblue.client.event.SafeExecuteEvent
-import me.zeroeightsix.kami.module.AbstractModule
-import me.zeroeightsix.kami.module.modules.client.CommandConfig
+import org.kamiblue.client.module.AbstractModule
+import org.kamiblue.client.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.toSafe

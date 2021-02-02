@@ -1,6 +1,6 @@
 package org.kamiblue.client.gui.rgui.component
 
-import me.zeroeightsix.kami.module.modules.client.GuiColors
+import org.kamiblue.client.module.modules.client.GuiColors
 import org.kamiblue.client.setting.settings.impl.number.FloatSetting
 import org.kamiblue.client.setting.settings.impl.number.IntegerSetting
 import org.kamiblue.client.setting.settings.impl.number.NumberSetting

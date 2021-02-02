@@ -3,7 +3,7 @@ package org.kamiblue.client.gui.hudgui.elements.world
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.manager.managers.FriendManager
-import me.zeroeightsix.kami.module.modules.combat.AntiBot
+import org.kamiblue.client.module.modules.combat.AntiBot
 import org.kamiblue.client.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.AsyncCachedValue
 import me.zeroeightsix.kami.util.color.ColorGradient

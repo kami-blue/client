@@ -3,7 +3,7 @@ package org.kamiblue.client.process
 import baritone.api.process.IBaritoneProcess
 import baritone.api.process.PathingCommand
 import baritone.api.process.PathingCommandType
-import me.zeroeightsix.kami.module.modules.misc.AutoObsidian
+import org.kamiblue.client.module.modules.misc.AutoObsidian
 
 object AutoObsidianProcess : IBaritoneProcess {
 

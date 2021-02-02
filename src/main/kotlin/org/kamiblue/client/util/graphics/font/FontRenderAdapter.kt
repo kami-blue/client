@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.graphics.font
 
-import me.zeroeightsix.kami.module.modules.client.CustomFont
+import org.kamiblue.client.module.modules.client.CustomFont
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
 import org.lwjgl.opengl.GL11.*

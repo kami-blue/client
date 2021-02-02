@@ -1,6 +1,6 @@
 package org.kamiblue.client.mixin.client;
 
-import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
+import org.kamiblue.client.module.modules.movement.ElytraFlight;
 import net.minecraft.client.audio.ElytraSound;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

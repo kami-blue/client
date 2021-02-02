@@ -1,6 +1,6 @@
 package org.kamiblue.client.mixin.client.world;
 
-import me.zeroeightsix.kami.module.modules.movement.NoSlowDown;
+import org.kamiblue.client.module.modules.movement.NoSlowDown;
 import net.minecraft.block.BlockWeb;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;

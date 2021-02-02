@@ -4,7 +4,7 @@ import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.mixin.extension.syncCurrentPlayItem
-import me.zeroeightsix.kami.module.AbstractModule
+import org.kamiblue.client.module.AbstractModule
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.items.clickSlot
 import me.zeroeightsix.kami.util.items.removeHoldingItem

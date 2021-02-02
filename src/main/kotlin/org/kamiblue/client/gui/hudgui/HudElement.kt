@@ -2,8 +2,8 @@ package org.kamiblue.client.gui.hudgui
 
 import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.gui.rgui.windows.BasicWindow
-import me.zeroeightsix.kami.module.modules.client.GuiColors
-import me.zeroeightsix.kami.module.modules.client.Hud
+import org.kamiblue.client.module.modules.client.GuiColors
+import org.kamiblue.client.module.modules.client.Hud
 import org.kamiblue.client.setting.GuiConfig
 import org.kamiblue.client.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D

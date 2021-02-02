@@ -2,8 +2,8 @@ package org.kamiblue.client.command
 
 import kotlinx.coroutines.Dispatchers
 import org.kamiblue.client.manager.managers.UUIDManager
-import me.zeroeightsix.kami.module.AbstractModule
-import me.zeroeightsix.kami.module.ModuleManager
+import org.kamiblue.client.module.AbstractModule
+import org.kamiblue.client.module.ModuleManager
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.threads.runSafeR
 import net.minecraft.block.Block

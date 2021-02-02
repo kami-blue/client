@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.world;
 
-import me.zeroeightsix.kami.module.modules.misc.AntiWeather;
-import me.zeroeightsix.kami.module.modules.render.NoRender;
+import org.kamiblue.client.module.modules.misc.AntiWeather;
+import org.kamiblue.client.module.modules.render.NoRender;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;

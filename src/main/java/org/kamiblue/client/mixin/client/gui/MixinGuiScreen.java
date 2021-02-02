@@ -1,8 +1,8 @@
 package org.kamiblue.client.mixin.client.gui;
 
-import me.zeroeightsix.kami.module.modules.render.CleanGUI;
-import me.zeroeightsix.kami.module.modules.render.MapPreview;
-import me.zeroeightsix.kami.module.modules.render.ShulkerPreview;
+import org.kamiblue.client.module.modules.render.CleanGUI;
+import org.kamiblue.client.module.modules.render.MapPreview;
+import org.kamiblue.client.module.modules.render.ShulkerPreview;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemMap;
