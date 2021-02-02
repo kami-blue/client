@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.gui.mc
 
 import com.google.gson.JsonParser
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.util.WebUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.threads.mainScope

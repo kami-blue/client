@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.setting.configs
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.setting.groups.SettingGroup
 import me.zeroeightsix.kami.setting.groups.SettingMultiGroup
 import me.zeroeightsix.kami.setting.settings.SettingRegister

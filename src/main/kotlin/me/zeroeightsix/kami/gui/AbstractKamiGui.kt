@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.gui.rgui.WindowComponent
 import me.zeroeightsix.kami.gui.rgui.windows.ColorPicker
 import me.zeroeightsix.kami.gui.rgui.windows.SettingWindow
-import me.zeroeightsix.kami.mixin.extension.listShaders
+import org.kamiblue.client.mixin.extension.listShaders
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.util.TimedFlag

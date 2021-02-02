@@ -8,8 +8,8 @@ import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
-import me.zeroeightsix.kami.mixin.extension.id
-import me.zeroeightsix.kami.mixin.extension.packetAction
+import org.kamiblue.client.mixin.extension.id
+import org.kamiblue.client.mixin.extension.packetAction
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*

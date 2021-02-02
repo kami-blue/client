@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.graphics
 
-import me.zeroeightsix.kami.mixin.extension.renderPartialTicksPaused
+import org.kamiblue.client.mixin.extension.renderPartialTicksPaused
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
 import net.minecraft.client.Minecraft

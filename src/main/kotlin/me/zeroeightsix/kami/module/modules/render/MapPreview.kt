@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.mixin.client.gui.MixinGuiScreen
+import org.kamiblue.client.mixin.client.gui.MixinGuiScreen
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.GuiColors

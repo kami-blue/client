@@ -4,9 +4,9 @@ import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.mixin.extension.entityOutlineShader
-import me.zeroeightsix.kami.mixin.extension.listShaders
-import me.zeroeightsix.kami.mixin.extension.renderOutlines
+import org.kamiblue.client.mixin.extension.entityOutlineShader
+import org.kamiblue.client.mixin.extension.listShaders
+import org.kamiblue.client.mixin.extension.renderOutlines
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList

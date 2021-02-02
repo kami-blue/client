@@ -2,12 +2,11 @@ package me.zeroeightsix.kami.module.modules.client
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.gui.AbstractKamiGui
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.Category
-import me.zeroeightsix.kami.module.modules.client.CommandConfig.setting
 import me.zeroeightsix.kami.setting.ConfigManager
 import me.zeroeightsix.kami.setting.GenericConfig
 import me.zeroeightsix.kami.setting.GuiConfig

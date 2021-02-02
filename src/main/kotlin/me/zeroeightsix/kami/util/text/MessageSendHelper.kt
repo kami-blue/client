@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.util.text
 
 import baritone.api.event.events.ChatEvent
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.manager.managers.MessageManager
 import me.zeroeightsix.kami.module.AbstractModule

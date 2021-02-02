@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.mixin.extension.rotationPitch
-import me.zeroeightsix.kami.mixin.extension.rotationYaw
+import org.kamiblue.client.mixin.extension.rotationPitch
+import org.kamiblue.client.mixin.extension.rotationYaw
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import net.minecraft.network.play.server.SPacketPlayerPosLook

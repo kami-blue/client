@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.GuiEvent
-import me.zeroeightsix.kami.mixin.extension.message
-import me.zeroeightsix.kami.mixin.extension.parentScreen
-import me.zeroeightsix.kami.mixin.extension.reason
+import org.kamiblue.client.mixin.extension.message
+import org.kamiblue.client.mixin.extension.parentScreen
+import org.kamiblue.client.mixin.extension.reason
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.StopTimer

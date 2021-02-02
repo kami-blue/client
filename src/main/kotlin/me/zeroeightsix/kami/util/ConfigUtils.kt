@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.MacroManager
 import me.zeroeightsix.kami.manager.managers.UUIDManager

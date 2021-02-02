@@ -1,6 +1,6 @@
 package org.kamiblue.client.installer;
 
-import me.zeroeightsix.kami.KamiMod;
+import org.kamiblue.client.KamiMod;
 import me.zeroeightsix.kami.util.WebUtils;
 import me.zeroeightsix.kami.util.filesystem.FolderUtils;
 

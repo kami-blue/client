@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.mixin.client.render.MixinEntityRenderer
+import org.kamiblue.client.mixin.client.render.MixinEntityRenderer
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 

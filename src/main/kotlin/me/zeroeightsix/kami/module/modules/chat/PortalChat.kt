@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.mixin.client.player.MixinEntityPlayerSP
+import org.kamiblue.client.mixin.client.player.MixinEntityPlayerSP
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 

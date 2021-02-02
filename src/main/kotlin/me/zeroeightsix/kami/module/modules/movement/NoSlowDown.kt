@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.mixin.client.world.MixinBlockSoulSand
-import me.zeroeightsix.kami.mixin.client.world.MixinBlockWeb
+import org.kamiblue.client.mixin.client.world.MixinBlockSoulSand
+import org.kamiblue.client.mixin.client.world.MixinBlockWeb
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.EntityUtils.flooredPosition

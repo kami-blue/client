@@ -5,10 +5,10 @@ import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.manager.Manager
-import me.zeroeightsix.kami.mixin.*
-import me.zeroeightsix.kami.mixin.client.accessor.*
-import me.zeroeightsix.kami.mixin.client.accessor.network.*
-import me.zeroeightsix.kami.mixin.extension.*
+import org.kamiblue.client.mixin.*
+import org.kamiblue.client.mixin.client.accessor.*
+import org.kamiblue.client.mixin.client.accessor.network.*
+import org.kamiblue.client.mixin.extension.*
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit

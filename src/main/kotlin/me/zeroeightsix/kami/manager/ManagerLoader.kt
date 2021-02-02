@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.manager
 
 import kotlinx.coroutines.Deferred
 import me.zeroeightsix.kami.AsyncLoader
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.util.StopTimer
 import org.kamiblue.commons.utils.ClassUtils

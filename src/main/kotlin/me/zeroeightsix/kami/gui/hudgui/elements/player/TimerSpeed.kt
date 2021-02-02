@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.gui.hudgui.elements.player
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
-import me.zeroeightsix.kami.mixin.extension.tickLength
-import me.zeroeightsix.kami.mixin.extension.timer
+import org.kamiblue.client.mixin.extension.tickLength
+import org.kamiblue.client.mixin.extension.timer
 import org.kamiblue.commons.utils.MathUtils
 
 object TimerSpeed : LabelHud(

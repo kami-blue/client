@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.client
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.DiscordRPC

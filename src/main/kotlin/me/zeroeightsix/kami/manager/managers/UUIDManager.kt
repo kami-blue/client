@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.manager.managers
 
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Wrapper
 import org.kamiblue.capeapi.AbstractUUIDManager

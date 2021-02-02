@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module
 
 import kotlinx.coroutines.Deferred
 import me.zeroeightsix.kami.AsyncLoader
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.util.AsyncCachedValue
 import me.zeroeightsix.kami.util.StopTimer
 import me.zeroeightsix.kami.util.TimeUnit

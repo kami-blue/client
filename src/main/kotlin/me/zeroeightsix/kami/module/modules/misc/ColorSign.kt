@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.GuiEvent
-import me.zeroeightsix.kami.mixin.extension.editLine
-import me.zeroeightsix.kami.mixin.extension.tileSign
+import org.kamiblue.client.mixin.extension.editLine
+import org.kamiblue.client.mixin.extension.tileSign
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import net.minecraft.client.gui.GuiButton

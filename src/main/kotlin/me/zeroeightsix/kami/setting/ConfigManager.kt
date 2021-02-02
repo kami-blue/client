@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.setting
 
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.setting.configs.IConfig
 import org.kamiblue.commons.collections.NameableSet
 

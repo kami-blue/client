@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.manager.managers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
 import me.zeroeightsix.kami.manager.Manager

@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.setting.configs
 
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.setting.groups.SettingMultiGroup
 import me.zeroeightsix.kami.setting.settings.SettingRegister
 import java.io.File

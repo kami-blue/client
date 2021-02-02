@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.gui
 
 import kotlinx.coroutines.Deferred
 import me.zeroeightsix.kami.AsyncLoader
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.gui.hudgui.HudElement

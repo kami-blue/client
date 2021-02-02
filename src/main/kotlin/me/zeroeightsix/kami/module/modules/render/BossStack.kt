@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.mixin.extension.mapBossInfos
-import me.zeroeightsix.kami.mixin.extension.render
+import org.kamiblue.client.mixin.extension.mapBossInfos
+import org.kamiblue.client.mixin.extension.render
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TickTimer

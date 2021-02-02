@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.command.commands
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue

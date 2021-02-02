@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.mixin.extension.tickLength
-import me.zeroeightsix.kami.mixin.extension.timer
+import org.kamiblue.client.mixin.extension.tickLength
+import org.kamiblue.client.mixin.extension.timer
 import me.zeroeightsix.kami.util.MovementUtils.realSpeed
 
 object InfoCalculator {

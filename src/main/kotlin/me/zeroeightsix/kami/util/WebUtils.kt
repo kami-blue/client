@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.commons.utils.ConnectionUtils
 import java.awt.Desktop
 import java.io.BufferedReader

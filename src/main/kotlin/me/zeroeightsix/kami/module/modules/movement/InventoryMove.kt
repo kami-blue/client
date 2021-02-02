@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.gui.AbstractKamiGui
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module

@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.gui.mc
 
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.command.CommandManager
-import me.zeroeightsix.kami.mixin.extension.historyBuffer
-import me.zeroeightsix.kami.mixin.extension.sentHistoryCursor
+import org.kamiblue.client.mixin.extension.historyBuffer
+import org.kamiblue.client.mixin.extension.sentHistoryCursor
 import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D

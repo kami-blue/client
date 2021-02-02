@@ -3,9 +3,9 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.mixin.extension.x
-import me.zeroeightsix.kami.mixin.extension.y
-import me.zeroeightsix.kami.mixin.extension.z
+import org.kamiblue.client.mixin.extension.x
+import org.kamiblue.client.mixin.extension.y
+import org.kamiblue.client.mixin.extension.z
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.threads.runSafe

@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.threads
 
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.event.ClientEvent
 import me.zeroeightsix.kami.event.ClientExecuteEvent
 import me.zeroeightsix.kami.event.SafeClientEvent

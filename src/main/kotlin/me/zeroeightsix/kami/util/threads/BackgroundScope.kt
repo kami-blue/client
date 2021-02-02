@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.util.threads
 
 import kotlinx.coroutines.*
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 
 @Suppress("EXPERIMENTAL_API_USAGE")
 internal object BackgroundScope : CoroutineScope by CoroutineScope(newFixedThreadPoolContext(2, "KAMI Blue Background")) {

@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.mixin.client.network.MixinNetworkManager
+import org.kamiblue.client.mixin.client.network.MixinNetworkManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendWarningMessage

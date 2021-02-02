@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.graphics.font
 
-import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.util.graphics.texture.MipmapTexture
 import org.kamiblue.commons.utils.MathUtils
 import org.lwjgl.opengl.GL11.*

@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.mixin.extension.sendClickBlockToController
+import org.kamiblue.client.mixin.extension.sendClickBlockToController
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.BaritoneUtils

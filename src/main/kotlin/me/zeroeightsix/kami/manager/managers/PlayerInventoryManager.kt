@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.manager.managers
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.manager.Manager
-import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
+import org.kamiblue.client.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.items.clickSlot
