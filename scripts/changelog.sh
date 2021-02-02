@@ -12,7 +12,7 @@ source "$__scripts"
 check_git || exit $?
 check_var "1" "$1" || exit $?
 
-CHANGELOG="$(git log --format=%s "$1"..."$2" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/"/\\"/g')" || {
+CHANGELOG="$(git log --format=%s "$1"..."$2" | sed ':a;N;$!ba;s/\n/\\n/g' | sed "s/\"/''/g")" || {
   echo "[changelog] Failed to create changelog from commits, exiting." >&2
   exit 1
 }

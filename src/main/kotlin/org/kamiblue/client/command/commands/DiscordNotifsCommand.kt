@@ -10,7 +10,7 @@ object DiscordNotifsCommand : ClientCommand(
     name = "discordnotifs",
     alias = arrayOf("webhook")
 ) {
-    private val urlRegex = Regex("^https://.*discord\\.com/api/webhooks/\\d+/.{68}$")
+    private val urlRegex = Regex("^https://.*discord(app|)\\.com/api/webhooks/\\d+/.{68}$")
 
     init {
         literal("id") {
