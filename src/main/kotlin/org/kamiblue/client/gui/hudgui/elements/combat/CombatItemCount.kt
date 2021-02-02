@@ -3,7 +3,7 @@ package org.kamiblue.client.gui.hudgui.elements.combat
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.gui.hudgui.LabelHud
-import me.zeroeightsix.kami.setting.GuiConfig.setting
+import org.kamiblue.client.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.items.allSlots

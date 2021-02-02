@@ -5,10 +5,10 @@ import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.manager.managers.MacroManager
 import org.kamiblue.client.manager.managers.UUIDManager
 import org.kamiblue.client.manager.managers.WaypointManager
-import me.zeroeightsix.kami.setting.ConfigManager
-import me.zeroeightsix.kami.setting.GenericConfig
-import me.zeroeightsix.kami.setting.ModuleConfig
-import me.zeroeightsix.kami.setting.configs.IConfig
+import org.kamiblue.client.setting.ConfigManager
+import org.kamiblue.client.setting.GenericConfig
+import org.kamiblue.client.setting.ModuleConfig
+import org.kamiblue.client.setting.configs.IConfig
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException

@@ -6,7 +6,7 @@ import org.kamiblue.client.event.events.BaritoneSettingsInitEvent
 import org.kamiblue.client.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
+import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit

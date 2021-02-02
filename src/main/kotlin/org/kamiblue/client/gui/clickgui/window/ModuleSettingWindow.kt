@@ -2,7 +2,7 @@ package org.kamiblue.client.gui.clickgui.window
 
 import org.kamiblue.client.gui.rgui.windows.SettingWindow
 import me.zeroeightsix.kami.module.AbstractModule
-import me.zeroeightsix.kami.setting.settings.AbstractSetting
+import org.kamiblue.client.setting.settings.AbstractSetting
 
 class ModuleSettingWindow(
     module: AbstractModule,

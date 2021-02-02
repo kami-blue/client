@@ -1,7 +1,7 @@
 package org.kamiblue.client.gui.hudgui.elements.player
 
 import org.kamiblue.client.gui.hudgui.HudElement
-import me.zeroeightsix.kami.setting.GuiConfig.setting
+import org.kamiblue.client.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.VertexHelper

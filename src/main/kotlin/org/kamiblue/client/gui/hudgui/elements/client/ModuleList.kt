@@ -3,7 +3,7 @@ package org.kamiblue.client.gui.hudgui.elements.client
 import org.kamiblue.client.gui.hudgui.HudElement
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.ModuleManager
-import me.zeroeightsix.kami.setting.GuiConfig.setting
+import org.kamiblue.client.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.AsyncCachedValue
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit

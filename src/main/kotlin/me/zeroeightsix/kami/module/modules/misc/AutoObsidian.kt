@@ -9,7 +9,7 @@ import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.process.AutoObsidianProcess
+import org.kamiblue.client.process.AutoObsidianProcess
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.EntityUtils.getDroppedItem
 import me.zeroeightsix.kami.util.WorldUtils.getNeighbour

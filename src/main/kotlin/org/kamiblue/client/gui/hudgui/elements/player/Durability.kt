@@ -2,7 +2,7 @@ package org.kamiblue.client.gui.hudgui.elements.player
 
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import me.zeroeightsix.kami.setting.GuiConfig.setting
+import org.kamiblue.client.setting.GuiConfig.setting
 import net.minecraft.util.EnumHand
 import org.kamiblue.commons.utils.MathUtils
 

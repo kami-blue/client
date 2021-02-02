@@ -1,9 +1,9 @@
 package org.kamiblue.client.gui.rgui.component
 
 import me.zeroeightsix.kami.module.modules.client.GuiColors
-import me.zeroeightsix.kami.setting.settings.impl.number.FloatSetting
-import me.zeroeightsix.kami.setting.settings.impl.number.IntegerSetting
-import me.zeroeightsix.kami.setting.settings.impl.number.NumberSetting
+import org.kamiblue.client.setting.settings.impl.number.FloatSetting
+import org.kamiblue.client.setting.settings.impl.number.IntegerSetting
+import org.kamiblue.client.setting.settings.impl.number.NumberSetting
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2f

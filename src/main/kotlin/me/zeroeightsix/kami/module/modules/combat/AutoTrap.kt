@@ -7,7 +7,7 @@ import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
+import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.WorldUtils.buildStructure
 import me.zeroeightsix.kami.util.WorldUtils.getPlaceInfo

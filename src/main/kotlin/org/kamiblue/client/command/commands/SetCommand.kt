@@ -2,8 +2,8 @@ package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
-import me.zeroeightsix.kami.setting.settings.impl.primitive.EnumSetting
+import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
+import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.format
 import me.zeroeightsix.kami.util.text.formatValue

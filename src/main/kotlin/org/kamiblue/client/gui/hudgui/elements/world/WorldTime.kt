@@ -2,7 +2,7 @@ package org.kamiblue.client.gui.hudgui.elements.world
 
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import me.zeroeightsix.kami.setting.GuiConfig.setting
+import org.kamiblue.client.setting.GuiConfig.setting
 import org.apache.commons.lang3.time.DurationFormatUtils
 import org.kamiblue.commons.interfaces.DisplayEnum
 

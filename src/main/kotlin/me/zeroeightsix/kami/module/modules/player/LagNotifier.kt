@@ -5,8 +5,8 @@ import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.process.PauseProcess.pauseBaritone
-import me.zeroeightsix.kami.process.PauseProcess.unpauseBaritone
+import org.kamiblue.client.process.PauseProcess.pauseBaritone
+import org.kamiblue.client.process.PauseProcess.unpauseBaritone
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter

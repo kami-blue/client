@@ -1,13 +1,13 @@
 package org.kamiblue.client.gui.rgui.windows
 
 import org.kamiblue.client.gui.rgui.component.*
-import me.zeroeightsix.kami.setting.settings.AbstractSetting
-import me.zeroeightsix.kami.setting.settings.impl.number.NumberSetting
-import me.zeroeightsix.kami.setting.settings.impl.other.BindSetting
-import me.zeroeightsix.kami.setting.settings.impl.other.ColorSetting
-import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
-import me.zeroeightsix.kami.setting.settings.impl.primitive.EnumSetting
-import me.zeroeightsix.kami.setting.settings.impl.primitive.StringSetting
+import org.kamiblue.client.setting.settings.AbstractSetting
+import org.kamiblue.client.setting.settings.impl.number.NumberSetting
+import org.kamiblue.client.setting.settings.impl.other.BindSetting
+import org.kamiblue.client.setting.settings.impl.other.ColorSetting
+import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
+import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
+import org.kamiblue.client.setting.settings.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 

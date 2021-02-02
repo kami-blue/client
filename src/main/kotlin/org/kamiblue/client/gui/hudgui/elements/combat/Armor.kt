@@ -1,7 +1,7 @@
 package org.kamiblue.client.gui.hudgui.elements.combat
 
 import org.kamiblue.client.gui.hudgui.HudElement
-import me.zeroeightsix.kami.setting.GuiConfig.setting
+import org.kamiblue.client.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.color.ColorGradient
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D

@@ -8,7 +8,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.settings.impl.collection.CollectionSetting
+import org.kamiblue.client.setting.settings.impl.collection.CollectionSetting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer

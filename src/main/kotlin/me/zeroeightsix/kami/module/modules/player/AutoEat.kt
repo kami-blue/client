@@ -4,8 +4,8 @@ import org.kamiblue.client.event.SafeClientEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.combat.CombatSetting
-import me.zeroeightsix.kami.process.PauseProcess.pauseBaritone
-import me.zeroeightsix.kami.process.PauseProcess.unpauseBaritone
+import org.kamiblue.client.process.PauseProcess.pauseBaritone
+import org.kamiblue.client.process.PauseProcess.unpauseBaritone
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.items.*

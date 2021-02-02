@@ -1,6 +1,6 @@
 package org.kamiblue.client.gui.rgui
 
-import me.zeroeightsix.kami.setting.GuiConfig.setting
+import org.kamiblue.client.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.graphics.AnimationUtils
 import me.zeroeightsix.kami.util.graphics.font.HAlign
 import me.zeroeightsix.kami.util.graphics.font.VAlign

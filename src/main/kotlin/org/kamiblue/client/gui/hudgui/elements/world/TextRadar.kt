@@ -4,7 +4,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.modules.combat.AntiBot
-import me.zeroeightsix.kami.setting.GuiConfig.setting
+import org.kamiblue.client.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.AsyncCachedValue
 import me.zeroeightsix.kami.util.color.ColorGradient
 import me.zeroeightsix.kami.util.color.ColorHolder

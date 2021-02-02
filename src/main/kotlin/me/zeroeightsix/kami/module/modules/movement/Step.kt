@@ -6,7 +6,7 @@ import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.mixin.extension.y
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
+import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.text.MessageSendHelper

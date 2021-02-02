@@ -3,11 +3,11 @@ package me.zeroeightsix.kami.module
 import org.kamiblue.client.event.KamiEventBus
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.setting.configs.NameableConfig
-import me.zeroeightsix.kami.setting.settings.AbstractSetting
-import me.zeroeightsix.kami.setting.settings.SettingRegister
-import me.zeroeightsix.kami.setting.settings.impl.other.BindSetting
-import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
+import org.kamiblue.client.setting.configs.NameableConfig
+import org.kamiblue.client.setting.settings.AbstractSetting
+import org.kamiblue.client.setting.settings.SettingRegister
+import org.kamiblue.client.setting.settings.impl.other.BindSetting
+import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.runSafe

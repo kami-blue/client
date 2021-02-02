@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module
 
-import me.zeroeightsix.kami.setting.ModuleConfig
+import org.kamiblue.client.setting.ModuleConfig
 
 internal abstract class Module(
     name: String,

@@ -2,7 +2,7 @@ package org.kamiblue.client.gui.hudgui.window
 
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.gui.rgui.windows.SettingWindow
-import me.zeroeightsix.kami.setting.settings.AbstractSetting
+import org.kamiblue.client.setting.settings.AbstractSetting
 
 class HudSettingWindow(
     hudElement: HudElement,

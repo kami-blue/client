@@ -2,7 +2,7 @@ package org.kamiblue.client.gui.rgui
 
 import org.kamiblue.client.KamiMod
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
-import me.zeroeightsix.kami.setting.GuiConfig.setting
+import org.kamiblue.client.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.HAlign
