@@ -3,7 +3,7 @@ package org.kamiblue.client.mixin.client;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.GuiEvent;
 import org.kamiblue.client.event.events.RenderEvent;
-import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
+import org.kamiblue.client.gui.mc.KamiGuiUpdateNotification;
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;

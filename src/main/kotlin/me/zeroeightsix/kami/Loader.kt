@@ -4,7 +4,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.command.CommandManager
-import me.zeroeightsix.kami.gui.GuiManager
+import org.kamiblue.client.gui.GuiManager
 import org.kamiblue.client.manager.ManagerLoader
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.util.threads.mainScope

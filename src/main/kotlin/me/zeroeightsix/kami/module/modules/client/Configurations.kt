@@ -4,7 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.events.ConnectionEvent
-import me.zeroeightsix.kami.gui.AbstractKamiGui
+import org.kamiblue.client.gui.AbstractKamiGui
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.setting.ConfigManager

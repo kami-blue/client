@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import org.kamiblue.client.event.SafeClientEvent
-import me.zeroeightsix.kami.gui.mc.KamiGuiDisconnected
+import org.kamiblue.client.gui.mc.KamiGuiDisconnected
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Category

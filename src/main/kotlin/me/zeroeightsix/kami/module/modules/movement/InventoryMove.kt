@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.gui.AbstractKamiGui
+import org.kamiblue.client.gui.AbstractKamiGui
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.threads.safeListener

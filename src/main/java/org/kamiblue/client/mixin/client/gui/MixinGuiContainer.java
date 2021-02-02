@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.gui;
 
-import me.zeroeightsix.kami.gui.mc.KamiGuiStealButton;
-import me.zeroeightsix.kami.gui.mc.KamiGuiStoreButton;
+import org.kamiblue.client.gui.mc.KamiGuiStealButton;
+import org.kamiblue.client.gui.mc.KamiGuiStoreButton;
 import me.zeroeightsix.kami.module.modules.player.ChestStealer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.setting
 
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.gui.rgui.Component
+import org.kamiblue.client.gui.rgui.Component
 import me.zeroeightsix.kami.module.modules.client.Configurations
 import me.zeroeightsix.kami.setting.configs.AbstractConfig
 import me.zeroeightsix.kami.setting.settings.AbstractSetting

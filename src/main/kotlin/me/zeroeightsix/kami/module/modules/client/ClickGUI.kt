@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import org.kamiblue.client.event.events.ShutdownEvent
-import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
+import org.kamiblue.client.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.StopTimer

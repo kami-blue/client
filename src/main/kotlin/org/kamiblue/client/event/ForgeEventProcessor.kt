@@ -5,7 +5,7 @@ import org.kamiblue.client.event.events.BaritoneCommandEvent
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.event.events.ResolutionUpdateEvent
-import me.zeroeightsix.kami.gui.mc.KamiGuiChat
+import org.kamiblue.client.gui.mc.KamiGuiChat
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.KamiTessellator

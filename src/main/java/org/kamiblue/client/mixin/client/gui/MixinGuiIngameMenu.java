@@ -1,6 +1,6 @@
 package org.kamiblue.client.mixin.client.gui;
 
-import me.zeroeightsix.kami.gui.mc.KamiGuiAntiDisconnect;
+import org.kamiblue.client.gui.mc.KamiGuiAntiDisconnect;
 import me.zeroeightsix.kami.module.modules.misc.AntiDisconnect;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.gui.GuiButton;

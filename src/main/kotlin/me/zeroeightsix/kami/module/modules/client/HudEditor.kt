@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import org.kamiblue.client.event.events.ShutdownEvent
-import me.zeroeightsix.kami.gui.hudgui.KamiHudGui
+import org.kamiblue.client.gui.hudgui.KamiHudGui
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import org.kamiblue.event.listener.listener

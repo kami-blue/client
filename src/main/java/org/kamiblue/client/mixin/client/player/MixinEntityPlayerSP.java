@@ -3,7 +3,7 @@ package org.kamiblue.client.mixin.client.player;
 import com.mojang.authlib.GameProfile;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent;
-import me.zeroeightsix.kami.gui.mc.KamiGuiBeacon;
+import org.kamiblue.client.gui.mc.KamiGuiBeacon;
 import org.kamiblue.client.manager.managers.MessageManager;
 import me.zeroeightsix.kami.module.modules.chat.PortalChat;
 import me.zeroeightsix.kami.module.modules.misc.BeaconSelector;
