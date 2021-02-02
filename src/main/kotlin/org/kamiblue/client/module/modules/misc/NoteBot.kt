@@ -6,11 +6,11 @@ import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.threads.runSafe
-import me.zeroeightsix.kami.util.threads.runSafeR
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.*
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.threads.runSafe
+import org.kamiblue.client.util.threads.runSafeR
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.init.Blocks
 import net.minecraft.init.SoundEvents
 import net.minecraft.network.play.client.CPacketPlayerDigging

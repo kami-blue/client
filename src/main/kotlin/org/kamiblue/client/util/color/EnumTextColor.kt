@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.color
+package org.kamiblue.client.util.color
 
 import net.minecraft.util.text.TextFormatting
 

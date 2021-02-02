@@ -3,7 +3,7 @@ package org.kamiblue.client.mixin.client.gui;
 import org.kamiblue.client.module.modules.render.CleanGUI;
 import org.kamiblue.client.module.modules.render.MapPreview;
 import org.kamiblue.client.module.modules.render.ShulkerPreview;
-import me.zeroeightsix.kami.util.Wrapper;
+import org.kamiblue.client.util.Wrapper;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemShulkerBox;

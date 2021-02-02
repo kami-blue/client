@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.render;
 
 import org.kamiblue.client.module.modules.movement.EntitySpeed;
-import me.zeroeightsix.kami.util.Wrapper;
+import org.kamiblue.client.util.Wrapper;
 import net.minecraft.client.model.ModelBoat;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;

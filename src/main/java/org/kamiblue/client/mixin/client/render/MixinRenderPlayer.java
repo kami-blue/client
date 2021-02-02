@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.render;
 
 import org.kamiblue.client.module.modules.movement.ElytraFlight;
-import me.zeroeightsix.kami.util.Wrapper;
+import org.kamiblue.client.util.Wrapper;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;

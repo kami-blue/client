@@ -6,11 +6,11 @@ import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.event.events.WaypointUpdateEvent
 import org.kamiblue.client.manager.Manager
-import me.zeroeightsix.kami.util.ConfigUtils
-import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.math.CoordinateConverter
-import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
-import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
+import org.kamiblue.client.util.ConfigUtils
+import org.kamiblue.client.util.Wrapper
+import org.kamiblue.client.util.math.CoordinateConverter
+import org.kamiblue.client.util.math.CoordinateConverter.asString
+import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import net.minecraft.util.math.BlockPos
 import java.io.*
 import java.text.SimpleDateFormat

@@ -4,8 +4,8 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.setting.GuiConfig.setting
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.graphics.AnimationUtils
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.graphics.AnimationUtils
 import net.minecraft.client.Minecraft
 import org.kamiblue.event.listener.listener
 import kotlin.math.max

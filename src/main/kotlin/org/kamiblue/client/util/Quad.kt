@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util
+package org.kamiblue.client.util
 
 import java.io.Serializable
 

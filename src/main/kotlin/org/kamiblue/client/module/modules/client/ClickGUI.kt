@@ -4,8 +4,8 @@ import org.kamiblue.client.event.events.ShutdownEvent
 import org.kamiblue.client.gui.clickgui.KamiClickGui
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.StopTimer
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.StopTimer
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard

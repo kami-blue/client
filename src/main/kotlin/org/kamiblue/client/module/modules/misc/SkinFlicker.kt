@@ -3,8 +3,8 @@ package org.kamiblue.client.module.modules.misc
 import org.kamiblue.client.event.events.RenderEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.entity.player.EnumPlayerModelParts
 
 internal object SkinFlicker : Module(

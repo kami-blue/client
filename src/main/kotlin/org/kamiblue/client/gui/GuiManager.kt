@@ -1,13 +1,13 @@
 package org.kamiblue.client.gui
 
 import kotlinx.coroutines.Deferred
-import me.zeroeightsix.kami.AsyncLoader
+import org.kamiblue.client.AsyncLoader
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.gui.clickgui.KamiClickGui
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.gui.hudgui.KamiHudGui
-import me.zeroeightsix.kami.util.StopTimer
+import org.kamiblue.client.util.StopTimer
 import org.kamiblue.commons.utils.ClassUtils
 import java.lang.reflect.Modifier
 

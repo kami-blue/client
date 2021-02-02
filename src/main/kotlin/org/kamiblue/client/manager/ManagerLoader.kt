@@ -1,10 +1,10 @@
 package org.kamiblue.client.manager
 
 import kotlinx.coroutines.Deferred
-import me.zeroeightsix.kami.AsyncLoader
+import org.kamiblue.client.AsyncLoader
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.KamiEventBus
-import me.zeroeightsix.kami.util.StopTimer
+import org.kamiblue.client.util.StopTimer
 import org.kamiblue.commons.utils.ClassUtils
 
 internal object ManagerLoader : AsyncLoader<List<Class<out Manager>>> {

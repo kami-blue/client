@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import me.zeroeightsix.kami.util.Wrapper
+import org.kamiblue.client.util.Wrapper
 import org.kamiblue.event.eventbus.AbstractAsyncEventBus
 import org.kamiblue.event.listener.AsyncListener
 import org.kamiblue.event.listener.Listener

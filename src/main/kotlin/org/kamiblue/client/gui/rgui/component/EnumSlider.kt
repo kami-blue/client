@@ -2,9 +2,9 @@ package org.kamiblue.client.gui.rgui.component
 
 import org.kamiblue.client.module.modules.client.GuiColors
 import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
-import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
-import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.client.util.graphics.VertexHelper
+import org.kamiblue.client.util.graphics.font.FontRenderAdapter
+import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.commons.extension.readableName
 import kotlin.math.floor
 

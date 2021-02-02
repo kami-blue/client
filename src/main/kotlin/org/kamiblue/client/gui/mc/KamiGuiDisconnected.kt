@@ -3,7 +3,7 @@ package org.kamiblue.client.gui.mc
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.kamiblue.client.module.modules.combat.AutoLog
-import me.zeroeightsix.kami.util.threads.mainScope
+import org.kamiblue.client.util.threads.mainScope
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import java.time.LocalTime

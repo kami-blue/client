@@ -3,7 +3,7 @@ package org.kamiblue.client.module.modules.player
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.network.play.client.CPacketPlayerDigging

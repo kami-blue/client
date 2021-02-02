@@ -4,7 +4,7 @@ import org.kamiblue.client.KamiMod
 import org.kamiblue.client.gui.AbstractKamiGui
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.GuiRepair
 import net.minecraft.client.gui.GuiScreen

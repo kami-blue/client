@@ -5,10 +5,10 @@ import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.mixin.extension.syncCurrentPlayItem
 import org.kamiblue.client.module.AbstractModule
-import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.items.clickSlot
-import me.zeroeightsix.kami.util.items.removeHoldingItem
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.*
+import org.kamiblue.client.util.items.clickSlot
+import org.kamiblue.client.util.items.removeHoldingItem
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.ClickType
 import org.kamiblue.event.listener.listener

@@ -2,8 +2,8 @@ package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.module.modules.chat.DiscordNotifs
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.formatValue
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.formatValue
 
 // TODO: Remove once GUI has proper String setting editing and is in master branch
 object DiscordNotifsCommand : ClientCommand(

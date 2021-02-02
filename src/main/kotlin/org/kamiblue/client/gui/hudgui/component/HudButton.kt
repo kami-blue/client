@@ -3,7 +3,7 @@ package org.kamiblue.client.gui.hudgui.component
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.gui.hudgui.KamiHudGui
 import org.kamiblue.client.gui.rgui.component.BooleanSlider
-import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.client.util.math.Vec2f
 
 class HudButton(val hudElement: HudElement) : BooleanSlider(hudElement.name, 0.0, hudElement.description) {
     init {

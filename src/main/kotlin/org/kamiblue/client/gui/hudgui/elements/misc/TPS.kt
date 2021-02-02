@@ -2,7 +2,7 @@ package org.kamiblue.client.gui.hudgui.elements.misc
 
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import me.zeroeightsix.kami.util.TpsCalculator
+import org.kamiblue.client.util.TpsCalculator
 
 object TPS : LabelHud(
     name = "TPS",

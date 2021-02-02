@@ -3,8 +3,8 @@ package org.kamiblue.client.module.modules.chat
 import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.color.EnumTextColor
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import org.kamiblue.client.util.color.EnumTextColor
+import org.kamiblue.client.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.text.TextComponentString

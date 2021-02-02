@@ -1,7 +1,7 @@
-package me.zeroeightsix.kami.util.graphics.font
+package org.kamiblue.client.util.graphics.font
 
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.util.graphics.texture.MipmapTexture
+import org.kamiblue.client.util.graphics.texture.MipmapTexture
 import org.kamiblue.commons.utils.MathUtils
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE

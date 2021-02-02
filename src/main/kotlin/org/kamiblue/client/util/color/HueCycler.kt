@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.util.color
+package org.kamiblue.client.util.color
 
-import me.zeroeightsix.kami.util.color.ColorConverter.hexToRgb
+import org.kamiblue.client.util.color.ColorConverter.hexToRgb
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 

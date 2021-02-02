@@ -5,8 +5,8 @@ import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.text.*
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import org.kamiblue.client.util.text.*
+import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 

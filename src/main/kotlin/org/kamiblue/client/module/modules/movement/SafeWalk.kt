@@ -2,7 +2,7 @@ package org.kamiblue.client.module.modules.movement
 
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.BaritoneUtils
+import org.kamiblue.client.util.BaritoneUtils
 
 internal object SafeWalk : Module(
     name = "SafeWalk",

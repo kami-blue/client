@@ -1,7 +1,7 @@
-package me.zeroeightsix.kami.util.graphics.font
+package org.kamiblue.client.util.graphics.font
 
-import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.math.Vec2d
+import org.kamiblue.client.util.color.ColorHolder
+import org.kamiblue.client.util.math.Vec2d
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.max
 

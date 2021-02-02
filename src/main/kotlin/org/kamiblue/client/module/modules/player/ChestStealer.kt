@@ -3,10 +3,10 @@ package org.kamiblue.client.module.modules.player
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.items.*
-import me.zeroeightsix.kami.util.threads.runSafe
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.items.*
+import org.kamiblue.client.util.threads.runSafe
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiEnchantment
 import net.minecraft.client.gui.GuiMerchant

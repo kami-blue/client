@@ -1,7 +1,7 @@
-package me.zeroeightsix.kami.util
+package org.kamiblue.client.util
 
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.formatValue
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.formatValue
 import org.lwjgl.input.Keyboard
 
 object KeyboardUtils {

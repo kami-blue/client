@@ -1,7 +1,7 @@
 package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.MessageSendHelper
 
 object LicenseCommand : ClientCommand(
     name = "license",

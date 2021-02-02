@@ -10,11 +10,11 @@ import org.kamiblue.client.mixin.client.accessor.*
 import org.kamiblue.client.mixin.client.accessor.network.*
 import org.kamiblue.client.mixin.extension.*
 import org.kamiblue.client.module.AbstractModule
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.TimeUnit
-import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.math.Vec2f
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.Wrapper
+import org.kamiblue.client.util.math.Vec2f
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketHeldItemChange
 import net.minecraft.network.play.client.CPacketPlayer

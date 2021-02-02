@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util
+package org.kamiblue.client.util
 
 import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.event.events.ConnectionEvent

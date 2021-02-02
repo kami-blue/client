@@ -3,7 +3,7 @@ package org.kamiblue.client.module.modules.client
 import org.kamiblue.client.event.events.BaritoneSettingsInitEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.BaritoneUtils
+import org.kamiblue.client.util.BaritoneUtils
 import org.kamiblue.event.listener.listener
 
 /**

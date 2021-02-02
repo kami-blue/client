@@ -5,10 +5,10 @@ import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.mixin.extension.onGround
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.WorldUtils.getGroundPos
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.EntityUtils
+import org.kamiblue.client.util.WorldUtils.getGroundPos
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack

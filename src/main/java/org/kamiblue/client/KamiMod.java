@@ -1,10 +1,5 @@
 package org.kamiblue.client;
 
-import me.zeroeightsix.kami.LoaderWrapper;
-import org.kamiblue.client.event.ForgeEventProcessor;
-import org.kamiblue.client.gui.mc.KamiGuiUpdateNotification;
-import me.zeroeightsix.kami.util.ConfigUtils;
-import me.zeroeightsix.kami.util.threads.BackgroundScope;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -12,6 +7,10 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.kamiblue.client.event.ForgeEventProcessor;
+import org.kamiblue.client.gui.mc.KamiGuiUpdateNotification;
+import org.kamiblue.client.util.ConfigUtils;
+import org.kamiblue.client.util.threads.BackgroundScope;
 
 import java.io.File;
 

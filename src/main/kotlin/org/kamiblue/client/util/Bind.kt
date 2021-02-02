@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util
+package org.kamiblue.client.util
 
 import org.kamiblue.client.module.modules.client.CommandConfig
 import org.lwjgl.input.Keyboard

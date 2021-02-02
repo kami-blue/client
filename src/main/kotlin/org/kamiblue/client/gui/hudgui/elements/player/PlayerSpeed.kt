@@ -3,7 +3,7 @@ package org.kamiblue.client.gui.hudgui.elements.player
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.setting.GuiConfig.setting
-import me.zeroeightsix.kami.util.InfoCalculator
+import org.kamiblue.client.util.InfoCalculator
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.commons.utils.MathUtils
 import java.util.*

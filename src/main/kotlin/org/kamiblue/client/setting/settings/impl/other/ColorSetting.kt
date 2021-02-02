@@ -1,7 +1,7 @@
 package org.kamiblue.client.setting.settings.impl.other
 
 import org.kamiblue.client.setting.settings.MutableSetting
-import me.zeroeightsix.kami.util.color.ColorHolder
+import org.kamiblue.client.util.color.ColorHolder
 
 class ColorSetting(
     name: String,

@@ -1,10 +1,10 @@
 package org.kamiblue.client.gui.hudgui
 
 import org.kamiblue.client.event.SafeClientEvent
-import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.graphics.font.TextComponent
-import me.zeroeightsix.kami.util.math.Vec2d
-import me.zeroeightsix.kami.util.threads.safeAsyncListener
+import org.kamiblue.client.util.graphics.VertexHelper
+import org.kamiblue.client.util.graphics.font.TextComponent
+import org.kamiblue.client.util.math.Vec2d
+import org.kamiblue.client.util.threads.safeAsyncListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 abstract class LabelHud(

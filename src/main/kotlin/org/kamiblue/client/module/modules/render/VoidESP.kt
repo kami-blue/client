@@ -5,13 +5,13 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.graphics.ESPRenderer
-import me.zeroeightsix.kami.util.graphics.GeometryMasks
-import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
-import me.zeroeightsix.kami.util.threads.defaultScope
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.color.ColorHolder
+import org.kamiblue.client.util.graphics.ESPRenderer
+import org.kamiblue.client.util.graphics.GeometryMasks
+import org.kamiblue.client.util.math.VectorUtils.distanceTo
+import org.kamiblue.client.util.threads.defaultScope
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 

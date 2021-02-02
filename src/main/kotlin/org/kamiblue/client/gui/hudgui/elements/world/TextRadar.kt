@@ -5,11 +5,11 @@ import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.module.modules.combat.AntiBot
 import org.kamiblue.client.setting.GuiConfig.setting
-import me.zeroeightsix.kami.util.AsyncCachedValue
-import me.zeroeightsix.kami.util.color.ColorGradient
-import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.color.DyeColors
-import me.zeroeightsix.kami.util.threads.runSafeR
+import org.kamiblue.client.util.AsyncCachedValue
+import org.kamiblue.client.util.color.ColorGradient
+import org.kamiblue.client.util.color.ColorHolder
+import org.kamiblue.client.util.color.DyeColors
+import org.kamiblue.client.util.threads.runSafeR
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.MobEffects
 import org.kamiblue.commons.utils.MathUtils

@@ -1,11 +1,11 @@
-package me.zeroeightsix.kami.util.combat
+package org.kamiblue.client.util.combat
 
 import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.mixin.extension.attackDamage
-import me.zeroeightsix.kami.util.items.swapToSlot
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.items.swapToSlot
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EntityLivingBase

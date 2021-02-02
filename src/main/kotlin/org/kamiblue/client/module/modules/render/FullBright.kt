@@ -2,8 +2,8 @@ package org.kamiblue.client.module.modules.render
 
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.max
 import kotlin.math.min

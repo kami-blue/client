@@ -2,16 +2,16 @@ package org.kamiblue.client.gui.hudgui.elements.combat
 
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.setting.GuiConfig.setting
-import me.zeroeightsix.kami.util.color.ColorGradient
-import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.graphics.RenderUtils2D
-import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
-import me.zeroeightsix.kami.util.graphics.font.HAlign
-import me.zeroeightsix.kami.util.graphics.font.VAlign
-import me.zeroeightsix.kami.util.items.allSlots
-import me.zeroeightsix.kami.util.items.countItem
-import me.zeroeightsix.kami.util.threads.safeAsyncListener
+import org.kamiblue.client.util.color.ColorGradient
+import org.kamiblue.client.util.color.ColorHolder
+import org.kamiblue.client.util.graphics.RenderUtils2D
+import org.kamiblue.client.util.graphics.VertexHelper
+import org.kamiblue.client.util.graphics.font.FontRenderAdapter
+import org.kamiblue.client.util.graphics.font.HAlign
+import org.kamiblue.client.util.graphics.font.VAlign
+import org.kamiblue.client.util.items.allSlots
+import org.kamiblue.client.util.items.countItem
+import org.kamiblue.client.util.threads.safeAsyncListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack

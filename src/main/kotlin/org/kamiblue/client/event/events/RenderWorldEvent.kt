@@ -5,8 +5,8 @@ import org.kamiblue.client.event.ProfilerEvent
 import org.kamiblue.client.mixin.extension.renderPosX
 import org.kamiblue.client.mixin.extension.renderPosY
 import org.kamiblue.client.mixin.extension.renderPosZ
-import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.graphics.KamiTessellator
+import org.kamiblue.client.util.Wrapper
+import org.kamiblue.client.util.graphics.KamiTessellator
 
 class RenderWorldEvent : Event, ProfilerEvent {
     override val profilerName: String = "kbRender3D"

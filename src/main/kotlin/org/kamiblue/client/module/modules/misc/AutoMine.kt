@@ -7,12 +7,12 @@ import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.mixin.extension.sendClickBlockToController
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.formatValue
-import me.zeroeightsix.kami.util.threads.runSafe
-import me.zeroeightsix.kami.util.threads.runSafeR
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.BaritoneUtils
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.formatValue
+import org.kamiblue.client.util.threads.runSafe
+import org.kamiblue.client.util.threads.runSafeR
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 

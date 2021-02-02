@@ -2,7 +2,7 @@ package org.kamiblue.client.module.modules.render
 
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.tutorial.TutorialSteps
 import net.minecraft.init.MobEffects
 import net.minecraftforge.client.event.RenderBlockOverlayEvent

@@ -4,7 +4,7 @@ import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.mixin.extension.rightClickDelayTimer
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.item.*
 import net.minecraft.network.play.client.CPacketPlayerDigging

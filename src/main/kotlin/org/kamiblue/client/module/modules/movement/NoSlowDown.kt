@@ -6,8 +6,8 @@ import org.kamiblue.client.mixin.client.world.MixinBlockSoulSand
 import org.kamiblue.client.mixin.client.world.MixinBlockWeb
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.EntityUtils.flooredPosition
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.init.Blocks
 import net.minecraft.item.*
 import net.minecraft.network.play.client.CPacketPlayer

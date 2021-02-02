@@ -5,10 +5,10 @@ import org.kamiblue.client.event.events.PlayerAttackEvent
 import org.kamiblue.client.mixin.extension.syncCurrentPlayItem
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.combat.CombatUtils
-import me.zeroeightsix.kami.util.combat.CombatUtils.equipBestWeapon
-import me.zeroeightsix.kami.util.items.swapToSlot
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.combat.CombatUtils
+import org.kamiblue.client.util.combat.CombatUtils.equipBestWeapon
+import org.kamiblue.client.util.items.swapToSlot
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EntityLivingBase

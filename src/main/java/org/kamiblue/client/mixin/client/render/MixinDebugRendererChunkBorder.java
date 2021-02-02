@@ -1,6 +1,6 @@
 package org.kamiblue.client.mixin.client.render;
 
-import me.zeroeightsix.kami.util.Wrapper;
+import org.kamiblue.client.util.Wrapper;
 import net.minecraft.client.renderer.debug.DebugRendererChunkBorder;
 import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.Mixin;

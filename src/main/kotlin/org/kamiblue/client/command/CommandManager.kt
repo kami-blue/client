@@ -1,15 +1,15 @@
 package org.kamiblue.client.command
 
 import kotlinx.coroutines.*
-import me.zeroeightsix.kami.AsyncLoader
+import org.kamiblue.client.AsyncLoader
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.ClientExecuteEvent
 import org.kamiblue.client.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.util.StopTimer
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.formatValue
-import me.zeroeightsix.kami.util.threads.defaultScope
-import me.zeroeightsix.kami.util.threads.onMainThreadW
+import org.kamiblue.client.util.StopTimer
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.formatValue
+import org.kamiblue.client.util.threads.defaultScope
+import org.kamiblue.client.util.threads.onMainThreadW
 import org.kamiblue.command.AbstractCommandManager
 import org.kamiblue.command.utils.CommandNotFoundException
 import org.kamiblue.command.utils.SubCommandNotFoundException

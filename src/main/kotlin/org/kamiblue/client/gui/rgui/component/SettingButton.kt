@@ -1,7 +1,7 @@
 package org.kamiblue.client.gui.rgui.component
 
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
-import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.client.util.math.Vec2f
 
 class SettingButton(val setting: BooleanSetting) : BooleanSlider(setting.name, 0.0, setting.description, setting.visibility) {
 

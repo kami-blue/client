@@ -2,9 +2,9 @@ package org.kamiblue.client.module.modules.render
 
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import me.zeroeightsix.kami.util.items.foodValue
-import me.zeroeightsix.kami.util.items.saturation
+import org.kamiblue.client.util.graphics.GlStateUtils
+import org.kamiblue.client.util.items.foodValue
+import org.kamiblue.client.util.items.saturation
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.init.MobEffects

@@ -4,9 +4,9 @@ import baritone.api.process.IBaritoneProcess
 import baritone.api.process.PathingCommand
 import baritone.api.process.PathingCommandType
 import org.kamiblue.client.module.AbstractModule
-import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.TimeUnit
+import org.kamiblue.client.util.BaritoneUtils
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.TimeUnit
 
 object PauseProcess : IBaritoneProcess {
 

@@ -1,6 +1,6 @@
 package org.kamiblue.client.gui.rgui.component
 
-import me.zeroeightsix.kami.util.graphics.AnimationUtils
+import org.kamiblue.client.util.graphics.AnimationUtils
 
 open class BooleanSlider(
     name: String,

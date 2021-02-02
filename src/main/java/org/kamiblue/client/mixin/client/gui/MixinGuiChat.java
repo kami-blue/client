@@ -2,7 +2,7 @@ package org.kamiblue.client.mixin.client.gui;
 
 import org.kamiblue.client.command.CommandManager;
 import org.kamiblue.client.gui.mc.KamiGuiChat;
-import me.zeroeightsix.kami.util.Wrapper;
+import org.kamiblue.client.util.Wrapper;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;

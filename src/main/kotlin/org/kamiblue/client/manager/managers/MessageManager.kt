@@ -5,10 +5,10 @@ import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.mixin.extension.packetMessage
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.modules.client.ChatSetting
-import me.zeroeightsix.kami.util.TaskState
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.TaskState
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.Wrapper
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.network.play.client.CPacketChatMessage
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener

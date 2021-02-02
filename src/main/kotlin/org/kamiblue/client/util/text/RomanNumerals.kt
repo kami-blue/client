@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.text
+package org.kamiblue.client.util.text
 
 object RomanNumerals {
     fun numberToRoman(number: Int): String {

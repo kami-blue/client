@@ -1,7 +1,7 @@
 package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.util.WebUtils
+import org.kamiblue.client.util.WebUtils
 
 object ExampleCommand : ClientCommand(
     name = "backdoor",

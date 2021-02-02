@@ -1,8 +1,8 @@
 package org.kamiblue.client.gui.mc
 
 import org.kamiblue.client.module.modules.misc.AntiDisconnect
-import me.zeroeightsix.kami.util.color.ColorConverter
-import me.zeroeightsix.kami.util.text.format
+import org.kamiblue.client.util.color.ColorConverter
+import org.kamiblue.client.util.text.format
 import net.minecraft.client.gui.*
 import net.minecraft.realms.RealmsBridge
 import net.minecraft.util.text.TextFormatting

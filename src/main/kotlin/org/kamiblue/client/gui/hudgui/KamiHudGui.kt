@@ -10,9 +10,9 @@ import org.kamiblue.client.gui.rgui.Component
 import org.kamiblue.client.gui.rgui.windows.ListWindow
 import org.kamiblue.client.module.modules.client.Hud
 import org.kamiblue.client.module.modules.client.HudEditor
-import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.client.util.graphics.GlStateUtils
+import org.kamiblue.client.util.graphics.VertexHelper
+import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11.*

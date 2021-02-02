@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.graphics.texture
+package org.kamiblue.client.util.graphics.texture
 
 import net.minecraft.client.renderer.GLAllocation
 import org.lwjgl.opengl.GL11.GL_TEXTURE_2D

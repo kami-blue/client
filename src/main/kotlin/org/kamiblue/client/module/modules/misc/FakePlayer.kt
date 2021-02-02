@@ -7,11 +7,11 @@ import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.GuiEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.formatValue
-import me.zeroeightsix.kami.util.threads.onMainThread
-import me.zeroeightsix.kami.util.threads.onMainThreadSafe
-import me.zeroeightsix.kami.util.threads.runSafeR
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.formatValue
+import org.kamiblue.client.util.threads.onMainThread
+import org.kamiblue.client.util.threads.onMainThreadSafe
+import org.kamiblue.client.util.threads.runSafeR
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.gui.GuiGameOver
 import net.minecraft.enchantment.Enchantment

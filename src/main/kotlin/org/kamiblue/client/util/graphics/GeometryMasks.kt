@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.graphics
+package org.kamiblue.client.util.graphics
 
 import net.minecraft.util.EnumFacing
 import java.util.*

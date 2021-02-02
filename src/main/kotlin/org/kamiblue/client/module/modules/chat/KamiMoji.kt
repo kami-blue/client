@@ -3,8 +3,8 @@ package org.kamiblue.client.module.modules.chat
 import org.kamiblue.client.manager.managers.KamiMojiManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import me.zeroeightsix.kami.util.graphics.texture.MipmapTexture
+import org.kamiblue.client.util.graphics.GlStateUtils
+import org.kamiblue.client.util.graphics.texture.MipmapTexture
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats

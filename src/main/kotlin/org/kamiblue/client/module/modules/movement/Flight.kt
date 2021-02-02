@@ -7,10 +7,10 @@ import org.kamiblue.client.event.events.PlayerTravelEvent
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.MovementUtils
-import me.zeroeightsix.kami.util.MovementUtils.calcMoveYaw
-import me.zeroeightsix.kami.util.threads.runSafe
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.MovementUtils
+import org.kamiblue.client.util.MovementUtils.calcMoveYaw
+import org.kamiblue.client.util.threads.runSafe
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.server.SPacketCloseWindow
 import org.kamiblue.event.listener.listener

@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.threads
+package org.kamiblue.client.util.threads
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -5,11 +5,11 @@ import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.mixin.extension.historyBuffer
 import org.kamiblue.client.mixin.extension.sentHistoryCursor
 import org.kamiblue.client.module.modules.client.GuiColors
-import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import me.zeroeightsix.kami.util.graphics.RenderUtils2D
-import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.math.Vec2d
-import me.zeroeightsix.kami.util.threads.defaultScope
+import org.kamiblue.client.util.graphics.GlStateUtils
+import org.kamiblue.client.util.graphics.RenderUtils2D
+import org.kamiblue.client.util.graphics.VertexHelper
+import org.kamiblue.client.util.math.Vec2d
+import org.kamiblue.client.util.threads.defaultScope
 import net.minecraft.client.gui.GuiChat
 import org.kamiblue.command.AbstractArg
 import org.kamiblue.command.AutoComplete

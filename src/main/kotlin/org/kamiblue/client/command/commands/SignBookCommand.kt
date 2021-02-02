@@ -1,10 +1,10 @@
 package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.util.items.itemPayload
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.text.formatValue
+import org.kamiblue.client.util.items.itemPayload
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.MessageSendHelper.sendChatMessage
+import org.kamiblue.client.util.text.formatValue
 import net.minecraft.item.ItemWritableBook
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.nbt.NBTTagString

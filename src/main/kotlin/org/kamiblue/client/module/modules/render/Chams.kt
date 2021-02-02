@@ -4,11 +4,11 @@ import org.kamiblue.client.event.Phase
 import org.kamiblue.client.event.events.RenderEntityEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.EntityUtils.mobTypeSettings
-import me.zeroeightsix.kami.util.color.HueCycler
-import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.EntityUtils
+import org.kamiblue.client.util.EntityUtils.mobTypeSettings
+import org.kamiblue.client.util.color.HueCycler
+import org.kamiblue.client.util.graphics.GlStateUtils
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityEnderCrystal

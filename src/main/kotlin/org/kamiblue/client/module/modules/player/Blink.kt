@@ -8,8 +8,8 @@ import org.kamiblue.client.mixin.extension.y
 import org.kamiblue.client.mixin.extension.z
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.threads.runSafe
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.threads.runSafe
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraftforge.fml.common.gameevent.TickEvent

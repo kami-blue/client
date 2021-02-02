@@ -1,9 +1,9 @@
-package me.zeroeightsix.kami.util.graphics
+package org.kamiblue.client.util.graphics
 
-import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
-import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.color.ColorHolder
+import org.kamiblue.client.util.EntityUtils
+import org.kamiblue.client.util.EntityUtils.getInterpolatedAmount
+import org.kamiblue.client.util.Wrapper
+import org.kamiblue.client.util.color.ColorHolder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.culling.ICamera

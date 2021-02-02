@@ -1,6 +1,6 @@
 package org.kamiblue.client.gui.rgui
 
-import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.client.util.math.Vec2f
 
 open class InteractiveComponent(
     name: String,

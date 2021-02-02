@@ -6,11 +6,11 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.combat.CombatSetting
 import org.kamiblue.client.process.PauseProcess.pauseBaritone
 import org.kamiblue.client.process.PauseProcess.unpauseBaritone
-import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.combat.CombatUtils
-import me.zeroeightsix.kami.util.items.*
-import me.zeroeightsix.kami.util.threads.runSafe
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.*
+import org.kamiblue.client.util.combat.CombatUtils
+import org.kamiblue.client.util.items.*
+import org.kamiblue.client.util.threads.runSafe
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.init.Items
 import net.minecraft.inventory.Slot

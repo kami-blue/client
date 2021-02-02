@@ -1,8 +1,8 @@
-package me.zeroeightsix.kami.util.graphics
+package org.kamiblue.client.util.graphics
 
 import org.kamiblue.client.mixin.extension.renderPartialTicksPaused
-import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.color.ColorHolder
+import org.kamiblue.client.util.EntityUtils
+import org.kamiblue.client.util.color.ColorHolder
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.ActiveRenderInfo
 import net.minecraft.client.renderer.GlStateManager

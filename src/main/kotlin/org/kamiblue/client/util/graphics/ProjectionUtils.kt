@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.util.graphics
+package org.kamiblue.client.util.graphics
 
-import me.zeroeightsix.kami.util.Wrapper
+import org.kamiblue.client.util.Wrapper
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.ActiveRenderInfo
 import net.minecraft.client.renderer.GLAllocation

@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.filesystem
+package org.kamiblue.client.util.filesystem
 
 import java.io.File
 

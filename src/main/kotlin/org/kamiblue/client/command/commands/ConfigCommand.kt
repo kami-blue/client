@@ -4,12 +4,12 @@ import kotlinx.coroutines.*
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.event.SafeExecuteEvent
 import org.kamiblue.client.module.modules.client.Configurations
-import me.zeroeightsix.kami.util.ConfigUtils
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.TimeUnit
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.formatValue
-import me.zeroeightsix.kami.util.threads.defaultScope
+import org.kamiblue.client.util.ConfigUtils
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.formatValue
+import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.command.IExecuteEvent
 
 object ConfigCommand : ClientCommand(

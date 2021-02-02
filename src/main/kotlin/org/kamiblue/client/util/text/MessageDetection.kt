@@ -1,9 +1,9 @@
-package me.zeroeightsix.kami.util.text
+package org.kamiblue.client.util.text
 
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.module.modules.chat.ChatEncryption
-import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.Wrapper
+import org.kamiblue.client.util.BaritoneUtils
+import org.kamiblue.client.util.Wrapper
 
 object MessageDetection {
     enum class Command : PrefixDetector {

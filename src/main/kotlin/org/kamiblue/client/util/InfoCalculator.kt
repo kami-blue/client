@@ -1,8 +1,8 @@
-package me.zeroeightsix.kami.util
+package org.kamiblue.client.util
 
 import org.kamiblue.client.mixin.extension.tickLength
 import org.kamiblue.client.mixin.extension.timer
-import me.zeroeightsix.kami.util.MovementUtils.realSpeed
+import org.kamiblue.client.util.MovementUtils.realSpeed
 
 object InfoCalculator {
     private val mc = Wrapper.minecraft

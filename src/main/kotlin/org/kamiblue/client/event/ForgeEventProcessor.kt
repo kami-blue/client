@@ -7,10 +7,10 @@ import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.event.events.ResolutionUpdateEvent
 import org.kamiblue.client.gui.mc.KamiGuiChat
 import org.kamiblue.client.module.ModuleManager
-import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.graphics.KamiTessellator
-import me.zeroeightsix.kami.util.graphics.ProjectionUtils
-import me.zeroeightsix.kami.util.text.MessageDetection
+import org.kamiblue.client.util.Wrapper
+import org.kamiblue.client.util.graphics.KamiTessellator
+import org.kamiblue.client.util.graphics.ProjectionUtils
+import org.kamiblue.client.util.text.MessageDetection
 import net.minecraftforge.client.event.*
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent

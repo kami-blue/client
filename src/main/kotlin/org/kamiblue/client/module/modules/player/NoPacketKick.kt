@@ -3,7 +3,7 @@ package org.kamiblue.client.module.modules.player
 import org.kamiblue.client.mixin.client.network.MixinNetworkManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendWarningMessage
+import org.kamiblue.client.util.text.MessageSendHelper.sendWarningMessage
 
 /**
  * @see MixinNetworkManager

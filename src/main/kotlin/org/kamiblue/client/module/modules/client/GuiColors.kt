@@ -2,7 +2,7 @@ package org.kamiblue.client.module.modules.client
 
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.color.ColorHolder
+import org.kamiblue.client.util.color.ColorHolder
 
 internal object GuiColors : Module(
     name = "GuiColors",

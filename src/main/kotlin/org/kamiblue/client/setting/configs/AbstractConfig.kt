@@ -7,7 +7,7 @@ import org.kamiblue.client.KamiMod
 import org.kamiblue.client.setting.groups.SettingGroup
 import org.kamiblue.client.setting.groups.SettingMultiGroup
 import org.kamiblue.client.setting.settings.SettingRegister
-import me.zeroeightsix.kami.util.ConfigUtils
+import org.kamiblue.client.util.ConfigUtils
 import java.io.File
 
 abstract class AbstractConfig<T : Any>(

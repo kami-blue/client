@@ -1,6 +1,6 @@
 package org.kamiblue.client.gui.rgui.component
 
-import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.client.util.math.Vec2f
 
 class Button(
     name: String,

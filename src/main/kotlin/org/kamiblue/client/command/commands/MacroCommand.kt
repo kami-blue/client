@@ -2,9 +2,9 @@ package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.manager.managers.MacroManager
-import me.zeroeightsix.kami.util.KeyboardUtils
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.formatValue
+import org.kamiblue.client.util.KeyboardUtils
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.formatValue
 
 object MacroCommand : ClientCommand(
     name = "macro",

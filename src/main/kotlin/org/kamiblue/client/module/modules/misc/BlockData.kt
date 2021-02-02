@@ -2,8 +2,8 @@ package org.kamiblue.client.module.modules.misc
 
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.text.MessageSendHelper
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult

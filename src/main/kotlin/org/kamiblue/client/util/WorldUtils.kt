@@ -1,11 +1,11 @@
-package me.zeroeightsix.kami.util
+package org.kamiblue.client.util
 
 import kotlinx.coroutines.delay
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.PlayerPacketManager
-import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
-import me.zeroeightsix.kami.util.math.corners
-import me.zeroeightsix.kami.util.threads.runSafeSuspend
+import org.kamiblue.client.util.math.RotationUtils.getRotationTo
+import org.kamiblue.client.util.math.corners
+import org.kamiblue.client.util.threads.runSafeSuspend
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock

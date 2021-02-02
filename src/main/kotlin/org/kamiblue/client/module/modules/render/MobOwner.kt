@@ -3,8 +3,8 @@ package org.kamiblue.client.module.modules.render
 import org.kamiblue.client.manager.managers.UUIDManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.threads.runSafe
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.threads.runSafe
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraft.entity.passive.EntityTameable
 import net.minecraftforge.fml.common.gameevent.TickEvent

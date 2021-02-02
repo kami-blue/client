@@ -3,7 +3,7 @@ package org.kamiblue.client.setting.settings.impl.other
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import org.kamiblue.client.setting.settings.ImmutableSetting
-import me.zeroeightsix.kami.util.Bind
+import org.kamiblue.client.util.Bind
 import org.lwjgl.input.Keyboard
 
 class BindSetting(

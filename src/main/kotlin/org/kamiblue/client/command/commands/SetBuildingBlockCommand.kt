@@ -2,9 +2,9 @@ package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.module.modules.player.InventoryManager
-import me.zeroeightsix.kami.util.items.block
-import me.zeroeightsix.kami.util.items.id
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import org.kamiblue.client.util.items.block
+import org.kamiblue.client.util.items.id
+import org.kamiblue.client.util.text.MessageSendHelper
 import net.minecraft.block.BlockAir
 
 // TODO: Remove once GUI has Block settings

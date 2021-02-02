@@ -4,14 +4,14 @@ import org.kamiblue.client.gui.rgui.InteractiveComponent
 import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.module.modules.client.GuiColors
 import org.kamiblue.client.module.modules.client.Tooltips
-import me.zeroeightsix.kami.util.TimedFlag
-import me.zeroeightsix.kami.util.graphics.AnimationUtils
-import me.zeroeightsix.kami.util.graphics.RenderUtils2D
-import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
-import me.zeroeightsix.kami.util.graphics.font.TextComponent
-import me.zeroeightsix.kami.util.math.Vec2d
-import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.client.util.TimedFlag
+import org.kamiblue.client.util.graphics.AnimationUtils
+import org.kamiblue.client.util.graphics.RenderUtils2D
+import org.kamiblue.client.util.graphics.VertexHelper
+import org.kamiblue.client.util.graphics.font.FontRenderAdapter
+import org.kamiblue.client.util.graphics.font.TextComponent
+import org.kamiblue.client.util.math.Vec2d
+import org.kamiblue.client.util.math.Vec2f
 import org.lwjgl.opengl.GL11.*
 
 open class Slider(

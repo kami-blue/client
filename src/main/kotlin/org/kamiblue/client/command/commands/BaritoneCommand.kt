@@ -3,7 +3,7 @@ package org.kamiblue.client.command.commands
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.command.CommandManager
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.MessageSendHelper
 
 // TODO: Add the follow argument when Baritone 1.2.15 is released.
 // Currently follow is broken on Forge 1.12.2 in 1.2.14, it is fixed in master branch.

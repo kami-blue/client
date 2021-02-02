@@ -2,7 +2,7 @@ package org.kamiblue.client.module.modules.render
 
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.math.Vec3f
+import org.kamiblue.client.util.math.Vec3f
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand

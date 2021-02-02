@@ -3,13 +3,13 @@ package org.kamiblue.client.module.modules.misc
 import org.kamiblue.client.manager.managers.WaypointManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.TimeUnit
-import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
-import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.InfoCalculator
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.math.CoordinateConverter.asString
+import org.kamiblue.client.util.math.VectorUtils.toBlockPos
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 internal object CoordsLog : Module(

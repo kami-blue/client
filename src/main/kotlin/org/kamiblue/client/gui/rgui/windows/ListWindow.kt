@@ -4,10 +4,10 @@ import org.kamiblue.client.gui.AbstractKamiGui
 import org.kamiblue.client.gui.rgui.Component
 import org.kamiblue.client.gui.rgui.InteractiveComponent
 import org.kamiblue.client.module.modules.client.ClickGUI
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.graphics.GlStateUtils
+import org.kamiblue.client.util.graphics.VertexHelper
+import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
 import org.lwjgl.input.Mouse

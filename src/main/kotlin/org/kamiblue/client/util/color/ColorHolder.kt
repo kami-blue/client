@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.util.color
+package org.kamiblue.client.util.color
 
-import me.zeroeightsix.kami.util.graphics.AnimationUtils
+import org.kamiblue.client.util.graphics.AnimationUtils
 import org.lwjgl.opengl.GL11.glColor4f
 import java.awt.Color
 

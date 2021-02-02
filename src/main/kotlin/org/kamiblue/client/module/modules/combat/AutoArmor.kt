@@ -5,9 +5,9 @@ import org.kamiblue.client.manager.managers.PlayerInventoryManager
 import org.kamiblue.client.manager.managers.PlayerInventoryManager.addInventoryTask
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.items.removeHoldingItem
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.*
+import org.kamiblue.client.util.items.removeHoldingItem
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType

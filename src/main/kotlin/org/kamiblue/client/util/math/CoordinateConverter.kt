@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.math
+package org.kamiblue.client.util.math
 
 import org.kamiblue.client.manager.managers.WaypointManager
 import net.minecraft.util.math.BlockPos

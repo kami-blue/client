@@ -1,6 +1,6 @@
 package org.kamiblue.client.mixin.client.gui;
 
-import me.zeroeightsix.kami.util.graphics.KamiTessellator;
+import org.kamiblue.client.util.graphics.KamiTessellator;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;

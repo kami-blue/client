@@ -5,9 +5,9 @@ import org.kamiblue.client.event.ClientExecuteEvent
 import org.kamiblue.client.event.SafeExecuteEvent
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.threads.defaultScope
-import me.zeroeightsix.kami.util.threads.toSafe
+import org.kamiblue.client.util.Wrapper
+import org.kamiblue.client.util.threads.defaultScope
+import org.kamiblue.client.util.threads.toSafe
 import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.util.math.BlockPos

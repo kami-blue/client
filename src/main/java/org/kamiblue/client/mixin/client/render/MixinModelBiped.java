@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.render;
 
 import org.kamiblue.client.module.modules.movement.ElytraFlight;
-import me.zeroeightsix.kami.util.Wrapper;
+import org.kamiblue.client.util.Wrapper;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;

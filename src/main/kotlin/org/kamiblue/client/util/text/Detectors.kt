@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.text
+package org.kamiblue.client.util.text
 
 interface Detector {
     infix fun detect(input: CharSequence): Boolean

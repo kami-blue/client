@@ -4,7 +4,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.module.modules.movement.AutoWalk
 import org.kamiblue.client.process.PauseProcess
-import me.zeroeightsix.kami.util.BaritoneUtils
+import org.kamiblue.client.util.BaritoneUtils
 
 object BaritoneProcess : LabelHud(
     name = "BaritoneProcess",

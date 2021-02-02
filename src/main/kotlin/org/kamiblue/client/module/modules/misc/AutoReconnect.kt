@@ -6,7 +6,7 @@ import org.kamiblue.client.mixin.extension.parentScreen
 import org.kamiblue.client.mixin.extension.reason
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.StopTimer
+import org.kamiblue.client.util.StopTimer
 import net.minecraft.client.gui.GuiDisconnected
 import net.minecraft.client.multiplayer.GuiConnecting
 import net.minecraft.client.multiplayer.ServerData

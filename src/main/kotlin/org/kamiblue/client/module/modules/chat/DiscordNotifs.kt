@@ -9,11 +9,11 @@ import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.TimeUnit
-import me.zeroeightsix.kami.util.text.*
-import me.zeroeightsix.kami.util.threads.defaultScope
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.text.*
+import org.kamiblue.client.util.threads.defaultScope
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.apache.commons.io.IOUtils

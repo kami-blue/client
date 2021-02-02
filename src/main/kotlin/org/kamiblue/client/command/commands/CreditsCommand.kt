@@ -4,8 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.formatValue
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.formatValue
 import org.kamiblue.commons.utils.ConnectionUtils
 
 object CreditsCommand : ClientCommand(

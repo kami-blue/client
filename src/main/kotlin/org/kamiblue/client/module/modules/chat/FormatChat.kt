@@ -3,7 +3,7 @@ package org.kamiblue.client.module.modules.chat
 import org.kamiblue.client.manager.managers.MessageManager.newMessageModifier
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.MessageSendHelper
 
 internal object FormatChat : Module(
     name = "FormatChat",

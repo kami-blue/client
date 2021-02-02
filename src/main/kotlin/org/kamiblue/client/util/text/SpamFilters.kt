@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.text
+package org.kamiblue.client.util.text
 
 object SpamFilters {
     val announcer = arrayOf( // RusherHack b8

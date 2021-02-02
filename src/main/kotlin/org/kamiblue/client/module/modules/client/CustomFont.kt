@@ -2,10 +2,10 @@ package org.kamiblue.client.module.modules.client
 
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.AsyncCachedValue
-import me.zeroeightsix.kami.util.TimeUnit
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
-import me.zeroeightsix.kami.util.threads.onMainThread
+import org.kamiblue.client.util.AsyncCachedValue
+import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.graphics.font.KamiFontRenderer
+import org.kamiblue.client.util.threads.onMainThread
 import java.awt.GraphicsEnvironment
 import java.util.*
 import kotlin.collections.HashMap

@@ -6,8 +6,8 @@ import org.kamiblue.client.event.events.PlayerAttackEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.misc.FakePlayer
-import me.zeroeightsix.kami.util.math.Vec2d
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.math.Vec2d
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.fml.common.gameevent.TickEvent

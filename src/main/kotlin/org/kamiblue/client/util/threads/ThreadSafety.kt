@@ -1,11 +1,11 @@
-package me.zeroeightsix.kami.util.threads
+package org.kamiblue.client.util.threads
 
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.ClientEvent
 import org.kamiblue.client.event.ClientExecuteEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.SafeExecuteEvent
-import me.zeroeightsix.kami.util.Wrapper
+import org.kamiblue.client.util.Wrapper
 import org.kamiblue.event.ListenerManager
 import org.kamiblue.event.listener.AsyncListener
 import org.kamiblue.event.listener.DEFAULT_PRIORITY

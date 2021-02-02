@@ -5,9 +5,9 @@ import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.mixin.extension.rightClickMouse
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.WorldUtils.isWater
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.WorldUtils.isWater
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.SPacketSoundEffect
 import net.minecraftforge.fml.common.gameevent.TickEvent

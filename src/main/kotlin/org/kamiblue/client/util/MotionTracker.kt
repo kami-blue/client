@@ -1,8 +1,8 @@
-package me.zeroeightsix.kami.util
+package org.kamiblue.client.util
 
 import org.kamiblue.client.event.KamiEventBus
-import me.zeroeightsix.kami.util.graphics.KamiTessellator
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.graphics.KamiTessellator
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d

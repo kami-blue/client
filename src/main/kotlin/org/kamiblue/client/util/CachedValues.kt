@@ -1,8 +1,8 @@
-package me.zeroeightsix.kami.util
+package org.kamiblue.client.util
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.util.threads.defaultScope
+import org.kamiblue.client.util.threads.defaultScope
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KProperty
 

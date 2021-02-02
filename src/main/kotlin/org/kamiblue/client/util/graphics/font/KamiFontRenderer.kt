@@ -1,10 +1,10 @@
-package me.zeroeightsix.kami.util.graphics.font
+package org.kamiblue.client.util.graphics.font
 
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.module.modules.client.CustomFont
-import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.color.DyeColors
-import me.zeroeightsix.kami.util.graphics.GlStateUtils
+import org.kamiblue.client.util.color.ColorHolder
+import org.kamiblue.client.util.color.DyeColors
+import org.kamiblue.client.util.graphics.GlStateUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats

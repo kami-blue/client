@@ -4,7 +4,7 @@ import org.kamiblue.client.event.Cancellable
 import org.kamiblue.client.event.Event
 import org.kamiblue.client.event.IMultiPhase
 import org.kamiblue.client.event.Phase
-import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.client.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.commons.extension.next
 

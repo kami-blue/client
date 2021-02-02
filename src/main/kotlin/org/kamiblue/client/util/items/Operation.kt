@@ -1,7 +1,7 @@
-package me.zeroeightsix.kami.util.items
+package org.kamiblue.client.util.items
 
 import org.kamiblue.client.event.SafeClientEvent
-import me.zeroeightsix.kami.util.threads.onMainThreadSafe
+import org.kamiblue.client.util.threads.onMainThreadSafe
 import net.minecraft.block.Block
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType

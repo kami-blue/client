@@ -3,8 +3,8 @@ package org.kamiblue.client.module.modules.render
 import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.color.EnumTextColor
-import me.zeroeightsix.kami.util.text.format
+import org.kamiblue.client.util.color.EnumTextColor
+import org.kamiblue.client.util.text.format
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.scoreboard.ScorePlayerTeam
 

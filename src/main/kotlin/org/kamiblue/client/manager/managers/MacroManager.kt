@@ -5,8 +5,8 @@ import com.google.gson.reflect.TypeToken
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.manager.Manager
-import me.zeroeightsix.kami.util.ConfigUtils
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import org.kamiblue.client.util.ConfigUtils
+import org.kamiblue.client.util.text.MessageSendHelper
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard

@@ -3,9 +3,9 @@ package org.kamiblue.client.command.commands
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.threads.defaultScope
-import me.zeroeightsix.kami.util.threads.onMainThreadSafe
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.threads.defaultScope
+import org.kamiblue.client.util.threads.onMainThreadSafe
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiShulkerBox
 import net.minecraft.item.ItemShulkerBox

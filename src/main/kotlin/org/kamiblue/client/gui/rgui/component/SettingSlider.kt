@@ -4,9 +4,9 @@ import org.kamiblue.client.module.modules.client.GuiColors
 import org.kamiblue.client.setting.settings.impl.number.FloatSetting
 import org.kamiblue.client.setting.settings.impl.number.IntegerSetting
 import org.kamiblue.client.setting.settings.impl.number.NumberSetting
-import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
-import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.client.util.graphics.VertexHelper
+import org.kamiblue.client.util.graphics.font.FontRenderAdapter
+import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.commons.utils.MathUtils
 import org.lwjgl.input.Keyboard
 import kotlin.math.abs

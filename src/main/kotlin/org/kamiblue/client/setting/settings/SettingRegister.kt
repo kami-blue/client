@@ -8,8 +8,8 @@ import org.kamiblue.client.setting.settings.impl.other.ColorSetting
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
 import org.kamiblue.client.setting.settings.impl.primitive.StringSetting
-import me.zeroeightsix.kami.util.Bind
-import me.zeroeightsix.kami.util.color.ColorHolder
+import org.kamiblue.client.util.Bind
+import org.kamiblue.client.util.color.ColorHolder
 
 /**
  * Setting register overloading

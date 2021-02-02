@@ -8,7 +8,7 @@ import org.kamiblue.client.gui.rgui.windows.ListWindow
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.module.modules.client.ClickGUI
-import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.client.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 
 object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, AbstractModule>() {

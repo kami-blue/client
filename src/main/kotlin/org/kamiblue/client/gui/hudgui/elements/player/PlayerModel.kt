@@ -2,10 +2,10 @@ package org.kamiblue.client.gui.hudgui.elements.player
 
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.setting.GuiConfig.setting
-import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import me.zeroeightsix.kami.util.graphics.KamiTessellator
-import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.threads.runSafe
+import org.kamiblue.client.util.graphics.GlStateUtils
+import org.kamiblue.client.util.graphics.KamiTessellator
+import org.kamiblue.client.util.graphics.VertexHelper
+import org.kamiblue.client.util.threads.runSafe
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase

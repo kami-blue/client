@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.math
+package org.kamiblue.client.util.math
 
 import net.minecraft.entity.Entity
 import org.kamiblue.commons.extension.toRadian

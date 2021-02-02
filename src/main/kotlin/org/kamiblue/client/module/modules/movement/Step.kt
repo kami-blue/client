@@ -7,11 +7,11 @@ import org.kamiblue.client.mixin.extension.y
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
-import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.Bind
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.threads.runSafe
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.BaritoneUtils
+import org.kamiblue.client.util.Bind
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.threads.runSafe
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent

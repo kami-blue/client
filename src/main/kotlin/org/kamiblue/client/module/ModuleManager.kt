@@ -1,11 +1,11 @@
 package org.kamiblue.client.module
 
 import kotlinx.coroutines.Deferred
-import me.zeroeightsix.kami.AsyncLoader
+import org.kamiblue.client.AsyncLoader
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.util.AsyncCachedValue
-import me.zeroeightsix.kami.util.StopTimer
-import me.zeroeightsix.kami.util.TimeUnit
+import org.kamiblue.client.util.AsyncCachedValue
+import org.kamiblue.client.util.StopTimer
+import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.commons.collections.AliasSet
 import org.kamiblue.commons.utils.ClassUtils
 import org.lwjgl.input.Keyboard

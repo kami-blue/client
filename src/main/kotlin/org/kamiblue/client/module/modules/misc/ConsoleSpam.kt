@@ -3,7 +3,7 @@ package org.kamiblue.client.module.modules.misc
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.MessageSendHelper
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.network.play.client.CPacketUpdateSign
 import net.minecraft.tileentity.TileEntitySign

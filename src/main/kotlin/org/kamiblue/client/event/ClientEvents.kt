@@ -1,7 +1,7 @@
 package org.kamiblue.client.event
 
 import org.kamiblue.client.command.CommandManager
-import me.zeroeightsix.kami.util.Wrapper
+import org.kamiblue.client.util.Wrapper
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.multiplayer.PlayerControllerMP
 import net.minecraft.client.multiplayer.WorldClient

@@ -5,9 +5,9 @@ import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.mixin.extension.y
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.BaritoneUtils
+import org.kamiblue.client.util.EntityUtils
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.block.BlockLiquid
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat

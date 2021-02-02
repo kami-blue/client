@@ -5,11 +5,11 @@ import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
-import me.zeroeightsix.kami.util.graphics.KamiTessellator
-import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.EntityUtils.getInterpolatedPos
+import org.kamiblue.client.util.graphics.KamiTessellator
+import org.kamiblue.client.util.math.VectorUtils.distanceTo
+import org.kamiblue.client.util.text.MessageSendHelper.sendChatMessage
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.realms.RealmsMth.sin
 import net.minecraft.util.math.Vec3d

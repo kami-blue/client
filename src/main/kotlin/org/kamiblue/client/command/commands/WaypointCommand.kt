@@ -4,11 +4,11 @@ import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.manager.managers.WaypointManager
 import org.kamiblue.client.manager.managers.WaypointManager.Waypoint
 import org.kamiblue.client.module.modules.movement.AutoWalk
-import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
-import me.zeroeightsix.kami.util.math.CoordinateConverter.bothConverted
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.formatValue
+import org.kamiblue.client.util.InfoCalculator
+import org.kamiblue.client.util.math.CoordinateConverter.asString
+import org.kamiblue.client.util.math.CoordinateConverter.bothConverted
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.formatValue
 import net.minecraft.util.math.BlockPos
 
 object WaypointCommand : ClientCommand(

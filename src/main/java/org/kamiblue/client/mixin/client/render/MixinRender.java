@@ -2,8 +2,8 @@ package org.kamiblue.client.mixin.client.render;
 
 import org.kamiblue.client.module.modules.render.ESP;
 import org.kamiblue.client.module.modules.render.Nametags;
-import me.zeroeightsix.kami.util.Wrapper;
-import me.zeroeightsix.kami.util.graphics.GlStateUtils;
+import org.kamiblue.client.util.Wrapper;
+import org.kamiblue.client.util.graphics.GlStateUtils;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;

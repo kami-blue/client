@@ -3,11 +3,11 @@ package org.kamiblue.client.module.modules.misc
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.items.swapToSlot
-import me.zeroeightsix.kami.util.math.VectorUtils
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.*
+import org.kamiblue.client.util.items.swapToSlot
+import org.kamiblue.client.util.math.VectorUtils
+import org.kamiblue.client.util.text.MessageSendHelper.sendChatMessage
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.block.BlockDeadBush
 import net.minecraft.block.BlockSoulSand
 import net.minecraft.block.BlockTallGrass

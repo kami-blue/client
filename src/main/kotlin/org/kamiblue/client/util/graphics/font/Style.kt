@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.graphics.font
+package org.kamiblue.client.util.graphics.font
 
 import java.awt.Font
 

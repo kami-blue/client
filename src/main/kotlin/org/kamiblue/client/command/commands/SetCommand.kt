@@ -4,9 +4,9 @@ import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.format
-import me.zeroeightsix.kami.util.text.formatValue
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.format
+import org.kamiblue.client.util.text.formatValue
 import net.minecraft.util.text.TextFormatting
 
 object SetCommand : ClientCommand(

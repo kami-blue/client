@@ -1,8 +1,8 @@
-package me.zeroeightsix.kami.util.graphics.font
+package org.kamiblue.client.util.graphics.font
 
 import org.kamiblue.client.module.modules.client.CustomFont
-import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.color.ColorHolder
+import org.kamiblue.client.util.Wrapper
+import org.kamiblue.client.util.color.ColorHolder
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.round
 

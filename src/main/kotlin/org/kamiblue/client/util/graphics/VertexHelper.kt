@@ -1,7 +1,7 @@
-package me.zeroeightsix.kami.util.graphics
+package org.kamiblue.client.util.graphics
 
-import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.math.Vec2d
+import org.kamiblue.client.util.color.ColorHolder
+import org.kamiblue.client.util.math.Vec2d
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.math.Vec3d

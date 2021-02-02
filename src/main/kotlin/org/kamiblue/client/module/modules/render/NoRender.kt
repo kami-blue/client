@@ -5,8 +5,8 @@ import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.RenderEntityEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.threads.runSafe
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.threads.runSafe
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.block.BlockSnow
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.renderer.Tessellator

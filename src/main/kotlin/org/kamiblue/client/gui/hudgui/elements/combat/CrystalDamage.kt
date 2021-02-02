@@ -4,8 +4,8 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.manager.managers.CombatManager
-import me.zeroeightsix.kami.util.Quad
-import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlaceCollide
+import org.kamiblue.client.util.Quad
+import org.kamiblue.client.util.combat.CrystalUtils.canPlaceCollide
 import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.max
 

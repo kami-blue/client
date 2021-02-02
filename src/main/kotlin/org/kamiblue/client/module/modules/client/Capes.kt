@@ -6,11 +6,11 @@ import org.kamiblue.client.KamiMod
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.misc.DiscordRPC
-import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.color.ColorConverter
-import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.color.DyeColors
-import me.zeroeightsix.kami.util.threads.BackgroundScope
+import org.kamiblue.client.util.EntityUtils
+import org.kamiblue.client.util.color.ColorConverter
+import org.kamiblue.client.util.color.ColorHolder
+import org.kamiblue.client.util.color.DyeColors
+import org.kamiblue.client.util.threads.BackgroundScope
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelElytra
 import net.minecraft.client.renderer.GlStateManager

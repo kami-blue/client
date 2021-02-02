@@ -2,7 +2,7 @@ package org.kamiblue.client.gui.hudgui.elements.player
 
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import me.zeroeightsix.kami.util.math.Direction
+import org.kamiblue.client.util.math.Direction
 
 object Direction : LabelHud(
     name = "Direction",

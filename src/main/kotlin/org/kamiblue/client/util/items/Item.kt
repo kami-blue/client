@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.items
+package org.kamiblue.client.util.items
 
 import io.netty.buffer.Unpooled
 import org.kamiblue.client.event.SafeClientEvent

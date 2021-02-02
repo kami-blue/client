@@ -8,9 +8,9 @@ import org.kamiblue.client.setting.settings.AbstractSetting
 import org.kamiblue.client.setting.settings.SettingRegister
 import org.kamiblue.client.setting.settings.impl.other.BindSetting
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
-import me.zeroeightsix.kami.util.Bind
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.threads.runSafe
+import org.kamiblue.client.util.Bind
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.threads.runSafe
 import net.minecraft.client.Minecraft
 import org.kamiblue.commons.interfaces.Alias
 import org.kamiblue.commons.interfaces.Nameable

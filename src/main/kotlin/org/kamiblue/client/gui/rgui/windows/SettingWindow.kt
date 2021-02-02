@@ -8,7 +8,7 @@ import org.kamiblue.client.setting.settings.impl.other.ColorSetting
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
 import org.kamiblue.client.setting.settings.impl.primitive.StringSetting
-import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.client.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 
 abstract class SettingWindow<T : Any>(

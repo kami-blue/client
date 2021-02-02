@@ -4,8 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import org.kamiblue.client.manager.managers.UUIDManager
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.ModuleManager
-import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.threads.runSafeR
+import org.kamiblue.client.util.*
+import org.kamiblue.client.util.threads.runSafeR
 import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.util.math.BlockPos

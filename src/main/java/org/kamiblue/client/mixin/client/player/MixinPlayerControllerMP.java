@@ -3,7 +3,7 @@ package org.kamiblue.client.mixin.client.player;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.PlayerAttackEvent;
 import org.kamiblue.client.module.modules.player.TpsSync;
-import me.zeroeightsix.kami.util.TpsCalculator;
+import org.kamiblue.client.util.TpsCalculator;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.entity.Entity;

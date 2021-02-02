@@ -1,9 +1,9 @@
-package me.zeroeightsix.kami.util.combat
+package org.kamiblue.client.util.combat
 
 import org.kamiblue.client.event.SafeClientEvent
-import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.math.VectorUtils
-import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
+import org.kamiblue.client.util.Wrapper
+import org.kamiblue.client.util.math.VectorUtils
+import org.kamiblue.client.util.math.VectorUtils.distanceTo
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal

@@ -2,7 +2,7 @@ package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.manager.managers.UUIDManager
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.MessageSendHelper
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.passive.AbstractHorse
 import org.kamiblue.commons.utils.MathUtils

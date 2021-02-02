@@ -3,8 +3,8 @@ package org.kamiblue.client.module.modules.misc
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.monster.EntityMob

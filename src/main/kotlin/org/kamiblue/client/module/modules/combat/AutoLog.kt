@@ -7,11 +7,11 @@ import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.combat.AutoLog.Reasons.*
-import me.zeroeightsix.kami.util.EntityUtils.isFakeOrSelf
-import me.zeroeightsix.kami.util.combat.CombatUtils
-import me.zeroeightsix.kami.util.items.allSlots
-import me.zeroeightsix.kami.util.items.countItem
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.EntityUtils.isFakeOrSelf
+import org.kamiblue.client.util.combat.CombatUtils
+import org.kamiblue.client.util.items.allSlots
+import org.kamiblue.client.util.items.countItem
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.GuiMainMenu
 import net.minecraft.client.gui.GuiMultiplayer

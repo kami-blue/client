@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util
+package org.kamiblue.client.util
 
 class TimedFlag<T : Comparable<*>>(valueIn: T) {
     var value = valueIn

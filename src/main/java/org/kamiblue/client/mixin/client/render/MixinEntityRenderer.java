@@ -11,7 +11,7 @@ import org.kamiblue.client.module.modules.render.AntiFog;
 import org.kamiblue.client.module.modules.render.AntiOverlay;
 import org.kamiblue.client.module.modules.render.CameraClip;
 import org.kamiblue.client.module.modules.render.NoHurtCam;
-import me.zeroeightsix.kami.util.math.Vec2f;
+import org.kamiblue.client.util.math.Vec2f;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;

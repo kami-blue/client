@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.util.graphics.font
+package org.kamiblue.client.util.graphics.font
 
-import me.zeroeightsix.kami.util.graphics.texture.MipmapTexture
+import org.kamiblue.client.util.graphics.texture.MipmapTexture
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL14
 

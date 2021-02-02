@@ -1,7 +1,7 @@
 package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
 
 object SayCommand : ClientCommand(
     name = "say",

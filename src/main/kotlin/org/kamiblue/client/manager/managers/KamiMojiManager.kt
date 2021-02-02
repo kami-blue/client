@@ -11,8 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.manager.Manager
-import me.zeroeightsix.kami.util.graphics.texture.MipmapTexture
-import me.zeroeightsix.kami.util.threads.defaultScope
+import org.kamiblue.client.util.graphics.texture.MipmapTexture
+import org.kamiblue.client.util.threads.defaultScope
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
 import org.lwjgl.opengl.GL14.GL_TEXTURE_LOD_BIAS

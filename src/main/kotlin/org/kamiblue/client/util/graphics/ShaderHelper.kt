@@ -1,9 +1,9 @@
-package me.zeroeightsix.kami.util.graphics
+package org.kamiblue.client.util.graphics
 
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.event.events.ResolutionUpdateEvent
-import me.zeroeightsix.kami.util.Wrapper
+import org.kamiblue.client.util.Wrapper
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.shader.Framebuffer

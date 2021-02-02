@@ -2,7 +2,7 @@ package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.module.modules.player.InventoryManager
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.MessageSendHelper
 
 // TODO: Remove once GUI has List
 object EjectCommand : ClientCommand(

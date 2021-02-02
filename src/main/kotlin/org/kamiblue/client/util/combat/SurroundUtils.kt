@@ -1,10 +1,10 @@
-package me.zeroeightsix.kami.util.combat
+package org.kamiblue.client.util.combat
 
 import org.kamiblue.client.event.ClientEvent
 import org.kamiblue.client.event.SafeClientEvent
-import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
-import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.threads.toSafe
+import org.kamiblue.client.util.EntityUtils.flooredPosition
+import org.kamiblue.client.util.Wrapper
+import org.kamiblue.client.util.threads.toSafe
 import net.minecraft.block.Block
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks

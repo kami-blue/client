@@ -1,10 +1,10 @@
 package org.kamiblue.client.gui.rgui
 
 import org.kamiblue.client.setting.GuiConfig.setting
-import me.zeroeightsix.kami.util.graphics.AnimationUtils
-import me.zeroeightsix.kami.util.graphics.font.HAlign
-import me.zeroeightsix.kami.util.graphics.font.VAlign
-import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.client.util.graphics.AnimationUtils
+import org.kamiblue.client.util.graphics.font.HAlign
+import org.kamiblue.client.util.graphics.font.VAlign
+import org.kamiblue.client.util.math.Vec2f
 import kotlin.math.max
 import kotlin.math.min
 

@@ -1,7 +1,7 @@
 package org.kamiblue.client.gui.mc
 
 import org.kamiblue.client.module.modules.player.ChestStealer
-import me.zeroeightsix.kami.util.Wrapper
+import org.kamiblue.client.util.Wrapper
 import net.minecraft.client.gui.GuiButton
 
 class KamiGuiStoreButton(x: Int, y: Int) :

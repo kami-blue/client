@@ -3,10 +3,10 @@ package org.kamiblue.client.command.commands
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.util.KeyboardUtils
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.format
-import me.zeroeightsix.kami.util.text.formatValue
+import org.kamiblue.client.util.KeyboardUtils
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.format
+import org.kamiblue.client.util.text.formatValue
 import net.minecraft.util.text.TextFormatting
 
 object BindCommand : ClientCommand(

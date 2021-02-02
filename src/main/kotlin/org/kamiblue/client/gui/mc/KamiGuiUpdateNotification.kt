@@ -3,9 +3,9 @@ package org.kamiblue.client.gui.mc
 import com.google.gson.JsonParser
 import kotlinx.coroutines.launch
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.util.WebUtils
-import me.zeroeightsix.kami.util.color.ColorConverter
-import me.zeroeightsix.kami.util.threads.mainScope
+import org.kamiblue.client.util.WebUtils
+import org.kamiblue.client.util.color.ColorConverter
+import org.kamiblue.client.util.threads.mainScope
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiMainMenu
 import net.minecraft.client.gui.GuiScreen

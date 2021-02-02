@@ -2,8 +2,8 @@ package org.kamiblue.client.module.modules.movement
 
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.BaritoneUtils
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 /**

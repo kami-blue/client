@@ -1,8 +1,8 @@
 package org.kamiblue.client.installer;
 
 import org.kamiblue.client.KamiMod;
-import me.zeroeightsix.kami.util.WebUtils;
-import me.zeroeightsix.kami.util.filesystem.FolderUtils;
+import org.kamiblue.client.util.WebUtils;
+import org.kamiblue.client.util.filesystem.FolderUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

@@ -1,8 +1,8 @@
-package me.zeroeightsix.kami.util
+package org.kamiblue.client.util
 
 import org.kamiblue.client.manager.managers.FriendManager
-import me.zeroeightsix.kami.util.items.id
-import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
+import org.kamiblue.client.util.items.id
+import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity

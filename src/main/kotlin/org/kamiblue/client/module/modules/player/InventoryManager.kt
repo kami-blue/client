@@ -8,9 +8,9 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.process.PauseProcess.pauseBaritone
 import org.kamiblue.client.process.PauseProcess.unpauseBaritone
 import org.kamiblue.client.setting.settings.impl.collection.CollectionSetting
-import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.items.*
-import me.zeroeightsix.kami.util.threads.safeListener
+import org.kamiblue.client.util.*
+import org.kamiblue.client.util.items.*
+import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
