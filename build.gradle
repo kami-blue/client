@@ -189,7 +189,7 @@ jar {
             'FMLCorePluginContainsFMLMod': 'true',
             'FMLCorePlugin': 'me.zeroeightsix.kami.mixin.MixinLoaderForge',
             'ForceLoadAsMod': 'true',
-            'Main-Class': 'me.zeroeightsix.installer.Installer'
+            'Main-Class': 'org.kamiblue.client.installer.Installer'
     )
 
     // Copy needed libs to jar

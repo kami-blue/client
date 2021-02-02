@@ -1,4 +1,4 @@
-package me.zeroeightsix.installer;
+package org.kamiblue.client.installer;
 
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.util.WebUtils;
