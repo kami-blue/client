@@ -7,7 +7,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
-import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.mixin.client.entity.MixinEntity
 import org.kamiblue.client.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Category

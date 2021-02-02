@@ -4,7 +4,7 @@ import org.kamiblue.client.event.Phase
 import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
-import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.MovementUtils

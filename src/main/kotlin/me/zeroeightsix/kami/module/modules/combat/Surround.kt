@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.combat
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.kamiblue.client.event.SafeClientEvent
-import me.zeroeightsix.kami.manager.managers.CombatManager
-import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe

@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent;
 import me.zeroeightsix.kami.gui.mc.KamiGuiBeacon;
-import me.zeroeightsix.kami.manager.managers.MessageManager;
+import org.kamiblue.client.manager.managers.MessageManager;
 import me.zeroeightsix.kami.module.modules.chat.PortalChat;
 import me.zeroeightsix.kami.module.modules.misc.BeaconSelector;
 import me.zeroeightsix.kami.module.modules.movement.Sprint;

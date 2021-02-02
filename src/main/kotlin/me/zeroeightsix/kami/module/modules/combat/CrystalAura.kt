@@ -6,8 +6,8 @@ import org.kamiblue.client.event.Phase
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
 import org.kamiblue.client.event.events.PacketEvent
-import me.zeroeightsix.kami.manager.managers.CombatManager
-import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.mixin.extension.id
 import org.kamiblue.client.mixin.extension.packetAction
 import me.zeroeightsix.kami.module.Category

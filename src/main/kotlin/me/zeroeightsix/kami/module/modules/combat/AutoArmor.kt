@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import org.kamiblue.client.event.SafeClientEvent
-import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager
-import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager.addInventoryTask
+import org.kamiblue.client.manager.managers.PlayerInventoryManager
+import org.kamiblue.client.manager.managers.PlayerInventoryManager.addInventoryTask
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*

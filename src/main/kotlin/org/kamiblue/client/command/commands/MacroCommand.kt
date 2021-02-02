@@ -1,7 +1,7 @@
 package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.manager.managers.MacroManager
+import org.kamiblue.client.manager.managers.MacroManager
 import me.zeroeightsix.kami.util.KeyboardUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue

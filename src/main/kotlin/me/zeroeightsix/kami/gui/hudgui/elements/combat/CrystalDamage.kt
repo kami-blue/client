@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.gui.hudgui.elements.combat
 import org.kamiblue.client.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
-import me.zeroeightsix.kami.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.CombatManager
 import me.zeroeightsix.kami.util.Quad
 import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlaceCollide
 import org.kamiblue.commons.utils.MathUtils

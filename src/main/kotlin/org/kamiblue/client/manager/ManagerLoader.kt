@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.manager
+package org.kamiblue.client.manager
 
 import kotlinx.coroutines.Deferred
 import me.zeroeightsix.kami.AsyncLoader

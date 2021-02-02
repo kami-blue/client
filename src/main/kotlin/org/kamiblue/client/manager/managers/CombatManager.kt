@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.manager.managers
+package org.kamiblue.client.manager.managers
 
-import me.zeroeightsix.kami.manager.Manager
+import org.kamiblue.client.manager.Manager
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.ModuleManager

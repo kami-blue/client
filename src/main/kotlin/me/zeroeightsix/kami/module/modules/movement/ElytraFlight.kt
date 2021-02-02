@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.movement
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
-import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.mixin.extension.rotationPitch
 import org.kamiblue.client.mixin.extension.tickLength
 import org.kamiblue.client.mixin.extension.timer

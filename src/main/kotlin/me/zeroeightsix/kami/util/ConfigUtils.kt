@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.util
 
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.manager.managers.FriendManager
-import me.zeroeightsix.kami.manager.managers.MacroManager
-import me.zeroeightsix.kami.manager.managers.UUIDManager
-import me.zeroeightsix.kami.manager.managers.WaypointManager
+import org.kamiblue.client.manager.managers.FriendManager
+import org.kamiblue.client.manager.managers.MacroManager
+import org.kamiblue.client.manager.managers.UUIDManager
+import org.kamiblue.client.manager.managers.WaypointManager
 import me.zeroeightsix.kami.setting.ConfigManager
 import me.zeroeightsix.kami.setting.GenericConfig
 import me.zeroeightsix.kami.setting.ModuleConfig

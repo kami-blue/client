@@ -1,11 +1,11 @@
-package me.zeroeightsix.kami.manager.managers
+package org.kamiblue.client.manager.managers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.event.events.WaypointUpdateEvent
-import me.zeroeightsix.kami.manager.Manager
+import org.kamiblue.client.manager.Manager
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.CoordinateConverter

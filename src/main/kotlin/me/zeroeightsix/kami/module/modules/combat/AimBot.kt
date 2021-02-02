@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.CombatManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.items.swapToItem

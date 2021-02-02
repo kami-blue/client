@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.util.text
 import baritone.api.event.events.ChatEvent
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.CommandManager
-import me.zeroeightsix.kami.manager.managers.MessageManager
+import org.kamiblue.client.manager.managers.MessageManager
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TaskState

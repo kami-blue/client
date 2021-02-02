@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.manager.managers.FriendManager
+import org.kamiblue.client.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TickTimer

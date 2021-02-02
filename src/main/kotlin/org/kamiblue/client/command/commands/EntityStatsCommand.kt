@@ -1,7 +1,7 @@
 package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.manager.managers.UUIDManager
+import org.kamiblue.client.manager.managers.UUIDManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.passive.AbstractHorse

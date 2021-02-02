@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import org.kamiblue.client.event.events.*
-import me.zeroeightsix.kami.manager.managers.WaypointManager
-import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
+import org.kamiblue.client.manager.managers.WaypointManager
+import org.kamiblue.client.manager.managers.WaypointManager.Waypoint
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TickTimer

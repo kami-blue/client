@@ -1,7 +1,7 @@
-package me.zeroeightsix.kami.manager.managers
+package org.kamiblue.client.manager.managers
 
 import org.kamiblue.client.event.events.PacketEvent
-import me.zeroeightsix.kami.manager.Manager
+import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.mixin.extension.packetMessage
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.modules.client.ChatSetting

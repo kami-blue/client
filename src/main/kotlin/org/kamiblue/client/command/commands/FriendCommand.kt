@@ -1,7 +1,7 @@
 package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.manager.managers.FriendManager
+import org.kamiblue.client.manager.managers.FriendManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 object FriendCommand : ClientCommand(

@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.manager.managers.KamiMojiManager
+import org.kamiblue.client.manager.managers.KamiMojiManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.graphics.GlStateUtils

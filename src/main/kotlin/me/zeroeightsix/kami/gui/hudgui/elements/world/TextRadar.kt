@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.gui.hudgui.elements.world
 
 import org.kamiblue.client.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
-import me.zeroeightsix.kami.manager.managers.FriendManager
+import org.kamiblue.client.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.modules.combat.AntiBot
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.AsyncCachedValue

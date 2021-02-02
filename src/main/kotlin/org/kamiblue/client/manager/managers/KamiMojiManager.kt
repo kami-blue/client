@@ -3,14 +3,14 @@
  * You can find a copy of the original license here: https://github.com/2b2t-Utilities/emoji-api/blob/35b0683/LICENSE
  */
 
-package me.zeroeightsix.kami.manager.managers
+package org.kamiblue.client.manager.managers
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.kamiblue.client.KamiMod
-import me.zeroeightsix.kami.manager.Manager
+import org.kamiblue.client.manager.Manager
 import me.zeroeightsix.kami.util.graphics.texture.MipmapTexture
 import me.zeroeightsix.kami.util.threads.defaultScope
 import org.lwjgl.opengl.GL11.*

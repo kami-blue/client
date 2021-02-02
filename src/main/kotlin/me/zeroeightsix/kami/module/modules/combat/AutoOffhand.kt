@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
-import me.zeroeightsix.kami.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module

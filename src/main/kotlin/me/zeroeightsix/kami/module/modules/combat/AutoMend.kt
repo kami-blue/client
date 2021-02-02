@@ -2,9 +2,9 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.GuiEvent
-import me.zeroeightsix.kami.manager.managers.FriendManager
-import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
-import me.zeroeightsix.kami.manager.managers.PlayerPacketManager.PlayerPacket
+import org.kamiblue.client.manager.managers.FriendManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager.PlayerPacket
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.EntityUtils.isFakeOrSelf

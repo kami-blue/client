@@ -1,8 +1,8 @@
 package org.kamiblue.client.command.commands
 
 import org.kamiblue.client.command.ClientCommand
-import me.zeroeightsix.kami.manager.managers.WaypointManager
-import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
+import org.kamiblue.client.manager.managers.WaypointManager
+import org.kamiblue.client.manager.managers.WaypointManager.Waypoint
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString

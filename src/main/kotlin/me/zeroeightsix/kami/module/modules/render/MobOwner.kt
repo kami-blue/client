@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.manager.managers.UUIDManager
+import org.kamiblue.client.manager.managers.UUIDManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.threads.runSafe

@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import org.kamiblue.client.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.mc.KamiGuiDisconnected
-import me.zeroeightsix.kami.manager.managers.CombatManager
-import me.zeroeightsix.kami.manager.managers.FriendManager
+import org.kamiblue.client.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.combat.AutoLog.Reasons.*

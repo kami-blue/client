@@ -4,7 +4,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
-import me.zeroeightsix.kami.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.CombatManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.PauseProcess.pauseBaritone

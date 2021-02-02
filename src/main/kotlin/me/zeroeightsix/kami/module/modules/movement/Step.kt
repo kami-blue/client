@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
-import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.mixin.extension.y
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module

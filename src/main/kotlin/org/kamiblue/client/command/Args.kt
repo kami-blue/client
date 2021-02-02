@@ -1,7 +1,7 @@
 package org.kamiblue.client.command
 
 import kotlinx.coroutines.Dispatchers
-import me.zeroeightsix.kami.manager.managers.UUIDManager
+import org.kamiblue.client.manager.managers.UUIDManager
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.util.*
