@@ -4,26 +4,29 @@ import net.minecraft.util.text.TextFormatting
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.module.AbstractModule
+import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.setting.settings.AbstractSetting
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
+import org.kamiblue.client.util.AsyncCachedValue
+import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.format
 import org.kamiblue.client.util.text.formatValue
+import java.util.*
 
 object SetCommand : ClientCommand(
     name = "set",
     alias = arrayOf("settings"),
     description = "Change the setting of a certain module."
 ) {
-    private fun getSetting(module: AbstractModule, name: String): AbstractSetting<*>? {
-        //Idk how this should be formatted, but it needs it.
-        return module.fullSettingList.find {
-            it.name.replace(" ", "")
-                .equals(
-                    name.replace(" ", "").replace("_", ""),
-                    true)
-        }
+    private val settingMap: Map<AbstractModule, Map<String, AbstractSetting<*>>> by AsyncCachedValue(5L, TimeUnit.SECONDS) {
+        ModuleManager.modules.asSequence()
+            .associateWith { module ->
+                module.fullSettingList.associateBy {
+                    it.name.removeSpaceAndLowerCase()
+                }
+            }
     }
 
     init {
@@ -36,7 +39,7 @@ object SetCommand : ClientCommand(
                         val setting = getSetting(module, settingName)
 
                         if (setting == null) {
-                            sendUnknownSettingMessage(module.name, settingName)
+                            sendUnknownSettingMessage(module, settingName)
                             return@execute
                         }
 
@@ -65,7 +68,7 @@ object SetCommand : ClientCommand(
                         val setting = getSetting(module, settingName)
 
                         if (setting == null) {
-                            sendUnknownSettingMessage(module.name, settingName)
+                            sendUnknownSettingMessage(module, settingName)
                             return@execute
                         }
 
@@ -87,7 +90,7 @@ object SetCommand : ClientCommand(
                     val setting = getSetting(module, settingName)
 
                     if (setting == null) {
-                        sendUnknownSettingMessage(module.name, settingName)
+                        sendUnknownSettingMessage(module, settingName)
                         return@execute
                     }
 
@@ -102,15 +105,21 @@ object SetCommand : ClientCommand(
                 val module = moduleArg.value
                 val settingList = module.fullSettingList
 
-                MessageSendHelper.sendChatMessage("List of settings for ${formatValue(module.name)}: " +
-                    formatValue(settingList.size)
-                )
-                MessageSendHelper.sendRawChatMessage(settingList.joinToString { it.name })
+                MessageSendHelper.sendChatMessage("List of settings for ${formatValue(module.name)}: ${formatValue(settingList.size)}")
+                MessageSendHelper.sendRawChatMessage(settingList.joinToString { "${it.name.removeSpaceAndLowerCase()}(${it.name})" })
             }
         }
     }
 
-    private fun sendUnknownSettingMessage(moduleName: String, settingName: String) {
-        MessageSendHelper.sendChatMessage("Unknown setting ${formatValue(settingName)} in ${formatValue(moduleName)}!")
+    private fun String.removeSpaceAndLowerCase() =
+        this.replace(" ", "")
+            .replace("_", "")
+            .toLowerCase(Locale.ROOT)
+
+    private fun getSetting(module: AbstractModule, settingName: String) =
+        settingMap[module]?.get(settingName.removeSpaceAndLowerCase())
+
+    private fun sendUnknownSettingMessage(module: AbstractModule, settingName: String) {
+        MessageSendHelper.sendChatMessage("Unknown setting ${formatValue(settingName)} in ${formatValue(module.name)}!")
     }
 }
