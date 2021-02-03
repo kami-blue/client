@@ -30,7 +30,7 @@ internal object Chams : Module(
 
     /* Entity type settings */
     private val self = setting("Self", false, { page.value == Page.ENTITY_TYPE })
-    private val all = setting("All Entity", false, { page.value == Page.ENTITY_TYPE })
+    private val all = setting("All Entities", false, { page.value == Page.ENTITY_TYPE })
     private val experience = setting("Experience", false, { page.value == Page.ENTITY_TYPE && !all.value })
     private val arrows = setting("Arrows", false, { page.value == Page.ENTITY_TYPE && !all.value })
     private val throwable = setting("Throwable", false, { page.value == Page.ENTITY_TYPE && !all.value })

@@ -36,7 +36,7 @@ internal object ESP : Module(
     private val page by setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val all by setting("All Entity", false, { page == Page.ENTITY_TYPE })
+    private val all by setting("All Entities", false, { page == Page.ENTITY_TYPE })
     private val experience by setting("Experience", false, { page == Page.ENTITY_TYPE && !all })
     private val arrows by setting("Arrows", false, { page == Page.ENTITY_TYPE && !all })
     private val throwable by setting("Throwable", false, { page == Page.ENTITY_TYPE && !all })
