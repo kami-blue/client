@@ -1,19 +1,31 @@
 package org.kamiblue.client.command.commands
 
+import net.minecraft.util.text.TextFormatting
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
+import org.kamiblue.client.module.AbstractModule
+import org.kamiblue.client.setting.settings.AbstractSetting
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.format
 import org.kamiblue.client.util.text.formatValue
-import net.minecraft.util.text.TextFormatting
 
 object SetCommand : ClientCommand(
     name = "set",
     alias = arrayOf("settings"),
     description = "Change the setting of a certain module."
 ) {
+    private fun getSetting(module: AbstractModule, name: String): AbstractSetting<*>? {
+        //Idk how this should be formatted, but it needs it.
+        return module.fullSettingList.find {
+            it.name.replace(" ", "")
+                .equals(
+                    name.replace(" ", "").replace("_", ""),
+                    true)
+        }
+    }
+
     init {
         module("module") { moduleArg ->
             string("setting") { settingArg ->
@@ -21,7 +33,7 @@ object SetCommand : ClientCommand(
                     execute {
                         val module = moduleArg.value
                         val settingName = settingArg.value
-                        val setting = module.fullSettingList.find { it.name.replace(" ", "").equals(settingName, true) }
+                        val setting = getSetting(module, settingName)
 
                         if (setting == null) {
                             sendUnknownSettingMessage(module.name, settingName)
@@ -50,7 +62,7 @@ object SetCommand : ClientCommand(
                     execute("Set the value of a module's setting") {
                         val module = moduleArg.value
                         val settingName = settingArg.value
-                        val setting = module.fullSettingList.find { it.name.replace(" ", "").equals(settingName, true) }
+                        val setting = getSetting(module, settingName)
 
                         if (setting == null) {
                             sendUnknownSettingMessage(module.name, settingName)
@@ -72,7 +84,7 @@ object SetCommand : ClientCommand(
                 execute("Show the value of a setting") {
                     val module = moduleArg.value
                     val settingName = settingArg.value
-                    val setting = module.fullSettingList.find { it.name.replace(" ", "").equals(settingName, true) }
+                    val setting = getSetting(module, settingName)
 
                     if (setting == null) {
                         sendUnknownSettingMessage(module.name, settingName)
