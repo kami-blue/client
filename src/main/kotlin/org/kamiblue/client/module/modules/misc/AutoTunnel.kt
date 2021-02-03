@@ -19,10 +19,10 @@ internal object AutoTunnel : Module(
     description = "Automatically tunnels forward, at a given size",
     category = Category.MISC
 ) {
-    private val backFill = setting("BackFill", false)
+    private val backFill = setting("Back Fill", false)
     private val height = setting("Height", 2, 1..10, 1)
     private val width = setting("Width", 1, 1..10, 1)
-    private val disableOnDisconnect = setting("DisableOnDisconnect", true)
+    private val disableOnDisconnect = setting("Disable On Disconnect", true)
 
     private var lastDirection = EnumFacing.NORTH
 

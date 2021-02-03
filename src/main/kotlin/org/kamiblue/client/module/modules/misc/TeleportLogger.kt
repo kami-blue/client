@@ -14,11 +14,11 @@ internal object TeleportLogger : Module(
     category = Category.MISC,
     description = "Logs when a player teleports somewhere"
 ) {
-    private val saveToFile = setting("SaveToFile", true)
-    private val remove = setting("RemoveInRange", true)
-    private val printAdd = setting("PrintAdd", true)
-    private val printRemove = setting("PrintRemove", true, { remove.value })
-    private val minimumDistance = setting("MinimumDistance", 512, 128..2048, 128)
+    private val saveToFile = setting("Save To File", true)
+    private val remove = setting("Remove In Range", true)
+    private val printAdd = setting("Print Add", true)
+    private val printRemove = setting("Print Remove", true, { remove.value })
+    private val minimumDistance = setting("Minimum Distance", 512, 128..2048, 128)
 
     private val teleportedPlayers = HashMap<String, BlockPos>()
 

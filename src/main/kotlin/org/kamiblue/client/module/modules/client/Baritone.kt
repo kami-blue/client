@@ -16,19 +16,19 @@ internal object Baritone : Module(
     showOnArray = false,
     alwaysEnabled = true
 ) {
-    private val allowBreak = setting("AllowBreak", true)
-    private val allowSprint = setting("AllowSprint", true)
-    private val allowPlace = setting("AllowPlace", true)
-    val allowInventory = setting("AllowInventory", false)
-    private val freeLook = setting("FreeLook", true)
-    private val allowDownwardTunneling = setting("DownwardTunneling", true)
-    private val allowParkour = setting("AllowParkour", true)
-    private val allowParkourPlace = setting("AllowParkourPlace", true)
-    private val avoidPortals = setting("AvoidPortals", false)
-    private val mapArtMode = setting("MapArtMode", false)
-    private val renderGoal = setting("RenderGoals", true)
-    private val failureTimeout = setting("FailTimeout", 2, 1..20, 1)
-    private val blockReachDistance = setting("ReachDistance", 4.5f, 1.0f..10.0f, 0.5f)
+    private val allowBreak = setting("Allow Break", true)
+    private val allowSprint = setting("Allow Sprint", true)
+    private val allowPlace = setting("Allow Place", true)
+    val allowInventory = setting("Allow Inventory", false)
+    private val freeLook = setting("Free Look", true)
+    private val allowDownwardTunneling = setting("Downward Tunneling", true)
+    private val allowParkour = setting("Allow Parkour", true)
+    private val allowParkourPlace = setting("Allow Parkour Place", true)
+    private val avoidPortals = setting("Avoid Portals", false)
+    private val mapArtMode = setting("Map Art Mode", false)
+    private val renderGoal = setting("Render Goals", true)
+    private val failureTimeout = setting("Fail Timeout", 2, 1..20, 1)
+    private val blockReachDistance = setting("Reach Distance", 4.5f, 1.0f..10.0f, 0.5f)
 
     init {
         settingList.forEach {

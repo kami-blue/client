@@ -22,8 +22,8 @@ internal object LogoutLogger : Module(
     category = Category.MISC,
     description = "Logs when a player leaves the game"
 ) {
-    private val saveToFile = setting("SaveToFile", true)
-    private val print = setting("PrintToChat", true)
+    private val saveToFile = setting("Save To File", true)
+    private val print = setting("Print To Chat", true)
 
     private val loggedPlayers = HashMap<GameProfile, BlockPos>()
     private val timer = TickTimer(TimeUnit.SECONDS)

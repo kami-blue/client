@@ -30,7 +30,7 @@ internal object NoFall : Module(
     private val mode = setting("Mode", Mode.CATCH)
     private val fallModeSetting = setting("Fall", FallMode.PACKET, { mode.value == Mode.FALL })
     private val catchModeSetting = setting("Catch", CatchMode.MOTION, { mode.value == Mode.CATCH })
-    private val voidOnly = setting("VoidOnly", false, { mode.value == Mode.CATCH })
+    private val voidOnly = setting("Void Only", false, { mode.value == Mode.CATCH })
 
     private enum class Mode {
         FALL, CATCH

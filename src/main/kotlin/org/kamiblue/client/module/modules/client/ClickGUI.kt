@@ -21,8 +21,8 @@ internal object ClickGUI : Module(
     private val scaleSetting = setting("Scale", 100, 50..400, 5)
     val blur by setting("Blur", 0.0f, 0.0f..1.0f, 0.05f)
     val darkness by setting("Darkness", 0.25f, 0.0f..1.0f, 0.05f)
-    val fadeInTime by setting("FadeInTime", 0.25f, 0.0f..1.0f, 0.05f)
-    val fadeOutTime by setting("FadeOutTime", 0.1f, 0.0f..1.0f, 0.05f)
+    val fadeInTime by setting("Fade In Time", 0.25f, 0.0f..1.0f, 0.05f)
+    val fadeOutTime by setting("Fade Out Time", 0.1f, 0.0f..1.0f, 0.05f)
 
     private var prevScale = scaleSetting.value / 100.0f
     private var scale = prevScale

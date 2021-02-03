@@ -12,7 +12,7 @@ internal object PortalGodMode : Module(
     category = Category.PLAYER,
     description = "Don't take damage in portals"
 ) {
-    private val instantTeleport by setting("InstantTeleport", true)
+    private val instantTeleport by setting("Instant Teleport", true)
 
     private var packet: CPacketConfirmTeleport? = null
 

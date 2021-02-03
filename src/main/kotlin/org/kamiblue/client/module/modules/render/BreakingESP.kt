@@ -25,14 +25,14 @@ internal object BreakingESP : Module(
     description = "Highlights blocks being broken near you",
     category = Category.RENDER
 ) {
-    private val espSelf = setting("ESPSelf", true)
-    private val warnSelf = setting("WarnSelf", false)
-    private val obsidianOnly = setting("ObsidianOnly", false)
+    private val espSelf = setting("ESP Self", true)
+    private val warnSelf = setting("Warn Self", false)
+    private val obsidianOnly = setting("Obsidian Only", false)
     private val warning = setting("Warn", false)
-    private val warningProgress = setting("WarnProgress", 4, 0..10, 1)
-    private val chatWarn = setting("ChatWarning", false)
-    private val screenWarn = setting("HUDWarning", true)
-    private val soundWarn = setting("SoundWarning", false)
+    private val warningProgress = setting("Warn Progress", 4, 0..10, 1)
+    private val chatWarn = setting("Chat Warning", false)
+    private val screenWarn = setting("HUD Warning", true)
+    private val soundWarn = setting("Sound Warning", false)
     private val range = setting("Range", 16.0f, 2.0f..32.0f, 2.0f)
     private val filled = setting("Filled", true)
     private val outline = setting("Outline", true)
@@ -40,10 +40,10 @@ internal object BreakingESP : Module(
     private val r = setting("Red", 255, 0..255, 1)
     private val g = setting("Green", 255, 0..255, 1)
     private val b = setting("Blue", 255, 0..255, 1)
-    private val aFilled = setting("FilledAlpha", 31, 0..255, 1, { filled.value })
-    private val aOutline = setting("OutlineAlpha", 200, 0..255, 1, { outline.value })
-    private val aTracer = setting("TracerAlpha", 255, 0..255, 1, { outline.value })
-    private val thickness = setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f)
+    private val aFilled = setting("Filled Alpha", 31, 0..255, 1, { filled.value })
+    private val aOutline = setting("Outline Alpha", 200, 0..255, 1, { outline.value })
+    private val aTracer = setting("Tracer Alpha", 255, 0..255, 1, { outline.value })
+    private val thickness = setting("Line Thickness", 2.0f, 0.25f..5.0f, 0.25f)
 
     private val breakingBlockList = LinkedHashMap<Int, Triple<BlockPos, Int, Pair<Boolean, Boolean>>>() /* <BreakerID, <Position, Progress, <Warned, Render>> */
     private var warn = false

@@ -15,8 +15,8 @@ internal object FullBright : Module(
     alwaysListening = true
 ) {
     private val gamma by setting("Gamma", 12.0f, 5.0f..15.0f, 0.5f)
-    private val transitionLength by setting("TransitionLength", 3.0f, 0.0f..10.0f, 0.5f)
-    private var oldValue by setting("OldValue", 1.0f, 0.0f..1.0f, 0.1f, { false })
+    private val transitionLength by setting("Transition Length", 3.0f, 0.0f..10.0f, 0.5f)
+    private var oldValue by setting("Old Value", 1.0f, 0.0f..1.0f, 0.1f, { false })
 
     private var gammaSetting: Float
         get() = mc.gameSettings.gammaSetting

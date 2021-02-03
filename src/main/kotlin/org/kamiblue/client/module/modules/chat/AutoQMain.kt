@@ -17,8 +17,8 @@ internal object AutoQMain : Module(
     category = Category.CHAT,
     showOnArray = false
 ) {
-    private val showWarns = setting("ShowWarnings", true)
-    private val dimensionWarning = setting("DimensionWarning", true)
+    private val showWarns = setting("Show Warnings", true)
+    private val dimensionWarning = setting("Dimension Warning", true)
     private val delay = setting("Delay", 30, 5..120, 5)
 
     private val timer = TickTimer(TimeUnit.SECONDS)

@@ -23,13 +23,13 @@ internal object TotemPopCounter : Module(
     description = "Counts how many times players pop",
     category = Category.COMBAT
 ) {
-    private val countFriends = setting("CountFriends", true)
-    private val countSelf = setting("CountSelf", false)
-    private val resetOnDeath = setting("ResetOnDeath", true)
+    private val countFriends = setting("Count Friends", true)
+    private val countSelf = setting("Count Self", false)
+    private val resetOnDeath = setting("Reset On Death", true)
     private val announceSetting = setting("Announce", Announce.CLIENT)
-    private val thanksTo = setting("ThanksTo", false)
-    private val colorName = setting("ColorName", EnumTextColor.DARK_PURPLE)
-    private val colorNumber = setting("ColorNumber", EnumTextColor.LIGHT_PURPLE)
+    private val thanksTo = setting("Thanks To", false)
+    private val colorName = setting("Color Name", EnumTextColor.DARK_PURPLE)
+    private val colorNumber = setting("Color Number", EnumTextColor.LIGHT_PURPLE)
 
     private enum class Announce {
         CLIENT, EVERYONE

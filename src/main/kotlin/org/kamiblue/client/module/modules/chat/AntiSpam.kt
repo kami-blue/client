@@ -17,7 +17,7 @@ internal object AntiSpam : Module(
     showOnArray = false
 ) {
     private val mode = setting("Mode", Mode.REPLACE)
-    private val replaceMode = setting("ReplaceMode", ReplaceMode.ASTERISKS, { mode.value == Mode.REPLACE })
+    private val replaceMode = setting("Replace Mode", ReplaceMode.ASTERISKS, { mode.value == Mode.REPLACE })
     private val page = setting("Page", Page.TYPE)
 
     /* Page One */
@@ -25,20 +25,20 @@ internal object AntiSpam : Module(
     private val slurs = setting("Slurs", true, { page.value == Page.TYPE })
     private val swears = setting("Swears", false, { page.value == Page.TYPE })
     private val automated = setting("Automated", true, { page.value == Page.TYPE })
-    private val ips = setting("ServerIps", true, { page.value == Page.TYPE })
-    private val specialCharEnding = setting("SpecialEnding", true, { page.value == Page.TYPE })
-    private val specialCharBegin = setting("SpecialBegin", true, { page.value == Page.TYPE })
-    private val greenText = setting("GreenText", false, { page.value == Page.TYPE })
-    private val fancyChat = setting("FancyChat", false, { page.value == Page.TYPE })
+    private val ips = setting("Server Ips", true, { page.value == Page.TYPE })
+    private val specialCharEnding = setting("Special Ending", true, { page.value == Page.TYPE })
+    private val specialCharBegin = setting("Special Begin", true, { page.value == Page.TYPE })
+    private val greenText = setting("Green Text", false, { page.value == Page.TYPE })
+    private val fancyChat = setting("Fancy Chat", false, { page.value == Page.TYPE })
 
     /* Page Two */
-    private val aggressiveFiltering = setting("AggressiveFiltering", true, { page.value == Page.SETTINGS })
+    private val aggressiveFiltering = setting("Aggressive Filtering", true, { page.value == Page.SETTINGS })
     private val duplicates = setting("Duplicates", true, { page.value == Page.SETTINGS })
-    private val duplicatesTimeout = setting("DuplicatesTimeout", 30, 1..600, 5, { duplicates.value && page.value == Page.SETTINGS })
-    private val filterOwn = setting("FilterOwn", false, { page.value == Page.SETTINGS })
-    private val filterDMs = setting("FilterDMs", false, { page.value == Page.SETTINGS })
-    private val filterServer = setting("FilterServer", false, { page.value == Page.SETTINGS })
-    private val showBlocked = setting("ShowBlocked", ShowBlocked.LOG_FILE, { page.value == Page.SETTINGS })
+    private val duplicatesTimeout = setting("Duplicates Timeout", 30, 1..600, 5, { duplicates.value && page.value == Page.SETTINGS })
+    private val filterOwn = setting("Filter Own", false, { page.value == Page.SETTINGS })
+    private val filterDMs = setting("Filter DMs", false, { page.value == Page.SETTINGS })
+    private val filterServer = setting("Filter Server", false, { page.value == Page.SETTINGS })
+    private val showBlocked = setting("Show Blocked", ShowBlocked.LOG_FILE, { page.value == Page.SETTINGS })
 
     private enum class Mode {
         REPLACE, HIDE

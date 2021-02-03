@@ -15,7 +15,7 @@ internal object ArmorHide : Module(
     showOnArray = false
 ) {
     private val player by setting("Players", false)
-    private val armorStands by setting("ArmourStands", true)
+    private val armorStands by setting("Armour Stands", true)
     private val mobs by setting("Mobs", true)
     private val helmet by setting("Helmet", false)
     private val chestplate by setting("Chestplate", false)

@@ -18,8 +18,8 @@ internal object ChatTimestamp : Module(
 ) {
     private val color by setting("Color", EnumTextColor.GRAY)
     private val separator by setting("Separator", Separator.ARROWS)
-    private val timeFormat by setting("TimeFormat", TimeUtils.TimeFormat.HHMM)
-    private val timeUnit by setting("TimeUnit", TimeUtils.TimeUnit.H12)
+    private val timeFormat by setting("Time Format", TimeUtils.TimeFormat.HHMM)
+    private val timeUnit by setting("Time Unit", TimeUtils.TimeUnit.H12)
 
     init {
         listener<ClientChatReceivedEvent> {

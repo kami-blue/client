@@ -21,7 +21,7 @@ object SetCommand : ClientCommand(
                     execute {
                         val module = moduleArg.value
                         val settingName = settingArg.value
-                        val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
+                        val setting = module.fullSettingList.find { it.name.replace(" ", "").equals(settingName, true) }
 
                         if (setting == null) {
                             sendUnknownSettingMessage(module.name, settingName)
@@ -50,7 +50,7 @@ object SetCommand : ClientCommand(
                     execute("Set the value of a module's setting") {
                         val module = moduleArg.value
                         val settingName = settingArg.value
-                        val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
+                        val setting = module.fullSettingList.find { it.name.replace(" ", "").equals(settingName, true) }
 
                         if (setting == null) {
                             sendUnknownSettingMessage(module.name, settingName)
@@ -72,7 +72,7 @@ object SetCommand : ClientCommand(
                 execute("Show the value of a setting") {
                     val module = moduleArg.value
                     val settingName = settingArg.value
-                    val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
+                    val setting = module.fullSettingList.find { it.name.replace(" ", "").equals(settingName, true) }
 
                     if (setting == null) {
                         sendUnknownSettingMessage(module.name, settingName)

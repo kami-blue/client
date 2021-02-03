@@ -26,10 +26,10 @@ internal object AutoFish : Module(
     description = "Automatically catch fish"
 ) {
     private val mode = setting("Mode", Mode.BOUNCE)
-    private val autoCast = setting("AutoCast", true)
-    private val castDelay = setting("AutoCastDelay(s)", 5, 1..20, 1, { autoCast.value })
-    private val catchDelay = setting("CatchDelay(ms)", 300, 50..2000, 50)
-    private val recastDelay = setting("RecastDelay(ms)", 450, 50..2000, 50)
+    private val autoCast = setting("Auto Cast", true)
+    private val castDelay = setting("Auto Cast Delay(s)", 5, 1..20, 1, { autoCast.value })
+    private val catchDelay = setting("Catch Delay(ms)", 300, 50..2000, 50)
+    private val recastDelay = setting("Recast Delay(ms)", 450, 50..2000, 50)
     private val variation = setting("Variation(ms)", 100, 0..1000, 50)
 
     @Suppress("UNUSED")

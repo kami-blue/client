@@ -18,7 +18,7 @@ internal object InventoryMove : Module(
     description = "Allows you to walk around with GUIs opened",
     category = Category.MOVEMENT
 ) {
-    private val rotateSpeed by setting("RotateSpeed", 5, 0..20, 1)
+    private val rotateSpeed by setting("Rotate Speed", 5, 0..20, 1)
     val sneak by setting("Sneak", false)
 
     private var hasSent = false

@@ -9,7 +9,7 @@ internal object ExtraChatHistory : Module(
     description = "Show more messages in the chat history",
     showOnArray = false
 ) {
-    val maxMessages = setting("MaxMessage", 1000, 100..5000, 100)
+    val maxMessages = setting("Max Message", 1000, 100..5000, 100)
 
     @JvmStatic
     fun <E> getModifiedSize(list: List<E>): Int {

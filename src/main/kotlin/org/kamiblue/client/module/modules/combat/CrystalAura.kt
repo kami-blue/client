@@ -73,50 +73,50 @@ internal object CrystalAura : Module(
     private val page by setting("Page", Page.GENERAL)
 
     /* General */
-    private val noSuicideThreshold by setting("NoSuicide", 8.0f, 0.0f..20.0f, 0.5f, { page == Page.GENERAL })
-    private val rotationTolerance by setting("RotationTolerance", 10, 5..50, 5, { page == Page.GENERAL })
-    private val maxYawSpeed by setting("MaxYawSpeed", 50, 10..100, 5, { page == Page.GENERAL })
-    private val swingMode by setting("SwingMode", SwingMode.CLIENT, { page == Page.GENERAL })
+    private val noSuicideThreshold by setting("No Suicide", 8.0f, 0.0f..20.0f, 0.5f, { page == Page.GENERAL })
+    private val rotationTolerance by setting("Rotation Tolerance", 10, 5..50, 5, { page == Page.GENERAL })
+    private val maxYawSpeed by setting("Max YawSpeed", 50, 10..100, 5, { page == Page.GENERAL })
+    private val swingMode by setting("Swing Mode", SwingMode.CLIENT, { page == Page.GENERAL })
 
     /* Force place */
-    private val bindForcePlace by setting("BindForcePlace", Bind(), { page == Page.FORCE_PLACE })
-    private val forcePlaceHealth by setting("ForcePlaceHealth", 6.0f, 0.0f..20.0f, 0.5f, { page == Page.FORCE_PLACE })
-    private val forcePlaceArmorDura by setting("ForcePlaceArmorDura", 5, 0..50, 1, { page == Page.FORCE_PLACE })
-    private val minDamageForcePlace by setting("MinDamageForcePlace", 1.5f, 0.0f..10.0f, 0.25f, { page == Page.FORCE_PLACE })
+    private val bindForcePlace by setting("Bind Force Place", Bind(), { page == Page.FORCE_PLACE })
+    private val forcePlaceHealth by setting("Force Place Health", 6.0f, 0.0f..20.0f, 0.5f, { page == Page.FORCE_PLACE })
+    private val forcePlaceArmorDura by setting("Force Place Armor Dura", 5, 0..50, 1, { page == Page.FORCE_PLACE })
+    private val minDamageForcePlace by setting("Min Damage Force Place", 1.5f, 0.0f..10.0f, 0.25f, { page == Page.FORCE_PLACE })
 
     /* Place page one */
     private val doPlace by setting("Place", true, { page == Page.PLACE_ONE })
-    private val autoSwap by setting("AutoSwap", true, { page == Page.PLACE_ONE })
-    private val spoofHotbar by setting("SpoofHotbar", false, { page == Page.PLACE_ONE && autoSwap })
-    private val placeSwing by setting("PlaceSwing", true, { page == Page.PLACE_ONE })
-    private val placeSync by setting("PlaceSync", false, { page == Page.PLACE_ONE })
-    private val extraPlacePacket by setting("ExtraPlacePacket", false, { page == Page.PLACE_ONE })
+    private val autoSwap by setting("Auto  Swap", true, { page == Page.PLACE_ONE })
+    private val spoofHotbar by setting("Spoof Hotbar", false, { page == Page.PLACE_ONE && autoSwap })
+    private val placeSwing by setting("Place Swing", true, { page == Page.PLACE_ONE })
+    private val placeSync by setting("Place Sync", false, { page == Page.PLACE_ONE })
+    private val extraPlacePacket by setting("Extra Place Packet", false, { page == Page.PLACE_ONE })
 
     /* Place page two */
-    private val minDamageP by setting("MinDamagePlace", 2.0f, 0.0f..10.0f, 0.25f, { page == Page.PLACE_TWO })
-    private val maxSelfDamageP by setting("MaxSelfDamagePlace", 2.0f, 0.0f..10.0f, 0.25f, { page == Page.PLACE_TWO })
-    private val placeOffset by setting("PlaceOffset", 1.0f, 0f..1f, 0.05f, { page == Page.PLACE_TWO })
-    private val maxCrystal by setting("MaxCrystal", 2, 1..5, 1, { page == Page.PLACE_TWO })
-    private val placeDelay by setting("PlaceDelay", 1, 1..10, 1, { page == Page.PLACE_TWO })
-    private val placeRange by setting("PlaceRange", 4.0f, 0.0f..5.0f, 0.25f, { page == Page.PLACE_TWO })
-    private val wallPlaceRange by setting("WallPlaceRange", 2.0f, 0.0f..5.0f, 0.25f, { page == Page.PLACE_TWO })
+    private val minDamageP by setting("Min Damage Place", 2.0f, 0.0f..10.0f, 0.25f, { page == Page.PLACE_TWO })
+    private val maxSelfDamageP by setting("Max Self Damage Place", 2.0f, 0.0f..10.0f, 0.25f, { page == Page.PLACE_TWO })
+    private val placeOffset by setting("Place Offset", 1.0f, 0f..1f, 0.05f, { page == Page.PLACE_TWO })
+    private val maxCrystal by setting("Max Crystal", 2, 1..5, 1, { page == Page.PLACE_TWO })
+    private val placeDelay by setting("Place Delay", 1, 1..10, 1, { page == Page.PLACE_TWO })
+    private val placeRange by setting("Place Range", 4.0f, 0.0f..5.0f, 0.25f, { page == Page.PLACE_TWO })
+    private val wallPlaceRange by setting("Wall Place Range", 2.0f, 0.0f..5.0f, 0.25f, { page == Page.PLACE_TWO })
 
     /* Explode page one */
     private val doExplode by setting("Explode", true, { page == Page.EXPLODE_ONE })
-    private val autoForceExplode by setting("AutoForceExplode", true, { page == Page.EXPLODE_ONE })
-    private val antiWeakness by setting("AntiWeakness", true, { page == Page.EXPLODE_ONE })
-    private val packetExplode by setting("PacketExplode", true, { page == Page.EXPLODE_ONE })
-    private val predictExplode by setting("PredictExplode", false, { page == Page.EXPLODE_ONE })
-    private val predictDelay by setting("PredictDelay", 10, 0..200, 1, { page == Page.EXPLODE_ONE && predictExplode })
+    private val autoForceExplode by setting("Auto Force Explode", true, { page == Page.EXPLODE_ONE })
+    private val antiWeakness by setting("Anti Weakness", true, { page == Page.EXPLODE_ONE })
+    private val packetExplode by setting("Packet Explode", true, { page == Page.EXPLODE_ONE })
+    private val predictExplode by setting("Predict Explode", false, { page == Page.EXPLODE_ONE })
+    private val predictDelay by setting("Predict Delay", 10, 0..200, 1, { page == Page.EXPLODE_ONE && predictExplode })
 
     /* Explode page two */
-    private val minDamageE by setting("MinDamageExplode", 6.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
-    private val maxSelfDamageE by setting("MaxSelfDamageExplode", 3.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
-    private val swapDelay by setting("SwapDelay", 10, 1..50, 1, { page == Page.EXPLODE_TWO })
-    private val hitDelay by setting("HitDelay", 1, 1..10, 1, { page == Page.EXPLODE_TWO })
-    private val hitAttempts by setting("HitAttempts", 4, 0..8, 1, { page == Page.EXPLODE_TWO })
-    private val explodeRange by setting("ExplodeRange", 4.0f, 0.0f..5.0f, 0.25f, { page == Page.EXPLODE_TWO })
-    private val wallExplodeRange by setting("WallExplodeRange", 2.0f, 0.0f..5.0f, 0.25f, { page == Page.EXPLODE_TWO })
+    private val minDamageE by setting("Min Damage Explode", 6.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
+    private val maxSelfDamageE by setting("Max Self Damage Explode", 3.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
+    private val swapDelay by setting("Swap Delay", 10, 1..50, 1, { page == Page.EXPLODE_TWO })
+    private val hitDelay by setting("Hit Delay", 1, 1..10, 1, { page == Page.EXPLODE_TWO })
+    private val hitAttempts by setting("Hit Attempts", 4, 0..8, 1, { page == Page.EXPLODE_TWO })
+    private val explodeRange by setting("Explode Range", 4.0f, 0.0f..5.0f, 0.25f, { page == Page.EXPLODE_TWO })
+    private val wallExplodeRange by setting("Wall Explode Range", 2.0f, 0.0f..5.0f, 0.25f, { page == Page.EXPLODE_TWO })
     /* End of settings */
 
     private enum class Page {

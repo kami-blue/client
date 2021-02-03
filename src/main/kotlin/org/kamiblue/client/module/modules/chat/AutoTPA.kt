@@ -14,7 +14,7 @@ internal object AutoTPA : Module(
     description = "Automatically accept or decline /TPAs",
     category = Category.CHAT
 ) {
-    private val friends = setting("AlwaysAcceptFriends", true)
+    private val friends = setting("Always Accept Friends", true)
     private val mode = setting("Response", Mode.DENY)
 
     private enum class Mode {

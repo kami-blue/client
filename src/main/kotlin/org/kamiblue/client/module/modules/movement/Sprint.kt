@@ -14,8 +14,8 @@ internal object Sprint : Module(
     description = "Automatically makes the player sprint",
     category = Category.MOVEMENT
 ) {
-    private val multiDirection = setting("MultiDirection", false)
-    private val onHolding = setting("OnHoldingSprint", false)
+    private val multiDirection = setting("Multi Direction", false)
+    private val onHolding = setting("On Holding Sprint", false)
 
     var sprinting = false
 

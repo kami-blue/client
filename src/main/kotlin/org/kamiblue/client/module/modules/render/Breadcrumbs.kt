@@ -31,16 +31,16 @@ internal object Breadcrumbs : Module(
     alwaysListening = true
 ) {
     private val clear = setting("Clear", false)
-    private val whileDisabled = setting("WhileDisabled", false)
-    private val smoothFactor = setting("SmoothFactor", 5.0f, 0.0f..10.0f, 0.25f)
-    private val maxDistance = setting("MaxDistance", 4096, 1024..16384, 1024)
-    private val yOffset = setting("YOffset", 0.5f, 0.0f..1.0f, 0.05f)
-    private val throughBlocks = setting("ThroughBlocks", true)
+    private val whileDisabled = setting("While Disabled", false)
+    private val smoothFactor = setting("Smooth Factor", 5.0f, 0.0f..10.0f, 0.25f)
+    private val maxDistance = setting("Max Distance", 4096, 1024..16384, 1024)
+    private val yOffset = setting("Y Offset", 0.5f, 0.0f..1.0f, 0.05f)
+    private val throughBlocks = setting("Through Blocks", true)
     private val r = setting("Red", 255, 0..255, 1)
     private val g = setting("Green", 166, 0..255, 1)
     private val b = setting("Blue", 188, 0..255, 1)
     private val a = setting("Alpha", 200, 0..255, 1)
-    private val thickness = setting("LineThickness", 2.0f, 0.25f..8.0f, 0.25f)
+    private val thickness = setting("Line Thickness", 2.0f, 0.25f..8.0f, 0.25f)
 
     private val mainList = ConcurrentHashMap<String, HashMap<Int, ArrayDeque<Vec3d>>>() /* <Server IP, <Dimension, PositionList>> */
     private var prevDimension = -2

@@ -12,11 +12,11 @@ internal object PacketCancel : Module(
     category = Category.PLAYER
 ) {
     private val all by setting("All", false)
-    private val packetInput by setting("CPacketInput", true, { !all })
-    private val packetPlayer by setting("CPacketPlayer", true, { !all })
-    private val packetEntityAction by setting("CPacketEntityAction", true, { !all })
-    private val packetUseEntity by setting("CPacketUseEntity", true, { !all })
-    private val packetVehicleMove by setting("CPacketVehicleMove", true, { !all })
+    private val packetInput by setting("CPacket Input", true, { !all })
+    private val packetPlayer by setting("CPacket Player", true, { !all })
+    private val packetEntityAction by setting("CPacket Entity Action", true, { !all })
+    private val packetUseEntity by setting("CPacket Use Entity", true, { !all })
+    private val packetVehicleMove by setting("CPacket Vehicle Move", true, { !all })
 
     private var numPackets = 0
 

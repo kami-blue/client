@@ -22,10 +22,10 @@ internal object ChestStealer : Module(
     description = "Automatically steal or store items from containers"
 ) {
     val mode = setting("Mode", Mode.TOGGLE)
-    private val movingMode = setting("MovingMode", MovingMode.QUICK_MOVE)
-    private val ignoreEjectItem = setting("IgnoresEjectItem", false, description = "Ignore AutoEject items in InventoryManager")
+    private val movingMode = setting("Moving Mode", MovingMode.QUICK_MOVE)
+    private val ignoreEjectItem = setting("Ignores Eject Item", false, description = "Ignore AutoEject items in InventoryManager")
     private val delay = setting("Delay", 250, 0..1000, 25, description = "Move stack delay in ms")
-    private val onlyShulkers = setting("OnlyShulkers", false, description = "Only move shulker boxes")
+    private val onlyShulkers = setting("Only Shulkers", false, description = "Only move shulker boxes")
 
     enum class Mode {
         ALWAYS, TOGGLE, MANUAL

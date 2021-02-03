@@ -16,8 +16,8 @@ internal object AutoRespawn : Module(
     category = Category.MISC
 ) {
     private val respawn = setting("Respawn", true)
-    private val deathCoords = setting("SaveDeathCoords", true)
-    private val antiGlitchScreen = setting("AntiGlitchScreen", true)
+    private val deathCoords = setting("Save Death Coords", true)
+    private val antiGlitchScreen = setting("Anti Glitch Screen", true)
 
     init {
         listener<GuiEvent.Displayed> {

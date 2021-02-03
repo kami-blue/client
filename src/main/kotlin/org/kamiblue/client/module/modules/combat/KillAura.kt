@@ -27,15 +27,15 @@ internal object KillAura : Module(
     modulePriority = 50
 ) {
     private val delayMode = setting("Mode", WaitMode.DELAY)
-    private val lockView = setting("LockView", false)
-    private val spoofRotation = setting("SpoofRotation", true, { !lockView.value })
-    private val waitTick = setting("SpamDelay", 2.0f, 1.0f..40.0f, 0.5f, { delayMode.value == WaitMode.SPAM })
+    private val lockView = setting("Lock View", false)
+    private val spoofRotation = setting("Spoof Rotation", true, { !lockView.value })
+    private val waitTick = setting("Spam Delay", 2.0f, 1.0f..40.0f, 0.5f, { delayMode.value == WaitMode.SPAM })
     val range = setting("Range", 5f, 0f..8f, 0.25f)
-    private val tpsSync = setting("TPSSync", false)
-    private val autoWeapon = setting("AutoWeapon", true)
-    private val weaponOnly = setting("WeaponOnly", true)
+    private val tpsSync = setting("TPS Sync", false)
+    private val autoWeapon = setting("Auto Weapon", true)
+    private val weaponOnly = setting("Weapon Only", true)
     private val prefer = setting("Prefer", CombatUtils.PreferWeapon.SWORD, { autoWeapon.value })
-    private val disableOnDeath = setting("DisableOnDeath", false)
+    private val disableOnDeath = setting("Disable On Death", false)
 
     private var inactiveTicks = 0
     private var tickCount = 0

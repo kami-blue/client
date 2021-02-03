@@ -29,11 +29,11 @@ internal object FakePlayer : Module(
     description = "Spawns a client sided fake player",
     category = Category.MISC
 ) {
-    private val copyInventory by setting("CopyInventory", true)
-    private val copyPotions by setting("CopyPotions", true)
-    private val maxArmor by setting("MaxArmor", false)
-    private val gappleEffects by setting("GappleEffects", false)
-    val playerName by setting("PlayerName", "Player")
+    private val copyInventory by setting("Copy Inventory", true)
+    private val copyPotions by setting("Copy Potions", true)
+    private val maxArmor by setting("Max Armor", false)
+    private val gappleEffects by setting("Gapple Effects", false)
+    val playerName by setting("Player Name", "Player")
 
     private const val ENTITY_ID = -696969420
     private var fakePlayer: EntityOtherPlayerMP? = null

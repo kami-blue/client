@@ -35,15 +35,15 @@ internal object WaypointRender : Module(
 
     /* Page one */
     private val dimension = setting("Dimension", Dimension.CURRENT, { page.value == Page.INFO_BOX })
-    private val showName = setting("ShowName", true, { page.value == Page.INFO_BOX })
-    private val showDate = setting("ShowDate", false, { page.value == Page.INFO_BOX })
-    private val showCoords = setting("ShowCoords", true, { page.value == Page.INFO_BOX })
-    private val showDist = setting("ShowDistance", true, { page.value == Page.INFO_BOX })
-    private val textScale = setting("TextScale", 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.INFO_BOX })
-    private val infoBoxRange = setting("InfoBoxRange", 512, 128..2048, 64, { page.value == Page.INFO_BOX })
+    private val showName = setting("Show Name", true, { page.value == Page.INFO_BOX })
+    private val showDate = setting("Show Date", false, { page.value == Page.INFO_BOX })
+    private val showCoords = setting("Show Coords", true, { page.value == Page.INFO_BOX })
+    private val showDist = setting("Show Distance", true, { page.value == Page.INFO_BOX })
+    private val textScale = setting("Text Scale", 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.INFO_BOX })
+    private val infoBoxRange = setting("Info Box Range", 512, 128..2048, 64, { page.value == Page.INFO_BOX })
 
     /* Page two */
-    private val espRangeLimit = setting("RenderRange", true, { page.value == Page.ESP })
+    private val espRangeLimit = setting("Render Range", true, { page.value == Page.ESP })
     private val espRange = setting("Range", 4096, 1024..16384, 1024, { page.value == Page.ESP && espRangeLimit.value })
     private val filled = setting("Filled", true, { page.value == Page.ESP })
     private val outline = setting("Outline", true, { page.value == Page.ESP })
@@ -51,10 +51,10 @@ internal object WaypointRender : Module(
     private val r = setting("Red", 31, 0..255, 1, { page.value == Page.ESP })
     private val g = setting("Green", 200, 0..255, 1, { page.value == Page.ESP })
     private val b = setting("Blue", 63, 0..255, 1, { page.value == Page.ESP })
-    private val aFilled = setting("FilledAlpha", 63, 0..255, 1, { page.value == Page.ESP && filled.value })
-    private val aOutline = setting("OutlineAlpha", 160, 0..255, 1, { page.value == Page.ESP && outline.value })
-    private val aTracer = setting("TracerAlpha", 200, 0..255, 1, { page.value == Page.ESP && tracer.value })
-    private val thickness = setting("LineThickness", 2.0f, 0.25f..8.0f, 0.25f)
+    private val aFilled = setting("Filled Alpha", 63, 0..255, 1, { page.value == Page.ESP && filled.value })
+    private val aOutline = setting("Outline Alpha", 160, 0..255, 1, { page.value == Page.ESP && outline.value })
+    private val aTracer = setting("Tracer Alpha", 200, 0..255, 1, { page.value == Page.ESP && tracer.value })
+    private val thickness = setting("Line Thickness", 2.0f, 0.25f..8.0f, 0.25f)
 
     private enum class Dimension {
         CURRENT, ANY
