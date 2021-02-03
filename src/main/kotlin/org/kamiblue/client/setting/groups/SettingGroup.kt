@@ -5,6 +5,8 @@ import com.google.gson.JsonPrimitive
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.setting.settings.AbstractSetting
 import org.kamiblue.commons.interfaces.Nameable
+import java.util.*
+import kotlin.collections.LinkedHashMap
 
 open class SettingGroup(
     override val name: String
@@ -43,11 +45,13 @@ open class SettingGroup(
     open fun write(): JsonObject = JsonObject().apply {
         add("name", JsonPrimitive(name))
 
-        if (subSetting.isNotEmpty()) add("settings", JsonObject().apply {
-            for (setting in subSetting.values) {
-                add(setting.name, setting.write())
-            }
-        })
+        if (subSetting.isNotEmpty()) {
+            add("settings", JsonObject().apply {
+                for (setting in subSetting.values) {
+                    add(setting.name.toJsonName(), setting.write())
+                }
+            })
+        }
     }
 
     /**
@@ -60,7 +64,10 @@ open class SettingGroup(
             (jsonObject?.get("settings") as? JsonObject)?.also {
                 for (setting in subSetting.values) {
                     try {
-                        setting.read(it.get(setting.name))
+                        val value = it.get(setting.name.toJsonName())
+                            ?: it.get(setting.name) // TODO: Remove this by 2.04.01 release
+                            ?: it.get(setting.name.removeSpace()) // TODO: Remove this by 2.04.01 release
+                        setting.read(value)
                     } catch (e: Exception) {
                         KamiMod.LOG.warn("Failed loading setting ${setting.name} at $name", e)
                     }
@@ -69,6 +76,14 @@ open class SettingGroup(
         }
     }
 
+    private fun String.toJsonName() =
+        this.replace(' ', '_')
+            .toLowerCase(Locale.ROOT)
+
+    // TODO: Remove this by 2.04.01 release
+    @Deprecated("For backward compatibility only, will be removed by 2.04.01 release", ReplaceWith(""))
+    private fun String.removeSpace() =
+        this.replace(" ", "")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
