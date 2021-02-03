@@ -34,13 +34,13 @@ object ModuleList : HudElement(
     enabledByDefault = true
 ) {
 
-    private val sortingMode = setting("SortingMode", SortingMode.LENGTH)
-    private val showInvisible by setting("ShowInvisible", false)
+    private val sortingMode = setting("Sorting Mode", SortingMode.LENGTH)
+    private val showInvisible by setting("Show Invisible", false)
     private val rainbow = setting("Rainbow", true)
-    private val rainbowLength by setting("RainbowLength", 10.0f, 1.0f..20.0f, 0.5f, { rainbow.value })
-    private val indexedHue by setting("IndexedHue", 0.5f, 0.0f..1.0f, 0.05f)
-    private val primary by setting("PrimaryColor", ColorHolder(155, 144, 255), false)
-    private val secondary by setting("SecondaryColor", ColorHolder(255, 255, 255), false)
+    private val rainbowLength by setting("Rainbow Length", 10.0f, 1.0f..20.0f, 0.5f, { rainbow.value })
+    private val indexedHue by setting("Indexed Hue", 0.5f, 0.0f..1.0f, 0.05f)
+    private val primary by setting("Primary Color", ColorHolder(155, 144, 255), false)
+    private val secondary by setting("Secondary Color", ColorHolder(255, 255, 255), false)
 
     @Suppress("UNUSED")
     private enum class SortingMode(

@@ -22,10 +22,10 @@ object CombatItemCount : LabelHud(
     private val crystal = setting("Crystal", true)
     private val gapple = setting("Gapple", true)
     private val totem = setting("Totem", true)
-    private val xpBottle = setting("XpBottle", true)
+    private val xpBottle = setting("Xp Bottle", true)
     private val pearl = setting("Pearl", false)
-    private val chorusFruit = setting("ChorusFruit", false)
-    private val showIcon by setting("ShowIcon", true)
+    private val chorusFruit = setting("Chorus Fruit", false)
+    private val showIcon by setting("Show Icon", true)
     private val horizontal by setting("Horizontal", true, { showIcon })
 
     private val itemSettings = linkedMapOf(

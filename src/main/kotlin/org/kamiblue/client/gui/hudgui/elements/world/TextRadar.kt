@@ -22,7 +22,7 @@ object TextRadar : LabelHud(
 
     private val health by setting("Health", true)
     private val ping by setting("Ping", false)
-    private val combatPotion by setting("CombatPotion", true)
+    private val combatPotion by setting("Combat Potion", true)
     private val distance by setting("Distance", true)
     private val friend by setting("Friend", true)
     private val maxEntries by setting("Max Entries", 8, 4..32, 1)

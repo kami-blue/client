@@ -14,8 +14,8 @@ object PlayerSpeed : LabelHud(
     description = "Player movement speed"
 ) {
 
-    private val speedUnit by setting("SpeedUnit", SpeedUnit.MPS)
-    private val averageSpeedTime by setting("AverageSpeedTime", 1.0f, 0.25f..5.0f, 0.25f)
+    private val speedUnit by setting("Speed Unit", SpeedUnit.MPS)
+    private val averageSpeedTime by setting("Average Speed Time", 1.0f, 0.25f..5.0f, 0.25f)
 
     @Suppress("UNUSED")
     private enum class SpeedUnit(override val displayName: String, val multiplier: Double) : DisplayEnum {
