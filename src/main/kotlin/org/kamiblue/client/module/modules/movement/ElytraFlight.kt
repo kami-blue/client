@@ -37,7 +37,7 @@ internal object ElytraFlight : Module(
     private val mode = setting("Mode", ElytraFlightMode.CONTROL)
     private val page by setting("Page", Page.GENERIC_SETTINGS)
     private val durabilityWarning by setting("Durability Warning", true, { page == Page.GENERIC_SETTINGS })
-    private val threshold by setting("Broken %", 5, 1..50, 1, { durabilityWarning && page == Page.GENERIC_SETTINGS })
+    private val threshold by setting("Warning Threshold", 5, 1..50, 1, { durabilityWarning && page == Page.GENERIC_SETTINGS }, description = "Threshold of durability to start sending warnings")
     private var autoLanding by setting("Auto Landing", false, { page == Page.GENERIC_SETTINGS })
 
     /* Generic Settings */
