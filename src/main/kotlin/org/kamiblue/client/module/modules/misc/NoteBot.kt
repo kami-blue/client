@@ -23,7 +23,9 @@ import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.runSafeR
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
+import java.io.DataInputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.IOException
 import java.util.*
 import javax.sound.midi.*
@@ -122,7 +124,7 @@ internal object NoteBot : Module(
 
     private fun parse(filename: String): TreeMap<Long, java.util.ArrayList<Note>> {
         sortOutInstruments()
-        if (filename.endsWith(".nbs")) return NBSReader.readNbs(filename)
+        if (filename.endsWith(".nbs")) return readNbs(filename)
         val sequence = MidiSystem.getSequence(File(filename))
         val noteSequence = TreeMap<Long, ArrayList<Note>>()
         val resolution = sequence.resolution.toDouble()
@@ -331,5 +333,75 @@ internal object NoteBot : Module(
         channelSettings[7].value = NoteBlockEvent.Instrument.BELL
         channelSettings[8].value = NoteBlockEvent.Instrument.CHIME
         channelSettings[9].value = NoteBlockEvent.Instrument.XYLOPHONE
+    }
+
+    fun readNbs(fileName: String): TreeMap<Long, ArrayList<Note>> {
+        val noteSequence = TreeMap<Long, ArrayList<Note>>()
+        val file = File(fileName)
+        val dataInputStream = DataInputStream(FileInputStream(file))
+        var length = dataInputStream.readShort()
+
+        var nbsversion = 0
+        if (length.toInt() == 0) {
+            nbsversion = dataInputStream.readByte().toInt()
+            dataInputStream.readByte().toInt()
+            if (nbsversion >= 3) {
+                length = dataInputStream.readShortCustom()
+            }
+        }
+        dataInputStream.readShortCustom()
+        dataInputStream.skipString()
+        dataInputStream.skipString()
+        dataInputStream.skipString()
+        dataInputStream.skipString()
+        val tempo = dataInputStream.readShortCustom()
+        val timeBetween = 1000 / (tempo / 100).toLong()
+        dataInputStream.skipBytes(23)
+        dataInputStream.skipString()
+        if (nbsversion >= 4) {
+            dataInputStream.skipBytes(4)
+        }
+        var currentTick: Short = -1
+        while (true) {
+            val jump = dataInputStream.readShortCustom()
+            if (jump.toInt() == 0) break
+            currentTick = (currentTick + jump).toShort()
+            var layer: Short = -1
+            while (true) {
+                val jumpLayer: Short = dataInputStream.readShortCustom()
+                if (jumpLayer == 0.toShort()) break
+                layer = (layer + jumpLayer).toShort()
+                val instrument = dataInputStream.readByte()
+                val key = dataInputStream.readByte()
+                if (nbsversion >= 4) {
+                    dataInputStream.readByte() // note block velocity
+                    dataInputStream.readByte() // note block panning
+                    dataInputStream.readShortCustom() // note block pitch
+                }
+                val time = timeBetween * currentTick
+                val note = key % 33
+                noteSequence.getOrPut(time, ::ArrayList).add(Note(note, instrument.coerceIn(0, 15).toInt()))
+            }
+        }
+        return noteSequence
+    }
+
+    private fun DataInputStream.readShortCustom(): Short {
+        val byte1 = readUnsignedByte()
+        val byte2 = readUnsignedByte()
+        return (byte1 + (byte2 shl 8)).toShort()
+    }
+
+    private fun DataInputStream.readIntCustom(): Int {
+        val byte1 = readUnsignedByte()
+        val byte2 = readUnsignedByte()
+        val byte3 = readUnsignedByte()
+        val byte4 = readUnsignedByte()
+        return byte1 + (byte2 shl 8) + (byte3 shl 16) + (byte4 shl 24)
+    }
+
+    private fun DataInputStream.skipString() {
+        var length = readIntCustom()
+        skip(length.toLong())
     }
 }
