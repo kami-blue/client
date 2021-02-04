@@ -1,9 +1,14 @@
 package org.kamiblue.client.gui.hudgui.elements.combat
 
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.init.Items
+import net.minecraft.item.ItemStack
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.color.ColorGradient
 import org.kamiblue.client.util.color.ColorHolder
+import org.kamiblue.client.util.graphics.GlStateUtils
 import org.kamiblue.client.util.graphics.RenderUtils2D
 import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.graphics.font.FontRenderAdapter
@@ -11,13 +16,11 @@ import org.kamiblue.client.util.graphics.font.HAlign
 import org.kamiblue.client.util.graphics.font.VAlign
 import org.kamiblue.client.util.items.allSlots
 import org.kamiblue.client.util.items.countItem
+import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.threads.safeAsyncListener
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.init.Items
-import net.minecraft.item.ItemStack
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 object Armor : HudElement(
     name = "Armor",
@@ -28,6 +31,11 @@ object Armor : HudElement(
     private val classic = setting("Classic", false)
     private val armorCount = setting("ArmorCount", true)
     private val countElytras = setting("CountElytras", false, { armorCount.value })
+    private val showDurability = setting("Durablity Mode", DurabilityMode.COLOUR_BAR)
+
+    private enum class DurabilityMode {
+        COLOUR_BAR, PERCENTAGE, BOTH
+    }
 
     override val hudWidth: Float
         get() = if (classic.value) {
@@ -100,7 +108,7 @@ object Armor : HudElement(
             for ((index, armor) in player.armorInventoryList.reversed().withIndex()) {
                 drawItem(armor, index, itemX, 2)
 
-                if (armor.isItemStackDamageable) {
+                if (armor.isItemStackDamageable and ((showDurability.value == DurabilityMode.PERCENTAGE) or (showDurability.value == DurabilityMode.BOTH))) {
                     val dura = armor.maxDamage - armor.itemDamage
                     val duraPercent = MathUtils.round(dura / armor.maxDamage.toFloat() * 100.0f, 1).toFloat()
 
@@ -126,6 +134,15 @@ object Armor : HudElement(
         if (itemStack.isEmpty) return
 
         RenderUtils2D.drawItem(itemStack, x, y, drawOverlay = false)
+
+        if (itemStack.isItemDamaged and ((showDurability.value == DurabilityMode.COLOUR_BAR) or (showDurability.value == DurabilityMode.BOTH))) {
+            val health: Double = itemStack.item.getDurabilityForDisplay(itemStack)
+            val rgbForDisplay: Int = itemStack.item.getRGBDurabilityForDisplay(itemStack)
+            val i = (13.0f - health.toFloat() * 13.0f).roundToInt()
+            RenderUtils2D.drawRectFilled(VertexHelper(GlStateUtils.useVbo()), Vec2d(x + 4, y + 15), Vec2d(x + 15, y + 17), ColorHolder(0, 0, 0, 255))
+            RenderUtils2D.drawRectFilled(VertexHelper(GlStateUtils.useVbo()), Vec2d(x + 2, y + 15), Vec2d(x + 2 + i, y + 17), ColorHolder(rgbForDisplay shr 16 and 255, rgbForDisplay shr 8 and 255, rgbForDisplay and 255, 255))
+        }
+
         if (armorCount.value) {
             val string = armorCounts[index].toString()
             val width = FontRenderAdapter.getStringWidth(string)
