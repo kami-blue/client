@@ -8,6 +8,7 @@ import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.event.events.RenderEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
+import org.kamiblue.client.util.Wrapper
 import org.kamiblue.event.listener.listener
 
 object MainThreadExecutor {
@@ -54,12 +55,15 @@ object MainThreadExecutor {
     }
 
     suspend fun <T> add(block: suspend () -> T) =
-        MainThreadJob(block).run {
-            mutex.withLock {
-                jobs.add(this)
+        MainThreadJob(block).apply {
+            if (Wrapper.minecraft.isCallingFromMinecraftThread) {
+                run()
+            } else {
+                mutex.withLock {
+                    jobs.add(this)
+                }
             }
-            deferred
-        }
+        }.deferred
 
     private class MainThreadJob<T>(private val block: suspend () -> T) {
         val deferred = CompletableDeferred<T>()
