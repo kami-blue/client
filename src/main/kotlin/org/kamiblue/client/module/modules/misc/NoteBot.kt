@@ -1,16 +1,5 @@
 package org.kamiblue.client.module.modules.misc
 
-import org.kamiblue.client.KamiMod
-import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.event.events.PacketEvent
-import org.kamiblue.client.event.events.RenderWorldEvent
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.*
-import org.kamiblue.client.util.text.MessageSendHelper
-import org.kamiblue.client.util.threads.runSafe
-import org.kamiblue.client.util.threads.runSafeR
-import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.init.Blocks
 import net.minecraft.init.SoundEvents
 import net.minecraft.network.play.client.CPacketPlayerDigging
@@ -22,6 +11,17 @@ import net.minecraft.util.SoundEvent
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.event.world.NoteBlockEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.KamiMod
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.PacketEvent
+import org.kamiblue.client.event.events.RenderWorldEvent
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.*
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.threads.runSafe
+import org.kamiblue.client.util.threads.runSafeR
+import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
 import java.io.File
 import java.io.IOException
@@ -38,24 +38,25 @@ internal object NoteBot : Module(
     description = "Plays music with note blocks; put songs as .mid files in .minecraft/kamiblue/songs"
 ) {
 
-    private val togglePlay = setting("TogglePlay", false)
-    private val reloadSong = setting("ReloadSong", false)
-    private val channel1 = setting("Channel1", NoteBlockEvent.Instrument.PIANO)
-    private val channel2 = setting("Channel2", NoteBlockEvent.Instrument.PIANO)
-    private val channel3 = setting("Channel3", NoteBlockEvent.Instrument.PIANO)
-    private val channel4 = setting("Channel4", NoteBlockEvent.Instrument.PIANO)
-    private val channel5 = setting("Channel5", NoteBlockEvent.Instrument.PIANO)
-    private val channel6 = setting("Channel6", NoteBlockEvent.Instrument.PIANO)
-    private val channel7 = setting("Channel7", NoteBlockEvent.Instrument.PIANO)
-    private val channel8 = setting("Channel8", NoteBlockEvent.Instrument.PIANO)
-    private val channel9 = setting("Channel9", NoteBlockEvent.Instrument.PIANO)
-    private val channel11 = setting("Channel11", NoteBlockEvent.Instrument.PIANO)
-    private val channel12 = setting("Channel12", NoteBlockEvent.Instrument.PIANO)
-    private val channel13 = setting("Channel13", NoteBlockEvent.Instrument.PIANO)
-    private val channel14 = setting("Channel14", NoteBlockEvent.Instrument.PIANO)
-    private val channel15 = setting("Channel15", NoteBlockEvent.Instrument.PIANO)
-    private val channel16 = setting("Channel16", NoteBlockEvent.Instrument.PIANO)
-    private val songName = setting("SongName", "Unchanged")
+    private val togglePlay = setting("Toggle Play", false)
+    private val reloadSong = setting("Reload Song", false)
+    private val songName = setting("Song Name", "Unchanged")
+    private val channel1 = setting("Channel 1", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
+    private val channel2 = setting("Channel 2", NoteBlockEvent.Instrument.PIANO)
+    private val channel3 = setting("Channel 3", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
+    private val channel4 = setting("Channel 4", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
+    private val channel5 = setting("Channel 5", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
+    private val channel6 = setting("Channel 6", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
+    private val channel7 = setting("Channel 7", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
+    private val channel8 = setting("Channel 8", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
+    private val channel9 = setting("Channel 9", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
+    private val channel11 = setting("Channel 11", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
+    private val channel12 = setting("Channel 12", NoteBlockEvent.Instrument.PIANO)
+    private val channel13 = setting("Channel 13", NoteBlockEvent.Instrument.PIANO)
+    private val channel14 = setting("Channel 14", NoteBlockEvent.Instrument.PIANO)
+    private val channel15 = setting("Channel 15", NoteBlockEvent.Instrument.PIANO)
+    private val channel16 = setting("Channel 16", NoteBlockEvent.Instrument.PIANO)
+
 
     private var noteSequence = TreeMap<Long, ArrayList<Note>>()
     private var startTime = 0L
@@ -120,6 +121,8 @@ internal object NoteBot : Module(
     }
 
     private fun parse(filename: String): TreeMap<Long, java.util.ArrayList<Note>> {
+        sortOutInstruments()
+        if (filename.endsWith(".nbs")) return NBSReader.readNbs(filename)
         val sequence = MidiSystem.getSequence(File(filename))
         val noteSequence = TreeMap<Long, ArrayList<Note>>()
         val resolution = sequence.resolution.toDouble()
@@ -282,7 +285,7 @@ internal object NoteBot : Module(
             ?: EnumFacing.UP
     }
 
-    private class Note(val note: Int, val track: Int) {
+    class Note(val note: Int, val track: Int) {
         val noteBlockNote: Int
             get() {
                 /**
@@ -314,5 +317,19 @@ internal object NoteBot : Module(
                 reloadSong.value = false
             }
         }
+    }
+
+    fun sortOutInstruments(){
+        if (!songName.value.endsWith(".nbs")) return
+
+        channelSettings[0].value = NoteBlockEvent.Instrument.PIANO
+        channelSettings[2].value = NoteBlockEvent.Instrument.BASSDRUM
+        channelSettings[3].value = NoteBlockEvent.Instrument.SNARE
+        channelSettings[4].value = NoteBlockEvent.Instrument.CLICKS
+        channelSettings[5].value = NoteBlockEvent.Instrument.GUITAR
+        channelSettings[6].value = NoteBlockEvent.Instrument.FLUTE
+        channelSettings[7].value = NoteBlockEvent.Instrument.BELL
+        channelSettings[8].value = NoteBlockEvent.Instrument.CHIME
+        channelSettings[9].value = NoteBlockEvent.Instrument.XYLOPHONE
     }
 }
