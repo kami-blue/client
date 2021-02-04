@@ -1,5 +1,6 @@
 package org.kamiblue.client.module.modules.client
 
+import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.AsyncCachedValue
@@ -57,7 +58,9 @@ internal object CustomFont : Module(
 
     init {
         fontName.listeners.add {
-            onMainThread { KamiFontRenderer.reloadFonts() }
+            runBlocking {
+                onMainThread { KamiFontRenderer.reloadFonts() }
+            }
         }
     }
 }

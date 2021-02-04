@@ -15,6 +15,7 @@ import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.asyncListener
 import org.kamiblue.event.listener.listener
 
 internal object LogoutLogger : Module(
@@ -29,7 +30,7 @@ internal object LogoutLogger : Module(
     private val timer = TickTimer(TimeUnit.SECONDS)
 
     init {
-        listener<ConnectionEvent.Disconnect> {
+        asyncListener<ConnectionEvent.Disconnect> {
             onMainThread {
                 loggedPlayers.clear()
             }
