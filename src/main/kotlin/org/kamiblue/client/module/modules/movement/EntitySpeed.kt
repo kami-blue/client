@@ -34,7 +34,7 @@ internal object EntitySpeed : Module(
     private val upSpeed = setting("Up Speed", 1.0f, 0.0f..5.0f, 0.1f, { flight.value })
     private val opacity = setting("Boat Opacity", 1.0f, 0.0f..1.0f, 0.01f)
     private val forceInteract = setting("Force Interact", false)
-    private val interactTickDelay = setting("Interact TickDelay", 2, 1..20, 1, { forceInteract.value })
+    private val interactTickDelay = setting("Interact Delay", 2, 1..20, 1, { forceInteract.value }, description = "Force interact packet delay, in ticks.")
 
     init {
         safeListener<PacketEvent.Send> {
