@@ -343,18 +343,12 @@ internal object NoteBot : Module(
         val noteSequence = TreeMap<Long, ArrayList<Note>>()
         val file = File(fileName)
         val dataInputStream = DataInputStream(FileInputStream(file))
-        var length = dataInputStream.readShort()
+        val length = dataInputStream.readShort()
 
         var nbsVersion = 0
         if (length.toInt() == 0) {
             nbsVersion = dataInputStream.readByte().toInt()
             dataInputStream.readByte().toInt()
-
-
-            if (nbsVersion >= 3) {
-                @Suppress("UNUSED_VALUE")
-                length = dataInputStream.readShortCustom()
-            }
         }
 
         dataInputStream.readShortCustom()
