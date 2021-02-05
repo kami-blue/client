@@ -349,6 +349,10 @@ internal object NoteBot : Module(
         if (length.toInt() == 0) {
             nbsVersion = dataInputStream.readByte().toInt()
             dataInputStream.readByte().toInt()
+
+            if (nbsVersion >= 3) {
+                dataInputStream.readShortCustom()
+            }
         }
 
         dataInputStream.readShortCustom()
