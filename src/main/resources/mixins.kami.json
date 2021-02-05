@@ -1,7 +1,7 @@
 {
   "required": true,
   "compatibilityLevel": "JAVA_8",
-  "package": "me.zeroeightsix.kami.mixin.client",
+  "package": "org.kamiblue.client.mixin.client",
   "refmap": "mixins.kami.refmap.json",
   "client": [
     "MixinElytraSound",
@@ -41,7 +41,6 @@
     "gui.MixinGuiPlayerTabOverlay",
     "gui.MixinGuiScreen",
     "network.MixinC00Handshake",
-    "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
     "optifine.MixinConfig",
     "player.MixinEntityPlayer",
