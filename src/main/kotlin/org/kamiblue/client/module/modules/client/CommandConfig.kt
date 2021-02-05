@@ -16,9 +16,9 @@ internal object CommandConfig : Module(
     alwaysEnabled = true
 ) {
     val prefix = setting("Prefix", ";", { false })
-    val toggleMessages = setting("ToggleMessages", false)
-    private val customTitle = setting("WindowTitle", true)
-    val modifierEnabled = setting("ModifierEnabled", false, { false })
+    val toggleMessages = setting("Toggle Messages", false)
+    private val customTitle = setting("Window Title", true)
+    val modifierEnabled = setting("Modifier Enabled", false, { false })
 
     private val timer = TickTimer()
     private val prevTitle = Display.getTitle()

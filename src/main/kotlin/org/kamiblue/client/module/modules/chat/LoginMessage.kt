@@ -24,7 +24,7 @@ internal object LoginMessage : Module(
     showOnArray = false,
     modulePriority = 150
 ) {
-    private val sendAfterMoving by setting("SendAfterMoving", false)
+    private val sendAfterMoving by setting("Send After Moving", false, description = "Wait until you have moved after logging in")
 
     private val file = File(KamiMod.DIRECTORY + "loginmsg.txt")
     private val loginMessages = CopyOnWriteArrayList<String>()

@@ -39,12 +39,12 @@ internal object Configurations : AbstractModule(
 ) {
     private const val defaultPreset = "default"
 
-    private val autoSaving by setting("AutoSaving", true)
-    private val savingFeedBack by setting("SavingFeedBack", false, { autoSaving })
+    private val autoSaving by setting("Auto Saving", true)
+    private val savingFeedBack by setting("Saving FeedBack", false, { autoSaving })
     private val savingInterval by setting("Interval", 10, 1..30, 1, { autoSaving }, description = "Frequency of auto saving in minutes")
-    val serverPreset by setting("ServerPreset", false)
-    private val guiPresetSetting = setting("GuiPreset", defaultPreset)
-    private val modulePresetSetting = setting("ModulePreset", defaultPreset)
+    val serverPreset by setting("Server Preset", false)
+    private val guiPresetSetting = setting("Gui Preset", defaultPreset)
+    private val modulePresetSetting = setting("Module Preset", defaultPreset)
 
     val guiPreset by guiPresetSetting
     val modulePreset by modulePresetSetting

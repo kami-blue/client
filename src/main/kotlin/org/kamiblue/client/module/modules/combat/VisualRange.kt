@@ -27,13 +27,13 @@ internal object VisualRange : Module(
 ) {
     private const val NAME_FORMAT = "\$NAME"
 
-    private val playSound by setting("PlaySound", false)
-    private val leaving by setting("CountLeaving", false)
+    private val playSound by setting("Play Sound", false)
+    private val leaving by setting("Count Leaving", false)
     private val friends by setting("Friends", true)
-    private val uwuAura by setting("UwUAura", false)
-    private val logToFile by setting("LogToFile", false)
-    private val enterMessage by setting("EnterMessage", "$NAME_FORMAT spotted!")
-    private val leaveMessage by setting("LeaveMessage", "$NAME_FORMAT left!", { leaving })
+    private val uwuAura by setting("UwU Aura", false)
+    private val logToFile by setting("Log To File", false)
+    private val enterMessage by setting("Enter Message", "$NAME_FORMAT spotted!")
+    private val leaveMessage by setting("Leave Message", "$NAME_FORMAT left!", { leaving })
 
     private val playerSet = LinkedHashSet<EntityPlayer>()
     private val timer = TickTimer(TimeUnit.SECONDS)

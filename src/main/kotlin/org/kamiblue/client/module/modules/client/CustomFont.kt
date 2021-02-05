@@ -1,5 +1,6 @@
 package org.kamiblue.client.module.modules.client
 
+import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.AsyncCachedValue
@@ -19,14 +20,14 @@ internal object CustomFont : Module(
 ) {
     private const val DEFAULT_FONT_NAME = "Lato"
 
-    val fontName = setting("FontName", DEFAULT_FONT_NAME, consumer = { prev, value ->
+    val fontName = setting("Font Name", DEFAULT_FONT_NAME, consumer = { prev, value ->
         getMatchingFontName(value) ?: getMatchingFontName(prev) ?: DEFAULT_FONT_NAME
     })
     private val sizeSetting = setting("Size", 1.0f, 0.5f..2.0f, 0.05f)
     private val gapSetting = setting("Gap", 0.0f, -10f..10f, 0.5f)
-    private val lineSpaceSetting = setting("LineSpace", 0.0f, -10f..10f, 0.05f)
-    private val baselineOffsetSetting = setting("BaselineOffset", 0.0f, -10.0f..10.0f, 0.05f)
-    private val lodBiasSetting = setting("LodBias", 0.0f, -10.0f..10.0f, 0.05f)
+    private val lineSpaceSetting = setting("Line Space", 0.0f, -10f..10f, 0.05f)
+    private val baselineOffsetSetting = setting("Baseline Offset", 0.0f, -10.0f..10.0f, 0.05f)
+    private val lodBiasSetting = setting("Lod Bias", 0.0f, -10.0f..10.0f, 0.05f)
 
     val isDefaultFont get() = fontName.value.equals(DEFAULT_FONT_NAME, true)
     val size get() = sizeSetting.value * 0.15f
@@ -57,7 +58,9 @@ internal object CustomFont : Module(
 
     init {
         fontName.listeners.add {
-            onMainThread { KamiFontRenderer.reloadFonts() }
+            runBlocking {
+                onMainThread { KamiFontRenderer.reloadFonts() }
+            }
         }
     }
 }

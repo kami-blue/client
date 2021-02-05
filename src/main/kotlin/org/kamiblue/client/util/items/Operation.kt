@@ -1,5 +1,6 @@
 package org.kamiblue.client.util.items
 
+import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.util.threads.onMainThreadSafe
 import net.minecraft.block.Block
@@ -362,7 +363,9 @@ fun SafeClientEvent.clickSlot(windowId: Int = 0, slot: Int, mouseButton: Int = 0
     val itemStack = container.slotClick(slot, mouseButton, type, player)
 
     connection.sendPacket(CPacketClickWindow(windowId, slot, mouseButton, type, itemStack, transactionID))
-    onMainThreadSafe { playerController.updateController() }
+    runBlocking {
+        onMainThreadSafe { playerController.updateController() }
+    }
 
     return transactionID
 }

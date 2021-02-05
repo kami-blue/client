@@ -23,4 +23,8 @@ class IntegerSetting(
         jsonElement?.asJsonPrimitive?.asInt?.let { value = it }
     }
 
+    override fun setValue(valueIn: Double) {
+        value = valueIn.toInt()
+    }
+
 }

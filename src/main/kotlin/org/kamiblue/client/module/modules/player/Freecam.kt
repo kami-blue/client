@@ -1,6 +1,7 @@
 package org.kamiblue.client.module.modules.player
 
 import baritone.api.pathing.goals.GoalTwoBlocks
+import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.PacketEvent
@@ -42,13 +43,13 @@ internal object Freecam : Module(
     category = Category.PLAYER,
     description = "Leave your body and transcend into the realm of the gods"
 ) {
-    private val directionMode = setting("FlightMode", FlightMode.CREATIVE)
-    private val horizontalSpeed = setting("HorizontalSpeed", 20f, 1f..50f, 1f)
-    private val verticalSpeed = setting("VerticalSpeed", 20f, 1f..50f, 1f)
-    private val autoRotate = setting("AutoRotate", true)
-    private val arrowKeyMove = setting("ArrowKeyMove", true)
-    private val disableOnDisconnect = setting("DisconnectDisable", true)
-    private val leftClickCome = setting("LeftClickCome", true)
+    private val directionMode = setting("Flight Mode", FlightMode.CREATIVE)
+    private val horizontalSpeed = setting("Horizontal Speed", 20f, 1f..50f, 1f)
+    private val verticalSpeed = setting("Vertical Speed", 20f, 1f..50f, 1f)
+    private val autoRotate = setting("Auto Rotate", true)
+    private val arrowKeyMove = setting("Arrow Key Move", true)
+    private val disableOnDisconnect = setting("Disconnect Disable", true)
+    private val leftClickCome = setting("Left Click Come", true)
 
     private enum class FlightMode(override val displayName: String) : DisplayEnum {
         CREATIVE("Creative"),
@@ -219,11 +220,13 @@ internal object Freecam : Module(
 
     private fun resetCameraGuy() {
         cameraGuy = null
-        onMainThreadSafe {
-            world.removeEntityFromWorld(ENTITY_ID)
-            mc.renderViewEntity = player
-            mc.renderGlobal.loadRenderers()
-            if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
+        runBlocking {
+            onMainThreadSafe {
+                world.removeEntityFromWorld(ENTITY_ID)
+                mc.renderViewEntity = player
+                mc.renderGlobal.loadRenderers()
+                if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
+            }
         }
     }
 

@@ -17,4 +17,12 @@ abstract class NumberSetting<T>(
 
     override fun write() = JsonPrimitive(value)
 
+    final override fun setValue(valueIn: String) {
+        valueIn.toDoubleOrNull()?.let {
+            setValue(it)
+        }
+    }
+
+    abstract fun setValue(valueIn: Double)
+
 }

@@ -22,7 +22,7 @@ internal object CustomChat : Module(
     private val decoMode by setting("Separator", DecoMode.NONE)
     private val commands by setting("Commands", false)
     private val spammer by setting("Spammer", false)
-    private val customText by setting("CustomText", "Default")
+    private val customText by setting("Custom Text", "Default")
 
     private enum class DecoMode {
         SEPARATOR, CLASSIC, NONE

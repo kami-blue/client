@@ -13,7 +13,7 @@ internal object SkinFlicker : Module(
     category = Category.MISC
 ) {
     private val mode by setting("Mode", FlickerMode.HORIZONTAL)
-    private val delay by setting("Delay(ms)", 10, 0..500, 10)
+    private val delay by setting("Delay", 10, 0..500, 5, description = "Skin layer toggle delay, in milliseconds")
 
     private enum class FlickerMode {
         HORIZONTAL, VERTICAL, RANDOM

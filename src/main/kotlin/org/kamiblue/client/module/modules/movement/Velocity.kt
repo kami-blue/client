@@ -21,7 +21,7 @@ internal object Velocity : Module(
     description = "Modify knock back impact",
     category = Category.MOVEMENT
 ) {
-    private val noPush = setting("NoPush", true)
+    private val noPush = setting("No Push", true)
     private val horizontal = setting("Horizontal", 0f, -5f..5f, 0.05f)
     private val vertical = setting("Vertical", 0f, -5f..5f, 0.05f)
 

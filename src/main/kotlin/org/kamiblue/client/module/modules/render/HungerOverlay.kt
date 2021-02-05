@@ -24,9 +24,9 @@ internal object HungerOverlay : Module(
     description = "Displays a helpful overlay over your hunger bar.",
     category = Category.RENDER
 ) {
-    private val saturationOverlay = setting("SaturationOverlay", true)
-    private val foodHungerOverlay = setting("FoodHungerOverlay", true)
-    private val foodSaturationOverlay = setting("FoodSaturationOverlay", true)
+    private val saturationOverlay = setting("Saturation Overlay", true)
+    private val foodHungerOverlay = setting("Food Hunger Overlay", true)
+    private val foodSaturationOverlay = setting("Food Saturation Overlay", true)
 
     private val icons = ResourceLocation("kamiblue/textures/hungeroverlay.png")
 

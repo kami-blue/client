@@ -28,15 +28,15 @@ internal object DiscordNotifs : Module(
     private val timeout by setting("Timeout", true)
     private val timeoutTime by setting("Seconds", 10, 0..120, 5, { timeout })
     private val time by setting("Timestamp", true)
-    private val importantPings by setting("ImportantPings", false)
-    private val connectionChange by setting("ConnectionChange", true, description = "When you get disconnected or reconnected to the server")
-    private val all by setting("AllMessages", false)
+    private val importantPings by setting("Important Pings", false)
+    private val connectionChange by setting("Connection Change", true, description = "When you get disconnected or reconnected to the server")
+    private val all by setting("All Messages", false)
     private val direct by setting("DMs", true, { !all })
-    private val queue by setting("QueuePosition", true, { !all })
+    private val queue by setting("Queue Position", true, { !all })
     private val restart by setting("Restart", true, { !all }, description = "Server restart notifications")
 
     val url = setting("URL", "unchanged")
-    val pingID = setting("PingID", "unchanged")
+    val pingID = setting("Ping ID", "unchanged")
     val avatar = setting("Avatar", "${KamiMod.GITHUB_LINK}/assets/raw/assets/assets/icons/kamiGithub.png")
 
     private const val username = "${KamiMod.NAME} ${KamiMod.VERSION}"

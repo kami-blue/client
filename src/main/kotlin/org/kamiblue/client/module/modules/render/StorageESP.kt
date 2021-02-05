@@ -31,32 +31,32 @@ internal object StorageESP : Module(
     /* Type settings */
     private val chest by setting("Chest", true, { page == Page.TYPE })
     private val shulker by setting("Shulker", true, { page == Page.TYPE })
-    private val enderChest by setting("EnderChest", true, { page == Page.TYPE })
-    private val frame by setting("ItemFrame", true, { page == Page.TYPE })
-    private val withShulkerOnly by setting("WithShulkerOnly", true, { page == Page.TYPE && frame })
+    private val enderChest by setting("Ender Chest", true, { page == Page.TYPE })
+    private val frame by setting("Item Frame", true, { page == Page.TYPE })
+    private val withShulkerOnly by setting("With Shulker Only", true, { page == Page.TYPE && frame })
     private val furnace by setting("Furnace", false, { page == Page.TYPE })
     private val dispenser by setting("Dispenser", false, { page == Page.TYPE })
     private val hopper by setting("Hopper", false, { page == Page.TYPE })
     private val cart by setting("Minecart", false, { page == Page.TYPE })
 
     /* Color settings */
-    private val colorChest by setting("ChestColor", DyeColors.ORANGE, { page == Page.COLOR })
-    private val colorDispenser by setting("DispenserColor", DyeColors.LIGHT_GRAY, { page == Page.COLOR })
-    private val colorShulker by setting("ShulkerColor", DyeColors.MAGENTA, { page == Page.COLOR })
-    private val colorEnderChest by setting("EnderChestColor", DyeColors.PURPLE, { page == Page.COLOR })
-    private val colorFurnace by setting("FurnaceColor", DyeColors.LIGHT_GRAY, { page == Page.COLOR })
-    private val colorHopper by setting("HopperColor", DyeColors.GRAY, { page == Page.COLOR })
-    private val colorCart by setting("CartColor", DyeColors.GREEN, { page == Page.COLOR })
-    private val colorFrame by setting("FrameColor", DyeColors.ORANGE, { page == Page.COLOR })
+    private val colorChest by setting("Chest Color", DyeColors.ORANGE, { page == Page.COLOR })
+    private val colorDispenser by setting("Dispenser Color", DyeColors.LIGHT_GRAY, { page == Page.COLOR })
+    private val colorShulker by setting("Shulker Color", DyeColors.MAGENTA, { page == Page.COLOR })
+    private val colorEnderChest by setting("Ender Chest Color", DyeColors.PURPLE, { page == Page.COLOR })
+    private val colorFurnace by setting("Furnace Color", DyeColors.LIGHT_GRAY, { page == Page.COLOR })
+    private val colorHopper by setting("Hopper Color", DyeColors.GRAY, { page == Page.COLOR })
+    private val colorCart by setting("Cart Color", DyeColors.GREEN, { page == Page.COLOR })
+    private val colorFrame by setting("Frame Color", DyeColors.ORANGE, { page == Page.COLOR })
 
     /* Render settings */
     private val filled by setting("Filled", true, { page == Page.RENDER })
     private val outline by setting("Outline", true, { page == Page.RENDER })
     private val tracer by setting("Tracer", true, { page == Page.RENDER })
-    private val aFilled by setting("FilledAlpha", 31, 0..255, 1, { page == Page.RENDER && filled })
-    private val aOutline by setting("OutlineAlpha", 127, 0..255, 1, { page == Page.RENDER && outline })
-    private val aTracer by setting("TracerAlpha", 200, 0..255, 1, { page == Page.RENDER && tracer })
-    private val thickness by setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f, { page == Page.RENDER })
+    private val aFilled by setting("Filled Alpha", 31, 0..255, 1, { page == Page.RENDER && filled })
+    private val aOutline by setting("Outline Alpha", 127, 0..255, 1, { page == Page.RENDER && outline })
+    private val aTracer by setting("Tracer Alpha", 200, 0..255, 1, { page == Page.RENDER && tracer })
+    private val thickness by setting("Line Thickness", 2.0f, 0.25f..5.0f, 0.25f, { page == Page.RENDER })
 
     private enum class Page {
         TYPE, COLOR, RENDER

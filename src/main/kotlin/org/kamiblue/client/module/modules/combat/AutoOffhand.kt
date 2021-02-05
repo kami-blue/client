@@ -38,35 +38,35 @@ internal object AutoOffhand : Module(
     private val type by setting("Type", Type.TOTEM)
 
     // Totem
-    private val hpThreshold by setting("HpThreshold", 5f, 1f..20f, 0.5f, { type == Type.TOTEM })
-    private val bindTotem by setting("BindTotem", Bind(), { type == Type.TOTEM })
-    private val checkDamage by setting("CheckDamage", true, { type == Type.TOTEM })
+    private val hpThreshold by setting("Hp Threshold", 5f, 1f..20f, 0.5f, { type == Type.TOTEM })
+    private val bindTotem by setting("Bind Totem", Bind(), { type == Type.TOTEM })
+    private val checkDamage by setting("Check Damage", true, { type == Type.TOTEM })
     private val mob by setting("Mob", true, { type == Type.TOTEM && checkDamage })
     private val player by setting("Player", true, { type == Type.TOTEM && checkDamage })
     private val crystal by setting("Crystal", true, { type == Type.TOTEM && checkDamage })
     private val falling by setting("Falling", true, { type == Type.TOTEM && checkDamage })
 
     // Gapple
-    private val offhandGapple by setting("OffhandGapple", false, { type == Type.GAPPLE })
-    private val bindGapple by setting("BindGapple", Bind(), { type == Type.GAPPLE && offhandGapple })
-    private val checkAuraG by setting("CheckAuraG", true, { type == Type.GAPPLE && offhandGapple })
-    private val checkWeaponG by setting("CheckWeaponG", false, { type == Type.GAPPLE && offhandGapple })
-    private val checkCAGapple by setting("CheckCrystalAuraG", true, { type == Type.GAPPLE && offhandGapple && !offhandCrystal })
+    private val offhandGapple by setting("Offhand Gapple", false, { type == Type.GAPPLE })
+    private val bindGapple by setting("Bind Gapple", Bind(), { type == Type.GAPPLE && offhandGapple })
+    private val checkAuraG by setting("Check Aura G", true, { type == Type.GAPPLE && offhandGapple })
+    private val checkWeaponG by setting("Check Weapon G", false, { type == Type.GAPPLE && offhandGapple })
+    private val checkCAGapple by setting("Check CrystalAura G", true, { type == Type.GAPPLE && offhandGapple && !offhandCrystal })
 
     // Strength
-    private val offhandStrength by setting("OffhandStrength", false, { type == Type.STRENGTH })
-    private val bindStrength by setting("BindStrength", Bind(), { type == Type.STRENGTH && offhandStrength })
-    private val checkAuraS by setting("CheckAuraS", true, { type == Type.STRENGTH && offhandStrength })
-    private val checkWeaponS by setting("CheckWeaponS", false, { type == Type.STRENGTH && offhandStrength })
+    private val offhandStrength by setting("Offhand Strength", false, { type == Type.STRENGTH })
+    private val bindStrength by setting("Bind Strength", Bind(), { type == Type.STRENGTH && offhandStrength })
+    private val checkAuraS by setting("Check Aura S", true, { type == Type.STRENGTH && offhandStrength })
+    private val checkWeaponS by setting("Check Weapon S", false, { type == Type.STRENGTH && offhandStrength })
 
     // Crystal
-    private val offhandCrystal by setting("OffhandCrystal", false, { type == Type.CRYSTAL })
-    private val bindCrystal by setting("BindCrystal", Bind(), { type == Type.CRYSTAL && offhandCrystal })
-    private val checkCACrystal by setting("CheckCrystalAuraC", false, { type == Type.CRYSTAL && offhandCrystal })
+    private val offhandCrystal by setting("Offhand Crystal", false, { type == Type.CRYSTAL })
+    private val bindCrystal by setting("Bind Crystal", Bind(), { type == Type.CRYSTAL && offhandCrystal })
+    private val checkCACrystal by setting("Check Crystal Aura C", false, { type == Type.CRYSTAL && offhandCrystal })
 
     // General
     private val priority by setting("Priority", Priority.HOTBAR)
-    private val switchMessage by setting("SwitchMessage", true)
+    private val switchMessage by setting("Switch Message", true)
 
     private enum class Type(val filter: (ItemStack) -> Boolean) {
         TOTEM({ it.item.id == 449 }),

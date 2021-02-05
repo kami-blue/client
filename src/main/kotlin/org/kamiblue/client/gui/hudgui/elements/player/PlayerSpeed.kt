@@ -4,6 +4,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.InfoCalculator
+import org.kamiblue.client.util.InfoCalculator.speed
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.commons.utils.MathUtils
 import java.util.*
@@ -14,8 +15,8 @@ object PlayerSpeed : LabelHud(
     description = "Player movement speed"
 ) {
 
-    private val speedUnit by setting("SpeedUnit", SpeedUnit.MPS)
-    private val averageSpeedTime by setting("AverageSpeedTime", 1.0f, 0.25f..5.0f, 0.25f)
+    private val speedUnit by setting("Speed Unit", SpeedUnit.MPS)
+    private val averageSpeedTime by setting("Average Speed Time", 1.0f, 0.25f..5.0f, 0.25f)
 
     @Suppress("UNUSED")
     private enum class SpeedUnit(override val displayName: String, val multiplier: Double) : DisplayEnum {
@@ -38,8 +39,8 @@ object PlayerSpeed : LabelHud(
         displayText.add(speedUnit.displayName, secondaryColor)
     }
 
-    private fun updateSpeedList() {
-        val speed = InfoCalculator.speed(false)
+    private fun SafeClientEvent.updateSpeedList() {
+        val speed = speed()
 
         if (speed > 0.0 || mc.player.ticksExisted % 4 == 0) {
             speedList.add(speed) // Only adding it every 4 ticks if speed is 0

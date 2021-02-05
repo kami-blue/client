@@ -17,7 +17,7 @@ internal object AntiHunger : Module(
     category = Category.MOVEMENT,
     description = "Reduces hunger lost when moving around"
 ) {
-    private val cancelMovementState = setting("CancelMovementState", true)
+    private val cancelMovementState = setting("Cancel Movement State", true)
 
     init {
         listener<PacketEvent.Send> {

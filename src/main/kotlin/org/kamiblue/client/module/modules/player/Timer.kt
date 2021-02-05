@@ -12,9 +12,9 @@ internal object Timer : Module(
     category = Category.PLAYER,
     description = "Changes your client tick speed"
 ) {
-    private val slow by setting("SlowMode", false)
-    private val tickNormal by setting("TickN", 2.0f, 1f..10f, 0.1f, { !slow })
-    private val tickSlow by setting("TickS", 8f, 1f..10f, 0.1f, { slow })
+    private val slow by setting("Slow Mode", false)
+    private val tickNormal by setting("Tick N", 2.0f, 1f..10f, 0.1f, { !slow })
+    private val tickSlow by setting("Tick S", 8f, 1f..10f, 0.1f, { slow })
 
     init {
         onDisable {

@@ -1,8 +1,10 @@
 package org.kamiblue.client.module.modules.combat
 
-import org.kamiblue.client.event.Phase
+import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.util.EnumHand
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.module.Category
@@ -14,9 +16,6 @@ import org.kamiblue.client.util.items.isWeapon
 import org.kamiblue.client.util.math.RotationUtils.faceEntityClosest
 import org.kamiblue.client.util.math.RotationUtils.getRotationToEntityClosest
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityLivingBase
-import net.minecraft.util.EnumHand
 
 @CombatManager.CombatModule
 internal object KillAura : Module(
@@ -27,15 +26,15 @@ internal object KillAura : Module(
     modulePriority = 50
 ) {
     private val delayMode = setting("Mode", WaitMode.DELAY)
-    private val lockView = setting("LockView", false)
-    private val spoofRotation = setting("SpoofRotation", true, { !lockView.value })
-    private val waitTick = setting("SpamDelay", 2.0f, 1.0f..40.0f, 0.5f, { delayMode.value == WaitMode.SPAM })
+    private val lockView = setting("Lock View", false)
+    private val spoofRotation = setting("Spoof Rotation", true, { !lockView.value })
+    private val waitTick = setting("Spam Delay", 2.0f, 1.0f..40.0f, 0.5f, { delayMode.value == WaitMode.SPAM })
     val range = setting("Range", 5f, 0f..8f, 0.25f)
-    private val tpsSync = setting("TPSSync", false)
-    private val autoWeapon = setting("AutoWeapon", true)
-    private val weaponOnly = setting("WeaponOnly", true)
+    private val tpsSync = setting("TPS Sync", false)
+    private val autoWeapon = setting("Auto Weapon", true)
+    private val weaponOnly = setting("Weapon Only", true)
     private val prefer = setting("Prefer", CombatUtils.PreferWeapon.SWORD, { autoWeapon.value })
-    private val disableOnDeath = setting("DisableOnDeath", false)
+    private val disableOnDeath = setting("Disable On Death", false)
 
     private var inactiveTicks = 0
     private var tickCount = 0
@@ -49,12 +48,12 @@ internal object KillAura : Module(
     }
 
     init {
-        safeListener<OnUpdateWalkingPlayerEvent> {
-            if (it.phase != Phase.PRE) return@safeListener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START) return@safeListener
 
             inactiveTicks++
 
-            if (player.isDead) {
+            if (player.isDead || player.health <= 0.0f) {
                 if (disableOnDeath.value) disable()
                 return@safeListener
             }

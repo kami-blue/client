@@ -26,7 +26,7 @@ internal object AntiOverlay : Module(
     private val vignette = setting("Vignette", true)
     private val helmet = setting("Helmet", true)
     private val tutorial = setting("Tutorial", true)
-    private val potionIcons = setting("PotionIcons", false)
+    private val potionIcons = setting("Potion Icons", false)
 
     init {
         listener<RenderBlockOverlayEvent> {

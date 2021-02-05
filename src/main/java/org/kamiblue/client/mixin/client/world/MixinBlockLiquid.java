@@ -24,11 +24,10 @@ public class MixinBlockLiquid {
         }
     }
 
-    /**
-     * Taken from Minecraft code {@link BlockLiquid#canCollideCheck}
-     */
     @Inject(method = "canCollideCheck", at = @At("HEAD"), cancellable = true)
     public void canCollideCheck(final IBlockState blockState, final boolean hitIfLiquid, final CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        callbackInfoReturnable.setReturnValue((hitIfLiquid && blockState.getValue(BlockLiquid.LEVEL) == 0) || LiquidInteract.INSTANCE.isEnabled());
+        if (LiquidInteract.INSTANCE.isEnabled()) {
+            callbackInfoReturnable.setReturnValue(true);
+        }
     }
 }

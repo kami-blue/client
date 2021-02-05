@@ -23,9 +23,9 @@ internal object AutoTool : Module(
     description = "Automatically switch to the best tools when mining or attacking",
     category = Category.MISC
 ) {
-    private val switchBack = setting("SwitchBack", true)
+    private val switchBack = setting("Switch Back", true)
     private val timeout = setting("Timeout", 20, 1..100, 5, { switchBack.value })
-    private val swapWeapon = setting("SwitchWeapon", false)
+    private val swapWeapon = setting("Switch Weapon", false)
     private val preferWeapon = setting("Prefer", CombatUtils.PreferWeapon.SWORD)
 
     private var shouldMoveBack = false

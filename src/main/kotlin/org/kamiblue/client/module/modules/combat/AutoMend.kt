@@ -30,14 +30,14 @@ internal object AutoMend : Module(
     category = Category.COMBAT,
     description = "Automatically mends armour"
 ) {
-    private val autoThrow by setting("AutoThrow", true)
-    private val throwDelay = setting("ThrowDelay", 2, 0..5, 1, description = "Number of ticks between throws to allow absorption")
-    private val autoSwitch by setting("AutoSwitch", true)
-    private val autoDisable by setting("AutoDisable", false, { autoSwitch })
-    private val cancelNearby by setting("CancelNearby", NearbyMode.OFF, description = "Don't mend when an enemy is nearby")
-    private val pauseNearbyRadius by setting("NearbyRadius", 8, 1..8, 1, { cancelNearby != NearbyMode.OFF })
-    private val threshold by setting("RepairAt", 75, 1..100, 1, description = "Percentage to start repairing any armor piece")
-    private val gui by setting("AllowGUI", false, description = "Allow mending when inside a GUI")
+    private val autoThrow by setting("Auto Throw", true)
+    private val throwDelay = setting("Throw Delay", 2, 0..5, 1, description = "Number of ticks between throws to allow absorption")
+    private val autoSwitch by setting("Auto Switch", true)
+    private val autoDisable by setting("Auto Disable", false, { autoSwitch })
+    private val cancelNearby by setting("Cancel Nearby", NearbyMode.OFF, description = "Don't mend when an enemy is nearby")
+    private val pauseNearbyRadius by setting("Nearby Radius", 8, 1..8, 1, { cancelNearby != NearbyMode.OFF })
+    private val threshold by setting("Repair At", 75, 1..100, 1, description = "Percentage to start repairing any armor piece")
+    private val gui by setting("Allow GUI", false, description = "Allow mending when inside a GUI")
 
     private var initHotbarSlot = -1
     private var isGuiOpened = false

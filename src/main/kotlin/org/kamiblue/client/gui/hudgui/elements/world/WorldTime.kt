@@ -12,8 +12,8 @@ object WorldTime : LabelHud(
     description = "Time in the Minecraft world"
 ) {
 
-    private val displayMode by setting("DisplayMode", DisplayMode.H24)
-    private val fromMidNight by setting("FromMidNight", true, { displayMode == DisplayMode.REAL_TIME || displayMode == DisplayMode.TICKS })
+    private val displayMode by setting("Display Mode", DisplayMode.H24)
+    private val fromMidNight by setting("From Midnight", true, { displayMode == DisplayMode.REAL_TIME || displayMode == DisplayMode.TICKS })
 
     private enum class DisplayMode(override val displayName: String) : DisplayEnum {
         H12("12-Hours"),

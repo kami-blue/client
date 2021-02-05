@@ -17,9 +17,9 @@ object PlayerModel : HudElement(
     category = Category.PLAYER,
     description = "Your player icon, or players you attacked"
 ) {
-    private val resetDelay by setting("ResetDelay", 100, 0..200, 5)
-    private val emulatePitch by setting("EmulatePitch", true)
-    private val emulateYaw by setting("EmulateYaw", false)
+    private val resetDelay by setting("Reset Delay", 100, 0..200, 5)
+    private val emulatePitch by setting("Emulate Pitch", true)
+    private val emulateYaw by setting("Emulate Yaw", false)
 
     override val hudWidth: Float get() = 50.0f
     override val hudHeight: Float get() = 80.0f

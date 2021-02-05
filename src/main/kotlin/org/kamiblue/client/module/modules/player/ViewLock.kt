@@ -19,14 +19,14 @@ internal object ViewLock : Module(
 
     private val yaw = setting("Yaw", true)
     private val pitch = setting("Pitch", true)
-    private val autoYaw = setting("AutoYaw", true, { yaw.value })
-    private val autoPitch = setting("AutoPitch", true, { pitch.value })
-    private val disableMouseYaw = setting("DisableMouseYaw", true, { yaw.value && yaw.value })
-    private val disableMousePitch = setting("DisableMousePitch", true, { pitch.value && pitch.value })
-    private val specificYaw = setting("SpecificYaw", 180.0f, -180.0f..180.0f, 1.0f, { !autoYaw.value && yaw.value })
-    private val specificPitch = setting("SpecificPitch", 0.0f, -90.0f..90.0f, 1.0f, { !autoPitch.value && pitch.value })
-    private val yawSlice = setting("YawSlice", 8, 2..32, 1, { autoYaw.value && yaw.value })
-    private val pitchSlice = setting("PitchSlice", 5, 2..32, 1, { autoPitch.value && pitch.value })
+    private val autoYaw = setting("Auto Yaw", true, { yaw.value })
+    private val autoPitch = setting("Auto Pitch", true, { pitch.value })
+    private val disableMouseYaw = setting("Disable Mouse Yaw", true, { yaw.value && yaw.value })
+    private val disableMousePitch = setting("Disable Mouse Pitch", true, { pitch.value && pitch.value })
+    private val specificYaw = setting("Specific Yaw", 180.0f, -180.0f..180.0f, 1.0f, { !autoYaw.value && yaw.value })
+    private val specificPitch = setting("Specific Pitch", 0.0f, -90.0f..90.0f, 1.0f, { !autoPitch.value && pitch.value })
+    private val yawSlice = setting("Yaw Slice", 8, 2..32, 1, { autoYaw.value && yaw.value })
+    private val pitchSlice = setting("Pitch Slice", 5, 2..32, 1, { autoPitch.value && pitch.value })
 
     private var yawSnap = 0
     private var pitchSnap = 0

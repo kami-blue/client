@@ -26,8 +26,8 @@ object Armor : HudElement(
 ) {
 
     private val classic = setting("Classic", false)
-    private val armorCount = setting("ArmorCount", true)
-    private val countElytras = setting("CountElytras", false, { armorCount.value })
+    private val armorCount = setting("Armor Count", true)
+    private val countElytras = setting("Count Elytras", false, { armorCount.value })
 
     override val hudWidth: Float
         get() = if (classic.value) {

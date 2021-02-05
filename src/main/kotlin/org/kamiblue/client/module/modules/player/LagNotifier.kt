@@ -29,11 +29,11 @@ internal object LagNotifier : Module(
     description = "Displays a warning when the server is lagging",
     category = Category.PLAYER
 ) {
-    private val detectRubberBand by setting("DetectRubberBand", true)
-    private val pauseBaritone by setting("PauseBaritone", true)
-    val pauseTakeoff by setting("PauseElytraTakeoff", true)
-    val pauseAutoWalk by setting("PauseAutoWalk", true)
-    private val feedback by setting("PauseFeedback", true, { pauseBaritone })
+    private val detectRubberBand by setting("Detect Rubber Band", true)
+    private val pauseBaritone by setting("Pause Baritone", true)
+    val pauseTakeoff by setting("Pause Elytra Takeoff", true)
+    val pauseAutoWalk by setting("Pause Auto Walk", true)
+    private val feedback by setting("Pause Feedback", true, { pauseBaritone })
     private val timeout by setting("Timeout", 3.5f, 0.0f..10.0f, 0.5f)
 
     private val pingTimer = TickTimer(TimeUnit.SECONDS)

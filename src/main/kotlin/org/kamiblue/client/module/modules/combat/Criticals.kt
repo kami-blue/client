@@ -19,7 +19,7 @@ internal object Criticals : Module(
     description = "Always do critical attacks"
 ) {
     private val mode = setting("Mode", CriticalMode.PACKET)
-    private val miniJump = setting("MiniJump", true, { mode.value == CriticalMode.DELAY })
+    private val miniJump = setting("Mini Jump", true, { mode.value == CriticalMode.DELAY })
 
     private enum class CriticalMode {
         PACKET, DELAY

@@ -16,8 +16,8 @@ internal object ChatFilter : Module(
     description = "Filters custom words or phrases from the chat",
     category = Category.CHAT
 ) {
-    private val filterOwn by setting("FilterOwn", false)
-    private val filterDMs by setting("FilterDMs", false)
+    private val filterOwn by setting("Filter Own", false)
+    private val filterDMs by setting("Filter DMs", false)
     private var hasRunInfo by setting("Info", false, { false })
 
     private val chatFilter = ArrayList<Regex>()

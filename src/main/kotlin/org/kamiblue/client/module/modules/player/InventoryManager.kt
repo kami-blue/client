@@ -32,17 +32,17 @@ internal object InventoryManager : Module(
         "minecraft:cobblestone"
     )
 
-    private val autoRefill by setting("AutoRefill", true)
-    private val buildingMode by setting("BuildingMode", false, { autoRefill })
-    var buildingBlockID by setting("BuildingBlockID", 0, 0..1000, 1, { false })
-    private val refillThreshold by setting("RefillThreshold", 16, 1..63, 1, { autoRefill })
-    private val itemSaver by setting("ItemSaver", false)
-    private val duraThreshold by setting("DurabilityThreshold", 5, 1..50, 1, { itemSaver })
-    private val autoEject by setting("AutoEject", false)
-    private val fullOnly by setting("OnlyAtFull", false, { autoEject })
-    private val pauseMovement by setting("PauseMovement", true)
-    private val delay by setting("DelayTicks", 1, 0..20, 1)
-    val ejectList = setting(CollectionSetting("EjectList", defaultEjectList))
+    private val autoRefill by setting("Auto Refill", true)
+    private val buildingMode by setting("Building Mode", false, { autoRefill })
+    var buildingBlockID by setting("Building Block ID", 0, 0..1000, 1, { false })
+    private val refillThreshold by setting("Refill Threshold", 16, 1..63, 1, { autoRefill })
+    private val itemSaver by setting("Item Saver", false)
+    private val duraThreshold by setting("Durability Threshold", 5, 1..50, 1, { itemSaver })
+    private val autoEject by setting("Auto Eject", false)
+    private val fullOnly by setting("Only At Full", false, { autoEject })
+    private val pauseMovement by setting("Pause Movement", true)
+    private val delay by setting("Delay Ticks", 1, 0..20, 1)
+    val ejectList = setting(CollectionSetting("Eject List", defaultEjectList))
 
     enum class State {
         IDLE, SAVING_ITEM, REFILLING_BUILDING, REFILLING, EJECTING

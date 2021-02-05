@@ -8,5 +8,5 @@ internal object AntiDisconnect : Module(
     description = "Are you sure you want to disconnect?",
     category = Category.MISC
 ) {
-    val presses = setting("ButtonPresses", 3, 1..20, 1)
+    val presses = setting("Button Presses", 3, 1..20, 1)
 }

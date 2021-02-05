@@ -31,15 +31,15 @@ internal object AutoLog : Module(
     category = Category.COMBAT,
     alwaysListening = true
 ) {
-    private val disableMode by setting("DisableMode", DisableMode.ALWAYS)
+    private val disableMode by setting("Disable Mode", DisableMode.ALWAYS)
     private val health by setting("Health", 10, 6..36, 1)
     private val crystals by setting("Crystals", false)
     private val creeper by setting("Creepers", true)
-    private val creeperDistance by setting("CreeperDistance", 5, 1..10, 1, { creeper })
+    private val creeperDistance by setting("Creeper Distance", 5, 1..10, 1, { creeper })
     private val totem by setting("Totem", false)
-    private val minTotems by setting("MinTotems", 2, 1..10, 1, { totem })
+    private val minTotems by setting("Min Totems", 2, 1..10, 1, { totem })
     private val players by setting("Players", false)
-    private val playerDistance by setting("PlayerDistance", 64, 32..128, 4, { players })
+    private val playerDistance by setting("Player Distance", 64, 32..128, 4, { players })
     private val friends by setting("Friends", false, { players })
 
     @Suppress("UNUSED")

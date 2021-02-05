@@ -14,23 +14,17 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.lang.Math.random
 import kotlin.math.abs
 
-/**
- * Created by 086 on 22/03/2018.
- * Updated by Qther on 05/03/20
- * Updated by l1ving on 26/05/20
- * Updated by Xiaro on 22/08/20
- */
 internal object AutoFish : Module(
     name = "AutoFish",
     category = Category.MISC,
     description = "Automatically catch fish"
 ) {
     private val mode = setting("Mode", Mode.BOUNCE)
-    private val autoCast = setting("AutoCast", true)
-    private val castDelay = setting("AutoCastDelay(s)", 5, 1..20, 1, { autoCast.value })
-    private val catchDelay = setting("CatchDelay(ms)", 300, 50..2000, 50)
-    private val recastDelay = setting("RecastDelay(ms)", 450, 50..2000, 50)
-    private val variation = setting("Variation(ms)", 100, 0..1000, 50)
+    private val autoCast = setting("Auto Cast", true)
+    private val castDelay = setting("Auto Cast Delay", 5, 1..20, 1, { autoCast.value }, description = "Delay before starting fishing when holding a fishing rod, in seconds")
+    private val catchDelay = setting("Catch Delay", 300, 50..2000, 50, description = "Delay before catching the fish, in milliseconds")
+    private val recastDelay = setting("Recast Delay", 450, 50..2000, 50, description = "Delay before recasting the fishing rod, in milliseconds")
+    private val variation = setting("Variation", 100, 0..1000, 50, description = "Randomize the delays in specific range, in milliseconds")
 
     @Suppress("UNUSED")
     private enum class Mode {
