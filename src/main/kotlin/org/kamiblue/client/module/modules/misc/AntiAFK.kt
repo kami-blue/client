@@ -38,7 +38,7 @@ internal object AntiAFK : Module(
     private val turn = setting("Turn", true)
     private val walk = setting("Walk", true)
     private val radius by setting("Radius", 64, 8..128, 8, fineStep = 1)
-    private val inputTimeout by setting("Input Timeout(m)", 0, 0..15, 1)
+    private val inputTimeout by setting("Input Timeout", 0, 0..15, 1, description = "Minutes to be actually AFK before enabling AntiAfk. Set to 0 to disable.")
     private val allowBreak by setting("Allow Breaking Blocks", false, { walk.value })
 
     private var startPos: BlockPos? = null
