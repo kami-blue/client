@@ -44,7 +44,7 @@ internal object NoteBot : Module(
     private val reloadSong = setting("Reload Song", false)
     private val songName = setting("Song Name", "Unchanged")
     private val channel1 = setting("Channel 1", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
-    private val channel2 = setting("Channel 2", NoteBlockEvent.Instrument.PIANO)
+    private val channel2 = setting("Channel 2", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
     private val channel3 = setting("Channel 3", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
     private val channel4 = setting("Channel 4", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
     private val channel5 = setting("Channel 5", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
@@ -125,6 +125,8 @@ internal object NoteBot : Module(
     private fun parse(filename: String): TreeMap<Long, java.util.ArrayList<Note>> {
         sortOutInstruments()
         if (filename.endsWith(".nbs")) return readNbs(filename)
+
+
         val sequence = MidiSystem.getSequence(File(filename))
         val noteSequence = TreeMap<Long, ArrayList<Note>>()
         val resolution = sequence.resolution.toDouble()
@@ -287,7 +289,7 @@ internal object NoteBot : Module(
             ?: EnumFacing.UP
     }
 
-    class Note(val note: Int, val track: Int) {
+    private class Note(val note: Int, val track: Int) {
         val noteBlockNote: Int
             get() {
                 /**
@@ -321,10 +323,11 @@ internal object NoteBot : Module(
         }
     }
 
-    fun sortOutInstruments(){
+    fun sortOutInstruments() {
         if (!songName.value.endsWith(".nbs")) return
 
         channelSettings[0].value = NoteBlockEvent.Instrument.PIANO
+        channelSettings[1].value = NoteBlockEvent.Instrument.BASSGUITAR
         channelSettings[2].value = NoteBlockEvent.Instrument.BASSDRUM
         channelSettings[3].value = NoteBlockEvent.Instrument.SNARE
         channelSettings[4].value = NoteBlockEvent.Instrument.CLICKS
@@ -335,7 +338,7 @@ internal object NoteBot : Module(
         channelSettings[9].value = NoteBlockEvent.Instrument.XYLOPHONE
     }
 
-    fun readNbs(fileName: String): TreeMap<Long, ArrayList<Note>> {
+    private fun readNbs(fileName: String): TreeMap<Long, ArrayList<Note>> {
         val noteSequence = TreeMap<Long, ArrayList<Note>>()
         val file = File(fileName)
         val dataInputStream = DataInputStream(FileInputStream(file))
@@ -345,22 +348,28 @@ internal object NoteBot : Module(
         if (length.toInt() == 0) {
             nbsversion = dataInputStream.readByte().toInt()
             dataInputStream.readByte().toInt()
+
+
             if (nbsversion >= 3) {
                 length = dataInputStream.readShortCustom()
             }
         }
+
         dataInputStream.readShortCustom()
         dataInputStream.skipString()
         dataInputStream.skipString()
         dataInputStream.skipString()
         dataInputStream.skipString()
+
         val tempo = dataInputStream.readShortCustom()
         val timeBetween = 1000 / (tempo / 100).toLong()
+
         dataInputStream.skipBytes(23)
         dataInputStream.skipString()
         if (nbsversion >= 4) {
             dataInputStream.skipBytes(4)
         }
+
         var currentTick: Short = -1
         while (true) {
             val jump = dataInputStream.readShortCustom()
@@ -387,12 +396,14 @@ internal object NoteBot : Module(
     }
 
     private fun DataInputStream.readShortCustom(): Short {
+        // This reads a short ( 2 * bytes), it has to be inverted from the normal readShort function.
         val byte1 = readUnsignedByte()
         val byte2 = readUnsignedByte()
         return (byte1 + (byte2 shl 8)).toShort()
     }
 
     private fun DataInputStream.readIntCustom(): Int {
+        // This reads an int (4 * bytes), it has to be inverted from the normal readInt function.
         val byte1 = readUnsignedByte()
         val byte2 = readUnsignedByte()
         val byte3 = readUnsignedByte()
@@ -401,6 +412,7 @@ internal object NoteBot : Module(
     }
 
     private fun DataInputStream.skipString() {
+        // Skip the next string (The first int is the length of the string (in bytes), and so you skip that many bytes.
         var length = readIntCustom()
         skip(length.toLong())
     }
