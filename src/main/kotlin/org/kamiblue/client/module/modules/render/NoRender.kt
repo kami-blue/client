@@ -29,7 +29,7 @@ internal object NoRender : Module(
     description = "Ignore entity spawn packets"
 ) {
 
-    private val packets = setting("CancelPackets", true)
+    private val packets = setting("Cancel Packets", true)
     private val page = setting("Page", Page.OTHER)
 
     // Entities
@@ -50,13 +50,13 @@ internal object NoRender : Module(
     // Others
     val map = setting("Maps", false, { page.value == Page.OTHER })
     private val explosion = setting("Explosions", true, { page.value == Page.OTHER })
-    val signText = setting("SignText", false, { page.value == Page.OTHER })
+    val signText = setting("Sign Text", false, { page.value == Page.OTHER })
     val particles = setting("Particles", true, { page.value == Page.OTHER })
-    private val falling = setting("FallingBlocks", true, { page.value == Page.OTHER })
-    val beacon = setting("BeaconBeams", true, { page.value == Page.OTHER })
-    val skylight = setting("SkyLightUpdates", true, { page.value == Page.OTHER })
-    private val enchantingTable = setting("EnchantingBooks", true, { page.value == Page.OTHER })
-    private val enchantingTableSnow = setting("EnchantTableSnow", false, { page.value == Page.OTHER })
+    private val falling = setting("Falling Blocks", true, { page.value == Page.OTHER })
+    val beacon = setting("Beacon Beams", true, { page.value == Page.OTHER })
+    val skylight = setting("SkyLight Updates", true, { page.value == Page.OTHER })
+    private val enchantingTable = setting("Enchanting Books", true, { page.value == Page.OTHER })
+    private val enchantingTableSnow = setting("Enchanting Table Snow", false, { page.value == Page.OTHER }, description = "Replace enchanting table models with snow layers")
     private val projectiles = setting("Projectiles", false, { page.value == Page.OTHER })
     private val lightning = setting("Lightning", true, { page.value == Page.OTHER })
 

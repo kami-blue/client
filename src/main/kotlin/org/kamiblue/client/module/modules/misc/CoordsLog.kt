@@ -18,7 +18,7 @@ internal object CoordsLog : Module(
     category = Category.MISC
 ) {
     private val saveOnDeath = setting("Save On Death", true)
-    private val autoLog = setting("AutoLog", false)
+    private val autoLog = setting("Automatically Log", false)
     private val delay = setting("Delay", 15, 1..60, 1)
 
     private var previousCoord: String? = null
