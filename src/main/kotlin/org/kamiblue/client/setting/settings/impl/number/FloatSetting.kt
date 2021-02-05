@@ -23,4 +23,8 @@ class FloatSetting(
         jsonElement?.asJsonPrimitive?.asFloat?.let { value = it }
     }
 
+    override fun setValue(valueIn: Double) {
+        value = valueIn.toFloat()
+    }
+
 }

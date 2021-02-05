@@ -19,6 +19,8 @@ import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.capeapi.CapeType
+import org.kamiblue.client.util.InfoCalculator.speed
+import org.kamiblue.client.util.threads.runSafeR
 import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
 
@@ -135,8 +137,9 @@ internal object DiscordRPC : Module(
                 else "No Coords"
             }
             LineInfo.SPEED -> {
-                if (mc.player != null) "${InfoCalculator.speed(false)} m/s"
-                else "No Speed"
+                runSafeR {
+                    "${"%.1f".format(speed())} m/s"
+                } ?: "No Speed"
             }
             LineInfo.HELD_ITEM -> {
                 "Holding ${mc.player?.heldItemMainhand?.displayName ?: "Air"}" // Holding air meme

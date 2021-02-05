@@ -1,8 +1,10 @@
 package org.kamiblue.client.module.modules.combat
 
-import org.kamiblue.client.event.Phase
+import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.util.EnumHand
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.module.Category
@@ -14,9 +16,6 @@ import org.kamiblue.client.util.items.isWeapon
 import org.kamiblue.client.util.math.RotationUtils.faceEntityClosest
 import org.kamiblue.client.util.math.RotationUtils.getRotationToEntityClosest
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityLivingBase
-import net.minecraft.util.EnumHand
 
 @CombatManager.CombatModule
 internal object KillAura : Module(
@@ -49,12 +48,12 @@ internal object KillAura : Module(
     }
 
     init {
-        safeListener<OnUpdateWalkingPlayerEvent> {
-            if (it.phase != Phase.PRE) return@safeListener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START) return@safeListener
 
             inactiveTicks++
 
-            if (player.isDead) {
+            if (player.isDead || player.health <= 0.0f) {
                 if (disableOnDeath.value) disable()
                 return@safeListener
             }

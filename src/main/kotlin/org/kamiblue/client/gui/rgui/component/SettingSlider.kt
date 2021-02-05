@@ -35,12 +35,6 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         else -> range / 20.0
     }
 
-    private fun getStepValue() = if (Keyboard.isKeyDown(Keyboard.KEY_LMENU)) {
-        fineStepDouble
-    } else {
-        stepDouble
-    }
-
     override fun onStopListening(success: Boolean) {
         if (success) {
             name.toDoubleOrNull()?.let { setting.setValue(it.toString()) }
@@ -82,10 +76,11 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         value = if (!Keyboard.isKeyDown(Keyboard.KEY_LMENU)) mousePos.x.toDouble() / width.toDouble()
         else (preDragMousePos.x + (mousePos.x - preDragMousePos.x) * 0.1) / width.toDouble()
 
-        val step = getStepValue()
+        val step = if (Keyboard.isKeyDown(Keyboard.KEY_LMENU)) fineStepDouble else stepDouble
         var roundedValue = MathUtils.round(round((value * range + setting.range.start.toDouble()) / step) * step, places)
         if (abs(roundedValue) == 0.0) roundedValue = 0.0
-        setting.setValue(roundedValue.toString())
+
+        setting.setValue(roundedValue)
     }
 
     override fun onKeyInput(keyCode: Int, keyState: Boolean) {
@@ -120,9 +115,10 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         super.onTick()
         if (mouseState != MouseState.DRAG && !listening) {
             val min = setting.range.start.toDouble()
-            val step = getStepValue()
-            val flooredSettingValue = floor((settingValueDouble - min) / step) * step
-            if (value * range + min !in (flooredSettingValue - step)..flooredSettingValue) {
+            var flooredValue = floor((value * range + setting.range.start.toDouble()) / stepDouble) * stepDouble
+            if (abs(flooredValue) == 0.0) flooredValue = 0.0
+
+            if (abs(flooredValue - settingValueDouble) >= stepDouble) {
                 value = (setting.value.toDouble() - min) / range
             }
         }

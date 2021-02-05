@@ -33,6 +33,7 @@ internal object HoleMiner : Module(
     description = "Mines your opponent's hole",
     modulePriority = 100
 ) {
+    private val morePacket by setting("More Packets", false)
     private val range by setting("Range", 5.0f, 1.0f..8.0f, 0.25f)
 
     private var miningPos: BlockPos? = null
@@ -99,7 +100,7 @@ internal object HoleMiner : Module(
 
                 PlayerPacketManager.addPacket(HoleMiner, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
 
-                connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, facing))
+                if (morePacket) connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, facing))
                 connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, facing))
 
                 player.swingArm(EnumHand.MAIN_HAND)

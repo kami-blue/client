@@ -1,6 +1,7 @@
 package org.kamiblue.client.module.modules.player
 
 import baritone.api.pathing.goals.GoalTwoBlocks
+import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.PacketEvent
@@ -219,11 +220,13 @@ internal object Freecam : Module(
 
     private fun resetCameraGuy() {
         cameraGuy = null
-        onMainThreadSafe {
-            world.removeEntityFromWorld(ENTITY_ID)
-            mc.renderViewEntity = player
-            mc.renderGlobal.loadRenderers()
-            if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
+        runBlocking {
+            onMainThreadSafe {
+                world.removeEntityFromWorld(ENTITY_ID)
+                mc.renderViewEntity = player
+                mc.renderGlobal.loadRenderers()
+                if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
+            }
         }
     }
 

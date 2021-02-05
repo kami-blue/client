@@ -1,6 +1,7 @@
 package org.kamiblue.client.module.modules.misc
 
 import com.mojang.authlib.GameProfile
+import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.ConnectionEvent
@@ -49,10 +50,12 @@ internal object FakePlayer : Module(
         }
 
         onDisable {
-            onMainThreadSafe {
-                fakePlayer?.setDead()
-                world.removeEntityFromWorld(ENTITY_ID)
-                fakePlayer = null
+            runBlocking {
+                onMainThreadSafe {
+                    fakePlayer?.setDead()
+                    world.removeEntityFromWorld(ENTITY_ID)
+                    fakePlayer = null
+                }
             }
         }
 
@@ -75,8 +78,10 @@ internal object FakePlayer : Module(
             if (maxArmor) addMaxArmor()
             if (gappleEffects) addGappleEffects()
         }.also {
-            onMainThread {
-                world.addEntityToWorld(ENTITY_ID, it)
+            runBlocking {
+                onMainThread {
+                    world.addEntityToWorld(ENTITY_ID, it)
+                }
             }
         }
     }
