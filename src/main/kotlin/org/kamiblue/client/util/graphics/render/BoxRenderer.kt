@@ -1,12 +1,13 @@
-package me.zeroeightsix.kami.util.graphics.render
+package org.kamiblue.client.util.graphics.render
 
-import me.zeroeightsix.kami.util.graphics.buffer.VertexBuffer
-import me.zeroeightsix.kami.util.graphics.buffer.ShortIndexBuffer
-import me.zeroeightsix.kami.util.graphics.buffer.newBufferGroup
-import me.zeroeightsix.kami.util.math.corners
 import net.minecraft.util.math.AxisAlignedBB
+import org.kamiblue.client.util.graphics.buffer.ShortIndexBuffer
+import org.kamiblue.client.util.graphics.buffer.VertexBuffer
+import org.kamiblue.client.util.graphics.buffer.newVertexBuffer
+import org.kamiblue.client.util.math.corners
 import org.kamiblue.commons.tuples.floats.VEC3D_ZERO
 import org.kamiblue.commons.tuples.floats.Vec3d
+import org.kamiblue.commons.tuples.floats.toFloat
 import org.kamiblue.commons.tuples.ints.Vec4i
 import org.kamiblue.commons.tuples.x
 import org.kamiblue.commons.tuples.y
@@ -19,7 +20,7 @@ class BoxRenderer(
     block: VertexBuffer.Builder.() -> Unit
 ) {
 
-    private val vertexBuffer = newBufferGroup(GL_DYNAMIC_DRAW, capacity * 16, block)
+    private val vertexBuffer = newVertexBuffer(GL_DYNAMIC_DRAW, capacity * 16, block)
     private val indexBuffer = ShortIndexBuffer(GL_DYNAMIC_DRAW, capacity * 60)
 
     private val filledIndices = ArrayList<Short>()

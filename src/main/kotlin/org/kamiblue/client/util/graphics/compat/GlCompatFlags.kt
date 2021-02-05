@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.graphics.compat
+package org.kamiblue.client.util.graphics.compat
 
 import org.lwjgl.opengl.ContextCapabilities
 import org.lwjgl.opengl.GLContext

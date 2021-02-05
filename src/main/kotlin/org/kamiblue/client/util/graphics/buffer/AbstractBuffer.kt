@@ -1,9 +1,9 @@
-package me.zeroeightsix.kami.util.graphics.buffer
+package org.kamiblue.client.util.graphics.buffer
 
-import me.zeroeightsix.kami.util.graphics.compat.bindBuffer
-import me.zeroeightsix.kami.util.graphics.compat.bufferData
-import me.zeroeightsix.kami.util.graphics.compat.bufferSubData
-import me.zeroeightsix.kami.util.graphics.compat.genBuffers
+import org.kamiblue.client.util.graphics.compat.glBindBufferC
+import org.kamiblue.client.util.graphics.compat.glBufferDataC
+import org.kamiblue.client.util.graphics.compat.glBufferSubDataC
+import org.kamiblue.client.util.graphics.compat.glGenBuffersC
 import java.nio.ByteBuffer
 
 abstract class AbstractBuffer {
@@ -11,7 +11,7 @@ abstract class AbstractBuffer {
     protected abstract val target: Int
     protected abstract val buffer: ByteBuffer
 
-    protected val id by lazy { genBuffers() }
+    protected val id by lazy { glGenBuffersC() }
 
     var renderSize = 0; private set
     var bufferSize = 0; private set
@@ -22,7 +22,7 @@ abstract class AbstractBuffer {
         if (shouldResize(newSize)) {
             allocate(newSize)
         } else {
-            bufferSubData(target, 0L, buffer)
+            glBufferSubDataC(target, 0L, buffer)
         }
 
         postUpload()
@@ -43,15 +43,15 @@ abstract class AbstractBuffer {
         newSize > bufferSize || bufferSize - newSize > 1024
 
     fun allocate(newSize: Int) {
-        bufferData(target, buffer, usage)
+        glBufferDataC(target, buffer, usage)
         bufferSize = newSize
     }
 
     fun bindBuffer() {
-        bindBuffer(target, id)
+        glBindBufferC(target, id)
     }
 
     fun unbindBuffer() {
-        bindBuffer(target, 0)
+        glBindBufferC(target, 0)
     }
 }
