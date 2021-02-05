@@ -26,12 +26,12 @@ internal object NoSlowDown : Module(
     category = Category.MOVEMENT,
     description = "Prevents being slowed down when using an item or going through cobwebs"
 ) {
-    private val ncpStrict by setting("NCPStrict", true)
+    private val ncpStrict by setting("NCP Strict", true)
     private val sneak by setting("Sneak", false)
-    val soulSand by setting("SoulSand", true)
+    val soulSand by setting("Soul Sand", true)
     val cobweb by setting("Cobweb", true)
     private val slime by setting("Slime", true)
-    private val allItems by setting("AllItems", false)
+    private val allItems by setting("All Items", false)
     private val food by setting("Food", true, { !allItems })
     private val bow by setting("Bows", true, { !allItems })
     private val potion by setting("Potions", true, { !allItems })

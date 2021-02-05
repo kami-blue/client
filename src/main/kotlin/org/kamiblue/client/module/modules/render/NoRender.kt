@@ -6,7 +6,6 @@ import net.minecraft.client.particle.Particle
 import net.minecraft.client.particle.ParticleFirework
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.entity.IProjectile
 import net.minecraft.entity.effect.EntityLightningBolt
 import net.minecraft.entity.item.*
 import net.minecraft.entity.monster.EntityMob
@@ -33,7 +32,7 @@ internal object NoRender : Module(
     description = "Ignore entity spawn packets"
 ) {
 
-    private val packets = setting("CancelPackets", true)
+    private val packets = setting("Cancel Packets", true)
     private val page = setting("Page", Page.OTHER)
 
     // Entities
@@ -43,10 +42,10 @@ internal object NoRender : Module(
     private val paint = setting("Paintings", false, { page.value == Page.ENTITIES })
     private val sign = setting("Signs", false, { page.value == Page.ENTITIES })
     private val skull = setting("Heads", false, { page.value == Page.ENTITIES })
-    private val armorStand = setting("ArmorStands", false, { page.value == Page.ENTITIES })
-    private val endPortal = setting("EndPortals", false, { page.value == Page.ENTITIES })
+    private val armorStand = setting("Armor Stands", false, { page.value == Page.ENTITIES })
+    private val endPortal = setting("End Portals", false, { page.value == Page.ENTITIES })
     private val banner = setting("Banners", false, { page.value == Page.ENTITIES })
-    private val itemFrame = setting("ItemFrames", false, { page.value == Page.ENTITIES })
+    private val itemFrame = setting("Item Frames", false, { page.value == Page.ENTITIES })
     private val xp = setting("XP", false, { page.value == Page.ENTITIES })
     private val items = setting("Items", false, { page.value == Page.ENTITIES })
     private val crystal = setting("Crystals", false, { page.value == Page.ENTITIES })
@@ -55,13 +54,13 @@ internal object NoRender : Module(
     // Others
     val map = setting("Maps", false, { page.value == Page.OTHER })
     private val explosion = setting("Explosions", true, { page.value == Page.OTHER })
-    val signText = setting("SignText", false, { page.value == Page.OTHER })
+    val signText = setting("Sign Text", false, { page.value == Page.OTHER })
     private val particles = setting("Particles", true, { page.value == Page.OTHER })
-    private val falling = setting("FallingBlocks", true, { page.value == Page.OTHER })
-    val beacon = setting("BeaconBeams", true, { page.value == Page.OTHER })
-    val skylight = setting("SkyLightUpdates", true, { page.value == Page.OTHER })
-    private val enchantingTable = setting("EnchantingBooks", true, { page.value == Page.OTHER })
-    private val enchantingTableSnow = setting("EnchantTableSnow", false, { page.value == Page.OTHER })
+    private val falling = setting("Falling Blocks", true, { page.value == Page.OTHER })
+    val beacon = setting("Beacon Beams", true, { page.value == Page.OTHER })
+    val skylight = setting("SkyLight Updates", true, { page.value == Page.OTHER })
+    private val enchantingTable = setting("Enchanting Books", true, { page.value == Page.OTHER })
+    private val enchantingTableSnow = setting("Enchanting Table Snow", false, { page.value == Page.OTHER }, description = "Replace enchanting table models with snow layers")
     private val projectiles = setting("Projectiles", false, { page.value == Page.OTHER })
     private val lightning = setting("Lightning", true, { page.value == Page.OTHER })
 
