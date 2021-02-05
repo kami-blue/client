@@ -352,6 +352,7 @@ internal object NoteBot : Module(
 
 
             if (nbsVersion >= 3) {
+                @Suppress("UNUSED_VALUE")
                 length = dataInputStream.readShortCustom()
             }
         }
