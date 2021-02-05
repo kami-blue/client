@@ -24,7 +24,7 @@ object SetCommand : ClientCommand(
         ModuleManager.modules.asSequence()
             .associateWith { module ->
                 module.fullSettingList.associateBy {
-                    it.name.removeSpaceAndLowerCase()
+                    it.name.formatSetting()
                 }
             }
     }
@@ -106,18 +106,21 @@ object SetCommand : ClientCommand(
                 val settingList = module.fullSettingList
 
                 MessageSendHelper.sendChatMessage("List of settings for ${formatValue(module.name)}: ${formatValue(settingList.size)}")
-                MessageSendHelper.sendRawChatMessage(settingList.joinToString { "${it.name.removeSpaceAndLowerCase()}(${it.name})" })
+                MessageSendHelper.sendRawChatMessage(settingList.joinToString { "${it.name.formatSetting(false)}(${it.name})" })
             }
         }
     }
 
-    private fun String.removeSpaceAndLowerCase() =
+    private fun String.formatSetting(lowerCase: Boolean = true): String {
         this.replace(" ", "")
             .replace("_", "")
-            .toLowerCase(Locale.ROOT)
+            .apply {
+                return if (lowerCase) this.toLowerCase(Locale.ROOT) else this
+            }
+    }
 
     private fun getSetting(module: AbstractModule, settingName: String) =
-        settingMap[module]?.get(settingName.removeSpaceAndLowerCase())
+        settingMap[module]?.get(settingName.formatSetting())
 
     private fun sendUnknownSettingMessage(module: AbstractModule, settingName: String) {
         MessageSendHelper.sendChatMessage("Unknown setting ${formatValue(settingName)} in ${formatValue(module.name)}!")
