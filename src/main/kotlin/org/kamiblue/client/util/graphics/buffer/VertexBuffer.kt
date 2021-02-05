@@ -10,9 +10,9 @@ import java.nio.ByteBuffer
 class VertexBuffer private constructor(
     override val usage: Int,
     override val buffer: ByteBuffer,
-    private val posBuffer: PosVertexElement?,
-    private val colorBuffer: ColorVertexElement?,
-    private val texPosBuffer: TexVertexElement?
+    private val posVertexElement: PosVertexElement?,
+    private val colorVertexElement: ColorVertexElement?,
+    private val texVertexElement: TexVertexElement?
 ) : AbstractBuffer() {
 
     override val target: Int get() = GL_ARRAY_BUFFER
@@ -20,7 +20,7 @@ class VertexBuffer private constructor(
     private var size = 0
 
     fun put(block: VertexBuilder.() -> Unit) {
-        VertexBuilder(buffer, posBuffer, colorBuffer, texPosBuffer).apply(block).build()
+        VertexBuilder(buffer, posVertexElement, colorVertexElement, texVertexElement).apply(block).build()
         size++
     }
 
@@ -51,33 +51,33 @@ class VertexBuffer private constructor(
 
     fun preRender() {
         bindBuffer()
-        posBuffer?.preRender()
-        colorBuffer?.preRender()
-        texPosBuffer?.preRender()
+        posVertexElement?.preRender()
+        colorVertexElement?.preRender()
+        texVertexElement?.preRender()
     }
 
     fun postRender() {
-        posBuffer?.postRender()
-        colorBuffer?.postRender()
-        texPosBuffer?.postRender()
+        posVertexElement?.postRender()
+        colorVertexElement?.postRender()
+        texVertexElement?.postRender()
         unbindBuffer()
     }
 
     class Builder(private val usage: Int, private val capacity: Int = 0x10000) {
 
-        private var posBuffer: PosVertexElement? = null
-        private var colorBuffer: ColorVertexElement? = null
-        private var texPosBuffer: TexVertexElement? = null
+        private var posVertexElement: PosVertexElement? = null
+        private var colorVertexElement: ColorVertexElement? = null
+        private var texVertexElement: TexVertexElement? = null
 
         fun pos2f() {
-            posBuffer = object : PosVertexElement() {
+            posVertexElement = object : PosVertexElement() {
                 override val vertexSize: Int
                     get() = 2
             }
         }
 
         fun pos3f() {
-            posBuffer = object : PosVertexElement() {
+            posVertexElement = object : PosVertexElement() {
                 override val vertexSize: Int
                     get() = 3
 
@@ -89,33 +89,33 @@ class VertexBuffer private constructor(
         }
 
         fun color4b() {
-            colorBuffer = object : ColorVertexElement() {}
+            colorVertexElement = object : ColorVertexElement() {}
         }
 
         fun tex2f() {
-            texPosBuffer = object : TexVertexElement() {}
+            texVertexElement = object : TexVertexElement() {}
         }
 
         fun build(): VertexBuffer {
             val buffer = prebuild()
-            return VertexBuffer(usage, buffer, posBuffer, colorBuffer, texPosBuffer)
+            return VertexBuffer(usage, buffer, posVertexElement, colorVertexElement, texVertexElement)
         }
 
-        private fun prebuild() : ByteBuffer {
+        private fun prebuild(): ByteBuffer {
             val stride = calcStride()
             var offset = 0L
 
-            posBuffer?.stride = stride
-            colorBuffer?.stride = stride
-            texPosBuffer?.stride = stride
+            posVertexElement?.stride = stride
+            colorVertexElement?.stride = stride
+            texVertexElement?.stride = stride
 
-            posBuffer?.offset = offset
-            offset += posBuffer?.byteSize ?: 0
+            posVertexElement?.offset = offset
+            offset += posVertexElement?.byteSize ?: 0
 
-            colorBuffer?.offset = offset
-            offset += colorBuffer?.byteSize ?: 0
+            colorVertexElement?.offset = offset
+            offset += colorVertexElement?.byteSize ?: 0
 
-            texPosBuffer?.offset = offset
+            texVertexElement?.offset = offset
 
             return BufferUtils.createByteBuffer(capacity * stride)
         }
@@ -123,9 +123,9 @@ class VertexBuffer private constructor(
         private fun calcStride(): Int {
             var stride = 0
 
-            stride += posBuffer?.byteSize
-            stride += colorBuffer?.byteSize
-            stride += texPosBuffer?.byteSize
+            stride += posVertexElement?.byteSize
+            stride += colorVertexElement?.byteSize
+            stride += texVertexElement?.byteSize
 
             return stride
         }

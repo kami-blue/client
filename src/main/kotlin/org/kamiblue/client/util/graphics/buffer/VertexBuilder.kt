@@ -8,9 +8,9 @@ import java.nio.ByteBuffer
 
 class VertexBuilder(
     private val buffer: ByteBuffer,
-    private val posBuffer: PosVertexElement?,
-    private val colorBuffer: ColorVertexElement?,
-    private val texPosBuffer: TexVertexElement?
+    private val posVertexElement: PosVertexElement?,
+    private val colorVertexElement: ColorVertexElement?,
+    private val texVertexElement: TexVertexElement?
 ) {
     private var builderPos: Vec3f? = null
     private var builderColor: Vec4i? = null
@@ -33,8 +33,8 @@ class VertexBuilder(
     }
 
     fun build() {
-        builderPos?.let { posBuffer?.pos(buffer, it) }
-        builderColor?.let { colorBuffer?.color(buffer, it) }
-        builderUV?.let { texPosBuffer?.uv(buffer, it) }
+        builderPos?.let { posVertexElement?.pos(buffer, it) }
+        builderColor?.let { colorVertexElement?.color(buffer, it) }
+        builderUV?.let { texVertexElement?.uv(buffer, it) }
     }
 }
