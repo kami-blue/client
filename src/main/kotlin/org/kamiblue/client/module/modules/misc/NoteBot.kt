@@ -43,24 +43,24 @@ internal object NoteBot : Module(
     private val togglePlay = setting("Toggle Play", false)
     private val reloadSong = setting("Reload Song", false)
     private val songName = setting("Song Name", "Unchanged")
-    private val channel1 = setting("Channel 1", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
-    private val channel2 = setting("Channel 2", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
-    private val channel3 = setting("Channel 3", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
-    private val channel4 = setting("Channel 4", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
-    private val channel5 = setting("Channel 5", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
-    private val channel6 = setting("Channel 6", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
-    private val channel7 = setting("Channel 7", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
-    private val channel8 = setting("Channel 8", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
-    private val channel9 = setting("Channel 9", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
-    private val channel11 = setting("Channel 11", NoteBlockEvent.Instrument.PIANO, { !songName.value.endsWith(".nbs") })
+    private val channel1 = setting("Channel 1", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
+    private val channel2 = setting("Channel 2", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
+    private val channel3 = setting("Channel 3", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
+    private val channel4 = setting("Channel 4", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
+    private val channel5 = setting("Channel 5", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
+    private val channel6 = setting("Channel 6", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
+    private val channel7 = setting("Channel 7", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
+    private val channel8 = setting("Channel 8", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
+    private val channel9 = setting("Channel 9", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
+    private val channel11 = setting("Channel 11", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
     private val channel12 = setting("Channel 12", NoteBlockEvent.Instrument.PIANO)
     private val channel13 = setting("Channel 13", NoteBlockEvent.Instrument.PIANO)
     private val channel14 = setting("Channel 14", NoteBlockEvent.Instrument.PIANO)
     private val channel15 = setting("Channel 15", NoteBlockEvent.Instrument.PIANO)
     private val channel16 = setting("Channel 16", NoteBlockEvent.Instrument.PIANO)
 
+    private val isNbsFormat get() = songName.value.endsWith(".nbs")
 
-    private var noteSequence = TreeMap<Long, ArrayList<Note>>()
     private var startTime = 0L
     private var elapsed = 0L
     private var duration = 0L
@@ -70,6 +70,7 @@ internal object NoteBot : Module(
             field = value
         }
 
+    private var noteSequence = TreeMap<Long, ArrayList<Note>>()
     private val noteBlockMap = EnumMap<NoteBlockEvent.Instrument, Array<BlockPos?>>(NoteBlockEvent.Instrument::class.java)
     private val noteBlocks = ArrayList<BlockPos>()
     private val clickedBlocks = HashSet<BlockPos>()
@@ -78,7 +79,7 @@ internal object NoteBot : Module(
     private val channelSettings = arrayOf(
         channel1, channel2, channel3, channel4,
         channel5, channel6, channel7, channel8,
-        channel9, channel9, channel11, channel12,
+        channel9, channel9, channel11, channel12, // yes, `channel9, channel9` is correct
         channel13, channel14, channel15, channel16
     )
 
@@ -323,8 +324,8 @@ internal object NoteBot : Module(
         }
     }
 
-    fun sortOutInstruments() {
-        if (!songName.value.endsWith(".nbs")) return
+    private fun sortOutInstruments() {
+        if (!isNbsFormat) return
 
         channelSettings[0].value = NoteBlockEvent.Instrument.PIANO
         channelSettings[1].value = NoteBlockEvent.Instrument.BASSGUITAR
@@ -344,13 +345,13 @@ internal object NoteBot : Module(
         val dataInputStream = DataInputStream(FileInputStream(file))
         var length = dataInputStream.readShort()
 
-        var nbsversion = 0
+        var nbsVersion = 0
         if (length.toInt() == 0) {
-            nbsversion = dataInputStream.readByte().toInt()
+            nbsVersion = dataInputStream.readByte().toInt()
             dataInputStream.readByte().toInt()
 
 
-            if (nbsversion >= 3) {
+            if (nbsVersion >= 3) {
                 length = dataInputStream.readShortCustom()
             }
         }
@@ -366,32 +367,41 @@ internal object NoteBot : Module(
 
         dataInputStream.skipBytes(23)
         dataInputStream.skipString()
-        if (nbsversion >= 4) {
+
+        if (nbsVersion >= 4) {
             dataInputStream.skipBytes(4)
         }
 
         var currentTick: Short = -1
         while (true) {
             val jump = dataInputStream.readShortCustom()
+
             if (jump.toInt() == 0) break
+
             currentTick = (currentTick + jump).toShort()
             var layer: Short = -1
+
             while (true) {
                 val jumpLayer: Short = dataInputStream.readShortCustom()
+
                 if (jumpLayer == 0.toShort()) break
+
                 layer = (layer + jumpLayer).toShort()
                 val instrument = dataInputStream.readByte()
                 val key = dataInputStream.readByte()
-                if (nbsversion >= 4) {
+
+                if (nbsVersion >= 4) {
                     dataInputStream.readByte() // note block velocity
                     dataInputStream.readByte() // note block panning
                     dataInputStream.readShortCustom() // note block pitch
                 }
+
                 val time = timeBetween * currentTick
-                val note = key % 33
+                val note = key % 33 // https://opennbs.org/nbs this ensures it is in the octave range (from 33-87)
                 noteSequence.getOrPut(time, ::ArrayList).add(Note(note, instrument.coerceIn(0, 15).toInt()))
             }
         }
+
         return noteSequence
     }
 
@@ -413,7 +423,6 @@ internal object NoteBot : Module(
 
     private fun DataInputStream.skipString() {
         // Skip the next string (The first int is the length of the string (in bytes), and so you skip that many bytes.
-        var length = readIntCustom()
-        skip(length.toLong())
+        skip(readIntCustom().toLong())
     }
 }
