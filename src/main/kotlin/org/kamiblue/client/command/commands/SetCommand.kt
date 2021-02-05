@@ -105,8 +105,10 @@ object SetCommand : ClientCommand(
                 val module = moduleArg.value
                 val settingList = module.fullSettingList
 
-                MessageSendHelper.sendChatMessage("List of settings for ${formatValue(module.name)}: ${formatValue(settingList.size)}")
-                MessageSendHelper.sendRawChatMessage(settingList.joinToString { "${it.name.formatSetting(false)}(${it.name})" })
+                MessageSendHelper.sendChatMessage("List of settings for ${formatValue(module.name)} ${formatValue(settingList.size)}")
+                MessageSendHelper.sendRawChatMessage(settingList.joinToString("\n") {
+                    "    ${it.name.formatSetting(false)} ${TextFormatting.GRAY format it.value}"
+                })
             }
         }
     }
