@@ -21,7 +21,7 @@ internal object ElytraReplace : Module(
 ) {
     private val inventoryMode = setting("Inventory", false)
     private val autoChest = setting("Auto Chest", false)
-    private val elytraFlightCheck = setting("Elytra Flight Check", true)
+    private val elytraFlightCheck = setting("ElytraFlight Check", true)
     private val logToChat = setting("Missing Warning", false)
     private val playSound = setting("Play Sound", false, { logToChat.value })
     private val logThreshold = setting("Warning Threshold", 2, 1..10, 1, { logToChat.value })
