@@ -1,5 +1,6 @@
 package org.kamiblue.client.gui.hudgui
 
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.gui.rgui.windows.BasicWindow
 import org.kamiblue.client.module.modules.client.GuiColors
@@ -11,8 +12,8 @@ import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.graphics.font.FontRenderAdapter
 import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.math.Vec2f
+import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.lwjgl.opengl.GL11.glScalef
 
@@ -26,6 +27,7 @@ open class HudElement(
 ) : BasicWindow(name, 20.0f, 20.0f, 100.0f, 50.0f, SettingGroup.HUD_GUI) {
 
     val scale by setting("Scale", 1.0f, 0.1f..4.0f, 0.05f)
+    val default = setting("Default", false)
 
     override val resizable = false
 
@@ -82,6 +84,14 @@ open class HudElement(
                 lastActiveTime = System.currentTimeMillis()
             } else if (!alwaysListening) {
                 KamiEventBus.unsubscribe(this)
+            }
+        }
+
+        default.valueListeners.add { _, it ->
+            if (it) {
+                settingList.filter {it != visibleSetting && it != default }.forEach { it.resetValue() }
+                default.value = false
+                MessageSendHelper.sendChatMessage("$name Set to defaults!")
             }
         }
 
