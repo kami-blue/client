@@ -19,7 +19,7 @@ object CPS : LabelHud(
     private var clicks = HashSet<Long>()
 
     override fun SafeClientEvent.updateText() {
-        displayText.add("%.2f".format(clicks.size / (averageSpeedTime / 1000.0)), primaryColor)
+        displayText.add((clicks.size / (averageSpeedTime / 1000)).toString(), primaryColor)
 
         displayText.add("CPS", secondaryColor)
     }
