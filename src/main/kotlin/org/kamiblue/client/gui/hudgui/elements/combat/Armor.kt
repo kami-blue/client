@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.setting.GuiConfig.setting
+import org.kamiblue.client.util.color.ColorConverter
 import org.kamiblue.client.util.color.ColorGradient
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.GlStateUtils
@@ -140,11 +141,11 @@ object Armor : HudElement(
 
         if (itemStack.isItemDamaged && colorBarMode) {
             val health: Double = itemStack.item.getDurabilityForDisplay(itemStack)
-            val rgbForDisplay: Int = itemStack.item.getRGBDurabilityForDisplay(itemStack)
+            val hexRgb: Int = itemStack.item.getRGBDurabilityForDisplay(itemStack)
             val i = (13.0f - health.toFloat() * 13.0f).roundToInt()
 
             RenderUtils2D.drawRectFilled(VertexHelper(GlStateUtils.useVbo()), Vec2d(x + 4, y + 15), Vec2d(x + 15, y + 17), ColorHolder(0, 0, 0, 255))
-            RenderUtils2D.drawRectFilled(VertexHelper(GlStateUtils.useVbo()), Vec2d(x + 2, y + 15), Vec2d(x + 2 + i, y + 17), ColorHolder(rgbForDisplay shr 16 and 255, rgbForDisplay shr 8 and 255, rgbForDisplay and 255, 255))
+            RenderUtils2D.drawRectFilled(VertexHelper(GlStateUtils.useVbo()), Vec2d(x + 2, y + 15), Vec2d(x + 2 + i, y + 17), ColorConverter.hexToRgb(hexRgb))
         }
 
         if (armorCount.value) {
