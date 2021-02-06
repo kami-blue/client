@@ -5,12 +5,12 @@ buildscript {
 
         maven {
             name = 'forge'
-            url = 'http://files.minecraftforge.net/maven'
+            url = 'https://files.minecraftforge.net/maven'
         }
 
         maven {
             name = 'SpongePowered'
-            url = 'http://repo.spongepowered.org/maven'
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
         }
     }
 
@@ -51,7 +51,7 @@ compileJava {
 repositories {
     maven {
         name = 'spongepowered-repo'
-        url = 'http://repo.spongepowered.org/maven/'
+        url = 'https://repo.spongepowered.org/repository/maven-public/'
     }
     maven {
         name = 'impactdevelopment-repo'
@@ -59,7 +59,7 @@ repositories {
     }
     maven {
         name = 'swt-repo'
-        url = "http://maven-eclipse.github.io/maven"
+        url = "https://maven-eclipse.github.io/maven"
     }
     maven {
         name = "jitpack.io"
@@ -77,7 +77,7 @@ minecraft {
         client {
             workingDirectory project.file('run')
 
-            property 'fml.coreMods.load', 'me.zeroeightsix.kami.mixin.MixinLoaderForge'
+            property 'fml.coreMods.load', 'org.kamiblue.client.mixin.MixinLoaderForge'
             property 'mixin.env.disableRefMap', 'true' // Disable refmap so we don't get trolled by Baritone
 
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -121,13 +121,6 @@ dependencies {
     jarLibs('club.minnced:java-discord-rpc:2.0.2') {
         exclude module: 'jna'
     }
-
-    jarLibs('com.github.MrPowerGamerBR:TemmieWebhook:-SNAPSHOT') {
-        exclude module: 'gson'
-    }
-
-    jarLibs 'com.github.kevinsawicki:http-request:6.0'
-
 
     // Kotlin libs
     // kotlin-stdlib-common and annotations aren't required at runtime
@@ -194,9 +187,9 @@ jar {
             'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
             'TweakOrder': 0,
             'FMLCorePluginContainsFMLMod': 'true',
-            'FMLCorePlugin': 'me.zeroeightsix.kami.mixin.MixinLoaderForge',
+            'FMLCorePlugin': 'org.kamiblue.client.mixin.MixinLoaderForge',
             'ForceLoadAsMod': 'true',
-            'Main-Class': 'me.zeroeightsix.installer.Installer'
+            'Main-Class': 'org.kamiblue.client.installer.Installer'
     )
 
     // Copy needed libs to jar
