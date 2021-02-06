@@ -1,11 +1,5 @@
 package org.kamiblue.client.mixin.client;
 
-import org.kamiblue.client.event.KamiEventBus;
-import org.kamiblue.client.event.events.GuiEvent;
-import org.kamiblue.client.event.events.RenderEvent;
-import org.kamiblue.client.gui.mc.KamiGuiUpdateNotification;
-import org.kamiblue.client.module.modules.combat.CrystalAura;
-import org.kamiblue.client.util.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
@@ -17,6 +11,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.GuiEvent;
+import org.kamiblue.client.event.events.MouseClickEvent;
+import org.kamiblue.client.event.events.RenderEvent;
+import org.kamiblue.client.gui.mc.KamiGuiUpdateNotification;
+import org.kamiblue.client.module.modules.combat.CrystalAura;
+import org.kamiblue.client.util.Wrapper;
+import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -82,6 +84,11 @@ public class MixinMinecraft {
         if (KamiGuiUpdateNotification.Companion.getLatest() != null && !KamiGuiUpdateNotification.Companion.isLatest()) {
             Wrapper.getMinecraft().displayGuiScreen(new KamiGuiUpdateNotification());
         }
+    }
+
+    @Inject(method = "runTickMouse", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getEventButton()I"))
+    public void mouseTick(CallbackInfo info) {
+        KamiEventBus.INSTANCE.post(new MouseClickEvent(Mouse.getEventButton(), Mouse.getEventButtonState()));
     }
 
 }

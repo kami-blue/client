@@ -1,16 +1,5 @@
 package org.kamiblue.client.module.modules.misc
 
-import org.kamiblue.client.KamiMod
-import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.event.events.PacketEvent
-import org.kamiblue.client.event.events.RenderWorldEvent
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.*
-import org.kamiblue.client.util.text.MessageSendHelper
-import org.kamiblue.client.util.threads.runSafe
-import org.kamiblue.client.util.threads.runSafeR
-import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.init.Blocks
 import net.minecraft.init.SoundEvents
 import net.minecraft.network.play.client.CPacketPlayerDigging
@@ -22,6 +11,17 @@ import net.minecraft.util.SoundEvent
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.event.world.NoteBlockEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.KamiMod
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.PacketEvent
+import org.kamiblue.client.event.events.RenderWorldEvent
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.*
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.threads.runSafe
+import org.kamiblue.client.util.threads.runSafeR
+import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
 import java.io.File
 import java.io.IOException
@@ -35,7 +35,7 @@ import kotlin.math.roundToInt
 internal object NoteBot : Module(
     name = "NoteBot",
     category = Category.MISC,
-    description = "Plays music with note blocks; put songs as .mid files in .minecraft/kamiblue/songs"
+    description = "Plays music with note blocks; put songs as .mid or .nbs files in .minecraft/kamiblue/songs"
 ) {
 
     private val togglePlay = setting("TogglePlay", false)
