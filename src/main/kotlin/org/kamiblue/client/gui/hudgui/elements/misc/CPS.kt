@@ -16,11 +16,11 @@ object CPS : LabelHud(
 
     var clicks = HashSet<Long>()
 
-    private val measurementTime by setting("Measurement Time (m)", 1000, 500..5000, 100)
+    private val measurementTime by setting("Average Speed Time", 1000, 500..5000, 100, description = "The time to measure over, in ms")
 
 
     override fun SafeClientEvent.updateText() {
-        displayText.add("%.2f".format(clicks.size.toDouble() / (measurementTime.toDouble() / 1000)), primaryColor)
+        displayText.add("%.2f".format(clicks.size / (measurementTime / 1000.0)), primaryColor)
 
         displayText.add("CPS", secondaryColor)
     }
