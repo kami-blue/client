@@ -58,7 +58,7 @@ object Armor : HudElement(
     private var stringWidth = 120.0f
 
     private val armorCounts = IntArray(4)
-    private val durabilityColorGradient = ColorGradient(
+    private val duraColorGradient = ColorGradient(
         0f to ColorHolder(180, 20, 20),
         50f to ColorHolder(240, 220, 20),
         100f to ColorHolder(20, 232, 20)
@@ -88,41 +88,41 @@ object Armor : HudElement(
 
         if (classic.value) {
             val itemY = if (dockingV != VAlign.TOP) (FontRenderAdapter.getFontHeight() + 4.0f).toInt() else 2
-            val durabilityY = if (dockingV != VAlign.TOP) 2.0f else 22.0f
+            val duraY = if (dockingV != VAlign.TOP) 2.0f else 22.0f
 
             for ((index, armor) in player.armorInventoryList.reversed().withIndex()) {
                 drawItem(armor, index, 2, itemY)
 
                 if (armor.isItemStackDamageable) {
-                    val durabilityPercentage = MathUtils.round((armor.maxDamage - armor.itemDamage) / armor.maxDamage.toFloat() * 100.0f, 1).toFloat()
-                    val string = durabilityPercentage.toInt().toString()
+                    val duraPercent = MathUtils.round((armor.maxDamage - armor.itemDamage) / armor.maxDamage.toFloat() * 100.0f, 1).toFloat()
+                    val string = duraPercent.toInt().toString()
                     val width = FontRenderAdapter.getStringWidth(string)
-                    val color = durabilityColorGradient.get(durabilityPercentage)
+                    val color = duraColorGradient.get(duraPercent)
 
-                    FontRenderAdapter.drawString(string, 10 - width * 0.5f, durabilityY, color = color)
+                    FontRenderAdapter.drawString(string, 10 - width * 0.5f, duraY, color = color)
                 }
 
                 GlStateManager.translate(20.0f, 0.0f, 0.0f)
             }
         } else {
             val itemX = if (dockingH != HAlign.RIGHT) 2 else (stringWidth - 18).toInt()
-            val durabilityY = 10.0f - FontRenderAdapter.getFontHeight() * 0.5f
+            val duraY = 10.0f - FontRenderAdapter.getFontHeight() * 0.5f
             var maxWidth = 0.0f
 
             for ((index, armor) in player.armorInventoryList.reversed().withIndex()) {
                 drawItem(armor, index, itemX, 2)
 
                 if (armor.isItemStackDamageable && percentageMode) {
-                    val durability = armor.maxDamage - armor.itemDamage
-                    val durabilityPercentage = MathUtils.round(durability / armor.maxDamage.toFloat() * 100.0f, 1).toFloat()
+                    val dura = armor.maxDamage - armor.itemDamage
+                    val duraPercent = MathUtils.round(dura / armor.maxDamage.toFloat() * 100.0f, 1).toFloat()
 
-                    val string = "$durability/${armor.maxDamage}  ($durabilityPercentage%)"
-                    val durabilityWidth = FontRenderAdapter.getStringWidth(string)
-                    val durabilityX = if (dockingH != HAlign.RIGHT) 22.0f else stringWidth - 22.0f - durabilityWidth
-                    val color = durabilityColorGradient.get(durabilityPercentage)
-                    maxWidth = max(durabilityWidth, maxWidth)
+                    val string = "$dura/${armor.maxDamage}  ($duraPercent%)"
+                    val duraWidth = FontRenderAdapter.getStringWidth(string)
+                    val duraX = if (dockingH != HAlign.RIGHT) 22.0f else stringWidth - 22.0f - duraWidth
+                    val color = duraColorGradient.get(duraPercent)
+                    maxWidth = max(duraWidth, maxWidth)
 
-                    FontRenderAdapter.drawString(string, durabilityX, durabilityY, color = color)
+                    FontRenderAdapter.drawString(string, duraX, duraY, color = color)
                 }
 
                 GlStateManager.translate(0.0f, 20.0f, 0.0f)
