@@ -14,13 +14,12 @@ object CPS : LabelHud(
     description = "Display your clicks per second."
 ) {
 
-    var clicks = HashSet<Long>()
+    private val averageSpeedTime by setting("Average Speed Time", 1000, 500..5000, 100, description = "The period of time to measure, in ms")
 
-    private val measurementTime by setting("Average Speed Time", 1000, 500..5000, 100, description = "The time to measure over, in ms")
-
+    private var clicks = HashSet<Long>()
 
     override fun SafeClientEvent.updateText() {
-        displayText.add("%.2f".format(clicks.size / (measurementTime / 1000.0)), primaryColor)
+        displayText.add("%.2f".format(clicks.size / (averageSpeedTime / 1000.0)), primaryColor)
 
         displayText.add("CPS", secondaryColor)
     }
@@ -34,7 +33,7 @@ object CPS : LabelHud(
 
         safeListener<TickEvent.ClientTickEvent> {
             // This needs to happen whenever running else it will continue to show a score after clicking has stopped.
-            clicks.removeIf { it < System.currentTimeMillis() - measurementTime }
+            clicks.removeIf { it < System.currentTimeMillis() - averageSpeedTime }
         }
     }
 
