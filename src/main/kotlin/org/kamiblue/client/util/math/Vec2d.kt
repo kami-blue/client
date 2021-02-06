@@ -11,8 +11,6 @@ data class Vec2d(val x: Double = 0.0, val y: Double = 0.0) {
 
     constructor(vec2d: Vec2d) : this(vec2d.x, vec2d.y)
 
-    constructor(x: Int, y: Int) : this(x.toDouble(), y.toDouble())
-
     fun toRadians() = Vec2d(x.toRadian(), y.toRadian())
 
 
