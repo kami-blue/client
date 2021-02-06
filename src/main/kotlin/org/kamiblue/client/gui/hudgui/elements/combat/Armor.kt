@@ -144,8 +144,8 @@ object Armor : HudElement(
             val hexRgb: Int = itemStack.item.getRGBDurabilityForDisplay(itemStack)
             val i = (13.0f - health.toFloat() * 13.0f).roundToInt()
 
-            RenderUtils2D.drawRectFilled(VertexHelper(GlStateUtils.useVbo()), Vec2d(x + 4, y + 15), Vec2d(x + 15, y + 17), ColorHolder(0, 0, 0, 255))
-            RenderUtils2D.drawRectFilled(VertexHelper(GlStateUtils.useVbo()), Vec2d(x + 2, y + 15), Vec2d(x + 2 + i, y + 17), ColorConverter.hexToRgb(hexRgb))
+            RenderUtils2D.drawRectFilled(VertexHelper(GlStateUtils.useVbo()), Vec2d(x + 2, y + 13), Vec2d(x + 15, y + 15), ColorHolder(0, 0, 0, 255))
+            RenderUtils2D.drawRectFilled(VertexHelper(GlStateUtils.useVbo()), Vec2d(x + 2, y + 13), Vec2d(x + 2 + i, y + 14), ColorConverter.hexToRgb(hexRgb))
         }
 
         if (armorCount.value) {
