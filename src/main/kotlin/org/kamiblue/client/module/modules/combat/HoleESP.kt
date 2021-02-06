@@ -21,20 +21,20 @@ internal object HoleESP : Module(
     category = Category.COMBAT,
     description = "Show safe holes for crystal pvp"
 ) {
-    private val range = setting("RenderDistance", 8, 4..32, 1)
+    private val range = setting("Render Distance", 8, 4..32, 1)
     private val filled = setting("Filled", true)
     private val outline = setting("Outline", true)
-    private val hideOwn = setting("HideOwn", true)
-    private val r1 = setting("Red(Obby)", 208, 0..255, 1, { shouldAddObsidian() })
-    private val g1 = setting("Green(Obby)", 144, 0..255, 1, { shouldAddObsidian() })
-    private val b1 = setting("Blue(Obby)", 255, 0..255, 1, { shouldAddObsidian() })
-    private val r2 = setting("Red(Bedrock)", 144, 0..255, 1, { shouldAddBedrock() })
-    private val g2 = setting("Green(Bedrock)", 144, 0..255, 1, { shouldAddBedrock() })
-    private val b2 = setting("Blue(Bedrock)", 255, 0..255, 1, { shouldAddBedrock() })
-    private val aFilled = setting("FilledAlpha", 31, 0..255, 1, { filled.value })
-    private val aOutline = setting("OutlineAlpha", 127, 0..255, 1, { outline.value })
+    private val hideOwn = setting("Hide Own", true)
+    private val r1 = setting("Obby Red", 208, 0..255, 1, { shouldAddObsidian() })
+    private val g1 = setting("Obby Green", 144, 0..255, 1, { shouldAddObsidian() })
+    private val b1 = setting("Obby Blue", 255, 0..255, 1, { shouldAddObsidian() })
+    private val r2 = setting("Bedrock Red", 144, 0..255, 1, { shouldAddBedrock() })
+    private val g2 = setting("Bedrock Green", 144, 0..255, 1, { shouldAddBedrock() })
+    private val b2 = setting("Bedrock Blue", 255, 0..255, 1, { shouldAddBedrock() })
+    private val aFilled = setting("Filled Alpha", 31, 0..255, 1, { filled.value })
+    private val aOutline = setting("Outline Alpha", 127, 0..255, 1, { outline.value })
     private val renderMode = setting("Mode", Mode.BLOCK_HOLE)
-    private val holeType = setting("HoleType", HoleType.BOTH)
+    private val holeType = setting("Hole Type", HoleType.BOTH)
 
     private enum class Mode {
         BLOCK_HOLE, BLOCK_FLOOR, FLAT

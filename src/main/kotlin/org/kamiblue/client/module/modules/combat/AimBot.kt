@@ -16,8 +16,8 @@ internal object AimBot : Module(
     category = Category.COMBAT,
     modulePriority = 20
 ) {
-    private val bowOnly by setting("BowOnly", true)
-    private val autoSwap by setting("AutoSwap", false)
+    private val bowOnly by setting("Bow Only", true)
+    private val autoSwap by setting("Auto Swap", false)
 
     init {
         safeListener<TickEvent.ClientTickEvent> {

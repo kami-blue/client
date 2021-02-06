@@ -31,9 +31,9 @@ internal object EyeFinder : Module(
     private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && players.value })
     private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && players.value })
     private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE })
-    private val passive = setting("PassiveMobs", false, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val neutral = setting("NeutralMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val hostile = setting("HostileMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val passive = setting("Passive Mobs", false, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val neutral = setting("Neutral Mobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val hostile = setting("Hostile Mobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
     private val invisible = setting("Invisible", true, { page.value == Page.ENTITY_TYPE })
     private val range = setting("Range", 64, 8..128, 8, { page.value == Page.ENTITY_TYPE })
 

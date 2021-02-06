@@ -18,9 +18,9 @@ internal object AutoEZ : Module(
     category = Category.COMBAT,
     description = "Sends an insult in chat after killing someone"
 ) {
-    private val detectMode = setting("DetectMode", DetectMode.HEALTH)
-    private val messageMode = setting("MessageMode", MessageMode.ONTOP)
-    private val customText = setting("CustomText", "unchanged")
+    private val detectMode = setting("Detect Mode", DetectMode.HEALTH)
+    private val messageMode = setting("Messag Mode", MessageMode.ONTOP)
+    private val customText = setting("Custom Text", "unchanged")
 
     private enum class DetectMode {
         BROADCAST, HEALTH

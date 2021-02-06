@@ -31,8 +31,8 @@ internal object MapPreview : Module(
 ) {
     private val mapBackground = ResourceLocation("textures/map/map_background.png")
 
-    private val showName = setting("ShowName", true)
-    private val frame = setting("ShowFrame", true)
+    private val showName = setting("Show Name", true)
+    private val frame = setting("Show Frame", true)
     val scale = setting("Scale", 5.0, 0.0..10.0, 0.1)
 
     @JvmStatic

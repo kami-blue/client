@@ -1,6 +1,7 @@
 package org.kamiblue.client.module.modules.misc
 
 import com.mojang.authlib.GameProfile
+import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.ConnectionEvent
@@ -29,11 +30,11 @@ internal object FakePlayer : Module(
     description = "Spawns a client sided fake player",
     category = Category.MISC
 ) {
-    private val copyInventory by setting("CopyInventory", true)
-    private val copyPotions by setting("CopyPotions", true)
-    private val maxArmor by setting("MaxArmor", false)
-    private val gappleEffects by setting("GappleEffects", false)
-    val playerName by setting("PlayerName", "Player")
+    private val copyInventory by setting("Copy Inventory", true)
+    private val copyPotions by setting("Copy Potions", true)
+    private val maxArmor by setting("Max Armor", false)
+    private val gappleEffects by setting("Gapple Effects", false)
+    val playerName by setting("Player Name", "Player")
 
     private const val ENTITY_ID = -696969420
     private var fakePlayer: EntityOtherPlayerMP? = null
@@ -49,10 +50,12 @@ internal object FakePlayer : Module(
         }
 
         onDisable {
-            onMainThreadSafe {
-                fakePlayer?.setDead()
-                world.removeEntityFromWorld(ENTITY_ID)
-                fakePlayer = null
+            runBlocking {
+                onMainThreadSafe {
+                    fakePlayer?.setDead()
+                    world.removeEntityFromWorld(ENTITY_ID)
+                    fakePlayer = null
+                }
             }
         }
 
@@ -75,8 +78,10 @@ internal object FakePlayer : Module(
             if (maxArmor) addMaxArmor()
             if (gappleEffects) addGappleEffects()
         }.also {
-            onMainThread {
-                world.addEntityToWorld(ENTITY_ID, it)
+            runBlocking {
+                onMainThread {
+                    world.addEntityToWorld(ENTITY_ID, it)
+                }
             }
         }
     }

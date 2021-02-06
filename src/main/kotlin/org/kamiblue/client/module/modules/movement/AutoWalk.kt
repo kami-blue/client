@@ -27,7 +27,7 @@ internal object AutoWalk : Module(
     description = "Automatically walks somewhere"
 ) {
     private val mode = setting("Direction", AutoWalkMode.BARITONE)
-    private val disableOnDisconnect by setting("DisableOnDisconnect", true)
+    private val disableOnDisconnect by setting("Disable On Disconnect", true)
 
     private enum class AutoWalkMode(override val displayName: String): DisplayEnum {
         FORWARD("Forward"),

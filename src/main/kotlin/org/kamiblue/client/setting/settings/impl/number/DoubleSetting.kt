@@ -23,4 +23,8 @@ class DoubleSetting(
         jsonElement?.asJsonPrimitive?.asDouble?.let { value = it }
     }
 
+    override fun setValue(valueIn: Double) {
+        value = valueIn
+    }
+
 }

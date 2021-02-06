@@ -1,5 +1,6 @@
 package org.kamiblue.client.mixin.client.render;
 
+import net.minecraft.client.particle.Particle;
 import org.kamiblue.client.module.modules.render.NoRender;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.Entity;
@@ -11,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ParticleManager.class)
 public class MixinParticleManager {
 
-    @Inject(method = "renderParticles", at = @At("HEAD"), cancellable = true)
-    public void renderEntityPre(Entity entityIn, float partialTicks, CallbackInfo ci) {
-        if (NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.getParticles().getValue()) {
+    @Inject(method = "addEffect", at = @At("HEAD"), cancellable = true)
+    public void addEffect(Particle effect, CallbackInfo ci) {
+        if (NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.handleParticle(effect)) {
             ci.cancel();
         }
     }

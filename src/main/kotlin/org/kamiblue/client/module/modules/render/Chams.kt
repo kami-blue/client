@@ -30,7 +30,7 @@ internal object Chams : Module(
 
     /* Entity type settings */
     private val self = setting("Self", false, { page.value == Page.ENTITY_TYPE })
-    private val all = setting("AllEntity", false, { page.value == Page.ENTITY_TYPE })
+    private val all = setting("All Entities", false, { page.value == Page.ENTITY_TYPE })
     private val experience = setting("Experience", false, { page.value == Page.ENTITY_TYPE && !all.value })
     private val arrows = setting("Arrows", false, { page.value == Page.ENTITY_TYPE && !all.value })
     private val throwable = setting("Throwable", false, { page.value == Page.ENTITY_TYPE && !all.value })
@@ -40,15 +40,15 @@ internal object Chams : Module(
     private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
     private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
     private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val passive = setting("PassiveMobs", false, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
-    private val neutral = setting("NeutralMobs", true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
-    private val hostile = setting("HostileMobs", true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
+    private val passive = setting("Passive Mobs", false, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
+    private val neutral = setting("Neutral Mobs", true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
+    private val hostile = setting("Hostile Mobs", true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
 
     /* Rendering settings */
-    private val throughWall = setting("ThroughWall", true, { page.value == Page.RENDERING })
+    private val throughWall = setting("Through Wall", true, { page.value == Page.RENDERING })
     private val texture = setting("Texture", false, { page.value == Page.RENDERING })
     private val lightning = setting("Lightning", false, { page.value == Page.RENDERING })
-    private val customColor = setting("CustomColor", false, { page.value == Page.RENDERING })
+    private val customColor = setting("Custom Color", false, { page.value == Page.RENDERING })
     private val rainbow = setting("Rainbow", false, { page.value == Page.RENDERING && customColor.value })
     private val r = setting("Red", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
     private val g = setting("Green", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })

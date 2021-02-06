@@ -25,7 +25,7 @@ internal object BookCrash : Module(
     description = "Crashes servers by sending large packets"
 ) {
     private val mode = setting("Mode", Mode.RAION)
-    private val fillMode = setting("FillMode", FillMode.RANDOM)
+    private val fillMode = setting("Fill Mode", FillMode.RANDOM)
     private val uses = setting("Uses", 2, 1..10, 1)
     private val delay = setting("Delay", 0, 0..40, 1)
     private val pages = setting("Pages", 50, 1..100, 5)

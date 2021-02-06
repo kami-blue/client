@@ -19,7 +19,7 @@ internal object FancyChat : Module(
     private val mock = setting("mOcK", false)
     private val green = setting(">", false)
     private val blue = setting("`", false)
-    private val randomSetting = setting("RandomCase", true, { mock.value })
+    private val randomSetting = setting("Random Case", true, { mock.value })
     private val commands = setting("Commands", false)
     private val spammer = setting("Spammer", false)
 

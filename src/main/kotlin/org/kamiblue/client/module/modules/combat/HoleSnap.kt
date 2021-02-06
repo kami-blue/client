@@ -25,7 +25,7 @@ internal object HoleSnap : Module(
     description = "Move you into the hole nearby",
     category = Category.COMBAT
 ) {
-    private val disableStrafe by setting("DisableStrafe", true)
+    private val disableStrafe by setting("Disable Strafe", true)
     private val range by setting("Range", 2.5f, 0.5f..4.0f, 0.25f)
 
     init {

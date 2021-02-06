@@ -32,13 +32,13 @@ internal object Surround : Module(
     description = "Surrounds you with obsidian to take less damage",
     modulePriority = 200
 ) {
-    private val autoCenter = setting("AutoCenter", AutoCenterMode.MOTION)
-    private val placeSpeed = setting("PlacesPerTick", 4f, 0.25f..5f, 0.25f)
-    private val autoDisable = setting("AutoDisable", AutoDisableMode.OUT_OF_HOLE)
-    private val outOfHoleTimeout = setting("OutOfHoleTimeout(t)", 10, 1..50, 5, { autoDisable.value == AutoDisableMode.OUT_OF_HOLE })
-    private val enableInHole = setting("EnableInHole", false)
-    private val inHoleTimeout = setting("InHoleTimeout(t)", 50, 1..100, 5, { enableInHole.value })
-    private val disableStrafe = setting("DisableStrafe", true)
+    private val autoCenter = setting("Auto Center", AutoCenterMode.MOTION)
+    private val placeSpeed = setting("Places Per Tick", 4f, 0.25f..5f, 0.25f)
+    private val autoDisable = setting("Auto Disable", AutoDisableMode.OUT_OF_HOLE)
+    private val outOfHoleTimeout = setting("Out Of Hole Timeout", 10, 1..50, 5, { autoDisable.value == AutoDisableMode.OUT_OF_HOLE }, description = "Delay before disabling Surround when you are out of hole, in ticks")
+    private val enableInHole = setting("Enable In Hole", false)
+    private val inHoleTimeout = setting("In Hole Timeout", 50, 1..100, 5, { enableInHole.value }, description = "Delay before enabling Surround when you are in hole, in ticks")
+    private val disableStrafe = setting("Disable Strafe", true)
 
     enum class AutoCenterMode {
         OFF, TP, MOTION

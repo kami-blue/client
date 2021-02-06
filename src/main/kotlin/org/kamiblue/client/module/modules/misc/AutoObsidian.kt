@@ -56,15 +56,15 @@ internal object AutoObsidian : Module(
     description = "Breaks down Ender Chests to restock obsidian",
     modulePriority = 15
 ) {
-    private val fillMode by setting("FillMode", FillMode.TARGET_STACKS)
-    private val searchShulker by setting("SearchShulker", false)
-    private val leaveEmptyShulkers by setting("LeaveEmptyShulkers", true, { searchShulker })
-    private val autoRefill by setting("AutoRefill", false, { fillMode != FillMode.INFINITE })
-    private val threshold by setting("RefillThreshold", 8, 1..63, 1, { autoRefill && fillMode != FillMode.INFINITE })
-    private val targetStacks by setting("TargetStacks", 1, 1..20, 1, { fillMode == FillMode.TARGET_STACKS })
-    private val delayTicks by setting("DelayTicks", 5, 0..10, 1)
-    private val rotationMode by setting("RotationMode", RotationMode.SPOOF)
-    private val maxReach by setting("MaxReach", 4.5f, 2.0f..6.0f, 0.1f)
+    private val fillMode by setting("Fill Mode", FillMode.TARGET_STACKS)
+    private val searchShulker by setting("Search Shulker", false)
+    private val leaveEmptyShulkers by setting("Leave Empty Shulkers", true, { searchShulker })
+    private val autoRefill by setting("Auto Refill", false, { fillMode != FillMode.INFINITE })
+    private val threshold by setting("Refill Threshold", 8, 1..63, 1, { autoRefill && fillMode != FillMode.INFINITE })
+    private val targetStacks by setting("Target Stacks", 1, 1..20, 1, { fillMode == FillMode.TARGET_STACKS })
+    private val delayTicks by setting("Delay Ticks", 5, 0..10, 1)
+    private val rotationMode by setting("Rotation Mode", RotationMode.SPOOF)
+    private val maxReach by setting("Max Reach", 4.5f, 2.0f..6.0f, 0.1f)
 
     private enum class FillMode(override val displayName: String, val message: String) : DisplayEnum {
         TARGET_STACKS("Target Stacks", "Target stacks reached"),

@@ -13,14 +13,14 @@ internal object ItemModel : Module(
     description = "Modify hand item rendering in first person",
     category = Category.RENDER
 ) {
-    private val posX by setting("PosX", 0.0f, -5.0f..5.0f, 0.025f)
-    private val posY by setting("PosY", 0.0f, -5.0f..5.0f, 0.025f)
-    private val posZ by setting("PosZ", 0.0f, -5.0f..5.0f, 0.025f)
-    private val rotateX by setting("RotateX", 0.0f, -180.0f..180.0f, 1.0f)
-    private val rotateY by setting("RotateY", 0.0f, -180.0f..180.0f, 1.0f)
-    private val rotateZ by setting("RotateZ", 0.0f, -180.0f..180.0f, 1.0f)
+    private val posX by setting("Pos X", 0.0f, -5.0f..5.0f, 0.025f)
+    private val posY by setting("Pos Y", 0.0f, -5.0f..5.0f, 0.025f)
+    private val posZ by setting("Pos Z", 0.0f, -5.0f..5.0f, 0.025f)
+    private val rotateX by setting("Rotate X", 0.0f, -180.0f..180.0f, 1.0f)
+    private val rotateY by setting("Rotate Y", 0.0f, -180.0f..180.0f, 1.0f)
+    private val rotateZ by setting("Rotate Z", 0.0f, -180.0f..180.0f, 1.0f)
     val scale by setting("Scale", 1.0f, 0.1f..3.0f, 0.025f)
-    private val modifyHand by setting("ModifyHand", false)
+    private val modifyHand by setting("Modify Hand", false)
 
     @JvmStatic
     fun getTranslation(stack: ItemStack, hand: EnumHand, player: AbstractClientPlayer): Vec3f? {

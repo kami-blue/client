@@ -18,9 +18,9 @@ object FPS : LabelHud(
     description = "Frame per second in game"
 ) {
 
-    private val showAverage = setting("ShowAverage", true)
-    private val showMin = setting("ShowMin", false)
-    private val showMax = setting("ShowMax", false)
+    private val showAverage = setting("Show Average", true)
+    private val showMin = setting("Show Min", false)
+    private val showMax = setting("Show Max", false)
 
     private val timer = TickTimer()
     private var prevFps = 0

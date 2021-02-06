@@ -23,8 +23,8 @@ internal object VoidESP : Module(
     private val filled by setting("Filled", true)
     private val outline by setting("Outline", true)
     private val color by setting("Color", ColorHolder(148, 161, 255), false)
-    private val aFilled by setting("FilledAlpha", 127, 0..255, 1)
-    private val aOutline by setting("OutlineAlpha", 255, 0..255, 1)
+    private val aFilled by setting("Filled Alpha", 127, 0..255, 1)
+    private val aOutline by setting("Outline Alpha", 255, 0..255, 1)
     private val renderMode by setting("Mode", Mode.BLOCK_HOLE)
     private val range by setting("Range", 8, 4..32, 1)
 

@@ -19,7 +19,7 @@ internal object RemoteCommand : Module(
     category = Category.CHAT
 ) {
     private val allow = setting("Allow", Allow.FRIENDS)
-    private val repeatAll by setting("RepeatAll", false)
+    private val repeatAll by setting("Repeat All", false)
     private val custom by setting("Custom", "unchanged")
 
     init {

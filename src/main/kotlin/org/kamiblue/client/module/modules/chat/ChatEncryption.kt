@@ -28,8 +28,8 @@ internal object ChatEncryption : Module(
     modulePriority = -69420
 ) {
     private val commands by setting("Commands", false)
-    private val self by setting("DecryptOwn", true)
-    private var keySetting by setting("KeySetting", "DefaultKey")
+    private val self by setting("Decrypt Own", true)
+    private var keySetting by setting("Key Setting", "DefaultKey")
     val delimiter by setting("Delimiter", "%", consumer = { prev: String, value: String ->
         if (value.length == 1 && !chars.contains(value.first())) value else prev
     })

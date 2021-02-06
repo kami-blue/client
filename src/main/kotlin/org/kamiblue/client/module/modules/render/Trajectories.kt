@@ -34,13 +34,13 @@ internal object Trajectories : Module(
     category = Category.RENDER,
     description = "Draws lines to where trajectories are going to fall"
 ) {
-    private val showEntity = setting("ShowEntity", true)
-    private val showBlock = setting("ShowBlock", false)
+    private val showEntity = setting("Show Entity", true)
+    private val showBlock = setting("Show Block", false)
     private val r = setting("Red", 255, 0..255, 1)
     private val g = setting("Green", 255, 0..255, 1)
     private val b = setting("Blue", 255, 0..255, 1)
-    private val aFilled = setting("FilledAlpha", 127, 0..255, 1)
-    private val aOutline = setting("OutlineAlpha", 255, 0..255, 1)
+    private val aFilled = setting("Filled Alpha", 127, 0..255, 1)
+    private val aOutline = setting("Outline Alpha", 255, 0..255, 1)
     private val thickness = setting("Thickness", 2f, 0.25f..5f, 0.25f)
 
     private var prevMotion = Vec3d(0.0, 0.0, 0.0)

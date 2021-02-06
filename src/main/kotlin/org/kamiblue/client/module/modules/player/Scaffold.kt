@@ -47,11 +47,11 @@ internal object Scaffold : Module(
     modulePriority = 500
 ) {
     private val tower by setting("Tower", true)
-    private val spoofHotbar by setting("SpoofHotbar", true)
-    val safeWalk by setting("SafeWalk", true)
+    private val spoofHotbar by setting("Spoof Hotbar", true)
+    val safeWalk by setting("Safe Walk", true)
     private val sneak by setting("Sneak", true)
     private val delay by setting("Delay", 2, 1..10, 1)
-    private val maxRange by setting("MaxRange", 1, 0..3, 1)
+    private val maxRange by setting("Max Range", 1, 0..3, 1)
 
     private var lastRotation = Vec2f.ZERO
     private var placeInfo: Pair<EnumFacing, BlockPos>? = null

@@ -9,7 +9,7 @@ internal object SafeWalk : Module(
     category = Category.MOVEMENT,
     description = "Keeps you from walking off edges"
 ) {
-    private val baritoneCompat = setting("BaritoneCompatibility", true)
+    private val baritoneCompat = setting("Baritone Compatibility", true)
 
     fun shouldSafewalk(): Boolean {
         return isEnabled && (baritoneCompat.value && BaritoneUtils.primary?.customGoalProcess?.goal == null || !baritoneCompat.value)

@@ -21,9 +21,9 @@ internal object Blink : Module(
     category = Category.PLAYER,
     description = "Cancels server side packets"
 ) {
-    private val cancelPacket by setting("CancelPackets", false)
-    private val autoReset by setting("AutoReset", true)
-    private val resetThreshold by setting("ResetThreshold", 20, 1..100, 5, { autoReset })
+    private val cancelPacket by setting("Cancel Packets", false)
+    private val autoReset by setting("Auto Reset", true)
+    private val resetThreshold by setting("Reset Threshold", 20, 1..100, 5, { autoReset })
 
     private const val ENTITY_ID = -114514
     private val packets = ArrayDeque<CPacketPlayer>()

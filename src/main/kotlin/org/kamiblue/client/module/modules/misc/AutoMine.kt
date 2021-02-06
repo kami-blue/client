@@ -24,7 +24,7 @@ internal object AutoMine : Module(
 
     private val manual by setting("Manual", false)
     private val iron = setting("Iron", false)
-    private val diamond = setting("Diamond", false)
+    private val diamond = setting("Diamond", true)
     private val gold = setting("Gold", false)
     private val coal = setting("Coal", false)
     private val log = setting("Logs", false)

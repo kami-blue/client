@@ -10,8 +10,8 @@ object MemoryUsage : LabelHud(
     description = "Display the used, allocated and max memory"
 ) {
 
-    private val showAllocated = setting("ShowAllocated", false)
-    private val showMax = setting("ShowMax", false)
+    private val showAllocated = setting("Show Allocated", false)
+    private val showMax = setting("Show Max", false)
 
     override fun SafeClientEvent.updateText() {
         val memory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576L

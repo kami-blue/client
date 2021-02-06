@@ -23,11 +23,11 @@ internal object Strafe : Module(
     category = Category.MOVEMENT,
     description = "Improves control in air"
 ) {
-    private val airSpeedBoost by setting("AirSpeedBoost", true)
-    private val timerBoost by setting("TimerBoost", true)
-    private val autoJump by setting("AutoJump", true)
-    private val onHoldingSprint by setting("OnHoldingSprint", false)
-    private val cancelInertia by setting("CancelInertia", false)
+    private val airSpeedBoost by setting("Air Speed Boost", true)
+    private val timerBoost by setting("Timer Boost", true)
+    private val autoJump by setting("Auto Jump", true)
+    private val onHoldingSprint by setting("On Holding Sprint", false)
+    private val cancelInertia by setting("Cancel Inertia", false)
 
     private var jumpTicks = 0
     private var strafeTimer = TickTimer(TimeUnit.TICKS)

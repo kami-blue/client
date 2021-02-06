@@ -57,7 +57,7 @@ object CrystalUtils {
 
     fun getCrystalBB(pos: BlockPos): AxisAlignedBB = AxisAlignedBB(-1.0, 0.0, -1.0, 1.0, 2.0, 1.0).offset(Vec3d(pos).add(0.5, 0.0, 0.5))
 
-    /** Checks colliding with all entity */
+    /** Checks colliding with All Entities */
     fun SafeClientEvent.canPlaceCollide(pos: BlockPos): Boolean {
         val placingBB = getCrystalPlacingBB(pos.up())
         return mc.world?.let { world ->

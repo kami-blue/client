@@ -12,9 +12,9 @@ object Durability : LabelHud(
     description = "Durability of holding items"
 ) {
 
-    private val showItemName = setting("ShowItemName", true)
-    private val showOffhand = setting("ShowOffhand", false)
-    private val showPercentage = setting("ShowPercentage", true)
+    private val showItemName = setting("Show Item Name", true)
+    private val showOffhand = setting("Show Offhand", false)
+    private val showPercentage = setting("Show Percentage", true)
 
     override fun SafeClientEvent.updateText() {
         if (mc.player.heldItemMainhand.isItemStackDamageable) {

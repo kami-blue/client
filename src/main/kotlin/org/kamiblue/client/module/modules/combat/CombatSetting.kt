@@ -60,26 +60,26 @@ internal object CombatSetting : Module(
     private val teammates = setting("Teammates", false, { page.value == Page.TARGETING && players.value })
     private val sleeping = setting("Sleeping", false, { page.value == Page.TARGETING && players.value })
     private val mobs = setting("Mobs", true, { page.value == Page.TARGETING })
-    private val passive = setting("PassiveMobs", false, { page.value == Page.TARGETING && mobs.value })
-    private val neutral = setting("NeutralMobs", false, { page.value == Page.TARGETING && mobs.value })
-    private val hostile = setting("HostileMobs", false, { page.value == Page.TARGETING && mobs.value })
-    private val tamed = setting("TamedMobs", false, { page.value == Page.TARGETING && mobs.value })
+    private val passive = setting("Passive Mobs", false, { page.value == Page.TARGETING && mobs.value })
+    private val neutral = setting("Neutral Mobs", false, { page.value == Page.TARGETING && mobs.value })
+    private val hostile = setting("Hostile Mobs", false, { page.value == Page.TARGETING && mobs.value })
+    private val tamed = setting("Tamed Mobs", false, { page.value == Page.TARGETING && mobs.value })
     private val invisible = setting("Invisible", true, { page.value == Page.TARGETING })
-    private val ignoreWalls = setting("IgnoreWalls", false, { page.value == Page.TARGETING })
-    private val range = setting("TargetRange", 16.0f, 2.0f..64.0f, 2.0f, { page.value == Page.TARGETING })
+    private val ignoreWalls = setting("Ignore Walls", false, { page.value == Page.TARGETING })
+    private val range = setting("Target Range", 16.0f, 2.0f..64.0f, 2.0f, { page.value == Page.TARGETING })
 
     /* In Combat */
-    private val pauseForDigging = setting("PauseForDigging", true, { page.value == Page.IN_COMBAT })
-    private val pauseForEating = setting("PauseForEating", true, { page.value == Page.IN_COMBAT })
-    private val ignoreOffhandEating = setting("IgnoreOffhandEating", true, { page.value == Page.IN_COMBAT && pauseForEating.value })
-    private val pauseBaritone = setting("PauseBaritone", true, { page.value == Page.IN_COMBAT })
-    private val resumeDelay = setting("ResumeDelay", 3, 1..10, 1, { page.value == Page.IN_COMBAT && pauseBaritone.value })
-    private val motionPrediction = setting("MotionPrediction", true, { page.value == Page.IN_COMBAT })
-    private val pingSync = setting("PingSync", true, { page.value == Page.IN_COMBAT && motionPrediction.value })
-    private val ticksAhead = setting("TicksAhead", 5, 0..20, 1, { page.value == Page.IN_COMBAT && motionPrediction.value && !pingSync.value })
+    private val pauseForDigging = setting("Pause For Digging", true, { page.value == Page.IN_COMBAT })
+    private val pauseForEating = setting("Pause For Eating", true, { page.value == Page.IN_COMBAT })
+    private val ignoreOffhandEating = setting("Ignore Offhand Eating", true, { page.value == Page.IN_COMBAT && pauseForEating.value })
+    private val pauseBaritone = setting("Pause Baritone", true, { page.value == Page.IN_COMBAT })
+    private val resumeDelay = setting("Resume Delay", 3, 1..10, 1, { page.value == Page.IN_COMBAT && pauseBaritone.value })
+    private val motionPrediction = setting("Motion Prediction", true, { page.value == Page.IN_COMBAT })
+    private val pingSync = setting("Ping Sync", true, { page.value == Page.IN_COMBAT && motionPrediction.value })
+    private val ticksAhead = setting("Ticks Ahead", 5, 0..20, 1, { page.value == Page.IN_COMBAT && motionPrediction.value && !pingSync.value })
 
     /* Render */
-    private val renderPredictedPos = setting("RenderPredictedPosition", false, { page.value == Page.RENDER })
+    private val renderPredictedPos = setting("Render Predicted Position", false, { page.value == Page.RENDER })
 
     private enum class Page {
         TARGETING, IN_COMBAT, RENDER

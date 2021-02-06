@@ -14,8 +14,8 @@ internal object FastFall : Module(
     description = "Makes you fall faster"
 ) {
     private val mode = setting("Mode", Mode.MOTION)
-    private val fallSpeed = setting("FallSpeed", 6.0, 0.1..10.0, 0.1)
-    private val fallDistance = setting("MaxFallDistance", 2, 0..10, 1)
+    private val fallSpeed = setting("Fall Speed", 6.0, 0.1..10.0, 0.1)
+    private val fallDistance = setting("Max Fall Distance", 2, 0..10, 1)
 
     private var timering = false
     private var motioning = false

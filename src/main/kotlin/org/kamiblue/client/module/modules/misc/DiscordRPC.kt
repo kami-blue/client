@@ -19,6 +19,8 @@ import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.capeapi.CapeType
+import org.kamiblue.client.util.InfoCalculator.speed
+import org.kamiblue.client.util.threads.runSafeR
 import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
 
@@ -28,11 +30,11 @@ internal object DiscordRPC : Module(
     description = "Discord Rich Presence",
     enabledByDefault = true
 ) {
-    private val line1Left by setting("Line1Left", LineInfo.VERSION) // details left
-    private val line1Right by setting("Line1Right", LineInfo.USERNAME) // details right
-    private val line2Left by setting("Line2Left", LineInfo.SERVER_IP) // state left
-    private val line2Right by setting("Line2Right", LineInfo.HEALTH) // state right
-    private val coordsConfirm by setting("CoordsConfirm", false, { showCoordsConfirm() })
+    private val line1Left by setting("Line 1 Left", LineInfo.VERSION) // details left
+    private val line1Right by setting("Line 1 Right", LineInfo.USERNAME) // details right
+    private val line2Left by setting("Line 2 Left", LineInfo.SERVER_IP) // state left
+    private val line2Right by setting("Line 2 Right", LineInfo.HEALTH) // state right
+    private val coordsConfirm by setting("Coords Confirm", false, { showCoordsConfirm() })
 
     private enum class LineInfo {
         VERSION, WORLD, DIMENSION, USERNAME, HEALTH, HUNGER, SERVER_IP, COORDS, SPEED, HELD_ITEM, FPS, TPS, NONE
@@ -135,8 +137,9 @@ internal object DiscordRPC : Module(
                 else "No Coords"
             }
             LineInfo.SPEED -> {
-                if (mc.player != null) "${InfoCalculator.speed(false)} m/s"
-                else "No Speed"
+                runSafeR {
+                    "${"%.1f".format(speed())} m/s"
+                } ?: "No Speed"
             }
             LineInfo.HELD_ITEM -> {
                 "Holding ${mc.player?.heldItemMainhand?.displayName ?: "Air"}" // Holding air meme

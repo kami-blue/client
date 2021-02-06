@@ -9,8 +9,8 @@ internal object NoEntityTrace : Module(
     category = Category.PLAYER,
     description = "Blocks entities from stopping you from mining"
 ) {
-    private val sneakTrigger = setting("SneakTrigger", false)
-    private val pickaxeOnly = setting("PickaxeOnly", true)
+    private val sneakTrigger = setting("Sneak Trigger", false)
+    private val pickaxeOnly = setting("Pickaxe Only", true)
 
     fun shouldIgnoreEntity() = isEnabled && (!sneakTrigger.value || mc.player?.isSneaking == true)
         && (!pickaxeOnly.value || mc.player?.heldItemMainhand?.item is ItemPickaxe)

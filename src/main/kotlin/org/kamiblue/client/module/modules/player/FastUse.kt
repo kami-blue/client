@@ -25,13 +25,13 @@ internal object FastUse : Module(
 ) {
     private val delay = setting("Delay", 0, 0..10, 1)
     private val blocks = setting("Blocks", false)
-    private val allItems = setting("AllItems", false)
-    private val expBottles = setting("ExpBottles", true, { !allItems.value })
-    private val endCrystals = setting("EndCrystals", true, { !allItems.value })
+    private val allItems = setting("All Items", false)
+    private val expBottles = setting("Exp Bottles", true, { !allItems.value })
+    private val endCrystals = setting("End Crystals", true, { !allItems.value })
     private val fireworks = setting("Fireworks", false, { !allItems.value })
     private val bow = setting("Bow", true, { !allItems.value })
-    private val chargeSetting = setting("BowCharge", 3, 0..20, 1, { allItems.value || bow.value })
-    private val chargeVariation = setting("ChargeVariation", 5, 0..20, 1, { allItems.value || bow.value })
+    private val chargeSetting = setting("Bow Charge", 3, 0..20, 1, { allItems.value || bow.value })
+    private val chargeVariation = setting("Charge Variation", 5, 0..20, 1, { allItems.value || bow.value })
 
     private var lastUsedHand = EnumHand.MAIN_HAND
     private var randomVariation = 0

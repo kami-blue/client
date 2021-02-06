@@ -18,8 +18,8 @@ internal object AutoReply : Module(
     description = "Automatically reply to direct messages",
     category = Category.CHAT
 ) {
-    private val customMessage = setting("CustomMessage", false)
-    private val customText = setting("CustomText", "unchanged", { customMessage.value })
+    private val customMessage = setting("Custom Message", false)
+    private val customText = setting("Custom Text", "unchanged", { customMessage.value })
 
     private val timer = TickTimer(TimeUnit.SECONDS)
 

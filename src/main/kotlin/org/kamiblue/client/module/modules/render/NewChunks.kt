@@ -1,5 +1,6 @@
 package org.kamiblue.client.module.modules.render
 
+import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
@@ -19,6 +20,8 @@ import net.minecraft.network.play.server.SPacketChunkData
 import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.event.world.ChunkEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.util.threads.safeAsyncListener
+import org.kamiblue.event.listener.asyncListener
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.io.*
@@ -31,7 +34,7 @@ internal object NewChunks : Module(
     category = Category.RENDER
 ) {
     private val relative by setting("Relative", false, description = "Renders the chunks at relative Y level to player")
-    private val yOffset by setting("YOffset", 0, -256..256, 4, fineStep = 1, description = "Render offset in Y axis")
+    private val yOffset by setting("Y Offset", 0, -256..256, 4, fineStep = 1, description = "Render offset in Y axis")
     private val color by setting("Color", ColorHolder(255, 64, 64, 200), description = "Highlighting color")
     private val thickness by setting("Thickness", 1.5f, 0.1f..4.0f, 0.1f, description = "Thickness of the highlighting square")
     private val range by setting("Render Range", 512, 64..2048, 32, description = "Maximum range for chunks to be highlighted")
@@ -53,8 +56,10 @@ internal object NewChunks : Module(
         }
 
         onDisable {
-            onMainThread {
-                chunks.clear()
+            runBlocking {
+                onMainThread {
+                    chunks.clear()
+                }
             }
         }
 
@@ -88,10 +93,10 @@ internal object NewChunks : Module(
             GlStateUtils.depth(true)
         }
 
-        safeListener<PacketEvent.PostReceive> { event ->
-            if (event.packet !is SPacketChunkData || event.packet.isFullChunk) return@safeListener
+        safeAsyncListener<PacketEvent.PostReceive> { event ->
+            if (event.packet !is SPacketChunkData || event.packet.isFullChunk) return@safeAsyncListener
             val chunk = world.getChunk(event.packet.chunkX, event.packet.chunkZ)
-            if (chunk.isEmpty) return@safeListener
+            if (chunk.isEmpty) return@safeAsyncListener
 
             onMainThread {
                 if (chunks.add(chunk)) {
@@ -104,7 +109,7 @@ internal object NewChunks : Module(
             }
         }
 
-        listener<ChunkEvent.Unload> {
+        asyncListener<ChunkEvent.Unload> {
             onMainThread {
                 if (removeMode == RemoveMode.UNLOAD) {
                     chunks.remove(it.chunk)
