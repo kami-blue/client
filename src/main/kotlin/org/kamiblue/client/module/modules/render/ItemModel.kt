@@ -10,6 +10,7 @@ import org.kamiblue.client.util.math.Vec3f
 
 internal object ItemModel : Module(
     name = "ItemModel",
+    alias = arrayOf("SmallShield"),
     description = "Modify hand item rendering in first person",
     category = Category.RENDER
 ) {
