@@ -2,6 +2,9 @@ package org.kamiblue.client.util
 
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.MobEffects
+import net.minecraft.potion.PotionEffect
 import org.kamiblue.client.event.SafeClientEvent
 import kotlin.math.cos
 import kotlin.math.hypot
@@ -43,5 +46,11 @@ object MovementUtils {
         val yaw = calcMoveYaw()
         player.motionX = -sin(yaw) * speed
         player.motionZ = cos(yaw) * speed
+    }
+
+    fun SafeClientEvent.applySpeedPotionEffects(speed: Double) = if (player.isPotionActive(MobEffects.SPEED)) {
+        speed * (1.0 + 0.2 * (player.getActivePotionEffect(MobEffects.SPEED)!!.amplifier + 1))
+    } else {
+        speed
     }
 }

@@ -3,12 +3,14 @@ package org.kamiblue.client.module.modules.movement
 import net.minecraft.client.settings.KeyBinding
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
+import org.kamiblue.client.mixin.extension.isInWeb
 import org.kamiblue.client.mixin.extension.tickLength
 import org.kamiblue.client.mixin.extension.timer
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.BaritoneUtils
 import org.kamiblue.client.util.MovementUtils
+import org.kamiblue.client.util.MovementUtils.applySpeedPotionEffects
 import org.kamiblue.client.util.MovementUtils.calcMoveYaw
 import org.kamiblue.client.util.MovementUtils.setSpeed
 import org.kamiblue.client.util.MovementUtils.speed
@@ -23,11 +25,32 @@ internal object Strafe : Module(
     category = Category.MOVEMENT,
     description = "Improves control in air"
 ) {
-    private val airSpeedBoost by setting("Air Speed Boost", true)
-    private val timerBoost by setting("Timer Boost", true)
-    private val autoJump by setting("Auto Jump", true)
-    private val onHoldingSprint by setting("On Holding Sprint", false)
-    private val cancelInertia by setting("Cancel Inertia", false)
+
+    private val mode = setting("Mode", SpeedBoost.NCP)
+    private val page by setting("Page", Page.GENERIC_SETTINGS)
+
+    /* Common Settings */
+    private val airSpeedBoost by setting("Air Speed Boost", true, { page == Page.GENERIC_SETTINGS })
+    private val groundSpeedBoost by setting("Ground Speed Boost", true, { page == Page.GENERIC_SETTINGS })
+    private val timerBoost by setting("Timer Boost", true, { page == Page.GENERIC_SETTINGS })
+    private val autoJump by setting("Auto Jump", true, { page == Page.GENERIC_SETTINGS })
+    private val onHoldingSprint by setting("On Holding Sprint", false, { page == Page.GENERIC_SETTINGS })
+    private val cancelInertia by setting("Cancel Inertia", false, { page == Page.GENERIC_SETTINGS })
+
+    /* NCP */
+    private val ncpStrict by setting("NCP Strict", false, { mode.value == SpeedBoost.NCP && page == Page.MODE_SETTINGS })
+
+    /* Custom */
+    private val customSpeed by setting("Speed", 0.28, 0.0..1.0, 0.01, { mode.value == SpeedBoost.CUSTOM && page == Page.MODE_SETTINGS })
+    private val customSpeedAlways by setting("Always Use Specified Speed", false, { mode.value == SpeedBoost.CUSTOM && page == Page.MODE_SETTINGS })
+
+    private enum class SpeedBoost {
+        NCP, CUSTOM
+    }
+
+    private enum class Page {
+        GENERIC_SETTINGS, MODE_SETTINGS
+    }
 
     private var jumpTicks = 0
     private var strafeTimer = TickTimer(TimeUnit.TICKS)
@@ -48,7 +71,7 @@ internal object Strafe : Module(
                 return@safeListener
             }
 
-            setSpeed(player.speed)
+            setSpeed(getSpeed())
             if (airSpeedBoost) player.jumpMovementFactor = 0.029f
             if (timerBoost) mc.timer.tickLength = 45.87155914306640625f
             if (autoJump) jump()
@@ -83,5 +106,22 @@ internal object Strafe : Module(
         }
 
         jumpTicks--
+    }
+
+    private fun SafeClientEvent.getSpeed() = when (mode.value) {
+        SpeedBoost.NCP -> {
+            if (groundSpeedBoost && player.onGround && !(player.isInWater || player.isInWeb))
+                applySpeedPotionEffects(if (ncpStrict) 0.26 else 0.28)
+            else
+                player.speed
+        }
+        SpeedBoost.CUSTOM -> {
+            if (customSpeedAlways)
+                customSpeed
+            else if (groundSpeedBoost && player.onGround && !(player.isInWater || player.isInWeb))
+                applySpeedPotionEffects(customSpeed)
+            else
+                player.speed
+        }
     }
 }
