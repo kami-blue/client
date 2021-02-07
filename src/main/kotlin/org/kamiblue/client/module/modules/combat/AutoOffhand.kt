@@ -29,6 +29,7 @@ import org.kamiblue.commons.extension.next
 import org.lwjgl.input.Keyboard
 import kotlin.math.ceil
 import kotlin.math.max
+import kotlin.math.min
 
 internal object AutoOffhand : Module(
     name = "AutoOffhand",
@@ -36,6 +37,7 @@ internal object AutoOffhand : Module(
     category = Category.COMBAT
 ) {
     private val type by setting("Type", Type.TOTEM)
+    private val delay by setting("Delay", 5, 0..20, 1)
 
     // Totem
     private val hpThreshold by setting("Hp Threshold", 5f, 1f..20f, 0.5f, { type == Type.TOTEM })
@@ -81,7 +83,7 @@ internal object AutoOffhand : Module(
     }
 
     private val transactionLog = HashMap<Short, Boolean>()
-    private val movingTimer = TickTimer()
+    private val movingTimer = TickTimer(TimeUnit.TICKS)
     private var maxDamage = 0f
 
     init {
@@ -100,7 +102,7 @@ internal object AutoOffhand : Module(
 
             transactionLog[it.packet.actionNumber] = it.packet.wasAccepted()
             if (!transactionLog.containsValue(false)) {
-                movingTimer.reset(-175L) // If all the click packets were accepted then we reset the timer for next moving
+                movingTimer.reset(-max(0, delay - 1).toLong()) // If all the click packets were accepted then we reset the timer for next moving
             }
         }
 
@@ -109,7 +111,7 @@ internal object AutoOffhand : Module(
 
             updateDamage()
 
-            if (!movingTimer.tick(200L, false)) return@safeListener // Delays 4 ticks by default
+            if (!movingTimer.tick(delay.toLong(), false)) return@safeListener // Delays 4 ticks by default
 
             if (!player.inventory.itemStack.isEmpty) { // If player is holding an in inventory
                 if (mc.currentScreen is GuiContainer) {// If inventory is open (playing moving item)
