@@ -3,7 +3,7 @@ package org.kamiblue.client.module.modules.render
 import kotlinx.coroutines.runBlocking
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.network.play.server.SPacketChunkData
-import net.minecraft.world.chunk.Chunk
+import net.minecraft.util.math.ChunkPos
 import net.minecraftforge.event.world.ChunkEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.events.PacketEvent
@@ -47,7 +47,7 @@ internal object NewChunks : Module(
     }
 
     private val timer = TickTimer(TimeUnit.MINUTES)
-    private val chunks = LinkedHashSet<Chunk>()
+    private val chunks = LinkedHashSet<ChunkPos>()
 
     init {
         onEnable {
@@ -77,14 +77,14 @@ internal object NewChunks : Module(
 
             val buffer = KamiTessellator.buffer
 
-            for (chunk in chunks) {
-                if (player.distanceTo(chunk.pos) > range) continue
+            for (chunkPos in chunks) {
+                if (player.distanceTo(chunkPos) > range) continue
 
                 buffer.begin(GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR)
-                buffer.pos(chunk.pos.xStart.toDouble(), y, chunk.pos.zStart.toDouble()).color(color.r, color.g, color.b, color.a).endVertex()
-                buffer.pos(chunk.pos.xEnd + 1.0, y, chunk.pos.zStart.toDouble()).color(color.r, color.g, color.b, color.a).endVertex()
-                buffer.pos(chunk.pos.xEnd + 1.0, y, chunk.pos.zEnd + 1.0).color(color.r, color.g, color.b, color.a).endVertex()
-                buffer.pos(chunk.pos.xStart.toDouble(), y, chunk.pos.zEnd + 1.0).color(color.r, color.g, color.b, color.a).endVertex()
+                buffer.pos(chunkPos.xStart.toDouble(), y, chunkPos.zStart.toDouble()).color(color.r, color.g, color.b, color.a).endVertex()
+                buffer.pos(chunkPos.xEnd + 1.0, y, chunkPos.zStart.toDouble()).color(color.r, color.g, color.b, color.a).endVertex()
+                buffer.pos(chunkPos.xEnd + 1.0, y, chunkPos.zEnd + 1.0).color(color.r, color.g, color.b, color.a).endVertex()
+                buffer.pos(chunkPos.xStart.toDouble(), y, chunkPos.zEnd + 1.0).color(color.r, color.g, color.b, color.a).endVertex()
                 KamiTessellator.render()
             }
 
@@ -98,9 +98,9 @@ internal object NewChunks : Module(
             if (chunk.isEmpty) return@safeAsyncListener
 
             onMainThread {
-                if (chunks.add(chunk)) {
+                if (chunks.add(chunk.pos)) {
                     if (removeMode == RemoveMode.MAX_NUMBER && chunks.size > maxNumber) {
-                        chunks.maxByOrNull { player.distanceTo(it.pos) }?.let {
+                        chunks.maxByOrNull { player.distanceTo(it) }?.let {
                             chunks.remove(it)
                         }
                     }
@@ -111,7 +111,7 @@ internal object NewChunks : Module(
         asyncListener<ChunkEvent.Unload> {
             onMainThread {
                 if (removeMode == RemoveMode.UNLOAD) {
-                    chunks.remove(it.chunk)
+                    chunks.remove(it.chunk.pos)
                 }
             }
         }
