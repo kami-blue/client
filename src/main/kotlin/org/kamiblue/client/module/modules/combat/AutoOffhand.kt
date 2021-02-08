@@ -37,6 +37,7 @@ internal object AutoOffhand : Module(
 ) {
     private val type by setting("Type", Type.TOTEM)
     private val delay by setting("Delay", 5, 0..20, 1)
+    private val confirmTimeout by setting("Confirm Delay", 4, 0..5, 1)
 
     // Totem
     private val hpThreshold by setting("Hp Threshold", 5f, 1f..20f, 0.5f, { type == Type.TOTEM })
@@ -101,7 +102,7 @@ internal object AutoOffhand : Module(
 
             transactionLog[it.packet.actionNumber] = it.packet.wasAccepted()
             if (!transactionLog.containsValue(false)) {
-                movingTimer.reset(-max(0, delay - 1).toLong()) // If all the click packets were accepted then we reset the timer for next moving
+                movingTimer.reset(-confirmTimeout.toLong()) // If all the click packets were accepted then we reset the timer for next moving
             }
         }
 
@@ -110,11 +111,11 @@ internal object AutoOffhand : Module(
 
             updateDamage()
 
-            if (!movingTimer.tick(delay.toLong(), false)) return@safeListener // Delays 4 ticks by default
+            if (!movingTimer.tick(delay.toLong(), false)) return@safeListener // Delays `delay` ticks
 
             if (!player.inventory.itemStack.isEmpty) { // If player is holding an in inventory
                 if (mc.currentScreen is GuiContainer) {// If inventory is open (playing moving item)
-                    movingTimer.reset() // delay for 5 ticks
+                    movingTimer.reset() // delay
                 } else { // If inventory is not open (ex. inventory desync)
                     removeHoldingItem()
                 }
