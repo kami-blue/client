@@ -36,8 +36,10 @@ internal object AutoOffhand : Module(
     category = Category.COMBAT
 ) {
     private val type by setting("Type", Type.TOTEM)
-    private val delay by setting("Delay", 5, 0..20, 1)
-    private val confirmTimeout by setting("Confirm Delay", 4, 0..5, 1)
+    private val delay by setting("Delay", 5, 0..20, 1,
+        description = "Ticks to wait before attempting another move")
+    private val confirmTimeout by setting("Confirm Timeout", 4, 0..5, 1,
+        description = "Ticks to wait to confirm we successfully moved an item into the offhand")
 
     // Totem
     private val hpThreshold by setting("Hp Threshold", 5f, 1f..20f, 0.5f, { type == Type.TOTEM })
@@ -114,8 +116,8 @@ internal object AutoOffhand : Module(
             if (!movingTimer.tick(delay.toLong(), false)) return@safeListener // Delays `delay` ticks
 
             if (!player.inventory.itemStack.isEmpty) { // If player is holding an in inventory
-                if (mc.currentScreen is GuiContainer) {// If inventory is open (playing moving item)
-                    movingTimer.reset() // delay
+                if (mc.currentScreen is GuiContainer) { // If inventory is open (playing moving item)
+                    movingTimer.reset() // reset movingTimer as the user is currently interacting with the inventory.
                 } else { // If inventory is not open (ex. inventory desync)
                     removeHoldingItem()
                 }
