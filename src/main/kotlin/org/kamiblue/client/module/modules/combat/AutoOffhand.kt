@@ -14,7 +14,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.manager.managers.CombatManager
-import org.kamiblue.client.mixin.extension.syncCurrentPlayItem
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
@@ -36,10 +35,6 @@ internal object AutoOffhand : Module(
     category = Category.COMBAT
 ) {
     private val type by setting("Type", Type.TOTEM)
-    private val delay by setting("Delay", 5, 0..20, 1,
-        description = "Ticks to wait before attempting another move")
-    private val confirmTimeout by setting("Confirm Timeout", 4, 0..5, 1,
-        description = "Ticks to wait to confirm we successfully moved an item into the offhand")
 
     // Totem
     private val hpThreshold by setting("Hp Threshold", 5f, 1f..20f, 0.5f, { type == Type.TOTEM })
@@ -71,6 +66,10 @@ internal object AutoOffhand : Module(
     // General
     private val priority by setting("Priority", Priority.HOTBAR)
     private val switchMessage by setting("Switch Message", true)
+    private val delay by setting("Delay", 2, 1..20, 1,
+        description = "Ticks to wait between each move")
+    private val confirmTimeout by setting("Confirm Timeout", 5, 1..20, 1,
+        description = "Maximum ticks to wait for confirm packets from server")
 
     private enum class Type(val filter: (ItemStack) -> Boolean) {
         TOTEM({ it.item.id == 449 }),
@@ -85,6 +84,7 @@ internal object AutoOffhand : Module(
     }
 
     private val transactionLog = HashMap<Short, Boolean>()
+    private val confirmTimer = TickTimer(TimeUnit.TICKS)
     private val movingTimer = TickTimer(TimeUnit.TICKS)
     private var maxDamage = 0f
 
@@ -104,16 +104,17 @@ internal object AutoOffhand : Module(
 
             transactionLog[it.packet.actionNumber] = it.packet.wasAccepted()
             if (!transactionLog.containsValue(false)) {
-                movingTimer.reset(-confirmTimeout.toLong()) // If all the click packets were accepted then we reset the timer for next moving
+                confirmTimer.reset(confirmTimeout * -50L) // If all the click packets were accepted then we reset the timer for next moving
             }
         }
 
         safeListener<TickEvent.ClientTickEvent>(1100) {
-            if (player.isDead) return@safeListener
+            if (player.isDead || player.health <= 0.0f) return@safeListener
+
+            if (!confirmTimer.tick(confirmTimeout.toLong(), false)) return@safeListener
+            if (!movingTimer.tick(delay.toLong(), false)) return@safeListener // Delays `delay` ticks
 
             updateDamage()
-
-            if (!movingTimer.tick(delay.toLong(), false)) return@safeListener // Delays `delay` ticks
 
             if (!player.inventory.itemStack.isEmpty) { // If player is holding an in inventory
                 if (mc.currentScreen is GuiContainer) { // If inventory is open (playing moving item)
@@ -163,9 +164,13 @@ internal object AutoOffhand : Module(
             if (!alternativeType && typeAlt != typeOriginal || checkOffhandItem(typeAlt)) return
 
             transactionLog.clear()
-            transactionLog.putAll(moveToSlot(slot.slotNumber, 45).associate { it to false })
+            moveToSlot(slot.slotNumber, 45).forEach {
+                transactionLog[it] = false
+            }
 
-            playerController.syncCurrentPlayItem()
+            playerController.updateController()
+
+            confirmTimer.reset()
             movingTimer.reset()
 
             if (switchMessage) MessageSendHelper.sendChatMessage("$chatName Offhand now has a ${typeAlt.toString().toLowerCase()}")
@@ -199,7 +204,7 @@ internal object AutoOffhand : Module(
         for (entity in world.loadedEntityList) {
             if (entity.name == player.name) continue
             if (entity !is EntityMob && entity !is EntityPlayer && entity !is EntityEnderCrystal) continue
-            if (player.getDistance(entity) > 10f) continue
+            if (player.getDistance(entity) > 10.0f) continue
 
             if (mob && entity is EntityMob) {
                 maxDamage = max(calcDamageFromMob(entity), maxDamage)
