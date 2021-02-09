@@ -24,7 +24,7 @@ object ModifiedCommand: ClientCommand(
                 }
 
                 if (!it.value.settingList.any { it.value != it.defaultValue }){
-                    sendChatMessage("No settings have been changed.")
+                    sendChatMessage("$it's settings are not modified from default")
                 }
             }
         }
