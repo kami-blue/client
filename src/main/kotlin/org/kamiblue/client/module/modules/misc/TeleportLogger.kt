@@ -14,7 +14,7 @@ internal object TeleportLogger : Module(
     category = Category.MISC,
     description = "Logs when a player teleports somewhere"
 ) {
-    private val saveToFile = setting("Save To File", true)
+    private val saveToWaypoints = setting("Save To Waypoints", true)
     private val remove = setting("Remove In Range", true)
     private val printAdd = setting("Print Add", true)
     private val printRemove = setting("Print Remove", true, { remove.value })
@@ -54,12 +54,12 @@ internal object TeleportLogger : Module(
     }
 
     private fun logCoordinates(coordinate: BlockPos, name: String): BlockPos {
-        return if (saveToFile.value) WaypointManager.add(coordinate, name).pos
+        return if (saveToWaypoints.value) WaypointManager.add(coordinate, name).pos
         else coordinate
     }
 
     private fun getSaveText(): String {
-        return if (saveToFile.value) "saved their coordinates at"
+        return if (saveToWaypoints.value) "saved their coordinates at"
         else "their coordinates are"
     }
 }
