@@ -33,6 +33,7 @@ internal object NewChunks : Module(
     category = Category.RENDER
 ) {
     private val relative by setting("Relative", false, description = "Renders the chunks at relative Y level to player")
+    val renderMode = setting("RenderMode", RenderMode.BOTH)
     private val yOffset by setting("Y Offset", 0, -256..256, 4, fineStep = 1, description = "Render offset in Y axis")
     private val color by setting("Color", ColorHolder(255, 64, 64, 200), description = "Highlighting color")
     private val thickness by setting("Thickness", 1.5f, 0.1f..4.0f, 0.1f, description = "Thickness of the highlighting square")
@@ -46,8 +47,12 @@ internal object NewChunks : Module(
         NEVER, UNLOAD, MAX_NUMBER
     }
 
+    enum class RenderMode {
+        WORLD, RADAR, BOTH
+    }
+
     private val timer = TickTimer(TimeUnit.MINUTES)
-    private val chunks = LinkedHashSet<ChunkPos>()
+    val chunks = LinkedHashSet<ChunkPos>()
 
     init {
         onEnable {
@@ -70,6 +75,8 @@ internal object NewChunks : Module(
         }
 
         safeListener<RenderWorldEvent> {
+            if (renderMode.value == RenderMode.RADAR) return@safeListener
+
             val y = yOffset.toDouble() + if (relative) getInterpolatedPos(player, KamiTessellator.pTicks()).y else 0.0
 
             glLineWidth(thickness)
