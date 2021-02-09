@@ -1,5 +1,6 @@
 package org.kamiblue.client.gui.rgui.component
 
+import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.setting.settings.impl.primitive.StringSetting
 import org.kamiblue.client.util.math.Vec2f
 import org.lwjgl.input.Keyboard
@@ -70,5 +71,7 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
             }
         }
     }
+
+    override fun isBold() = setting.isModified() and ClickGUI.showModifiedInBold
 
 }

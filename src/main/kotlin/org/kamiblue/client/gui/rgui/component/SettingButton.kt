@@ -1,5 +1,6 @@
 package org.kamiblue.client.gui.rgui.component
 
+import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import org.kamiblue.client.util.math.Vec2f
 
@@ -20,4 +21,6 @@ class SettingButton(val setting: BooleanSetting) : BooleanSlider(setting.name, 0
             setting.value = !setting.value
         }
     }
+
+    override fun isBold() = setting.isModified() and ClickGUI.showModifiedInBold
 }

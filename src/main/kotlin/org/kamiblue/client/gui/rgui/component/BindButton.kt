@@ -1,5 +1,6 @@
 package org.kamiblue.client.gui.rgui.component
 
+import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.module.modules.client.GuiColors
 import org.kamiblue.client.setting.settings.impl.other.BindSetting
 import org.kamiblue.client.util.graphics.VertexHelper
@@ -40,4 +41,6 @@ class BindButton(
         val posY = renderHeight - 2.0f - FontRenderAdapter.getFontHeight(0.75f)
         FontRenderAdapter.drawString(valueText, posX, posY, color = GuiColors.text, scale = 0.75f)
     }
+
+    override fun isBold() = setting.isModified() and ClickGUI.showModifiedInBold
 }

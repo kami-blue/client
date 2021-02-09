@@ -114,7 +114,9 @@ open class Slider(
                     (renderHeight * ClickGUI.getScaleFactor()).roundToInt()
             )
         }*/
-        FontRenderAdapter.drawString(name, 1.5f, 1.0f, color = GuiColors.text)
+        val text = if (isBold()) "§l $name" else name
+
+        FontRenderAdapter.drawString(text, 1.5f, 1.0f, color = GuiColors.text)
         //GlStateUtils.popScissor()
     }
 
@@ -164,4 +166,6 @@ open class Slider(
         MouseState.HOVER -> GuiColors.hover
         else -> GuiColors.click
     }
+
+    open fun isBold() = false
 }

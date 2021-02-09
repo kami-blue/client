@@ -15,7 +15,7 @@ object ModifiedCommand: ClientCommand(
         module("module"){
             execute("List changed settings"){
 
-                for (setting in it.value.settingList.filter { it.value != it.defaultValue }){
+                for (setting in it.value.settingList.filter { it.isModified() }) {
                     val component = TextComponentString("${setting.name} has been changed to ${setting.value}")
                     // horrible, however this is mojang code that we are working on.
                     component.style.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, ";set ${it.value.name} ${setting.name.replace(" ", "")} ${setting.defaultValue}")

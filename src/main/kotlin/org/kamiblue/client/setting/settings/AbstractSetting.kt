@@ -48,4 +48,6 @@ abstract class AbstractSetting<T : Any> : Nameable {
         val parser = JsonParser()
     }
 
+    fun isModified() = this.value != this.defaultValue
+
 }
