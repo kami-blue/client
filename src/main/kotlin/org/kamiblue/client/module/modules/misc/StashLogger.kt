@@ -31,7 +31,7 @@ internal object StashLogger : Module(
     category = Category.MISC,
     description = "Logs storage units in render distance."
 ) {
-    private val saveToFile by setting("Save To File", true)
+    private val saveToWaypoints by setting("Save To Waypoints", true)
     private val logToChat by setting("Log To Chat", true)
     private val playSound by setting("Play Sound", true)
     private val logChests by setting("Chests", true)
@@ -76,7 +76,7 @@ internal object StashLogger : Module(
             val center = chunkStats.center()
             val string = chunkStats.toString()
 
-            if (saveToFile) {
+            if (saveToWaypoints) {
                 WaypointManager.add(center, string)
             }
 
