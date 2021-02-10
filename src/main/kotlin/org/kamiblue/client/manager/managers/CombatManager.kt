@@ -17,8 +17,8 @@ object CombatManager : Manager {
             motionTracker.target = value
             field = value
         }
-    var placeMap = emptyMap<BlockPos, Triple<Float, Float, Double>>() // <BlockPos, <Target Damage, Self Damage, Distance>>
-    var crystalMap = emptyMap<EntityEnderCrystal, Triple<Float, Float, Double>>() // <Crystal, <Target Damage, Self Damage, Distance>>
+    var placeMap = emptyMap<BlockPos, CombatCalculation>() // <BlockPos, <Target Damage, Self Damage, Distance>>
+    var crystalMap = emptyMap<EntityEnderCrystal, CombatCalculation>() // <Crystal, <Target Damage, Self Damage, Distance>>
     val motionTracker = MotionTracker(null)
 
     fun isActiveAndTopPriority(module: AbstractModule) = module.isActive() && isOnTopPriority(module)
@@ -39,6 +39,13 @@ object CombatManager : Manager {
             topModule = module
         }
         return topModule
+    }
+
+    data class CombatCalculation(val targetDamage: Float, val selfDamage: Float, val distance: Double) {
+        companion object {
+            val comparator = compareByDescending<CombatCalculation> { it.targetDamage }
+                .thenBy { it.selfDamage }
+        }
     }
 
     /** Use to mark a module that should be added to [combatModules] */
