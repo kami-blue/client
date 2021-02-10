@@ -21,14 +21,14 @@ internal object AntiSpam : Module(
     private val page = setting("Page", Page.TYPE)
 
     /* Page One */
-    private val discordLinks = setting("Discord", true, { page.value == Page.TYPE })
-    private val slurs = setting("Slurs", true, { page.value == Page.TYPE })
-    private val swears = setting("Swears", false, { page.value == Page.TYPE })
-    private val automated = setting("Automated", true, { page.value == Page.TYPE })
-    private val ips = setting("Server Ips", true, { page.value == Page.TYPE })
-    private val specialCharEnding = setting("Special Ending", true, { page.value == Page.TYPE })
-    private val specialCharBegin = setting("Special Begin", true, { page.value == Page.TYPE })
-    private val greenText = setting("Green Text", false, { page.value == Page.TYPE })
+    private val discordLinks = setting("Discord", true, { page.value == Page.TYPE }, description = "Block messages containing discord links")
+    private val slurs = setting("Slurs", true, { page.value == Page.TYPE }, description = "Removes slurs from messages")
+    private val swears = setting("Swears", false, { page.value == Page.TYPE }, description = "Removes swear words from messages")
+    private val automated = setting("Automated", true, { page.value == Page.TYPE }, description = "Block messages that appear to be automated. E.G. announcer.")
+    private val ips = setting("Server Ips", true, { page.value == Page.TYPE }, description = "Block messages that contain server IP's")
+    private val specialCharEnding = setting("Special Ending", true, { page.value == Page.TYPE }, description = "Block messages that end with a special character")
+    private val specialCharBegin = setting("Special Beginning", true, { page.value == Page.TYPE }, description = "Block messages that begin with a special character")
+    private val greenText = setting("Green Text", false, { page.value == Page.TYPE }, description = "Block messages continaing green text")
     private val fancyChat = setting("Fancy Chat", false, { page.value == Page.TYPE })
 
     /* Page Two */
@@ -38,7 +38,7 @@ internal object AntiSpam : Module(
     private val filterOwn = setting("Filter Own", false, { page.value == Page.SETTINGS })
     private val filterDMs = setting("Filter DMs", false, { page.value == Page.SETTINGS })
     private val filterServer = setting("Filter Server", false, { page.value == Page.SETTINGS })
-    private val showBlocked = setting("Show Blocked", ShowBlocked.LOG_FILE, { page.value == Page.SETTINGS })
+    private val showBlocked = setting("Show Blocked", ShowBlocked.LOG_FILE, { page.value == Page.SETTINGS }, description = "Where to show blocked messages")
 
     private enum class Mode {
         REPLACE, HIDE

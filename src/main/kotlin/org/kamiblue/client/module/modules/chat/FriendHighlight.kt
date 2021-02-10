@@ -18,9 +18,9 @@ internal object FriendHighlight : Module(
     category = Category.CHAT,
     showOnArray = false
 ) {
-    private val bold = setting("Bold", true)
-    private val color = setting("Color", EnumTextColor.GRAY)
-    private val sound = setting("Sound", true)
+    private val bold = setting("Bold", true, description = "Display their name in bold")
+    private val color = setting("Color", EnumTextColor.GRAY, description = "Change the colour of their name")
+    private val sound = setting("Sound", true, description = "Play a sound")
 
     private val regex1 = "<(.*?)>".toRegex()
     private val regex2 = "[<>]".toRegex()

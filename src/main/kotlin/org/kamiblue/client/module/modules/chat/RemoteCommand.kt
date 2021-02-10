@@ -18,7 +18,7 @@ internal object RemoteCommand : Module(
     description = "Allow trusted players to send commands",
     category = Category.CHAT
 ) {
-    private val allow = setting("Allow", Allow.FRIENDS)
+    private val allow = setting("Allow", Allow.FRIENDS, description = "Who do you want to be able to see your messages.")
     private val repeatAll by setting("Repeat All", false)
     private val custom by setting("Custom", "unchanged")
 

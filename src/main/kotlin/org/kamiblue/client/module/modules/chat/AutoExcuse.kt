@@ -18,10 +18,10 @@ internal object AutoExcuse : Module(
     category = Category.CHAT,
     modulePriority = 500
 ) {
-    private val mode by setting("Mode", Mode.INTERNAL)
+    private val mode by setting("Mode", Mode.PRESET, description = "Where to load excuses from")
 
     private enum class Mode {
-        INTERNAL, EXTERNAL
+        PRESET, FROM_FILE
     }
 
     private const val CLIENT_NAME = "%CLIENT%"
@@ -72,7 +72,7 @@ internal object AutoExcuse : Module(
         }
 
         onEnable {
-            loadedExcuses = if (mode == Mode.EXTERNAL) {
+            loadedExcuses = if (mode == Mode.FROM_FILE) {
                 if (file.exists()) {
                     val cacheList = ArrayList<String>()
                     try {

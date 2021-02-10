@@ -14,14 +14,14 @@ internal object FancyChat : Module(
     showOnArray = false,
     modulePriority = 100
 ) {
-    private val uwu = setting("uwu", true)
-    private val leet = setting("1337", false)
-    private val mock = setting("mOcK", false)
-    private val green = setting(">", false)
-    private val blue = setting("`", false)
-    private val randomSetting = setting("Random Case", true, { mock.value })
-    private val commands = setting("Commands", false)
-    private val spammer = setting("Spammer", false)
+    private val uwu = setting("uwu", false, description = "Uwufy all of your messages")
+    private val leet = setting("1337", false, description = "Exchange certain characters for other similar looking characters")
+    private val mock = setting("mOcK", false, description = "Change from lower case to upper case")
+    private val green = setting(">", false, description = "Send all messages as green text")
+    private val blue = setting("`", false, description = "Send all messages as blue text")
+    private val randomSetting = setting("Random Case", true, { mock.value }, description = "Randomize when m0ck happens.")
+    private val commands = setting("Commands", false, description = "Detect commands")
+    private val spammer = setting("Spammer", false, description = "Detect messages sent by spammer")
 
     private val modifier = newMessageModifier(
         filter = {
