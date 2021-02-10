@@ -10,12 +10,15 @@ object ModifiedCommand: ClientCommand(
     name = "modified",
     description = "View modified settings in a module"
 ) {
+    init {
+        module("module") {
+            execute("List changed settings") {
 
-    init{
-        module("module"){
-            execute("List changed settings"){
+                var anyChanged = false
 
-                for (setting in it.value.settingList.filter { it.isModified() }) {
+                for (setting in it.value.settingList) {
+                    if (!setting.isModified) continue
+                    anyChanged = true
                     val component = TextComponentString("${setting.name} has been changed to ${setting.value}")
                     // horrible, however this is mojang code that we are working on.
                     component.style.clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, ";set ${it.value.name} ${setting.name.replace(" ", "")} ${setting.defaultValue}")
@@ -23,8 +26,8 @@ object ModifiedCommand: ClientCommand(
                     sendChatMessage(component)
                 }
 
-                if (!it.value.settingList.any { it.value != it.defaultValue }){
-                    sendChatMessage("$it's settings are not modified from default")
+                if (!anyChanged) {
+                    sendChatMessage("${it.value.name}'s settings are not modified from default")
                 }
             }
         }

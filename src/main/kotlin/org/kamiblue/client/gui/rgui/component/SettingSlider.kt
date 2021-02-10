@@ -28,6 +28,9 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         else -> MathUtils.decimalPlaces(settingStep.toDouble())
     }
 
+    override val isBold
+        get() = setting.isModified and ClickGUI.showModifiedInBold
+
     private var preDragMousePos = Vec2f(0.0f, 0.0f)
 
     private fun getDefaultStep() = when (setting) {
@@ -136,7 +139,4 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
             FontRenderAdapter.drawString(valueText, posX, posY, color = GuiColors.text, scale = 0.75f)
         }
     }
-
-    override fun isBold() = setting.isModified() and ClickGUI.showModifiedInBold
-
 }

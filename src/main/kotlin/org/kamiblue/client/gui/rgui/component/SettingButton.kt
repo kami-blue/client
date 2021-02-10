@@ -6,6 +6,9 @@ import org.kamiblue.client.util.math.Vec2f
 
 class SettingButton(val setting: BooleanSetting) : BooleanSlider(setting.name, 0.0, setting.description, setting.visibility) {
 
+    override val isBold
+        get() = setting.isModified and ClickGUI.showModifiedInBold
+
     init {
         if (setting.value) value = 1.0
     }
@@ -21,6 +24,4 @@ class SettingButton(val setting: BooleanSetting) : BooleanSlider(setting.name, 0
             setting.value = !setting.value
         }
     }
-
-    override fun isBold() = setting.isModified() and ClickGUI.showModifiedInBold
 }

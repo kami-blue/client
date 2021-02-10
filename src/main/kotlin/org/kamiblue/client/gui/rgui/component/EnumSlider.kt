@@ -12,6 +12,9 @@ import kotlin.math.floor
 class EnumSlider(val setting: EnumSetting<*>) : Slider(setting.name, 0.0, setting.description, setting.visibility) {
     private val enumValues = setting.enumValues
 
+    override val isBold
+        get() = setting.isModified and ClickGUI.showModifiedInBold
+
     override fun onTick() {
         super.onTick()
         if (mouseState != MouseState.DRAG) {
@@ -48,6 +51,4 @@ class EnumSlider(val setting: EnumSetting<*>) : Slider(setting.name, 0.0, settin
         val posY = renderHeight - 2.0f - FontRenderAdapter.getFontHeight(0.75f)
         FontRenderAdapter.drawString(valueText, posX, posY, color = GuiColors.text, scale = 0.75f)
     }
-
-    override fun isBold() = setting.isModified() and ClickGUI.showModifiedInBold
 }

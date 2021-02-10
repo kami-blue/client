@@ -44,6 +44,9 @@ open class Slider(
 
     var listening = false; protected set
 
+    open val isBold
+        get() = false
+
     override fun onClosed() {
         super.onClosed()
         onStopListening(false)
@@ -116,7 +119,7 @@ open class Slider(
                     (renderHeight * ClickGUI.getScaleFactor()).roundToInt()
             )
         }*/
-        val text = if (isBold()) TextFormatting.BOLD.format(name) else name
+        val text = if (isBold) TextFormatting.BOLD format name else name
 
         FontRenderAdapter.drawString(text, 1.5f, 1.0f, color = GuiColors.text)
         //GlStateUtils.popScissor()
@@ -168,6 +171,4 @@ open class Slider(
         MouseState.HOVER -> GuiColors.hover
         else -> GuiColors.click
     }
-
-    open fun isBold() = false
 }

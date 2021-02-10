@@ -12,6 +12,9 @@ class BindButton(
     private val setting: BindSetting
 ) : Slider(setting.name, 0.0, setting.description, setting.visibility) {
 
+    override val isBold
+        get() = setting.isModified and ClickGUI.showModifiedInBold
+
     override val renderProgress: Double = 0.0
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
@@ -41,6 +44,4 @@ class BindButton(
         val posY = renderHeight - 2.0f - FontRenderAdapter.getFontHeight(0.75f)
         FontRenderAdapter.drawString(valueText, posX, posY, color = GuiColors.text, scale = 0.75f)
     }
-
-    override fun isBold() = setting.isModified() and ClickGUI.showModifiedInBold
 }

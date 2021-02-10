@@ -8,6 +8,9 @@ import kotlin.math.max
 
 class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0, setting.description, setting.visibility) {
 
+    override val isBold
+        get() = setting.isModified and ClickGUI.showModifiedInBold
+
     override fun onDisplayed() {
         super.onDisplayed()
         value = 1.0
@@ -71,7 +74,4 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
             }
         }
     }
-
-    override fun isBold() = setting.isModified() and ClickGUI.showModifiedInBold
-
 }
