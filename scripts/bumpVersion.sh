@@ -29,7 +29,7 @@ fi
 
 # Set above information
 sed -i "s/modVersion=.*/modVersion=$VERSION/" gradle.properties
-sed -i "s/VERSION = \".*\";/VERSION = \"$VERSION\";/" src/main/java/me/zeroeightsix/kami/KamiMod.java
-sed -i "s/VERSION_SIMPLE = \".*\";/VERSION_SIMPLE = \"$VERSION_SIMPLE\";/" src/main/java/me/zeroeightsix/kami/KamiMod.java
-sed -i "s/VERSION_MAJOR = \".*\";/VERSION_MAJOR = \"$VERSION_MAJOR\";/" src/main/java/me/zeroeightsix/kami/KamiMod.java
-sed -i "s/BUILD_NUMBER = .*;/BUILD_NUMBER = $BUILD_NUMBER;/" src/main/java/me/zeroeightsix/kami/KamiMod.java
+sed -i "s/VERSION = \".*\";/VERSION = \"$VERSION\";/" src/main/java/org/kamiblue/client/KamiMod.java
+sed -i "s/VERSION_SIMPLE = \".*\";/VERSION_SIMPLE = \"$VERSION_SIMPLE\";/" src/main/java/org/kamiblue/client/KamiMod.java
+sed -i "s/VERSION_MAJOR = \".*\";/VERSION_MAJOR = \"$VERSION_MAJOR\";/" src/main/java/org/kamiblue/client/KamiMod.java
+sed -i "s/BUILD_NUMBER = .*;/BUILD_NUMBER = $BUILD_NUMBER;/" src/main/java/org/kamiblue/client/KamiMod.java

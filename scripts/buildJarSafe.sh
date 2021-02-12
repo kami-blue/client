@@ -44,7 +44,7 @@ mv "$__named" "$__bad_named" # rename it to include release
 # Build release jar with the name without -release
 export JAVA_HOME="$JDK_11_HOME"
 sudo archlinux-java set java-11-openjdk || exit $?
-java -jar "$__d/jar-shrink/jar-shrink.jar" "$__bad_named" -out "$__named" -n -keep "me.zeroeightsix" -keep "baritone" -keep "org.kamiblue" -keep "org.spongepowered"
+java -jar "$__d/jar-shrink/jar-shrink.jar" "$__bad_named" -out "$__named" -n -keep "org.kamiblue" -keep "baritone" -keep "org.spongepowered"
 
 rm "$__bad_named" # remove the un-shrunk jar with -release
 
