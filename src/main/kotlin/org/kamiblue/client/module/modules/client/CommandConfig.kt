@@ -1,7 +1,7 @@
 package org.kamiblue.client.module.modules.client
 
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
@@ -22,7 +22,7 @@ internal object CommandConfig : Module(
 
     private val timer = TickTimer()
     private val prevTitle = Display.getTitle()
-    private const val title = "${KamiMod.NAME} ${KamiMod.KAMI_KATAKANA} ${KamiMod.VERSION_SIMPLE}"
+    private const val title = "${KamiBlueMod.NAME} ${KamiBlueMod.KAMI_KATAKANA} ${KamiBlueMod.VERSION_SIMPLE}"
 
     init {
         listener<TickEvent.ClientTickEvent> {

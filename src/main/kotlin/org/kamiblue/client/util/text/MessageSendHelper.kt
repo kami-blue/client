@@ -4,7 +4,7 @@ import baritone.api.event.events.ChatEvent
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TextComponentBase
 import net.minecraft.util.text.TextFormatting
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.manager.managers.MessageManager
 import org.kamiblue.client.module.AbstractModule
@@ -83,5 +83,5 @@ object MessageSendHelper {
         }
     }
 
-    private fun coloredName(colorCode: Char) = "&7[&$colorCode" + KamiMod.KAMI_KATAKANA + "&7] &r"
+    private fun coloredName(colorCode: Char) = "&7[&$colorCode" + KamiBlueMod.KAMI_KATAKANA + "&7] &r"
 }

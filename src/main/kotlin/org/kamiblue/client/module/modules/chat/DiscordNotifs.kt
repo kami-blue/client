@@ -6,7 +6,7 @@ import kotlinx.coroutines.launch
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.apache.commons.io.IOUtils
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.PacketEvent
@@ -37,9 +37,9 @@ internal object DiscordNotifs : Module(
 
     val url = setting("URL", "unchanged")
     val pingID = setting("Ping ID", "unchanged")
-    val avatar = setting("Avatar", "${KamiMod.GITHUB_LINK}/assets/raw/assets/assets/icons/kamiGithub.png")
+    val avatar = setting("Avatar", "${KamiBlueMod.GITHUB_LINK}/assets/raw/assets/assets/icons/kamiGithub.png")
 
-    private const val username = "${KamiMod.NAME} ${KamiMod.VERSION}"
+    private const val username = "${KamiBlueMod.NAME} ${KamiBlueMod.VERSION}"
     private val server: String get() = mc.currentServerData?.serverIP ?: "the server"
     private val timer = TickTimer(TimeUnit.SECONDS)
 
@@ -141,11 +141,11 @@ internal object DiscordNotifs : Module(
                     }
 
                     if (response.isNotEmpty()) {
-                        KamiMod.LOG.info("Unexpected response from DiscordNotifs http request: $response")
+                        KamiBlueMod.LOG.info("Unexpected response from DiscordNotifs http request: $response")
                     }
                 },
                 {
-                    KamiMod.LOG.warn("Error while sending webhook", it)
+                    KamiBlueMod.LOG.warn("Error while sending webhook", it)
                 },
             )
         }

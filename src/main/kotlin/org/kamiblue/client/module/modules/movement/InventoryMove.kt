@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiEditSign
 import net.minecraft.util.MovementInputFromOptions
 import net.minecraftforge.client.event.InputUpdateEvent
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.gui.AbstractKamiGui
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -83,7 +83,7 @@ internal object InventoryMove : Module(
                 }
             } catch (e: IndexOutOfBoundsException) {
                 if (!hasSent) {
-                    KamiMod.LOG.error("$chatName Error: Key is bound to a mouse button!", e)
+                    KamiBlueMod.LOG.error("$chatName Error: Key is bound to a mouse button!", e)
                     hasSent = true
                 }
             }

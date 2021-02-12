@@ -3,7 +3,7 @@ package org.kamiblue.client.module.modules.chat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -26,7 +26,7 @@ internal object LoginMessage : Module(
 ) {
     private val sendAfterMoving by setting("Send After Moving", false, description = "Wait until you have moved after logging in")
 
-    private val file = File(KamiMod.DIRECTORY + "loginmsg.txt")
+    private val file = File(KamiBlueMod.DIRECTORY + "loginmsg.txt")
     private val loginMessages = CopyOnWriteArrayList<String>()
     private var sent = false
     private var moved = false

@@ -2,7 +2,7 @@ package org.kamiblue.client.setting.groups
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.setting.settings.AbstractSetting
 import org.kamiblue.commons.interfaces.Nameable
 import java.util.*
@@ -69,7 +69,7 @@ open class SettingGroup(
                             ?: it.get(setting.name.removeSpace()) // TODO: Remove this by 2.04.01 release
                         setting.read(value)
                     } catch (e: Exception) {
-                        KamiMod.LOG.warn("Failed loading setting ${setting.name} at $name", e)
+                        KamiBlueMod.LOG.warn("Failed loading setting ${setting.name} at $name", e)
                     }
                 }
             }

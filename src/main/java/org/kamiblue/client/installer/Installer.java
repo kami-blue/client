@@ -1,6 +1,6 @@
 package org.kamiblue.client.installer;
 
-import org.kamiblue.client.KamiMod;
+import org.kamiblue.client.KamiBlueMod;
 import org.kamiblue.client.util.WebUtils;
 import org.kamiblue.client.util.filesystem.FolderUtils;
 
@@ -14,11 +14,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Installer extends JPanel {
-    private final String[] downloadsAPI = WebUtils.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
+    private final String[] downloadsAPI = WebUtils.INSTANCE.getUrlContents(KamiBlueMod.DOWNLOADS_API).replace("\n", "").split("\"");
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void main(String[] args) throws IOException {
-        System.out.println("Ran the " + KamiMod.NAME + " " + KamiMod.VERSION + " installer!");
+        System.out.println("Ran the " + KamiBlueMod.NAME + " " + KamiBlueMod.VERSION + " installer!");
 
         /* ensure mods exists */
         new File(FolderUtils.getModsFolder()).mkdirs();
@@ -149,12 +149,12 @@ public class Installer extends JPanel {
         }).start();
 
         /* please ignore the clusterfuck of code that this is */
-        System.out.println(KamiMod.NAME + " download started!");
+        System.out.println(KamiBlueMod.NAME + " download started!");
         if (version == VersionType.STABLE) {
             try {
                 WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[9], FolderUtils.getModsFolder() + getFullJarName(downloadsAPI[9]));
                 dialog[0].dispose();
-                System.out.println(KamiMod.NAME + " download finished!");
+                System.out.println(KamiBlueMod.NAME + " download finished!");
             } catch (IOException e) {
                 notifyAndExitWeb(e);
             }
@@ -162,7 +162,7 @@ public class Installer extends JPanel {
             try {
                 WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[19], FolderUtils.getModsFolder() + getFullJarName(downloadsAPI[19]));
                 dialog[0].dispose();
-                System.out.println(KamiMod.NAME + " download finished!");
+                System.out.println(KamiBlueMod.NAME + " download finished!");
             } catch (IOException e) {
                 notifyAndExitWeb(e);
             }

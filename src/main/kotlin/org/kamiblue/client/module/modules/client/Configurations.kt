@@ -3,7 +3,7 @@ package org.kamiblue.client.module.modules.client
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.gui.AbstractKamiGui
 import org.kamiblue.client.module.AbstractModule
@@ -56,7 +56,7 @@ internal object Configurations : AbstractModule(
         BackgroundScope.launchLooping("Config Auto Saving", 60000L) {
             if (autoSaving && mc.currentScreen !is AbstractKamiGui<*, *> && timer.tick(savingInterval.toLong())) {
                 if (savingFeedBack) MessageSendHelper.sendChatMessage("Auto saving settings...")
-                else KamiMod.LOG.info("Auto saving settings...")
+                else KamiBlueMod.LOG.info("Auto saving settings...")
                 ConfigUtils.saveAll()
             }
         }
@@ -107,7 +107,7 @@ internal object Configurations : AbstractModule(
             MessageSendHelper.sendChatMessage("Preset set to ${formatValue(nameWithoutExtension)}!")
         } catch (e: IOException) {
             MessageSendHelper.sendChatMessage("Couldn't set preset: ${e.message}")
-            KamiMod.LOG.warn("Couldn't set path!", e)
+            KamiBlueMod.LOG.warn("Couldn't set path!", e)
 
             setting.value = prev
             ConfigManager.save(GenericConfig)
@@ -210,7 +210,7 @@ internal object Configurations : AbstractModule(
                     fileFrom.copyTo(fileTo, true)
                 } catch (e: Exception) {
                     MessageSendHelper.sendErrorMessage("Failed to copy preset, ${e.message}")
-                    KamiMod.LOG.error("Failed to copy preset", e)
+                    KamiBlueMod.LOG.error("Failed to copy preset", e)
                 }
             }
         }
@@ -232,7 +232,7 @@ internal object Configurations : AbstractModule(
                     MessageSendHelper.sendChatMessage("Deleted preset $name for ${formatValue(displayName)} config")
                 } catch (e: Exception) {
                     MessageSendHelper.sendErrorMessage("Failed to delete preset, ${e.message}")
-                    KamiMod.LOG.error("Failed to delete preset", e)
+                    KamiBlueMod.LOG.error("Failed to delete preset", e)
                 }
             }
         }

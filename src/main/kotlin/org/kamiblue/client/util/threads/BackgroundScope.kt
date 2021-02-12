@@ -1,7 +1,7 @@
 package org.kamiblue.client.util.threads
 
 import kotlinx.coroutines.*
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 
 @Suppress("EXPERIMENTAL_API_USAGE")
 internal object BackgroundScope : CoroutineScope by CoroutineScope(newFixedThreadPoolContext(2, "KAMI Blue Background")) {
@@ -36,7 +36,7 @@ internal object BackgroundScope : CoroutineScope by CoroutineScope(newFixedThrea
                 try {
                     job.block(this)
                 } catch (e: Exception) {
-                    KamiMod.LOG.warn("Error occurred while running background job ${job.name}", e)
+                    KamiBlueMod.LOG.warn("Error occurred while running background job ${job.name}", e)
                 }
                 delay(job.delay)
             }

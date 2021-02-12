@@ -1,7 +1,7 @@
 package org.kamiblue.client.command.commands
 
 import net.minecraft.util.text.TextFormatting
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.util.text.MessageSendHelper
@@ -46,7 +46,7 @@ object HelpCommand : ClientCommand(
                 "How do I use Baritone? - ${formatValue("${prefix}b")}\n" +
                 "How do I change ${TextFormatting.GRAY};${TextFormatting.RESET} to something else? - ${formatValue("${prefix}prefix")}\n" +
                 "How do I get a Cape? - Donate, or contribute to one of our projects.\n" +
-                "Other questions? - Get support at ${TextFormatting.BLUE}${KamiMod.WEBSITE_LINK}/discord"
+                "Other questions? - Get support at ${TextFormatting.BLUE}${KamiBlueMod.WEBSITE_LINK}/discord"
             )
         }
     }

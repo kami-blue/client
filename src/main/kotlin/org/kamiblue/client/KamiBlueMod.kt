@@ -14,15 +14,17 @@ import org.kamiblue.client.util.threads.BackgroundScope
 import java.io.File
 
 @Mod(
-    modid = KamiMod.ID,
-    name = KamiMod.NAME,
-    version = KamiMod.VERSION
+    modid = KamiBlueMod.ID,
+    name = KamiBlueMod.NAME,
+    version = KamiBlueMod.VERSION
 )
-class KamiMod {
+class KamiBlueMod {
 
     companion object {
         const val NAME = "KAMI Blue"
         const val ID = "kamiblue"
+        const val DIRECTORY = "kamiblue/"
+
         const val VERSION = "2.02.xx-dev" // Used for debugging. R.MM.DD-hash format.
         const val VERSION_SIMPLE = "2.02.xx-dev" // Shown to the user. R.MM.DD[-beta] format.
         const val VERSION_MAJOR = "2.02.01" // Used for update checking. RR.MM.01 format.
@@ -37,7 +39,6 @@ class KamiMod {
 
         const val KAMI_KATAKANA = "カミブル"
 
-        const val DIRECTORY = "kamiblue/"
         val LOG: Logger = LogManager.getLogger(NAME)
 
         var ready: Boolean = false

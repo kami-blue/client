@@ -1,6 +1,6 @@
 package org.kamiblue.client.util.graphics.font
 
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.util.graphics.texture.MipmapTexture
 import org.kamiblue.commons.utils.MathUtils
 import org.lwjgl.opengl.GL11.*
@@ -138,7 +138,7 @@ class FontGlyphs(private val font: Font, private val fallbackFont: Font) {
             GlyphChunk(chunk, texture, charInfoArray)
 
         } catch (e: Exception) {
-            KamiMod.LOG.error("Failed to load glyph chunk $chunk.", e)
+            KamiBlueMod.LOG.error("Failed to load glyph chunk $chunk.", e)
             null
         }
     }

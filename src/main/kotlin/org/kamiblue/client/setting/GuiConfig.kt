@@ -1,6 +1,6 @@
 package org.kamiblue.client.setting
 
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.gui.rgui.Component
 import org.kamiblue.client.module.modules.client.Configurations
 import org.kamiblue.client.setting.configs.AbstractConfig
@@ -9,7 +9,7 @@ import java.io.File
 
 internal object GuiConfig : AbstractConfig<Component>(
     "gui",
-    "${KamiMod.DIRECTORY}config/gui"
+    "${KamiBlueMod.DIRECTORY}config/gui"
 ) {
     override val file: File get() = File("$filePath/${Configurations.guiPreset}.json")
     override val backup get() = File("$filePath/${Configurations.guiPreset}.bak")

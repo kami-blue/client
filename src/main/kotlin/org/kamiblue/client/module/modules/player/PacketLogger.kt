@@ -6,7 +6,7 @@ import net.minecraft.network.Packet
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.*
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.mixin.extension.*
@@ -312,11 +312,11 @@ internal object PacketLogger : Module(
 
         defaultScope.launch(Dispatchers.IO) {
             try {
-                FileWriter("${KamiMod.DIRECTORY}packetLogs/${filename}", true).buffered().use {
+                FileWriter("${KamiBlueMod.DIRECTORY}packetLogs/${filename}", true).buffered().use {
                     for (line in lines) it.write(line)
                 }
             } catch (e: Exception) {
-                KamiMod.LOG.warn("$chatName Failed saving packet log!", e)
+                KamiBlueMod.LOG.warn("$chatName Failed saving packet log!", e)
             }
         }
     }

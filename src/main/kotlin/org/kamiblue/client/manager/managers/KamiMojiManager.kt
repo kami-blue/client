@@ -9,7 +9,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.util.graphics.texture.MipmapTexture
 import org.kamiblue.client.util.threads.defaultScope
@@ -26,7 +26,7 @@ import javax.imageio.ImageIO
 
 object KamiMojiManager : Manager {
 
-    private const val directory = "${KamiMod.DIRECTORY}emojis"
+    private const val directory = "${KamiBlueMod.DIRECTORY}emojis"
     private const val versionURL = "https://raw.githubusercontent.com/2b2t-Utilities/emojis/master/version.json"
     private const val zipUrl = "https://github.com/2b2t-Utilities/emojis/archive/master.zip"
 
@@ -44,7 +44,7 @@ object KamiMojiManager : Manager {
         try {
             checkEmojiUpdate()
         } catch (e: Exception) {
-            KamiMod.LOG.warn("Failed to check emoji update", e)
+            KamiBlueMod.LOG.warn("Failed to check emoji update", e)
         }
 
         directory.listFiles()?.forEach {
@@ -53,7 +53,7 @@ object KamiMojiManager : Manager {
             }
         }
 
-        KamiMod.LOG.info("KamiMoji Initialized")
+        KamiBlueMod.LOG.info("KamiMoji Initialized")
     }
 
     private fun checkEmojiUpdate() {
@@ -79,7 +79,7 @@ object KamiMojiManager : Manager {
         return try {
             parser.parse(stream.reader()).asJsonObject
         } catch (e: Exception) {
-            KamiMod.LOG.warn("Failed to parse emoji version Json", e)
+            KamiBlueMod.LOG.warn("Failed to parse emoji version Json", e)
             null
         }
     }
@@ -140,7 +140,7 @@ object KamiMojiManager : Manager {
 
             emojiMap[name] = texture
         } catch (e: IOException) {
-            KamiMod.LOG.warn("Failed to load emoji", e)
+            KamiBlueMod.LOG.warn("Failed to load emoji", e)
         }
     }
 

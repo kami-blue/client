@@ -1,6 +1,6 @@
 package org.kamiblue.client.setting.configs
 
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.setting.groups.SettingMultiGroup
 import org.kamiblue.client.setting.settings.SettingRegister
 import java.io.File
@@ -34,7 +34,7 @@ abstract class AbstractMultiConfig<T : Any>(
             try {
                 loadFromFile(group, file.first)
             } catch (e: Exception) {
-                KamiMod.LOG.warn("Failed to load latest, loading backup.")
+                KamiBlueMod.LOG.warn("Failed to load latest, loading backup.")
                 loadFromFile(group, file.second)
             }
         }

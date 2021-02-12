@@ -4,7 +4,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.SPacketEntityStatus
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.manager.managers.FriendManager
@@ -101,7 +101,7 @@ internal object TotemPopCounter : Module(
 
     private fun grammar(player: EntityPlayer) = if (player == mc.player) "my" else "their"
 
-    private fun ending(): String = if (thanksTo.value) " thanks to ${KamiMod.NAME} !" else "!"
+    private fun ending(): String = if (thanksTo.value) " thanks to ${KamiBlueMod.NAME} !" else "!"
 
     private fun formatNumber(message: Int) = colorNumber.value.textFormatting.toString() + message + TextFormatting.RESET
 

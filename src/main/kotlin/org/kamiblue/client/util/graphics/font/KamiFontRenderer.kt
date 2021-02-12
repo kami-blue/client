@@ -4,7 +4,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.text.TextFormatting
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.module.modules.client.CustomFont
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.color.DyeColors
@@ -106,7 +106,7 @@ object KamiFontRenderer {
                 Font(CustomFont.fontName.value, style.styleConst, 64)
             }
         } catch (e: Exception) {
-            KamiMod.LOG.warn("Failed loading main font. Using Sans Serif font.", e)
+            KamiBlueMod.LOG.warn("Failed loading main font. Using Sans Serif font.", e)
             getSansSerifFont(style.styleConst)
         }
 
@@ -114,7 +114,7 @@ object KamiFontRenderer {
         val fallbackFont = try {
             Font(getFallbackFont(), style.styleConst, 64)
         } catch (e: Exception) {
-            KamiMod.LOG.warn("Failed loading fallback font. Using Sans Serif font", e)
+            KamiBlueMod.LOG.warn("Failed loading fallback font. Using Sans Serif font", e)
             getSansSerifFont(style.styleConst)
         }
 

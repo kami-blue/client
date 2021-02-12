@@ -1,6 +1,6 @@
 package org.kamiblue.client.setting
 
-import org.kamiblue.client.KamiMod
+import org.kamiblue.client.KamiBlueMod
 import org.kamiblue.client.setting.configs.IConfig
 import org.kamiblue.commons.collections.NameableSet
 
@@ -25,10 +25,10 @@ internal object ConfigManager {
     fun load(config: IConfig): Boolean {
         return try {
             config.load()
-            KamiMod.LOG.info("${config.name} config loaded")
+            KamiBlueMod.LOG.info("${config.name} config loaded")
             true
         } catch (e: Exception) {
-            KamiMod.LOG.error("Failed to load ${config.name} config", e)
+            KamiBlueMod.LOG.error("Failed to load ${config.name} config", e)
             false
         }
     }
@@ -46,10 +46,10 @@ internal object ConfigManager {
     fun save(config: IConfig): Boolean {
         return try {
             config.save()
-            KamiMod.LOG.info("${config.name} config saved")
+            KamiBlueMod.LOG.info("${config.name} config saved")
             true
         } catch (e: Exception) {
-            KamiMod.LOG.error("Failed to save ${config.name} config!", e)
+            KamiBlueMod.LOG.error("Failed to save ${config.name} config!", e)
             false
         }
     }
