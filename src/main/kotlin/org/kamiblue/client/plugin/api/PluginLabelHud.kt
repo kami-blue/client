@@ -1,11 +1,11 @@
-package me.zeroeightsix.kami.plugin.api
+package org.kamiblue.client.plugin.api
 
-import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.graphics.font.TextComponent
-import me.zeroeightsix.kami.util.math.Vec2d
-import me.zeroeightsix.kami.util.threads.safeAsyncListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.util.graphics.VertexHelper
+import org.kamiblue.client.util.graphics.font.TextComponent
+import org.kamiblue.client.util.math.Vec2d
+import org.kamiblue.client.util.threads.safeAsyncListener
 
 abstract class PluginLabelHud(
     pluginMain: Plugin,

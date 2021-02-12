@@ -8,6 +8,7 @@ import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.graphics.font.HAlign
 import org.kamiblue.client.util.graphics.font.VAlign
 import org.kamiblue.client.util.math.Vec2f
+import org.kamiblue.commons.interfaces.Nameable
 import kotlin.math.max
 
 open class Component(

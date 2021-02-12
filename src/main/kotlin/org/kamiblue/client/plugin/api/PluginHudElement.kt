@@ -1,7 +1,7 @@
-package me.zeroeightsix.kami.plugin.api
+package org.kamiblue.client.plugin.api
 
-import me.zeroeightsix.kami.gui.hudgui.HudElement
-import me.zeroeightsix.kami.setting.settings.SettingRegister
+import org.kamiblue.client.gui.hudgui.HudElement
+import org.kamiblue.client.setting.settings.SettingRegister
 
 abstract class PluginHudElement(
     final override val pluginMain: Plugin,

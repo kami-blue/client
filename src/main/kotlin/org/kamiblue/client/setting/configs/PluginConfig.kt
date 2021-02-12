@@ -1,10 +1,10 @@
-package me.zeroeightsix.kami.setting.configs
+package org.kamiblue.client.setting.configs
 
-import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.plugin.api.IPluginClass
-import me.zeroeightsix.kami.plugin.api.PluginHudElement
-import me.zeroeightsix.kami.plugin.api.PluginModule
-import me.zeroeightsix.kami.setting.settings.AbstractSetting
+import org.kamiblue.client.plugin.api.PluginHudElement
+import org.kamiblue.client.KamiMod
+import org.kamiblue.client.plugin.api.IPluginClass
+import org.kamiblue.client.plugin.api.PluginModule
+import org.kamiblue.client.setting.settings.AbstractSetting
 import java.io.File
 
 class PluginConfig(pluginName: String) : NameableConfig<IPluginClass>(

@@ -1,13 +1,13 @@
-package me.zeroeightsix.kami.command.commands
+package org.kamiblue.client.command.commands
 
-import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.plugin.PluginError
-import me.zeroeightsix.kami.plugin.PluginLoader
-import me.zeroeightsix.kami.plugin.PluginManager
-import me.zeroeightsix.kami.plugin.api.Plugin
-import me.zeroeightsix.kami.util.ConfigUtils
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.formatValue
+import org.kamiblue.client.command.ClientCommand
+import org.kamiblue.client.plugin.PluginError
+import org.kamiblue.client.plugin.PluginLoader
+import org.kamiblue.client.plugin.PluginManager
+import org.kamiblue.client.plugin.api.Plugin
+import org.kamiblue.client.util.ConfigUtils
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.formatValue
 import java.io.File
 
 object PluginCommand : ClientCommand(

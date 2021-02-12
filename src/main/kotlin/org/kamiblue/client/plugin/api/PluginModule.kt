@@ -1,7 +1,7 @@
-package me.zeroeightsix.kami.plugin.api
+package org.kamiblue.client.plugin.api
 
-import me.zeroeightsix.kami.module.AbstractModule
-import me.zeroeightsix.kami.module.Category
+import org.kamiblue.client.module.AbstractModule
+import org.kamiblue.client.module.Category
 
 abstract class PluginModule(
     final override val pluginMain: Plugin,

@@ -1,8 +1,8 @@
-package me.zeroeightsix.kami.plugin
+package org.kamiblue.client.plugin
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.gui.mc.KamiGuiPluginError
-import me.zeroeightsix.kami.util.Wrapper
+import org.kamiblue.client.KamiMod
+import org.kamiblue.client.util.Wrapper
 
 internal enum class PluginError {
     HOT_RELOAD,

@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import org.kamiblue.client.AsyncLoader
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.ClientExecuteEvent
+import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.module.modules.client.CommandConfig
 import org.kamiblue.client.util.StopTimer
 import org.kamiblue.client.util.text.MessageSendHelper

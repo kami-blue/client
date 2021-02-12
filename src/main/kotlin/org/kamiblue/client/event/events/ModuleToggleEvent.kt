@@ -1,7 +1,6 @@
-package me.zeroeightsix.kami.event.events
+package org.kamiblue.client.event.events
 
-import me.zeroeightsix.kami.event.Event
-import me.zeroeightsix.kami.module.AbstractModule
-import me.zeroeightsix.kami.module.Module
+import org.kamiblue.client.event.Event
+import org.kamiblue.client.module.AbstractModule
 
 class ModuleToggleEvent internal constructor(val module: AbstractModule) : Event

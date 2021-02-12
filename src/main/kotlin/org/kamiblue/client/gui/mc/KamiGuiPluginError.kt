@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.gui.mc
 
-import me.zeroeightsix.kami.plugin.PluginError
-import me.zeroeightsix.kami.plugin.PluginLoader
-import me.zeroeightsix.kami.plugin.PluginManager
+import org.kamiblue.client.plugin.PluginError
+import org.kamiblue.client.plugin.PluginLoader
+import org.kamiblue.client.plugin.PluginManager
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager

@@ -1,10 +1,10 @@
-package me.zeroeightsix.kami.plugin
+package org.kamiblue.client.plugin
 
 import kotlinx.coroutines.Deferred
-import me.zeroeightsix.kami.AsyncLoader
-import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.plugin.api.Plugin
+import org.kamiblue.client.plugin.api.Plugin
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
+import org.kamiblue.client.AsyncLoader
+import org.kamiblue.client.KamiMod
 import org.kamiblue.commons.collections.NameableSet
 import java.io.File
 import java.io.FileNotFoundException
@@ -55,7 +55,7 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
         val validLoaders = checkPluginLoaders(loaders)
 
         synchronized(lockObject) {
-            validLoaders.forEach(::loadWithoutCheck)
+            validLoaders.forEach(PluginManager::loadWithoutCheck)
         }
 
         KamiMod.LOG.info("Loaded ${loadedPlugins.size} plugins!")
@@ -151,7 +151,7 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
     }
 
     fun unloadAll() {
-        loadedPlugins.filter { it.hotReload }.forEach(::unloadWithoutCheck)
+        loadedPlugins.filter { it.hotReload }.forEach(PluginManager::unloadWithoutCheck)
 
         KamiMod.LOG.info("Unloaded all plugins!")
     }
