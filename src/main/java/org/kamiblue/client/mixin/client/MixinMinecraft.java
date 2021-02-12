@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Created by 086 on 17/11/2017.
  */
 @Mixin(Minecraft.class)
-public abstract class MixinMinecraft {
+public class MixinMinecraft {
 
     @Shadow public WorldClient world;
     @Shadow public EntityPlayerSP player;
@@ -40,8 +40,6 @@ public abstract class MixinMinecraft {
     @Shadow public RayTraceResult objectMouseOver;
     @Shadow public PlayerControllerMP playerController;
     @Shadow public EntityRenderer entityRenderer;
-
-    @Shadow public abstract void displayGuiScreen(@Nullable GuiScreen guiScreenIn);
 
     @Inject(method = "rightClickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;getHeldItem(Lnet/minecraft/util/EnumHand;)Lnet/minecraft/item/ItemStack;"), cancellable = true)
     public void processRightClickBlock(CallbackInfo ci) {
