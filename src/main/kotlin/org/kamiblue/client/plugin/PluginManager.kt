@@ -17,7 +17,6 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
 
     const val pluginPath = "${KamiMod.DIRECTORY}plugins/"
 
-    private val lockObject = Any()
     private val kamiVersion = DefaultArtifactVersion(KamiMod.VERSION_MAJOR)
 
     override fun preLoad0() = getLoaders()
@@ -54,7 +53,7 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
     fun loadAll(loaders: List<PluginLoader>) {
         val validLoaders = checkPluginLoaders(loaders)
 
-        synchronized(lockObject) {
+        synchronized(this) {
             validLoaders.forEach(PluginManager::loadWithoutCheck)
         }
 
@@ -106,7 +105,7 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
     }
 
     fun load(loader: PluginLoader) {
-        synchronized(lockObject) {
+        synchronized(this) {
             val hotReload = KamiMod.isReady() && !loader.info.hotReload
             val duplicate = loadedPlugins.containsName(loader.name)
             val unsupported = DefaultArtifactVersion(loader.info.kamiVersion) > kamiVersion
@@ -124,7 +123,7 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
     }
 
     private fun loadWithoutCheck(loader: PluginLoader) {
-        val plugin = synchronized(lockObject) {
+        val plugin = synchronized(this) {
             val plugin = runCatching(loader::load).getOrElse {
                 when (it) {
                     is ClassNotFoundException -> {
@@ -169,7 +168,7 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
             throw IllegalArgumentException("Plugin $plugin cannot be hot reloaded!")
         }
 
-        synchronized(lockObject) {
+        synchronized(this) {
             if (loadedPlugins.remove(plugin)) {
                 plugin.unregister()
                 plugin.onUnload()
