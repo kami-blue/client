@@ -1,7 +1,7 @@
 package org.kamiblue.client.plugin
 
-import me.zeroeightsix.kami.gui.mc.KamiGuiPluginError
 import org.kamiblue.client.KamiMod
+import org.kamiblue.client.gui.mc.KamiGuiPluginError
 import org.kamiblue.client.util.Wrapper
 
 internal enum class PluginError {

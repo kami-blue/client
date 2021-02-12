@@ -2,7 +2,9 @@ package org.kamiblue.client.gui.rgui
 
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.module.modules.client.ClickGUI
+import org.kamiblue.client.setting.GuiConfig
 import org.kamiblue.client.setting.GuiConfig.setting
+import org.kamiblue.client.setting.configs.AbstractConfig
 import org.kamiblue.client.util.Wrapper
 import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.graphics.font.HAlign
@@ -17,7 +19,8 @@ open class Component(
     posYIn: Float,
     widthIn: Float,
     heightIn: Float,
-    val settingGroup: SettingGroup
+    val settingGroup: SettingGroup,
+    val config: AbstractConfig<out Nameable> = GuiConfig
 ) : Nameable {
 
     // Basic info

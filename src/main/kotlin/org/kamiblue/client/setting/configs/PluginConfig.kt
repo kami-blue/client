@@ -5,6 +5,7 @@ import org.kamiblue.client.KamiMod
 import org.kamiblue.client.plugin.api.IPluginClass
 import org.kamiblue.client.plugin.api.PluginModule
 import org.kamiblue.client.setting.settings.AbstractSetting
+import org.kamiblue.commons.interfaces.Nameable
 import java.io.File
 
 class PluginConfig(pluginName: String) : NameableConfig<IPluginClass>(
@@ -13,19 +14,35 @@ class PluginConfig(pluginName: String) : NameableConfig<IPluginClass>(
     override val file: File get() = File("$filePath/default.json")
     override val backup: File get() = File("$filePath/default.bak")
 
-    override fun <S : AbstractSetting<*>> IPluginClass.setting(setting: S): S {
-        when (this) {
+    fun addSettingToPlugin(owner: IPluginClass, setting: AbstractSetting<*>) {
+        owner.setting(setting)
+    }
+
+    override fun addSettingToConfig(owner: IPluginClass, setting: AbstractSetting<*>) {
+        when (owner) {
             is PluginModule -> {
-                getGroupOrPut("modules").getGroupOrPut(name).addSetting(setting)
+                getGroupOrPut("modules").getGroupOrPut(owner.name).addSetting(setting)
             }
             is PluginHudElement -> {
-                getGroupOrPut("hud").getGroupOrPut(name).addSetting(setting)
+                getGroupOrPut("hud").getGroupOrPut(owner.name).addSetting(setting)
             }
             else -> {
-                getGroupOrPut("misc").getGroupOrPut(name).addSetting(setting)
+                getGroupOrPut("misc").getGroupOrPut(owner.name).addSetting(setting)
             }
         }
+    }
 
-        return setting
+    override fun getSettings(nameable: Nameable): List<AbstractSetting<*>> {
+        return when (nameable) {
+            is PluginModule -> {
+                getGroup("modules")?.getGroupOrPut(nameable.name)?.getSettings()
+            }
+            is PluginHudElement -> {
+                getGroup("hud")?.getGroup(nameable.name)?.getSettings()
+            }
+            else -> {
+                getGroup("misc")?.getGroup(nameable.name)?.getSettings()
+            }
+        } ?: emptyList()
     }
 }

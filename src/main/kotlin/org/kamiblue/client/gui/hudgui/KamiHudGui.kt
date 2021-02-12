@@ -2,7 +2,6 @@ package org.kamiblue.client.gui.hudgui
 
 import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.gui.AbstractKamiGui
-import org.kamiblue.client.gui.GuiManager
 import org.kamiblue.client.gui.clickgui.KamiClickGui
 import org.kamiblue.client.gui.hudgui.component.HudButton
 import org.kamiblue.client.gui.hudgui.elements.client.WaterMark
@@ -20,17 +19,17 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 
-object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
+object KamiHudGui : AbstractKamiGui<HudSettingWindow, AbstractHudElement>() {
 
     override val alwaysTicking = true
-    private val hudWindows = EnumMap<HudElement.Category, ListWindow>(HudElement.Category::class.java)
+    private val hudWindows = EnumMap<AbstractHudElement.Category, ListWindow>(AbstractHudElement.Category::class.java)
 
     init {
         var posX = 0.0f
         var posY = 0.0f
         val screenWidth = KamiClickGui.mc.displayWidth / ClickGUI.getScaleFactorFloat()
 
-        for (category in HudElement.Category.values()) {
+        for (category in AbstractHudElement.Category.values()) {
             val window = ListWindow(category.displayName, posX, 0.0f, 90.0f, 300.0f, Component.SettingGroup.HUD_GUI)
             windowList.add(window)
             hudWindows[category] = window
@@ -44,13 +43,13 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
         }
     }
 
-    internal fun register(hudElement: HudElement) {
+    internal fun register(hudElement: AbstractHudElement) {
         val button = HudButton(hudElement)
         hudWindows[hudElement.category]!!.children.add(button)
         windowList.add(hudElement)
     }
 
-    internal fun unregister(hudElement: HudElement) {
+    internal fun unregister(hudElement: AbstractHudElement) {
         hudWindows[hudElement.category]!!.children.removeIf { it is HudButton && it.hudElement == hudElement }
         windowList.remove(hudElement)
     }
@@ -60,7 +59,7 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
         setHudButtonVisibility { true }
     }
 
-    override fun newSettingWindow(element: HudElement, mousePos: Vec2f): HudSettingWindow {
+    override fun newSettingWindow(element: AbstractHudElement, mousePos: Vec2f): HudSettingWindow {
         return HudSettingWindow(element, mousePos.x, mousePos.y)
     }
 
@@ -101,7 +100,7 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
 
             if (Hud.isEnabled) {
                 for (window in windowList) {
-                    if (window !is HudElement || !window.visible) continue
+                    if (window !is AbstractHudElement || !window.visible) continue
                     renderHudElement(vertexHelper, window)
                 }
             } else if (WaterMark.visible) {
@@ -113,7 +112,7 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
         }
     }
 
-    private fun renderHudElement(vertexHelper: VertexHelper, window: HudElement) {
+    private fun renderHudElement(vertexHelper: VertexHelper, window: AbstractHudElement) {
         glPushMatrix()
         glTranslatef(window.renderPosX, window.renderPosY, 0.0f)
 

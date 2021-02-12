@@ -1,13 +1,13 @@
-package me.zeroeightsix.kami.gui.mc
+package org.kamiblue.client.gui.mc
 
-import org.kamiblue.client.plugin.PluginError
-import org.kamiblue.client.plugin.PluginLoader
-import org.kamiblue.client.plugin.PluginManager
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.event.world.NoteBlockEvent
+import org.kamiblue.client.plugin.PluginError
+import org.kamiblue.client.plugin.PluginLoader
+import org.kamiblue.client.plugin.PluginManager
 import java.awt.Desktop
 import java.io.File
 import java.util.*
@@ -51,7 +51,7 @@ internal class KamiGuiPluginError(
     override fun initGui() {
         super.initGui()
         buttonList.add(GuiButton(0, width / 2 - 210, height - 40, "Open Plugins Folder"))
-        buttonList.add(GuiButton(1, width / 2 + 10, height - 40,  "Continue"))
+        buttonList.add(GuiButton(1, width / 2 + 10, height - 40, "Continue"))
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {

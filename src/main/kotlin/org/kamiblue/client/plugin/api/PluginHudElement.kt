@@ -1,6 +1,6 @@
 package org.kamiblue.client.plugin.api
 
-import org.kamiblue.client.gui.hudgui.HudElement
+import org.kamiblue.client.gui.hudgui.AbstractHudElement
 import org.kamiblue.client.setting.settings.SettingRegister
 
 abstract class PluginHudElement(
@@ -11,6 +11,6 @@ abstract class PluginHudElement(
     description: String,
     alwaysListening: Boolean = false,
     enabledByDefault: Boolean = false
-) : HudElement(name, alias, category, description, alwaysListening, enabledByDefault),
+) : AbstractHudElement(name, alias, category, description, alwaysListening, enabledByDefault, pluginMain.config),
     IPluginClass,
     SettingRegister<IPluginClass> by pluginMain.config

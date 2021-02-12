@@ -41,7 +41,7 @@ abstract class AbstractModule(
     val isVisible: Boolean get() = visible.value
 
     private fun addSetting(setting: AbstractSetting<*>) {
-        config.getGroupOrPut(name).addSetting(setting)
+        (config as NameableConfig<Nameable>).addSettingToConfig(this, setting)
     }
 
     internal fun postInit() {

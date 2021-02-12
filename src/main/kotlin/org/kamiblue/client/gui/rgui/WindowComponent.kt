@@ -1,10 +1,12 @@
 package org.kamiblue.client.gui.rgui
 
 import org.kamiblue.client.setting.GuiConfig.setting
+import org.kamiblue.client.setting.configs.AbstractConfig
 import org.kamiblue.client.util.graphics.AnimationUtils
 import org.kamiblue.client.util.graphics.font.HAlign
 import org.kamiblue.client.util.graphics.font.VAlign
 import org.kamiblue.client.util.math.Vec2f
+import org.kamiblue.commons.interfaces.Nameable
 import kotlin.math.max
 import kotlin.math.min
 
@@ -14,8 +16,9 @@ open class WindowComponent(
     posY: Float,
     width: Float,
     height: Float,
-    settingGroup: SettingGroup
-) : InteractiveComponent(name, posX, posY, width, height, settingGroup) {
+    settingGroup: SettingGroup,
+    config: AbstractConfig<out Nameable>
+) : InteractiveComponent(name, posX, posY, width, height, settingGroup, config) {
 
     // Basic info
     private val minimizedSetting = setting("Minimized", false,

@@ -1,6 +1,5 @@
 package org.kamiblue.client.plugin.api
 
-import org.kamiblue.client.setting.configs.PluginConfig
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.event.KamiEventBus
@@ -9,6 +8,7 @@ import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.plugin.PluginInfo
 import org.kamiblue.client.setting.ConfigManager
+import org.kamiblue.client.setting.configs.PluginConfig
 import org.kamiblue.client.util.threads.BackgroundJob
 import org.kamiblue.client.util.threads.BackgroundScope
 import org.kamiblue.commons.collections.CloseableList
@@ -42,35 +42,35 @@ open class Plugin : Nameable {
     /**
      * The list of [Manager] the plugin will add.
      *
-     * @sample me.zeroeightsix.kami.manager.managers.KamiMojiManager
+     * @sample org.kamiblue.client.manager.managers.KamiMojiManager
      */
     val managers = CloseableList<Manager>()
 
     /**
      * The list of [ClientCommand] the plugin will add.
      *
-     * @sample me.zeroeightsix.kami.command.commands.CreditsCommand
+     * @sample org.kamiblue.client.command.commands.CreditsCommand
      */
     val commands = CloseableList<ClientCommand>()
 
     /**
      * The list of [PluginModule] the plugin will add.
      *
-     * @sample me.zeroeightsix.kami.module.modules.combat.KillAura
+     * @sample org.kamiblue.client.module.modules.combat.KillAura
      */
     val modules = CloseableList<PluginModule>()
 
     /**
      * The list of [PluginHudElement] the plugin will add.
      *
-     * @sample me.zeroeightsix.kami.gui.hudgui.elements.client.ModuleList
+     * @sample org.kamiblue.client.gui.hudgui.elements.client.ModuleList
      */
     val hudElements = CloseableList<PluginHudElement>()
 
     /**
      * The list of [BackgroundJob] the plugin will add.
      *
-     * @sample me.zeroeightsix.kami.module.modules.client.CommandConfig
+     * @sample org.kamiblue.client.module.modules.client.CommandConfig
      */
     val bgJobs = CloseableList<BackgroundJob>()
 

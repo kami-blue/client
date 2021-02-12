@@ -5,7 +5,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.ModuleManager
-import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.AsyncCachedValue
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
@@ -27,7 +26,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.max
 
-object ModuleList : HudElement(
+internal object ModuleList : HudElement(
     name = "ModuleList",
     category = Category.CLIENT,
     description = "List of enabled modules",
