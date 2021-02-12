@@ -181,16 +181,18 @@ processResources {
 
 task sourceJar(type: Jar) { // Generate sources
     group 'build'
-    from sourceSets.main.allSource
-    archiveClassifier.set('source')
     description 'Assemble API library source archive'
+
+    archiveClassifier.set('api-source')
+    from sourceSets.main.allSource
 }
 
 task apiJar(type: Jar) {
     group 'build'
-    from sourceSets.main.output
-    archiveClassifier.set('api')
     description 'Assemble API library archive'
+
+    archiveClassifier.set('api')
+    from sourceSets.main.output
 }
 
 // Don't put baritone mixin here please c:

@@ -62,7 +62,7 @@ class PluginInfo private constructor(
     override fun toString() = "Name: ${name}\n" +
         "Version: ${version}\n" +
         "Authors: ${authors.joinToString(",")}\n" +
-        "Description: ${description}\n " +
+        "Description: ${description}\n" +
         "KAMI Blue Version: ${kamiVersion}\n" +
         "Required Plugins: ${requiredPlugins.joinToString(",")}"
 
