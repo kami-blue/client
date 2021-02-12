@@ -14,10 +14,6 @@ class PluginConfig(pluginName: String) : NameableConfig<IPluginClass>(
     override val file: File get() = File("$filePath/default.json")
     override val backup: File get() = File("$filePath/default.bak")
 
-    fun addSettingToPlugin(owner: IPluginClass, setting: AbstractSetting<*>) {
-        owner.setting(setting)
-    }
-
     override fun addSettingToConfig(owner: IPluginClass, setting: AbstractSetting<*>) {
         when (owner) {
             is PluginModule -> {

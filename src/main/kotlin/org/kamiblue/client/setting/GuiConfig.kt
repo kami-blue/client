@@ -19,7 +19,7 @@ internal object GuiConfig : AbstractConfig<Component>(
 
     override fun addSettingToConfig(owner: Component, setting: AbstractSetting<*>) {
         if (owner is IPluginClass) {
-            (owner.config as PluginConfig).addSettingToPlugin(owner, setting)
+            (owner.config as PluginConfig).addSettingToConfig(owner, setting)
         } else {
             val groupName = owner.settingGroup.groupName
             if (groupName.isNotEmpty()) {
