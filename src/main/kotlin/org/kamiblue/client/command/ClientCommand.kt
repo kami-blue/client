@@ -106,7 +106,7 @@ abstract class ClientCommand(
 
     protected companion object {
         val mc = Wrapper.minecraft
-        val prefix: String get() = CommandConfig.prefix.value
+        val prefix: String get() = CommandConfig.prefix
     }
 
 }

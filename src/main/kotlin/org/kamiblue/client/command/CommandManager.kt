@@ -20,7 +20,7 @@ import org.kamiblue.commons.utils.ClassUtils
 
 object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoader<List<Class<out ClientCommand>>> {
     override var deferred: Deferred<List<Class<out ClientCommand>>>? = null
-    val prefix: String get() = CommandConfig.prefix.value
+    val prefix: String get() = CommandConfig.prefix
 
     override fun preLoad0(): List<Class<out ClientCommand>> {
         val stopTimer = StopTimer()

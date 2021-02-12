@@ -19,10 +19,10 @@ internal object CommandConfig : Module(
     showOnArray = false,
     alwaysEnabled = true
 ) {
-    val prefix = setting("Prefix", ";", { false })
-    val toggleMessages = setting("Toggle Messages", false)
+    var prefix by setting("Prefix", ";", { false })
+    val toggleMessages by setting("Toggle Messages", false)
     private val customTitle = setting("Window Title", true)
-    val modifierEnabled = setting("Modifier Enabled", false, { false })
+    val modifierEnabled by setting("Modifier Enabled", true, { false })
 
     private val timer = TickTimer()
     private val prevTitle = Display.getTitle()
@@ -30,14 +30,12 @@ internal object CommandConfig : Module(
 
     init {
         listener<ModuleToggleEvent> {
-            if (!toggleMessages.value) return@listener
+            if (!toggleMessages) return@listener
 
-            if (it.module.isEnabled) {
-                MessageSendHelper.sendChatMessage(name +
-                    if (it.module.isEnabled) TextFormatting.RED format " disabled"
-                    else TextFormatting.GREEN format " enabled"
-                )
-            }
+            MessageSendHelper.sendChatMessage(it.module.name +
+                if (it.module.isEnabled) TextFormatting.RED format " disabled"
+                else TextFormatting.GREEN format " enabled"
+            )
         }
 
         listener<TickEvent.ClientTickEvent> {

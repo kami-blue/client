@@ -30,7 +30,7 @@ class Bind(
 
     fun isDown(keyIn: Int): Boolean {
         return !isEmpty
-            && (!CommandConfig.modifierEnabled.value || shift == isShiftDown() && ctrl == isCtrlDown() && alt == isAltDown())
+            && (!CommandConfig.modifierEnabled || shift == isShiftDown() && ctrl == isCtrlDown() && alt == isAltDown())
             && key == keyIn
     }
 

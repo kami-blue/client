@@ -12,7 +12,7 @@ object PrefixCommand : ClientCommand(
     init {
         literal("reset") {
             execute("Reset the prefix to ;") {
-                CommandConfig.prefix.value = ";"
+                CommandConfig.prefix = ";"
                 MessageSendHelper.sendChatMessage("Reset prefix to [&7;&f]!")
             }
         }
@@ -20,12 +20,12 @@ object PrefixCommand : ClientCommand(
         string("new prefix") { prefixArg ->
             execute("Set a new prefix") {
                 if (prefixArg.value.isEmpty() || prefixArg.value == "\\") {
-                    CommandConfig.prefix.value = ";"
+                    CommandConfig.prefix = ";"
                     MessageSendHelper.sendChatMessage("Reset prefix to [&7;&f]!")
                     return@execute
                 }
 
-                CommandConfig.prefix.value = prefixArg.value
+                CommandConfig.prefix = prefixArg.value
                 MessageSendHelper.sendChatMessage("Set prefix to ${formatValue(prefixArg.value)}!")
             }
         }
