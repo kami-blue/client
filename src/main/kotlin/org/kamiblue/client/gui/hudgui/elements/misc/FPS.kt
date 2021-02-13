@@ -54,6 +54,7 @@ object FPS : LabelHud(
         var min = 6969
         var max = 0
         for (value in longFps) {
+            if (value != 0) min = min(value, min)
             max = max(value, max)
         }
 
