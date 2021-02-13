@@ -12,6 +12,7 @@ import org.kamiblue.client.util.BaritoneUtils
 import org.kamiblue.client.util.MovementUtils
 import org.kamiblue.client.util.MovementUtils.applySpeedPotionEffects
 import org.kamiblue.client.util.MovementUtils.calcMoveYaw
+import org.kamiblue.client.util.MovementUtils.isInOrAboveLiquid
 import org.kamiblue.client.util.MovementUtils.setSpeed
 import org.kamiblue.client.util.MovementUtils.speed
 import org.kamiblue.client.util.TickTimer
@@ -71,7 +72,7 @@ internal object Strafe : Module(
                 return@safeListener
             }
 
-            setSpeed(getSpeed())
+            if (!player.collidedHorizontally) setSpeed(getSpeed())
 
             if (airSpeedBoost) player.jumpMovementFactor = 0.029f
             if (timerBoost) mc.timer.tickLength = 45.87155914306640625f
@@ -92,6 +93,7 @@ internal object Strafe : Module(
         && !player.isElytraFlying
         && (!onHoldingSprint || mc.gameSettings.keyBindSprint.isKeyDown)
         && MovementUtils.isInputting
+        && !(player.isInOrAboveLiquid || player.isInWeb)
 
     private fun SafeClientEvent.jump() {
         if (player.onGround && jumpTicks <= 0) {
@@ -135,5 +137,5 @@ internal object Strafe : Module(
     }
 
     private val SafeClientEvent.shouldBoostGroundSpeed
-        get() = groundSpeedBoost && player.onGround && !(player.isInWater || player.isInWeb)
+        get() = groundSpeedBoost && player.onGround
 }

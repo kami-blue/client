@@ -1,5 +1,6 @@
 package org.kamiblue.client.util
 
+import net.minecraft.block.material.Material
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.init.MobEffects
@@ -19,6 +20,7 @@ object MovementUtils {
     val Entity.isMoving get() = speed > 0.0001
     val Entity.speed get() = hypot(motionX, motionZ)
     val Entity.realSpeed get() = hypot(posX - prevPosX, posZ - prevPosZ)
+    val Entity.isInOrAboveLiquid get() =  world.containsAnyLiquid(entityBoundingBox.grow(0.0, -1.0, 0.0).shrink(0.001))
 
     /* totally not taken from elytrafly */
     fun SafeClientEvent.calcMoveYaw(yawIn: Float = mc.player.rotationYaw, moveForward: Float = roundedForward, moveString: Float = roundedStrafing): Double {
