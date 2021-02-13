@@ -15,7 +15,7 @@ object TpsCalculator {
     private var timeLastTimeUpdate: Long = 0
 
     val tickRate: Float
-        get() = MathHelper.clamp(tickRates.average(), 0.0f, 20.0f)
+        get() = tickRates.average().coerceIn(0.0f, 20.0f)
 
     val adjustTicks: Float get() = tickRates.average() - 20f
 
@@ -24,7 +24,7 @@ object TpsCalculator {
             if (it.packet !is SPacketTimeUpdate) return@listener
             if (timeLastTimeUpdate != -1L) {
                 val timeElapsed = (System.nanoTime() - timeLastTimeUpdate) / 1E9
-                tickRates.add(MathHelper.clamp(20.0 / timeElapsed, 0.0, 20.0).toFloat())
+                tickRates.add((20.0 / timeElapsed).coerceIn(0.0, 20.0).toFloat())
             }
             timeLastTimeUpdate = System.nanoTime()
         }
