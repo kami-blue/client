@@ -45,12 +45,9 @@ class CircularArray<T : Number> constructor(private val array: Array<T>, filled:
             else -> array[index]
         }
 
-    private class CircularArrayIterator<T : Number>(private val self: CircularArray<T>) : Iterator<T> {
+    override fun iterator() = object : Iterator<T> {
         private var index = 0
-        override fun hasNext(): Boolean = index < self.size
-        override fun next(): T = try { self[index++] } catch (e: IndexOutOfBoundsException) { index -= 1; throw NoSuchElementException(e.message) }
-
+        override fun hasNext(): Boolean = index < size
+        override fun next(): T = try { get(index++) } catch (e: IndexOutOfBoundsException) { index -= 1; throw NoSuchElementException(e.message) }
     }
-
-    override fun iterator(): Iterator<T> = CircularArrayIterator(this)
 }
