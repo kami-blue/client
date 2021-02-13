@@ -13,7 +13,7 @@ class BindButton(
 ) : Slider(setting.name, 0.0, setting.description, setting.visibility) {
 
     override val isBold
-        get() = setting.isModified and ClickGUI.showModifiedInBold
+        get() = setting.isModified && ClickGUI.showModifiedInBold
 
     override val renderProgress: Double = 0.0
 

@@ -29,7 +29,7 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
     }
 
     override val isBold
-        get() = setting.isModified and ClickGUI.showModifiedInBold
+        get() = setting.isModified && ClickGUI.showModifiedInBold
 
     private var preDragMousePos = Vec2f(0.0f, 0.0f)
 

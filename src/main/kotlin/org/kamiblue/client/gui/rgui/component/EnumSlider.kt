@@ -13,7 +13,7 @@ class EnumSlider(val setting: EnumSetting<*>) : Slider(setting.name, 0.0, settin
     private val enumValues = setting.enumValues
 
     override val isBold
-        get() = setting.isModified and ClickGUI.showModifiedInBold
+        get() = setting.isModified && ClickGUI.showModifiedInBold
 
     override fun onTick() {
         super.onTick()
