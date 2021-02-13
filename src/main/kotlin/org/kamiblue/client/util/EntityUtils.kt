@@ -38,6 +38,8 @@ object EntityUtils {
 
     val Entity.isHostile get() = isMobAggressive(this)
 
+    val Entity.isInOrAboveLiquid get() = world.containsAnyLiquid(entityBoundingBox.grow(0.0, -1.0, 0.0).shrink(0.001))
+
     val EntityPlayer.isFakeOrSelf get() = this == mc.player || this == mc.renderViewEntity || this.entityId < 0
 
     private fun isNeutralMob(entity: Entity) = entity is EntityPigZombie

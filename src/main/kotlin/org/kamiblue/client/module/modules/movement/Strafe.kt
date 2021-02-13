@@ -9,10 +9,10 @@ import org.kamiblue.client.mixin.extension.timer
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.BaritoneUtils
+import org.kamiblue.client.util.EntityUtils.isInOrAboveLiquid
 import org.kamiblue.client.util.MovementUtils
 import org.kamiblue.client.util.MovementUtils.applySpeedPotionEffects
 import org.kamiblue.client.util.MovementUtils.calcMoveYaw
-import org.kamiblue.client.util.MovementUtils.isInOrAboveLiquid
 import org.kamiblue.client.util.MovementUtils.setSpeed
 import org.kamiblue.client.util.MovementUtils.speed
 import org.kamiblue.client.util.TickTimer
