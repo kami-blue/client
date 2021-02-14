@@ -13,7 +13,7 @@ import net.minecraft.util.SoundEvent
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.event.world.NoteBlockEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.client.KamiBlueMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
@@ -104,7 +104,7 @@ internal object NoteBot : Module(
 
     private fun loadSong() {
         defaultScope.launch(Dispatchers.IO) {
-            val path = "${KamiBlueMod.DIRECTORY}songs/$songName"
+            val path = "${KamiMod.DIRECTORY}songs/$songName"
 
             try {
                 parse(path).let {

@@ -3,11 +3,11 @@ package org.kamiblue.client.manager.managers
 import org.kamiblue.capeapi.AbstractUUIDManager
 import org.kamiblue.capeapi.PlayerProfile
 import org.kamiblue.capeapi.UUIDUtils
-import org.kamiblue.client.KamiBlueMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.util.Wrapper
 
-object UUIDManager : AbstractUUIDManager(KamiBlueMod.DIRECTORY + "uuid_cache.json", KamiBlueMod.LOG, maxCacheSize = 1000), Manager {
+object UUIDManager : AbstractUUIDManager(KamiMod.DIRECTORY + "uuid_cache.json", KamiMod.LOG, maxCacheSize = 1000), Manager {
 
     override fun getOrRequest(nameOrUUID: String): PlayerProfile? {
         return Wrapper.minecraft.connection?.playerInfoMap?.let { playerInfoMap ->

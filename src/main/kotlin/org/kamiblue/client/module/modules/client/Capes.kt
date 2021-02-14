@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper
 import org.kamiblue.capeapi.Cape
 import org.kamiblue.capeapi.CapeType
 import org.kamiblue.capeapi.CapeUser
-import org.kamiblue.client.KamiBlueMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.misc.DiscordRPC
@@ -51,8 +51,8 @@ internal object Capes : Module(
     }
 
     private fun updateCapes() {
-        val rawJson = ConnectionUtils.requestRawJsonFrom(KamiBlueMod.CAPES_JSON) {
-            KamiBlueMod.LOG.warn("Failed requesting capes", it)
+        val rawJson = ConnectionUtils.requestRawJsonFrom(KamiMod.CAPES_JSON) {
+            KamiMod.LOG.warn("Failed requesting capes", it)
         } ?: return
 
         try {
@@ -73,9 +73,9 @@ internal object Capes : Module(
             }
 
             DiscordRPC.setCustomIcons(type)
-            KamiBlueMod.LOG.info("Capes loaded")
+            KamiMod.LOG.info("Capes loaded")
         } catch (e: Exception) {
-            KamiBlueMod.LOG.warn("Failed parsing capes", e)
+            KamiMod.LOG.warn("Failed parsing capes", e)
         }
     }
 

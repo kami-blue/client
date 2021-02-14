@@ -3,7 +3,7 @@ package org.kamiblue.client.manager.managers
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import net.minecraftforge.fml.common.gameevent.InputEvent
-import org.kamiblue.client.KamiBlueMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.util.ConfigUtils
@@ -21,7 +21,7 @@ object MacroManager : Manager {
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
     private val type = object : TypeToken<LinkedHashMap<Int, List<String>>>() {}.type
-    private val file get() = File(KamiBlueMod.DIRECTORY + "macros.json")
+    private val file get() = File(KamiMod.DIRECTORY + "macros.json")
 
     init {
         listener<InputEvent.KeyInputEvent> {
@@ -36,10 +36,10 @@ object MacroManager : Manager {
             FileReader(file).buffered().use {
                 macroMap = gson.fromJson(it, type)
             }
-            KamiBlueMod.LOG.info("Macro loaded")
+            KamiMod.LOG.info("Macro loaded")
             true
         } catch (e: Exception) {
-            KamiBlueMod.LOG.warn("Failed loading macro", e)
+            KamiMod.LOG.warn("Failed loading macro", e)
             false
         }
     }
@@ -49,10 +49,10 @@ object MacroManager : Manager {
             FileWriter(file, false).buffered().use {
                 gson.toJson(macroMap, it)
             }
-            KamiBlueMod.LOG.info("Macro saved")
+            KamiMod.LOG.info("Macro saved")
             true
         } catch (e: Exception) {
-            KamiBlueMod.LOG.warn("Failed saving macro", e)
+            KamiMod.LOG.warn("Failed saving macro", e)
             false
         }
     }

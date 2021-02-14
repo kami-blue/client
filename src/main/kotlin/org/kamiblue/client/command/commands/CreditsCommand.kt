@@ -2,7 +2,7 @@ package org.kamiblue.client.command.commands
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import org.kamiblue.client.KamiBlueMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.formatValue
@@ -19,7 +19,7 @@ object CreditsCommand : ClientCommand(
         executeAsync {
             val contributors = getContributors() ?: run {
                 MessageSendHelper.sendErrorMessage("Failed to retrieve contributors from Github API.\n" +
-                    "Checkout the page manually: &9${KamiBlueMod.GITHUB_LINK}/client/graphs/contributors")
+                    "Checkout the page manually: &9${KamiMod.GITHUB_LINK}/client/graphs/contributors")
                 return@executeAsync
             }
 
@@ -38,11 +38,11 @@ object CreditsCommand : ClientCommand(
     private fun getContributors(): Array<GithubUser>? {
         return try {
             val rawJson = ConnectionUtils.requestRawJsonFrom(url) {
-                KamiBlueMod.LOG.error("Failed to load Github contributors", it)
+                KamiMod.LOG.error("Failed to load Github contributors", it)
             }
             gson.getAdapter(Array<GithubUser>::class.java).fromJson(rawJson)
         } catch (e: Exception) {
-            KamiBlueMod.LOG.error("Failed to parse Github contributors", e)
+            KamiMod.LOG.error("Failed to parse Github contributors", e)
             null
         }
     }

@@ -1,6 +1,6 @@
 package org.kamiblue.client.gui.hudgui.elements.client
 
-import org.kamiblue.client.KamiBlueMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.module.modules.client.Capes
@@ -25,8 +25,8 @@ object WaterMark : LabelHud(
     }
 
     override fun SafeClientEvent.updateText() {
-        displayText.add(KamiBlueMod.NAME, primaryColor)
-        displayText.add(KamiBlueMod.VERSION_SIMPLE, secondaryColor)
+        displayText.add(KamiMod.NAME, primaryColor)
+        displayText.add(KamiMod.VERSION_SIMPLE, secondaryColor)
     }
 
     override fun renderHud(vertexHelper: VertexHelper) {

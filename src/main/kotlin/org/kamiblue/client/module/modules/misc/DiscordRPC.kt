@@ -5,7 +5,7 @@ import club.minnced.discord.rpc.DiscordRichPresence
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.capeapi.CapeType
-import org.kamiblue.client.KamiBlueMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.events.ShutdownEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -71,20 +71,20 @@ internal object DiscordRPC : Module(
     private fun start() {
         if (connected) return
 
-        KamiBlueMod.LOG.info("Starting Discord RPC")
+        KamiMod.LOG.info("Starting Discord RPC")
         connected = true
-        rpc.Discord_Initialize(KamiBlueMod.APP_ID, DiscordEventHandlers(), true, "")
+        rpc.Discord_Initialize(KamiMod.APP_ID, DiscordEventHandlers(), true, "")
         presence.startTimestamp = System.currentTimeMillis() / 1000L
 
         BackgroundScope.launchLooping(job)
 
-        KamiBlueMod.LOG.info("Discord RPC initialised successfully")
+        KamiMod.LOG.info("Discord RPC initialised successfully")
     }
 
     private fun end() {
         if (!connected) return
 
-        KamiBlueMod.LOG.info("Shutting down Discord RPC...")
+        KamiMod.LOG.info("Shutting down Discord RPC...")
         BackgroundScope.cancel(job)
         connected = false
         rpc.Discord_Shutdown()
@@ -106,7 +106,7 @@ internal object DiscordRPC : Module(
     private fun getLine(line: LineInfo): String {
         return when (line) {
             LineInfo.VERSION -> {
-                KamiBlueMod.VERSION_SIMPLE
+                KamiMod.VERSION_SIMPLE
             }
             LineInfo.WORLD -> {
                 when {

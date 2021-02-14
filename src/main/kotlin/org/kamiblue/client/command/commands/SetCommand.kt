@@ -1,7 +1,7 @@
 package org.kamiblue.client.command.commands
 
 import net.minecraft.util.text.TextFormatting
-import org.kamiblue.client.KamiBlueMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.ModuleManager
@@ -79,7 +79,7 @@ object SetCommand : ClientCommand(
                             MessageSendHelper.sendChatMessage("Set ${formatValue(setting.name)} to ${formatValue(value)}.")
                         } catch (e: Exception) {
                             MessageSendHelper.sendChatMessage("Unable to set value! ${TextFormatting.RED format e.message.toString()}")
-                            KamiBlueMod.LOG.info("Unable to set value!", e)
+                            KamiMod.LOG.info("Unable to set value!", e)
                         }
                     }
                 }

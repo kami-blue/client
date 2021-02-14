@@ -3,7 +3,7 @@ package org.kamiblue.client.command.commands
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import org.kamiblue.client.KamiBlueMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.Category
@@ -16,7 +16,7 @@ object GenerateWebsiteCommand : ClientCommand(
     name = "generatewebsite",
     description = "Generates the website modules to the file"
 ) {
-    private const val path = "${KamiBlueMod.DIRECTORY}modules.md"
+    private const val path = "${KamiMod.DIRECTORY}modules.md"
 
     init {
         executeAsync {

@@ -14,11 +14,11 @@ import org.kamiblue.client.util.threads.BackgroundScope
 import java.io.File
 
 @Mod(
-    modid = KamiBlueMod.ID,
-    name = KamiBlueMod.NAME,
-    version = KamiBlueMod.VERSION
+    modid = KamiMod.ID,
+    name = KamiMod.NAME,
+    version = KamiMod.VERSION
 )
-class KamiBlueMod {
+class KamiMod {
 
     companion object {
         const val NAME = "KAMI Blue"
@@ -41,11 +41,7 @@ class KamiBlueMod {
 
         val LOG: Logger = LogManager.getLogger(NAME)
 
-        var ready: Boolean = false
-
-        fun isReady(): Boolean {
-            return ready
-        }
+        var ready: Boolean = false; private set
     }
 
     @Mod.EventHandler

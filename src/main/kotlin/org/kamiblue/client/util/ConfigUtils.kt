@@ -1,6 +1,6 @@
 package org.kamiblue.client.util
 
-import org.kamiblue.client.KamiBlueMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.manager.managers.MacroManager
 import org.kamiblue.client.manager.managers.UUIDManager
@@ -64,7 +64,7 @@ object ConfigUtils {
                     it.write(if (isArray) "[]" else "{}")
                 }
             } catch (exception: IOException) {
-                KamiBlueMod.LOG.warn("Failed fixing empty json", exception)
+                KamiMod.LOG.warn("Failed fixing empty json", exception)
             }
         }
     }
@@ -92,14 +92,14 @@ object ConfigUtils {
             newConfig.file.parentFile.mkdirs()
             Files.move(oldConfig.absoluteFile.toPath(), newConfig.file.absoluteFile.toPath())
         } catch (e: Exception) {
-            KamiBlueMod.LOG.warn("Error moving legacy config", e)
+            KamiMod.LOG.warn("Error moving legacy config", e)
         }
 
         try {
             newConfig.backup.parentFile.mkdirs()
             Files.move(oldConfigBak.absoluteFile.toPath(), newConfig.backup.absoluteFile.toPath())
         } catch (e: Exception) {
-            KamiBlueMod.LOG.warn("Error moving legacy config", e)
+            KamiMod.LOG.warn("Error moving legacy config", e)
         }
     }
 
@@ -114,7 +114,7 @@ object ConfigUtils {
             newConfig.parentFile.mkdirs()
             Files.move(oldConfig.absoluteFile.toPath(), newConfig.absoluteFile.toPath())
         } catch (e: Exception) {
-            KamiBlueMod.LOG.warn("Error moving legacy config", e)
+            KamiMod.LOG.warn("Error moving legacy config", e)
         }
     }
 

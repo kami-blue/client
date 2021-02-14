@@ -1,7 +1,7 @@
 package org.kamiblue.client.module.modules.chat
 
 import net.minecraftforge.client.event.ClientChatReceivedEvent
-import org.kamiblue.client.KamiBlueMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.text.MessageDetection
@@ -21,7 +21,7 @@ internal object ChatFilter : Module(
     private var hasRunInfo by setting("Info", false, { false })
 
     private val chatFilter = ArrayList<Regex>()
-    private val file = File(KamiBlueMod.DIRECTORY + "chat_filter.txt")
+    private val file = File(KamiMod.DIRECTORY + "chat_filter.txt")
 
     init {
         onEnable {

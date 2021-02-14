@@ -1,6 +1,6 @@
 package org.kamiblue.client.command.commands
 
-import org.kamiblue.client.KamiBlueMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.util.text.MessageSendHelper
@@ -149,7 +149,7 @@ object BaritoneCommand : ClientCommand(
         literal("version") {
             executeSafe {
                 exec("version")
-                MessageSendHelper.sendBaritoneMessage("Running on KAMI Blue ${KamiBlueMod.VERSION}")
+                MessageSendHelper.sendBaritoneMessage("Running on KAMI Blue ${KamiMod.VERSION}")
             }
         }
 

@@ -3,7 +3,7 @@ package org.kamiblue.client.manager.managers
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import net.minecraft.util.math.BlockPos
-import org.kamiblue.client.KamiBlueMod
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.event.events.WaypointUpdateEvent
 import org.kamiblue.client.manager.Manager
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentSkipListSet
 
 object WaypointManager : Manager {
     private val gson = GsonBuilder().setPrettyPrinting().create()
-    private val file = File(KamiBlueMod.DIRECTORY + "waypoints.json")
+    private val file = File(KamiMod.DIRECTORY + "waypoints.json")
     private val sdf = SimpleDateFormat("HH:mm:ss dd/MM/yyyy")
 
     val waypoints = ConcurrentSkipListSet<Waypoint>(compareBy { it.id })
@@ -35,10 +35,10 @@ object WaypointManager : Manager {
             waypoints.clear()
             waypoints.addAll(cacheArray)
 
-            KamiBlueMod.LOG.info("Waypoint loaded")
+            KamiMod.LOG.info("Waypoint loaded")
             true
         } catch (e: Exception) {
-            KamiBlueMod.LOG.warn("Failed loading waypoints", e)
+            KamiMod.LOG.warn("Failed loading waypoints", e)
             false
         }
 
@@ -51,10 +51,10 @@ object WaypointManager : Manager {
             FileWriter(file, false).buffered().use {
                 gson.toJson(waypoints, it)
             }
-            KamiBlueMod.LOG.info("Waypoint saved")
+            KamiMod.LOG.info("Waypoint saved")
             true
         } catch (e: Exception) {
-            KamiBlueMod.LOG.warn("Failed saving waypoint", e)
+            KamiMod.LOG.warn("Failed saving waypoint", e)
             false
         }
     }
@@ -78,7 +78,7 @@ object WaypointManager : Manager {
             KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.ADD, waypoint))
             waypoint
         } else {
-            KamiBlueMod.LOG.error("Error during waypoint adding")
+            KamiMod.LOG.error("Error during waypoint adding")
             dateFormatter(BlockPos(0, 0, 0), locationName) // This shouldn't happen
         }
     }
