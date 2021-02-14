@@ -66,7 +66,7 @@ class KamiMod {
 
         BackgroundScope.start()
 
-        LOG.info("$NAME Mod initialized!")
+        LOG.info("$NAME initialized!")
     }
 
     @Mod.EventHandler
