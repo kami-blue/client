@@ -66,7 +66,7 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
 
         for (loader in loaders) {
             // Hot reload check, the error shouldn't be show when reload in game
-            if (KamiMod.isReady() && !loader.info.hotReload) {
+            if (KamiMod.ready && !loader.info.hotReload) {
                 invalids.add(loader)
             }
 
@@ -106,7 +106,7 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
 
     fun load(loader: PluginLoader) {
         synchronized(this) {
-            val hotReload = KamiMod.isReady() && !loader.info.hotReload
+            val hotReload = KamiMod.ready && !loader.info.hotReload
             val duplicate = loadedPlugins.containsName(loader.name)
             val unsupported = DefaultArtifactVersion(loader.info.kamiVersion) > kamiVersion
             val missing = !loadedPlugins.containsNames(loader.info.requiredPlugins)

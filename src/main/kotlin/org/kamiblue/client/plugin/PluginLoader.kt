@@ -49,7 +49,7 @@ internal class PluginLoader(
     }
 
     fun load(): Plugin {
-        if (KamiMod.isReady() && !info.hotReload) {
+        if (KamiMod.ready && !info.hotReload) {
             throw IllegalAccessException("Plugin $this cannot be hot reloaded!")
         }
 
