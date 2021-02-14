@@ -22,7 +22,7 @@ object Wrapper {
 
     @JvmStatic
     fun saveAndShutdown() {
-        if (!KamiMod.isReady()) return
+        if (!KamiMod.ready) return
 
         ShutdownEvent.post()
 

@@ -12,8 +12,8 @@ import org.kamiblue.client.module.modules.client.CommandConfig
 import org.kamiblue.client.util.Wrapper
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.toSafe
-import org.kamiblue.command.AbstractArg
 import org.kamiblue.command.CommandBuilder
+import org.kamiblue.command.args.AbstractArg
 import org.kamiblue.command.utils.BuilderBlock
 import org.kamiblue.command.utils.ExecuteBlock
 import java.io.File
@@ -90,7 +90,7 @@ abstract class ClientCommand(
         val asyncExecuteBlock: ExecuteBlock<ClientExecuteEvent> = {
             defaultScope.launch { block() }
         }
-        this.execute(description, asyncExecuteBlock)
+        this.execute(description, block = asyncExecuteBlock)
     }
 
     @CommandBuilder
@@ -101,7 +101,7 @@ abstract class ClientCommand(
         val safeExecuteBlock: ExecuteBlock<ClientExecuteEvent> = {
             toSafe()?.block()
         }
-        this.execute(description, safeExecuteBlock)
+        this.execute(description, block = safeExecuteBlock)
     }
 
     protected companion object {

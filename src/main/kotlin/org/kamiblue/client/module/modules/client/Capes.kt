@@ -146,7 +146,7 @@ internal object Capes : Module(
         val relativeX = sin(yawOffset)
         val relativeZ = -cos(yawOffset)
 
-        var angle1 = MathHelper.clamp(relativePosY.toFloat() * 10.0f, -6.0f, 32.0f)
+        var angle1 = (relativePosY.toFloat() * 10.0f).coerceIn(-6.0f, 32.0f)
 
         var angle2 = (relativePosX * relativeX + relativePosZ * relativeZ).toFloat() * 100.0f
         val angle3 = (relativePosX * relativeZ - relativePosZ * relativeX).toFloat() * 100.0f
