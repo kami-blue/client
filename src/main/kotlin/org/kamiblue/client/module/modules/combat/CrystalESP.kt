@@ -66,7 +66,7 @@ internal object CrystalESP : Module(
         DAMAGE_ESP, CRYSTAL_ESP, CRYSTAL_ESP_COLOR
     }
 
-    private var placeMap = emptyMap<BlockPos, CombatManager.CombatCalculation>()
+    private var placeMap = emptyMap<BlockPos, CombatManager.CrystalDamage>()
     private val renderCrystalMap = LinkedHashMap<BlockPos, Quad<Float, Float, Float, Float>>() // <Crystal, <Target Damage, Self Damage, Prev Progress, Progress>>
     private val pendingPlacing = LinkedHashMap<BlockPos, Long>()
 

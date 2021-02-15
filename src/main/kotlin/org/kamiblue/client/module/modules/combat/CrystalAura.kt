@@ -136,8 +136,8 @@ internal object CrystalAura : Module(
     private val yawDiffList = FloatArray(20)
     private val lockObject = Any()
 
-    private var placeMap = emptyMap<BlockPos, CombatManager.CombatCalculation>()
-    private var crystalMap = emptyMap<EntityEnderCrystal, CombatManager.CombatCalculation>()
+    private var placeMap = emptyMap<BlockPos, CombatManager.CrystalDamage>()
+    private var crystalMap = emptyMap<EntityEnderCrystal, CombatManager.CrystalDamage>()
     private var lastCrystal: EntityEnderCrystal? = null
     private var lastLookAt = Vec3d.ZERO
     private var forcePlacing = false
