@@ -173,7 +173,7 @@ internal object CombatSetting : Module(
         }
 
         CombatManager.placeMap = LinkedHashMap<BlockPos, CombatManager.CombatCalculation>(cacheList.size).apply {
-            putAll(cacheList.sortedWith(compareBy(CombatManager.CombatCalculation.comparator) { it.second }))
+            putAll(cacheList.sortedByDescending { it.second.targetDamage })
         }
     }
 
@@ -197,7 +197,7 @@ internal object CombatSetting : Module(
         }
 
         CombatManager.crystalMap = LinkedHashMap<EntityEnderCrystal, CombatManager.CombatCalculation>(cacheList.size).apply {
-            putAll(cacheList.sortedWith(compareBy(CombatManager.CombatCalculation.comparator) { it.second }))
+            putAll(cacheList.sortedByDescending { it.second.targetDamage })
         }
     }
 

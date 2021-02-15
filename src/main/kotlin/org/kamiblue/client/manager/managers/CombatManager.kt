@@ -41,12 +41,7 @@ object CombatManager : Manager {
         return topModule
     }
 
-    data class CombatCalculation(val targetDamage: Float, val selfDamage: Float, val distance: Double) {
-        companion object {
-            val comparator = compareByDescending<CombatCalculation> { it.targetDamage }
-                .thenBy { it.selfDamage }
-        }
-    }
+    data class CombatCalculation(val targetDamage: Float, val selfDamage: Float, val distance: Double)
 
     /** Use to mark a module that should be added to [combatModules] */
     annotation class CombatModule
