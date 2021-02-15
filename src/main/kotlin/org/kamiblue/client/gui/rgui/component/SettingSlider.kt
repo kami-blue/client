@@ -1,5 +1,6 @@
 package org.kamiblue.client.gui.rgui.component
 
+import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.module.modules.client.GuiColors
 import org.kamiblue.client.setting.settings.impl.number.FloatSetting
 import org.kamiblue.client.setting.settings.impl.number.IntegerSetting
@@ -26,6 +27,9 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         is FloatSetting -> MathUtils.decimalPlaces(settingStep.toFloat())
         else -> MathUtils.decimalPlaces(settingStep.toDouble())
     }
+
+    override val isBold
+        get() = setting.isModified && ClickGUI.showModifiedInBold
 
     private var preDragMousePos = Vec2f(0.0f, 0.0f)
 
@@ -135,5 +139,4 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
             FontRenderAdapter.drawString(valueText, posX, posY, color = GuiColors.text, scale = 0.75f)
         }
     }
-
 }

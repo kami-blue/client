@@ -1,5 +1,6 @@
 package org.kamiblue.client.gui.rgui.component
 
+import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.module.modules.client.GuiColors
 import org.kamiblue.client.setting.settings.impl.other.BindSetting
 import org.kamiblue.client.util.graphics.VertexHelper
@@ -10,6 +11,9 @@ import org.lwjgl.input.Keyboard
 class BindButton(
     private val setting: BindSetting
 ) : Slider(setting.name, 0.0, setting.description, setting.visibility) {
+
+    override val isBold
+        get() = setting.isModified && ClickGUI.showModifiedInBold
 
     override val renderProgress: Double = 0.0
 

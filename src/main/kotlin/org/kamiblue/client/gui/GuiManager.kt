@@ -9,6 +9,7 @@ import org.kamiblue.client.gui.hudgui.AbstractHudElement
 import org.kamiblue.client.gui.hudgui.KamiHudGui
 import org.kamiblue.client.util.StopTimer
 import org.kamiblue.commons.utils.ClassUtils
+import org.kamiblue.commons.utils.ClassUtils.instance
 import java.lang.reflect.Modifier
 
 internal object GuiManager : AsyncLoader<List<Class<out AbstractHudElement>>> {
@@ -17,8 +18,10 @@ internal object GuiManager : AsyncLoader<List<Class<out AbstractHudElement>>> {
     override fun preLoad0(): List<Class<out AbstractHudElement>> {
         val stopTimer = StopTimer()
 
-        val list = ClassUtils.findClasses("org.kamiblue.client.gui.hudgui.elements", AbstractHudElement::class.java)
-            .filter { Modifier.isFinal(it.modifiers) }
+        val list = ClassUtils.findClasses<AbstractHudElement>("org.kamiblue.client.gui.hudgui.elements") {
+            filter { Modifier.isFinal(it.modifiers) }
+        }
+
         val time = stopTimer.stop()
 
         KamiMod.LOG.info("${list.size} hud elements found, took ${time}ms")
@@ -29,7 +32,7 @@ internal object GuiManager : AsyncLoader<List<Class<out AbstractHudElement>>> {
         val stopTimer = StopTimer()
 
         for (clazz in input) {
-            KamiHudGui.register(ClassUtils.getInstance(clazz))
+            KamiHudGui.register(clazz.instance)
         }
 
         val time = stopTimer.stop()

@@ -1,11 +1,15 @@
 package org.kamiblue.client.gui.rgui.component
 
+import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.setting.settings.impl.primitive.StringSetting
 import org.kamiblue.client.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 import kotlin.math.max
 
 class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0, setting.description, setting.visibility) {
+
+    override val isBold
+        get() = setting.isModified && ClickGUI.showModifiedInBold
 
     override fun onDisplayed() {
         super.onDisplayed()
@@ -70,5 +74,4 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
             }
         }
     }
-
 }
