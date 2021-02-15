@@ -31,9 +31,9 @@ object CrystalDamage : LabelHud(
 
         var currentTarget = 0.0f
         var currentSelf = 0.0f
-        for ((damage, selfDamage, _) in crystalList) {
-            currentTarget = max(damage, currentTarget)
-            currentSelf = max(selfDamage, currentSelf)
+        for (calculation in crystalList) {
+            currentTarget = max(calculation.targetDamage, currentTarget)
+            currentSelf = max(calculation.selfDamage, currentSelf)
         }
 
         val quad = Quad(potentialTarget, potentialSelf, currentTarget, currentSelf)
