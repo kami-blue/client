@@ -6,6 +6,7 @@ import org.kamiblue.client.plugin.api.Plugin
 import org.kamiblue.client.KamiMod
 import org.kamiblue.commons.interfaces.Nameable
 import org.kamiblue.commons.utils.ClassUtils
+import org.kamiblue.commons.utils.ClassUtils.instance
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.reflect.Type
@@ -55,7 +56,7 @@ internal class PluginLoader(
 
         val clazz = Class.forName(info.mainClass, true, loader)
         val obj = try {
-            ClassUtils.getInstance(clazz)
+            clazz.instance
         } catch (e : NoSuchFieldException) {
             clazz.newInstance()
         }
