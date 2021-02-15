@@ -63,7 +63,7 @@ internal object AutoOffhand : Module(
     private val checkCACrystal by setting("Check Crystal Aura C", false, { type == Type.CRYSTAL && offhandCrystal })
 
     // General
-    private val priorityInv by setting("Priority", Priority.HOTBAR)
+    private val priority by setting("Priority", Priority.HOTBAR)
     private val switchMessage by setting("Switch Message", true)
     private val delay by setting("Delay", 2, 1..20, 1,
         description = "Ticks to wait between each move")
@@ -189,7 +189,7 @@ internal object AutoOffhand : Module(
     private fun SafeClientEvent.getSlot(type: Type): Slot? {
         val slots = player.inventorySlots
 
-        return if (priorityInv == Priority.HOTBAR) {
+        return if (priority == Priority.HOTBAR) {
             slots.lastOrNull { type.filter(it.stack) }
         } else {
             slots.firstOrNull { type.filter(it.stack) }

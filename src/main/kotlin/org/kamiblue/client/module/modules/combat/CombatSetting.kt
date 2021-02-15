@@ -54,7 +54,7 @@ internal object CombatSetting : Module(
     /* Targeting */
     private val filter = setting("Filter", TargetFilter.ALL, { page.value == Page.TARGETING })
     private val fov = setting("FOV", 90.0f, 0.0f..180.0f, 5.0f, { page.value == Page.TARGETING && filter.value == TargetFilter.FOV })
-    private val targetPriority = setting("Target Priority", TargetPriority.DISTANCE, { page.value == Page.TARGETING })
+    private val priority = setting("Priority", TargetPriority.DISTANCE, { page.value == Page.TARGETING })
     private val players = setting("Players", true, { page.value == Page.TARGETING })
     private val friends = setting("Friends", false, { page.value == Page.TARGETING && players.value })
     private val teammates = setting("Teammates", false, { page.value == Page.TARGETING && players.value })
@@ -288,11 +288,11 @@ internal object CombatSetting : Module(
     private fun SafeClientEvent.filterByPriority(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
         if (listIn.isEmpty()) return null
 
-        if (targetPriority.value == TargetPriority.DAMAGE) filterByDamage(listIn)
+        if (priority.value == TargetPriority.DAMAGE) filterByDamage(listIn)
 
-        if (targetPriority.value == TargetPriority.HEALTH) filterByHealth(listIn)
+        if (priority.value == TargetPriority.HEALTH) filterByHealth(listIn)
 
-        return if (targetPriority.value == TargetPriority.CROSS_HAIR) filterByCrossHair(listIn) else filterByDistance(listIn)
+        return if (priority.value == TargetPriority.CROSS_HAIR) filterByCrossHair(listIn) else filterByDistance(listIn)
     }
 
     private fun filterByDamage(listIn: LinkedList<EntityLivingBase>) {

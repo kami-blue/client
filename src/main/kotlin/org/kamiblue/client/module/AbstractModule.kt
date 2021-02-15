@@ -35,7 +35,7 @@ abstract class AbstractModule(
     private val enabled = BooleanSetting("Enabled", false, { false }).also(::addSetting)
     private val visible = BooleanSetting("Visible", showOnArray).also(::addSetting)
     private val default = BooleanSetting("Default", false, { settingList.isNotEmpty() }).also(::addSetting)
-    val priority = IntegerSetting("Priority", 0, IntRange(0, 1000), 1, { ClickGUI.sortBy.value == ClickGUI.SortByOptions.CUSTOM }).also(::addSetting)
+    val priorityForGui = IntegerSetting("Priority In GUI", 0, IntRange(0, 1000), 1, { ClickGUI.sortBy.value == ClickGUI.SortByOptions.CUSTOM }).also(::addSetting)
     val clicks = IntegerSetting("Clicks", 0, IntRange(0, Int.MAX_VALUE), 1, { false }).also(::addSetting) // Not nice, however easiest way to save it.
 
     val fullSettingList get() = config.getSettings(this)
@@ -56,11 +56,11 @@ abstract class AbstractModule(
     }
 
     fun toggle() {
-        clicks.value++
         enabled.value = !enabled.value
     }
 
     fun enable() {
+        clicks.value++
         enabled.value = true
     }
 
@@ -131,7 +131,7 @@ abstract class AbstractModule(
             }
         }
 
-        priority.listeners.add { KamiClickGui.reorderModules() }
+        priorityForGui.listeners.add { KamiClickGui.reorderModules() }
 
         // clicks is deliberately not re-organised when changed.
     }
