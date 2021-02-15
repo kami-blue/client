@@ -14,6 +14,7 @@ import org.kamiblue.client.event.events.BaritoneCommandEvent
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.event.events.ResolutionUpdateEvent
+import org.kamiblue.client.gui.GuiManager
 import org.kamiblue.client.gui.mc.KamiGuiChat
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.util.Wrapper
@@ -78,6 +79,7 @@ object ForgeEventProcessor {
         }
 
         KamiEventBus.post(event)
+        GuiManager.onBind(Keyboard.getEventKey())
         ModuleManager.onBind(Keyboard.getEventKey())
     }
 

@@ -7,6 +7,7 @@ import org.kamiblue.client.module.modules.client.GuiColors
 import org.kamiblue.client.module.modules.client.Hud
 import org.kamiblue.client.setting.GuiConfig
 import org.kamiblue.client.setting.GuiConfig.setting
+import org.kamiblue.client.util.Bind
 import org.kamiblue.client.util.graphics.RenderUtils2D
 import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.graphics.font.FontRenderAdapter
@@ -28,6 +29,7 @@ open class HudElement(
 
     val scale by setting("Scale", 1.0f, 0.1f..4.0f, 0.05f)
     val default = setting("Default", false)
+    val bind = setting("Bind", Bind())
 
     override val resizable = false
 

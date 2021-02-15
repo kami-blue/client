@@ -10,6 +10,7 @@ import org.kamiblue.client.gui.hudgui.KamiHudGui
 import org.kamiblue.client.util.StopTimer
 import org.kamiblue.commons.utils.ClassUtils
 import org.kamiblue.commons.utils.ClassUtils.instance
+import org.lwjgl.input.Keyboard
 import java.lang.reflect.Modifier
 
 object GuiManager : AsyncLoader<List<Class<out HudElement>>> {
@@ -44,5 +45,12 @@ object GuiManager : AsyncLoader<List<Class<out HudElement>>> {
 
         KamiEventBus.subscribe(KamiClickGui)
         KamiEventBus.subscribe(KamiHudGui)
+    }
+
+    internal fun onBind(eventKey: Int) {
+        if (eventKey == 0 || Keyboard.isKeyDown(Keyboard.KEY_F3)) return  // if key is the 'none' key (stuff like mod key in i3 might return 0)
+        for (hudElement in hudElementsMap) {
+            if (hudElement.value.bind.value.isDown(eventKey)) hudElement.value.visible = !hudElement.value.visible
+        }
     }
 }
