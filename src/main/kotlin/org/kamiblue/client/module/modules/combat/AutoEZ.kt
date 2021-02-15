@@ -11,7 +11,10 @@ import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.commons.extension.synchronized
 import org.kamiblue.event.listener.listener
+import java.util.*
+import kotlin.collections.LinkedHashMap
 
 internal object AutoEZ : Module(
     name = "AutoEZ",
@@ -85,16 +88,15 @@ internal object AutoEZ : Module(
     ) // Got these from the forums, kinda based -humboldt123 
 
     private val timer = TickTimer(TimeUnit.SECONDS)
-    private val attackedPlayers = LinkedHashMap<EntityPlayer, Int>() // <Player, Last Attack Time>
-    private val lockObject = Any()
+    private val attackedPlayers = LinkedHashMap<EntityPlayer, Int>().synchronized() // <Player, Last Attack Time>
 
     init {
-        listener<ClientChatReceivedEvent> {
-            if (detectMode.value != DetectMode.BROADCAST || mc.player == null
-                || mc.player.isDead || mc.player.health <= 0.0f) return@listener
+        safeListener<ClientChatReceivedEvent> {
+            if (detectMode.value != DetectMode.BROADCAST || player.isDead || player.health <= 0.0f) return@safeListener
 
             val message = it.message.unformattedText
-            if (!message.contains(mc.player.name, true)) return@listener
+            if (!message.contains(player.name, true)) return@safeListener
+
             for (player in attackedPlayers.keys) {
                 if (!message.contains(player.name, true)) continue
                 sendEzMessage(player)
@@ -102,7 +104,9 @@ internal object AutoEZ : Module(
             }
         }
 
-        safeListener<TickEvent.ClientTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> { event ->
+            if (event.phase != TickEvent.Phase.END) return@safeListener
+
             if (player.isDead || player.health <= 0.0f) {
                 attackedPlayers.clear()
                 return@safeListener
@@ -114,6 +118,9 @@ internal object AutoEZ : Module(
                 attackedPlayers[attacked] = player.lastAttackedEntityTime
             }
 
+            // Remove players if they are out of world or we haven't attack them again in 100 ticks (5 seconds)
+            attackedPlayers.entries.removeIf { !it.key.isAddedToWorld || player.ticksExisted - it.value > 100 }
+
             // Check death
             if (detectMode.value == DetectMode.HEALTH) {
                 for (player in attackedPlayers.keys) {
@@ -123,19 +130,13 @@ internal object AutoEZ : Module(
                 }
             }
 
-            // Remove players if they are out of world or we haven't attack them again in 100 ticks (5 seconds)
-            attackedPlayers.entries.removeIf { !it.key.isAddedToWorld || player.ticksExisted - it.value > 100 }
-
             // Send custom message type help message
             sendHelpMessage()
         }
 
         // Clear the map on disconnect
-        // Disconnect event can be called from another thread so we have to lock it here
         listener<ConnectionEvent.Disconnect> {
-            synchronized(lockObject) {
-                attackedPlayers.clear()
-            }
+            attackedPlayers.clear()
         }
     }
 

@@ -51,6 +51,7 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.runSafeR
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.commons.extension.synchronized
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import java.util.*
@@ -129,7 +130,7 @@ internal object CrystalAura : Module(
     }
 
     /* Variables */
-    private val placedBBMap = Collections.synchronizedMap(HashMap<BlockPos, Pair<AxisAlignedBB, Long>>()) // <CrystalBoundingBox, Added Time>
+    private val placedBBMap = HashMap<BlockPos, Pair<AxisAlignedBB, Long>>().synchronized() // <CrystalBoundingBox, Added Time>
     private val ignoredList = HashSet<EntityEnderCrystal>()
     private val packetList = ArrayList<Packet<*>>(3)
     private val yawDiffList = FloatArray(20)

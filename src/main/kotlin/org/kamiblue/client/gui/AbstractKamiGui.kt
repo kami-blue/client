@@ -25,6 +25,7 @@ import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.math.min
 
 abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
 
@@ -110,17 +111,27 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
 
     fun displaySettingWindow(element: E) {
         val mousePos = getRealMousePos()
+
         settingMap.getOrPut(element) {
             newSettingWindow(element, mousePos)
         }.apply {
-            posX = mousePos.x
-            posY = mousePos.y
-        }.also {
-            lastClickedWindow = it
-            settingWindow = it
-            windowList.add(it)
-            it.onGuiInit()
-            it.onDisplayed()
+            lastClickedWindow = this
+            settingWindow = this
+            windowList.add(this)
+
+            val screenWidth = mc.displayWidth / ClickGUI.getScaleFactorFloat()
+            val screenHeight = mc.displayHeight / ClickGUI.getScaleFactorFloat()
+
+            posX = if (mousePos.x + this.width <= screenWidth) {
+                mousePos.x
+            } else {
+                mousePos.x - this.width
+            }
+
+            posY = min(mousePos.y, screenHeight - this.height)
+
+            onGuiInit()
+            onDisplayed()
         }
     }
 

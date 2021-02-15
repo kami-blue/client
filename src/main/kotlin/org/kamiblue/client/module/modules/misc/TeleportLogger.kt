@@ -5,6 +5,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.manager.managers.WaypointManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.EntityUtils.isFakeOrSelf
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.commons.utils.MathUtils
@@ -25,7 +26,7 @@ internal object TeleportLogger : Module(
     init {
         safeListener<TickEvent.ClientTickEvent> {
             for (worldPlayer in world.playerEntities) {
-                if (worldPlayer == player) continue
+                if (worldPlayer.isFakeOrSelf) continue
 
                 /* 8 chunk render distance * 16 */
                 if (remove.value && worldPlayer.getDistance(player) < 128) {

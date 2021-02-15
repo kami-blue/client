@@ -10,10 +10,10 @@ import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.threads.runSafeR
-import org.kamiblue.command.AbstractArg
-import org.kamiblue.command.AutoComplete
-import org.kamiblue.command.DynamicPrefixMatch
-import org.kamiblue.command.StaticPrefixMatch
+import org.kamiblue.command.args.AbstractArg
+import org.kamiblue.command.args.AutoComplete
+import org.kamiblue.command.args.DynamicPrefixMatch
+import org.kamiblue.command.args.StaticPrefixMatch
 import java.io.File
 import java.util.*
 import kotlin.streams.toList

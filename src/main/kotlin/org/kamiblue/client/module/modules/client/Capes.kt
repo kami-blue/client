@@ -2,6 +2,9 @@ package org.kamiblue.client.module.modules.client
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelElytra
 import net.minecraft.client.renderer.GlStateManager
@@ -18,6 +21,7 @@ import org.kamiblue.capeapi.Cape
 import org.kamiblue.capeapi.CapeType
 import org.kamiblue.capeapi.CapeUser
 import org.kamiblue.client.KamiMod
+import org.kamiblue.client.gui.hudgui.elements.client.WaterMark
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.misc.DiscordRPC
@@ -26,6 +30,8 @@ import org.kamiblue.client.util.color.ColorConverter
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.color.DyeColors
 import org.kamiblue.client.util.threads.BackgroundScope
+import org.kamiblue.client.util.threads.defaultScope
+import org.kamiblue.commons.extension.synchronized
 import org.kamiblue.commons.utils.ConnectionUtils
 import java.util.*
 import kotlin.collections.HashMap
@@ -39,25 +45,36 @@ internal object Capes : Module(
     showOnArray = false,
     enabledByDefault = true
 ) {
-    private val capeUsers = Collections.synchronizedMap(HashMap<UUID, Cape>())
+    private val capeUsers = HashMap<UUID, Cape>().synchronized()
+
+    var updated = false; private set
     var isPremium = false; private set
 
     private val gson = Gson()
+    private val type = TypeToken.getArray(CapeUser::class.java).type
 
     init {
+        onEnable {
+            defaultScope.launch {
+                updateCapes()
+            }
+        }
+
         BackgroundScope.launchLooping("Cape", 300000L) {
             updateCapes()
         }
     }
 
-    private fun updateCapes() {
-        val rawJson = ConnectionUtils.requestRawJsonFrom(KamiMod.CAPES_JSON) {
-            KamiMod.LOG.warn("Failed requesting capes", it)
+    private suspend fun updateCapes() {
+        val rawJson = withContext(Dispatchers.IO) {
+            ConnectionUtils.requestRawJsonFrom(KamiMod.CAPES_JSON) {
+                KamiMod.LOG.warn("Failed requesting capes", it)
+            }
         } ?: return
 
         try {
-            var type: CapeType? = null
-            val cacheList = gson.fromJson<ArrayList<CapeUser>>(rawJson, object : TypeToken<List<CapeUser>>() {}.type)
+            var capeType: CapeType? = null
+            val cacheList = gson.fromJson<Array<CapeUser>>(rawJson, type)
             capeUsers.clear()
 
             cacheList.forEach { capeUser ->
@@ -66,13 +83,15 @@ internal object Capes : Module(
                         capeUsers[it] = cape
                         if (it == mc.session.profile.id) { // if any of the capeUser's capes match current UUID
                             isPremium = isPremium || capeUser.isPremium // || is to prevent bug if there is somehow a duplicate capeUser
-                            type = cape.type
+                            capeType = cape.type
                         }
                     }
                 }
             }
 
-            DiscordRPC.setCustomIcons(type)
+            updated = true
+            WaterMark.visible = WaterMark.visible
+            DiscordRPC.setCustomIcons(capeType)
             KamiMod.LOG.info("Capes loaded")
         } catch (e: Exception) {
             KamiMod.LOG.warn("Failed parsing capes", e)
@@ -128,7 +147,7 @@ internal object Capes : Module(
         val relativeX = sin(yawOffset)
         val relativeZ = -cos(yawOffset)
 
-        var angle1 = MathHelper.clamp(relativePosY.toFloat() * 10.0f, -6.0f, 32.0f)
+        var angle1 = (relativePosY.toFloat() * 10.0f).coerceIn(-6.0f, 32.0f)
 
         var angle2 = (relativePosX * relativeX + relativePosZ * relativeZ).toFloat() * 100.0f
         val angle3 = (relativePosX * relativeZ - relativePosZ * relativeX).toFloat() * 100.0f

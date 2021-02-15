@@ -14,6 +14,8 @@ import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.prevPosVector
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.combat.CrystalUtils.canPlace
 import org.kamiblue.client.util.combat.CrystalUtils.canPlaceOn
 import org.kamiblue.client.util.combat.SurroundUtils
@@ -33,9 +35,10 @@ internal object HoleMiner : Module(
     description = "Mines your opponent's hole",
     modulePriority = 100
 ) {
-    private val morePacket by setting("More Packets", false)
+    private val delay by setting("Delay", 2, 1..10, 1)
     private val range by setting("Range", 5.0f, 1.0f..8.0f, 0.25f)
 
+    private val timer = TickTimer(TimeUnit.TICKS)
     private var miningPos: BlockPos? = null
 
     override fun getHudInfo() = CombatManager.target?.name ?: ""
@@ -63,7 +66,7 @@ internal object HoleMiner : Module(
         }
 
         safeListener<TickEvent.ClientTickEvent> { event ->
-            if (event.phase != TickEvent.Phase.END || !CombatManager.isOnTopPriority(HoleMiner)) return@safeListener
+            if (event.phase != TickEvent.Phase.START || !CombatManager.isOnTopPriority(HoleMiner)) return@safeListener
 
             if (player.heldItemMainhand.item != Items.DIAMOND_PICKAXE) {
                 if (!swapToItem(Items.DIAMOND_PICKAXE)) {
@@ -93,17 +96,21 @@ internal object HoleMiner : Module(
                     return@safeListener
                 }
 
-                val rotation = getRotationTo(pos.toVec3dCenter())
-                val diff = player.getPositionEyes(1.0f).subtract(pos.toVec3dCenter())
+                val center = pos.toVec3dCenter()
+                val rotation = getRotationTo(center)
+                val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation)
+                PlayerPacketManager.addPacket(this@HoleMiner, packet)
+
+                val diff = player.getPositionEyes(1.0f).subtract(center)
                 val normalizedVec = diff.normalize()
                 val facing = EnumFacing.getFacingFromVector(normalizedVec.x.toFloat(), normalizedVec.y.toFloat(), normalizedVec.z.toFloat())
 
-                PlayerPacketManager.addPacket(HoleMiner, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
+                if (timer.tick(delay.toLong())) {
+                    connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, facing))
+                    connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, facing))
 
-                if (morePacket) connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, facing))
-                connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, facing))
-
-                player.swingArm(EnumHand.MAIN_HAND)
+                    player.swingArm(EnumHand.MAIN_HAND)
+                }
             }
         }
     }

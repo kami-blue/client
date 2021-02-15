@@ -224,7 +224,6 @@ internal object Freecam : Module(
             onMainThreadSafe {
                 world.removeEntityFromWorld(ENTITY_ID)
                 mc.renderViewEntity = player
-                mc.renderGlobal.loadRenderers()
                 if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
             }
         }

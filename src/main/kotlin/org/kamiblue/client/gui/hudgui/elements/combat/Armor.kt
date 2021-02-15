@@ -37,7 +37,7 @@ object Armor : HudElement(
         get() = if (classic) {
             80.0f
         } else {
-            stringWidth
+            renderStringWidth
         }
 
     override val hudHeight: Float
@@ -48,6 +48,7 @@ object Armor : HudElement(
         }
 
     private var stringWidth = 120.0f
+    private var renderStringWidth = 120.0f
 
     private val armorCounts = IntArray(4)
     private val duraColorGradient = ColorGradient(
@@ -74,10 +75,10 @@ object Armor : HudElement(
 
     override fun renderHud(vertexHelper: VertexHelper) {
         super.renderHud(vertexHelper)
+        stringWidth = 0.0f
 
         runSafe {
             GlStateManager.pushMatrix()
-            stringWidth = 24.0f
 
             for ((index, itemStack) in player.armorInventoryList.reversed().withIndex()) {
                 if (classic) {
@@ -89,6 +90,8 @@ object Armor : HudElement(
 
             GlStateManager.popMatrix()
         }
+
+        renderStringWidth = stringWidth + 24.0f
     }
 
     private fun drawClassic(vertexHelper: VertexHelper, index: Int, itemStack: ItemStack) {
@@ -99,7 +102,7 @@ object Armor : HudElement(
     }
 
     private fun drawModern(vertexHelper: VertexHelper, index: Int, itemStack: ItemStack) {
-        val itemX = if (dockingH != HAlign.RIGHT) 2 else (stringWidth - 18).toInt()
+        val itemX = if (dockingH != HAlign.RIGHT) 2 else (renderStringWidth - 18.0f).toInt()
 
         drawItem(vertexHelper, itemStack, index, itemX, 2)
         GlStateManager.translate(0.0f, 20.0f, 0.0f)
@@ -129,7 +132,7 @@ object Armor : HudElement(
         val color = duraColorGradient.get(duraPercent)
 
         if (durabilityBar) {
-            val duraBarWidth = 16.0 * duraMultiplier
+            val duraBarWidth = (16.0 * duraMultiplier).coerceAtLeast(0.0)
             RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(x.toDouble(), y + 16.0), Vec2d(x + 16.0, y + 18.0), ColorHolder(0, 0, 0))
             RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(x.toDouble(), y + 16.0), Vec2d(x + duraBarWidth, y + 18.0), color)
         }
@@ -146,11 +149,11 @@ object Armor : HudElement(
             } else {
                 val string = "$dura/${itemStack.maxDamage}  ($duraPercent%)"
                 val width = FontRenderAdapter.getStringWidth(string)
+                stringWidth = max(width, stringWidth)
 
-                val duraX = if (dockingH != HAlign.RIGHT) 22.0f else stringWidth - 22.0f - width
+                val duraX = if (dockingH != HAlign.RIGHT) 22.0f else renderStringWidth - 22.0f - width
                 val duraY = 10.0f - FontRenderAdapter.getFontHeight() * 0.5f
 
-                stringWidth = max(width, maxWidth)
                 FontRenderAdapter.drawString(string, duraX, duraY, color = color)
             }
         }

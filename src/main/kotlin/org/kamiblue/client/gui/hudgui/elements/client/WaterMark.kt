@@ -17,12 +17,7 @@ object WaterMark : LabelHud(
     override val hudWidth: Float get() = (displayText.getWidth() + 2.0f) / scale
     override val hudHeight: Float get() = displayText.getHeight(2) / scale
 
-    override val closeable: Boolean get() = Capes.isPremium
-
-    override fun onGuiInit() {
-        super.onGuiInit()
-        visible = visible
-    }
+    override val closeable: Boolean get() = !Capes.updated || Capes.isPremium
 
     override fun SafeClientEvent.updateText() {
         displayText.add(KamiMod.NAME, primaryColor)

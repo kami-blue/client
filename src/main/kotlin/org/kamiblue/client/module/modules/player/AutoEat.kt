@@ -31,12 +31,14 @@ internal object AutoEat : Module(
     private val eatBadFood by setting("Eat Bad Food", false)
     private val pauseBaritone by setting("Pause Baritone", true)
 
+    private val timer = TickTimer(TimeUnit.TICKS)
     private var lastSlot = -1
-    var eating = false; private set
+    private var eating = false
 
     init {
         onDisable {
             stopEating()
+            swapBack()
         }
 
         safeListener<TickEvent.ClientTickEvent> {
@@ -48,8 +50,12 @@ internal object AutoEat : Module(
                 } else if (swapToFood()) {
                     eat(EnumHand.MAIN_HAND)
                 }
-            } else if (eating) {
-                stopEating()
+            } else if (timer.tick(2)) {
+                if (eating) {
+                    stopEating()
+                } else {
+                    swapBack()
+                }
             }
         }
     }
@@ -64,6 +70,7 @@ internal object AutoEat : Module(
         KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
         playerController.processRightClick(player, world, hand)
 
+        timer.reset()
         eating = true
     }
 
@@ -71,16 +78,21 @@ internal object AutoEat : Module(
         unpauseBaritone()
 
         runSafe {
-            if (lastSlot != -1) {
-                swapToSlot(lastSlot)
-                lastSlot = -1
-            }
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
             playerController.onStoppedUsingItem(player)
         }
 
         eating = false
+    }
 
+    private fun swapBack() {
+        val slot = lastSlot
+        if (slot == -1) return
+
+        lastSlot = -1
+        runSafe {
+            swapToSlot(slot)
+        }
     }
 
     private fun SafeClientEvent.swapToFood(): Boolean {
@@ -89,13 +101,12 @@ internal object AutoEat : Module(
         lastSlot = player.inventory.currentItem
         val hasFoodInSlot = swapToItem<ItemFood> { isValid(it) }
 
-        return if (!hasFoodInSlot) {
+        if (!hasFoodInSlot) {
             lastSlot = -1
             moveFoodToHotbar()
-            false
-        } else {
-            true
         }
+
+        return false
     }
 
     private fun SafeClientEvent.moveFoodToHotbar() {

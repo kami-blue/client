@@ -45,6 +45,7 @@ internal object PacketLogger : Module(
     private var last = 0L
     private val timer = TickTimer(TimeUnit.SECONDS)
 
+    private const val directory = "${KamiMod.DIRECTORY}packetLogs"
     private var filename = ""
     private var lines = ArrayList<String>()
 
@@ -312,7 +313,11 @@ internal object PacketLogger : Module(
 
         defaultScope.launch(Dispatchers.IO) {
             try {
-                FileWriter("${KamiMod.DIRECTORY}packetLogs/${filename}", true).buffered().use {
+                with(File(directory)) {
+                    if (!exists()) mkdir()
+                }
+
+                FileWriter("$directory/${filename}", true).buffered().use {
                     for (line in lines) it.write(line)
                 }
             } catch (e: Exception) {

@@ -5,6 +5,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.setting.GuiConfig.setting
+import org.kamiblue.client.util.CircularArray
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.graphics.AnimationUtils
 import org.kamiblue.event.listener.listener
@@ -26,8 +27,7 @@ object FPS : LabelHud(
     private var prevFps = 0
     private var currentFps = 0
 
-    private val longFps = IntArray(10)
-    private var longFpsIndex = 0
+    private val longFps = CircularArray.create<Int>(10)
 
     private var prevAvgFps = 0
     private var currentAvgFps = 0
@@ -38,8 +38,7 @@ object FPS : LabelHud(
                 prevFps = currentFps
                 currentFps = Minecraft.getDebugFPS()
 
-                longFps[longFpsIndex] = currentFps
-                longFpsIndex = (longFpsIndex + 1) % 10
+                longFps.add(currentFps)
 
                 prevAvgFps = currentAvgFps
                 currentAvgFps = longFps.average().roundToInt()

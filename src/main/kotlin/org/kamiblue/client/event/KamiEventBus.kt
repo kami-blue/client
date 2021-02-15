@@ -2,7 +2,6 @@ package org.kamiblue.client.event
 
 import io.netty.util.internal.ConcurrentSet
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.util.Wrapper
@@ -60,12 +59,10 @@ object KamiEventBus : AbstractAsyncEventBus() {
 
         if (listeners.isNotEmpty()) {
             runBlocking {
-                coroutineScope {
-                    listeners.forEach {
-                        launch(Dispatchers.Default) {
-                            @Suppress("UNCHECKED_CAST") // IDE meme
-                            (it as AsyncListener<Any>).function.invoke(event)
-                        }
+                listeners.forEach {
+                    launch(Dispatchers.Default) {
+                        @Suppress("UNCHECKED_CAST") // IDE meme
+                        (it as AsyncListener<Any>).function.invoke(event)
                     }
                 }
             }

@@ -14,6 +14,7 @@ import org.kamiblue.command.AbstractCommandManager
 import org.kamiblue.command.utils.CommandNotFoundException
 import org.kamiblue.command.utils.SubCommandNotFoundException
 import org.kamiblue.commons.utils.ClassUtils
+import org.kamiblue.commons.utils.ClassUtils.instance
 
 object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoader<List<Class<out ClientCommand>>> {
     override var deferred: Deferred<List<Class<out ClientCommand>>>? = null
@@ -22,7 +23,8 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoade
     override fun preLoad0(): List<Class<out ClientCommand>> {
         val stopTimer = StopTimer()
 
-        val list = ClassUtils.findClasses("org.kamiblue.client.command.commands", ClientCommand::class.java)
+        val list = ClassUtils.findClasses<ClientCommand>("org.kamiblue.client.command.commands")
+
         val time = stopTimer.stop()
 
         KamiMod.LOG.info("${list.size} commands found, took ${time}ms")
@@ -33,7 +35,7 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoade
         val stopTimer = StopTimer()
 
         for (clazz in input) {
-            register(ClassUtils.getInstance(clazz))
+            register(clazz.instance)
         }
 
         val time = stopTimer.stop()
