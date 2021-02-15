@@ -11,7 +11,7 @@ class ModuleSettingWindow(
 ) : SettingWindow<AbstractModule>(module.name, module, posX, posY, SettingGroup.NONE) {
 
     override fun getSettingList(): List<AbstractSetting<*>> {
-        return element.fullSettingList.filter { it.name != "Enabled" }
+        return element.fullSettingList.filter { it.name != "Enabled" && it.name != "Clicks" }
     }
 
 }

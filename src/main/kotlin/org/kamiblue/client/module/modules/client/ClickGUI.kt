@@ -24,10 +24,15 @@ internal object ClickGUI : Module(
     val fadeInTime by setting("Fade In Time", 0.25f, 0.0f..1.0f, 0.05f)
     val fadeOutTime by setting("Fade Out Time", 0.1f, 0.0f..1.0f, 0.05f)
     val showModifiedInBold by setting("Show Modified In Bold", false, description = "Display modified settings in a bold font")
+    val sortBy = setting("Sort By", SortByOptions.ALPHABETICALLY)
 
     private var prevScale = scaleSetting.value / 100.0f
     private var scale = prevScale
     private val settingTimer = StopTimer()
+
+    enum class SortByOptions {
+        ALPHABETICALLY, FREQUENCY, CUSTOM
+    }
 
     fun resetScale() {
         scaleSetting.value = 100
@@ -55,6 +60,8 @@ internal object ClickGUI : Module(
         listener<ShutdownEvent> {
             disable()
         }
+
+        sortBy.listeners.add { KamiClickGui.reorderModules() }
     }
 
     private fun getRoundedScale(): Float {
