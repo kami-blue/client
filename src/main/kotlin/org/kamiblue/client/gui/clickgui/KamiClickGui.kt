@@ -96,8 +96,8 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, AbstractModule>() {
 
     private fun List<ModuleButton>.customSort(): List<ModuleButton> {
         return when (ClickGUI.sortBy.value) {
-            ClickGUI.SortByOptions.CUSTOM -> this.sortedBy { -it.module.priorityForGui.value }
-            ClickGUI.SortByOptions.FREQUENCY -> this.sortedBy { -it.module.clicks.value }
+            ClickGUI.SortByOptions.CUSTOM -> this.sortedByDescending { it.module.priorityForGui.value }
+            ClickGUI.SortByOptions.FREQUENCY -> this.sortedByDescending { it.module.clicks.value }
             else -> this.sortedBy { it.name }
         }
     }
