@@ -27,9 +27,9 @@ open class HudElement(
     enabledByDefault: Boolean = false
 ) : BasicWindow(name, 20.0f, 20.0f, 100.0f, 50.0f, SettingGroup.HUD_GUI) {
 
+    val bind by setting("Bind", Bind())
     val scale by setting("Scale", 1.0f, 0.1f..4.0f, 0.05f)
     val default = setting("Default", false)
-    val bind by setting("Bind", Bind())
 
     override val resizable = false
 
