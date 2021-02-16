@@ -29,7 +29,7 @@ open class HudElement(
 
     val scale by setting("Scale", 1.0f, 0.1f..4.0f, 0.05f)
     val default = setting("Default", false)
-    val bind = setting("Bind", Bind())
+    val bind by setting("Bind", Bind())
 
     override val resizable = false
 
