@@ -1,20 +1,22 @@
 package org.kamiblue.client.module.modules.combat
 
 import net.minecraft.init.Items
-import net.minecraft.inventory.ClickType
 import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.client.manager.managers.PlayerInventoryManager.addInventoryTask
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
+import org.kamiblue.client.util.inventory.ClickTask
+import org.kamiblue.client.util.inventory.clickTask
+import org.kamiblue.client.util.inventory.confirmedOrTrue
+import org.kamiblue.client.util.inventory.operation.click
+import org.kamiblue.client.util.inventory.operation.shiftClick
 import org.kamiblue.client.util.inventory.slot.armorSlots
 import org.kamiblue.client.util.inventory.slot.chestSlot
 import org.kamiblue.client.util.inventory.slot.inventorySlots
-import org.kamiblue.client.util.items.ClickInfo
 import org.kamiblue.client.util.threads.safeListener
 
 internal object AutoArmor : Module(
@@ -23,14 +25,14 @@ internal object AutoArmor : Module(
     description = "Automatically equips armour",
     modulePriority = 500
 ) {
-    private val delay = setting("Delay", 5, 1..10, 1)
+    private val confirmTimeout by setting("Confirm Timeout", 5, 1..20, 1)
+    private val delay by setting("Delay", 2, 1..10, 1)
 
-    private val timer = TickTimer(TimeUnit.TICKS)
-    private var lastTask = TaskState(true)
+    private var lastTask: ClickTask? = null
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (!lastTask.done || !timer.tick(delay.value.toLong())) return@safeListener
+            if (!lastTask.confirmedOrTrue) return@safeListener
 
             val armorSlots = player.armorSlots
             val chestItem = player.chestSlot.stack.item
@@ -85,16 +87,17 @@ internal object AutoArmor : Module(
 
             val armorSlot = armorSlots[index]
 
-            lastTask = if (!armorSlot.hasStack) {
-                addInventoryTask(
-                    ClickInfo(0, pair.first, type = ClickType.QUICK_MOVE) // Move the new one into armor slot
-                )
-            } else {
-                addInventoryTask(
-                    ClickInfo(0, armorSlot, type = ClickType.PICKUP), // Pick up the old armor from armor slot
-                    ClickInfo(0, pair.first, type = ClickType.QUICK_MOVE), // Move the new one into armor slot
-                    ClickInfo(0, pair.first, type = ClickType.PICKUP) // Put the old one into the empty slot
-                )
+            lastTask = clickTask {
+                postDelay(delay.toLong(), TimeUnit.TICKS)
+                timeout(confirmTimeout.toLong(), TimeUnit.TICKS)
+
+                if (!armorSlot.hasStack) {
+                    shiftClick(pair.first) // Move the new one into armor slot
+                } else {
+                    click(armorSlot)  // Pick up the old armor from armor slot
+                    shiftClick(pair.first) // Move the new one into armor slot
+                    click(pair.first) // Put the old one into the empty slot
+                }
             }
 
             break // Don't move more than one at once
