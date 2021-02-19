@@ -1,6 +1,5 @@
 package org.kamiblue.client.mixin.extension
 
-import org.kamiblue.client.mixin.client.accessor.network.*
 import net.minecraft.network.play.client.CPacketChatMessage
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
@@ -9,6 +8,7 @@ import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.network.play.server.SPacketExplosion
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import net.minecraft.util.text.ITextComponent
+import org.kamiblue.client.mixin.client.accessor.network.*
 
 var CPacketChatMessage.packetMessage: String
     get() = this.message

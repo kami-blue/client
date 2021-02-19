@@ -2,6 +2,7 @@ package org.kamiblue.client.module.modules.client
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.gui.AbstractKamiGui
@@ -22,7 +23,6 @@ import org.kamiblue.client.util.text.formatValue
 import org.kamiblue.client.util.threads.BackgroundScope
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
 import java.io.File

@@ -10,7 +10,7 @@ import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.formatValue
 import org.kamiblue.client.util.threads.defaultScope
-import org.kamiblue.command.IExecuteEvent
+import org.kamiblue.command.execute.IExecuteEvent
 
 object ConfigCommand : ClientCommand(
     name = "config",
@@ -53,14 +53,6 @@ object ConfigCommand : ClientCommand(
             literal("save") {
                 execute("Save a config") {
                     configTypeArg.value.save()
-                }
-            }
-
-            literal("set") {
-                string("name") { nameArg ->
-                    execute("Change preset") {
-                        configTypeArg.value.setPreset(nameArg.value)
-                    }
                 }
             }
 

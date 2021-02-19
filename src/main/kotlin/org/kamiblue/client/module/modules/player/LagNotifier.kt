@@ -1,5 +1,9 @@
 package org.kamiblue.client.module.modules.player
 
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.network.play.server.SPacketPlayerPosLook
+import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
@@ -13,10 +17,6 @@ import org.kamiblue.client.util.graphics.font.FontRenderAdapter
 import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.network.play.server.SPacketPlayerPosLook
-import net.minecraft.util.math.Vec3d
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.glColor4f

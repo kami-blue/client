@@ -1,12 +1,12 @@
 package org.kamiblue.client.module.modules.chat
 
+import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.text.MessageDetection
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.formatValue
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.event.listener.listener
 import java.io.*
 import java.util.*

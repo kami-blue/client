@@ -1,5 +1,6 @@
 package org.kamiblue.client.command.commands
 
+import net.minecraft.util.text.TextFormatting
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.module.modules.client.CommandConfig
@@ -7,7 +8,6 @@ import org.kamiblue.client.util.KeyboardUtils
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.format
 import org.kamiblue.client.util.text.formatValue
-import net.minecraft.util.text.TextFormatting
 
 object BindCommand : ClientCommand(
     name = "bind",

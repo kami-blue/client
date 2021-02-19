@@ -2,6 +2,8 @@ package org.kamiblue.client.module.modules.chat
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.minecraft.network.play.server.SPacketChat
+import net.minecraft.util.text.TextFormatting
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.manager.managers.MessageManager
 import org.kamiblue.client.manager.managers.MessageManager.newMessageModifier
@@ -14,8 +16,6 @@ import org.kamiblue.client.util.text.format
 import org.kamiblue.client.util.text.formatValue
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.network.play.server.SPacketChat
-import net.minecraft.util.text.TextFormatting
 import org.kamiblue.commons.utils.SystemUtils
 import java.util.*
 import kotlin.collections.HashMap

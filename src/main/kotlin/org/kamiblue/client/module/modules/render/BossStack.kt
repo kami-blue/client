@@ -1,17 +1,17 @@
 package org.kamiblue.client.module.modules.render
 
-import org.kamiblue.client.mixin.extension.mapBossInfos
-import org.kamiblue.client.mixin.extension.render
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.TickTimer
-import org.kamiblue.client.util.graphics.GlStateUtils
 import net.minecraft.client.gui.BossInfoClient
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderGameOverlayEvent
+import org.kamiblue.client.mixin.extension.mapBossInfos
+import org.kamiblue.client.mixin.extension.render
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.graphics.GlStateUtils
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.abs

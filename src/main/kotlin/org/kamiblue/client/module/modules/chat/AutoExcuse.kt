@@ -1,5 +1,6 @@
 package org.kamiblue.client.module.modules.chat
 
+import net.minecraft.network.play.server.SPacketUpdateHealth
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.module.Category
@@ -9,7 +10,6 @@ import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.network.play.server.SPacketUpdateHealth
 import java.io.File
 
 internal object AutoExcuse : Module(

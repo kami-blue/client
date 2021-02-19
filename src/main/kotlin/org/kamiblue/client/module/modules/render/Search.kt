@@ -3,6 +3,13 @@ package org.kamiblue.client.module.modules.render
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import net.minecraft.block.state.IBlockState
+import net.minecraft.init.Blocks
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.ChunkPos
+import net.minecraft.util.math.Vec3d
+import net.minecraft.world.chunk.Chunk
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
@@ -19,13 +26,6 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.formatValue
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.block.state.IBlockState
-import net.minecraft.init.Blocks
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.ChunkPos
-import net.minecraft.util.math.Vec3d
-import net.minecraft.world.chunk.Chunk
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.set

@@ -1,13 +1,13 @@
 package org.kamiblue.client.module.modules.render
 
+import net.minecraft.entity.passive.AbstractHorse
+import net.minecraft.entity.passive.EntityTameable
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.manager.managers.UUIDManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.entity.passive.AbstractHorse
-import net.minecraft.entity.passive.EntityTameable
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils.round
 import kotlin.math.pow
 

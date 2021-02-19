@@ -1,5 +1,9 @@
 package org.kamiblue.client.gui.hudgui.elements.player
 
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.util.ResourceLocation
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.setting.GuiConfig.setting
@@ -10,10 +14,6 @@ import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.items.storageSlots
 import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.threads.runSafe
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.*
 
 object InventoryViewer : HudElement(

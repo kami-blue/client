@@ -1,5 +1,6 @@
 package org.kamiblue.client.gui.rgui.component
 
+import net.minecraft.util.text.TextFormatting
 import org.kamiblue.client.gui.rgui.InteractiveComponent
 import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.module.modules.client.GuiColors
@@ -12,6 +13,7 @@ import org.kamiblue.client.util.graphics.font.FontRenderAdapter
 import org.kamiblue.client.util.graphics.font.TextComponent
 import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.math.Vec2f
+import org.kamiblue.client.util.text.format
 import org.lwjgl.opengl.GL11.*
 
 open class Slider(
@@ -42,6 +44,9 @@ open class Slider(
 
     var listening = false; protected set
 
+    open val isBold
+        get() = false
+
     override fun onClosed() {
         super.onClosed()
         onStopListening(false)
@@ -61,22 +66,27 @@ open class Slider(
     private fun setupDescription() {
         displayDescription.clear()
         if (description.isNotBlank()) {
+            val stringBuilder = StringBuilder()
             val spaceWidth = FontRenderAdapter.getStringWidth(" ")
             var lineWidth = -spaceWidth
-            var lineString = ""
 
             for (string in description.split(' ')) {
-                lineWidth += FontRenderAdapter.getStringWidth(string) + spaceWidth
-                if (lineWidth > 169) {
-                    displayDescription.addLine(lineString.trimEnd())
-                    lineWidth = -spaceWidth
-                    lineString = ""
+                val wordWidth = FontRenderAdapter.getStringWidth(string) + spaceWidth
+                val newWidth = lineWidth + wordWidth
+
+                lineWidth = if (newWidth > 169.0f) {
+                    displayDescription.addLine(stringBuilder.toString())
+                    stringBuilder.clear()
+                    -spaceWidth + wordWidth
                 } else {
-                    lineString += "$string "
+                    newWidth
                 }
+
+                stringBuilder.append(string)
+                stringBuilder.append(' ')
             }
 
-            if (lineString.isNotBlank()) displayDescription.addLine(lineString)
+            if (stringBuilder.isNotEmpty()) displayDescription.addLine(stringBuilder.toString())
         }
     }
 
@@ -109,7 +119,9 @@ open class Slider(
                     (renderHeight * ClickGUI.getScaleFactor()).roundToInt()
             )
         }*/
-        FontRenderAdapter.drawString(name, 1.5f, 1.0f, color = GuiColors.text)
+        val text = if (isBold) TextFormatting.BOLD format name else name
+
+        FontRenderAdapter.drawString(text, 1.5f, 1.0f, color = GuiColors.text)
         //GlStateUtils.popScissor()
     }
 

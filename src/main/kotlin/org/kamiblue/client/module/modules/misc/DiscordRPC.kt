@@ -2,11 +2,15 @@ package org.kamiblue.client.module.modules.misc
 
 import club.minnced.discord.rpc.DiscordEventHandlers
 import club.minnced.discord.rpc.DiscordRichPresence
+import net.minecraft.client.Minecraft
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.capeapi.CapeType
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.events.ShutdownEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.InfoCalculator
+import org.kamiblue.client.util.InfoCalculator.speed
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.TpsCalculator
@@ -15,12 +19,8 @@ import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.BackgroundJob
 import org.kamiblue.client.util.threads.BackgroundScope
-import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.client.Minecraft
-import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.capeapi.CapeType
-import org.kamiblue.client.util.InfoCalculator.speed
 import org.kamiblue.client.util.threads.runSafeR
+import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
 

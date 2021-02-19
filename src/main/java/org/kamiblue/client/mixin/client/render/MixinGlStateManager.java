@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.render;
 
-import org.kamiblue.client.util.graphics.GlStateUtils;
 import net.minecraft.client.renderer.GlStateManager;
+import org.kamiblue.client.util.graphics.GlStateUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

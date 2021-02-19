@@ -1,5 +1,6 @@
 package org.kamiblue.client.gui.rgui.component
 
+import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.module.modules.client.GuiColors
 import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
 import org.kamiblue.client.util.graphics.VertexHelper
@@ -10,6 +11,9 @@ import kotlin.math.floor
 
 class EnumSlider(val setting: EnumSetting<*>) : Slider(setting.name, 0.0, setting.description, setting.visibility) {
     private val enumValues = setting.enumValues
+
+    override val isBold
+        get() = setting.isModified && ClickGUI.showModifiedInBold
 
     override fun onTick() {
         super.onTick()

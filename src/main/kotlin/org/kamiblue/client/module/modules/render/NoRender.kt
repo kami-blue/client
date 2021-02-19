@@ -154,7 +154,7 @@ internal object NoRender : Module(
     }
 
     fun handleParticle(particle: Particle) = particles.value
-            || firework.value && (particle is ParticleFirework.Overlay || particle is ParticleFirework.Spark || particle is ParticleFirework.Starter)
+        || firework.value && (particle is ParticleFirework.Overlay || particle is ParticleFirework.Spark || particle is ParticleFirework.Starter)
 
     fun tryReplaceEnchantingTable(tileEntity: TileEntity): Boolean {
         if (!enchantingTableSnow.value || tileEntity !is TileEntityEnchantmentTable) return false

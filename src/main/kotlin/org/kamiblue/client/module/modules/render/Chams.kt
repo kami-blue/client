@@ -1,14 +1,5 @@
 package org.kamiblue.client.module.modules.render
 
-import org.kamiblue.client.event.Phase
-import org.kamiblue.client.event.events.RenderEntityEvent
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.EntityUtils
-import org.kamiblue.client.util.EntityUtils.mobTypeSettings
-import org.kamiblue.client.util.color.HueCycler
-import org.kamiblue.client.util.graphics.GlStateUtils
-import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -18,6 +9,15 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityThrowable
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.event.Phase
+import org.kamiblue.client.event.events.RenderEntityEvent
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.EntityUtils
+import org.kamiblue.client.util.EntityUtils.mobTypeSettings
+import org.kamiblue.client.util.color.HueCycler
+import org.kamiblue.client.util.graphics.GlStateUtils
+import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 

@@ -1,12 +1,12 @@
 package org.kamiblue.client.module.modules.client
 
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.events.ShutdownEvent
 import org.kamiblue.client.gui.clickgui.KamiClickGui
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.StopTimer
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import kotlin.math.round
@@ -23,6 +23,7 @@ internal object ClickGUI : Module(
     val darkness by setting("Darkness", 0.25f, 0.0f..1.0f, 0.05f)
     val fadeInTime by setting("Fade In Time", 0.25f, 0.0f..1.0f, 0.05f)
     val fadeOutTime by setting("Fade Out Time", 0.1f, 0.0f..1.0f, 0.05f)
+    val showModifiedInBold by setting("Show Modified In Bold", false, description = "Display modified settings in a bold font")
 
     private var prevScale = scaleSetting.value / 100.0f
     private var scale = prevScale

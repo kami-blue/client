@@ -1,12 +1,12 @@
 package org.kamiblue.client.module.modules.misc
 
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
+import net.minecraft.network.play.client.CPacketUpdateSign
+import net.minecraft.tileentity.TileEntitySign
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.text.MessageSendHelper
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
-import net.minecraft.network.play.client.CPacketUpdateSign
-import net.minecraft.tileentity.TileEntitySign
 import org.kamiblue.event.listener.listener
 
 internal object ConsoleSpam : Module(

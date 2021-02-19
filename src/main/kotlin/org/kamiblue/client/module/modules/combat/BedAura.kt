@@ -1,5 +1,17 @@
 package org.kamiblue.client.module.modules.combat
 
+import net.minecraft.init.Blocks
+import net.minecraft.init.Items
+import net.minecraft.inventory.Slot
+import net.minecraft.item.ItemBed
+import net.minecraft.network.play.client.CPacketPlayer
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
+import net.minecraft.tileentity.TileEntityBed
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.EnumHand
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.manager.managers.CombatManager
@@ -17,18 +29,6 @@ import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.math.VectorUtils
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.init.Blocks
-import net.minecraft.init.Items
-import net.minecraft.inventory.Slot
-import net.minecraft.item.ItemBed
-import net.minecraft.network.play.client.CPacketPlayer
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
-import net.minecraft.tileentity.TileEntityBed
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.EnumHand
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
 import kotlin.collections.HashMap
 

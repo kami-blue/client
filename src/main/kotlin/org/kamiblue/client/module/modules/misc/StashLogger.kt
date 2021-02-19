@@ -2,6 +2,12 @@ package org.kamiblue.client.module.modules.misc
 
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import net.minecraft.client.audio.PositionedSoundRecord
+import net.minecraft.init.SoundEvents
+import net.minecraft.tileentity.*
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.ChunkPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.manager.managers.WaypointManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -14,12 +20,7 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.onMainThread
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.client.audio.PositionedSoundRecord
-import net.minecraft.init.SoundEvents
-import net.minecraft.tileentity.*
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.ChunkPos
-import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.extension.synchronized
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
@@ -31,7 +32,7 @@ internal object StashLogger : Module(
     category = Category.MISC,
     description = "Logs storage units in render distance."
 ) {
-    private val saveToFile by setting("Save To File", true)
+    private val saveToWaypoints by setting("Save To Waypoints", true)
     private val logToChat by setting("Log To Chat", true)
     private val playSound by setting("Play Sound", true)
     private val logChests by setting("Chests", true)
@@ -76,7 +77,7 @@ internal object StashLogger : Module(
             val center = chunkStats.center()
             val string = chunkStats.toString()
 
-            if (saveToFile) {
+            if (saveToWaypoints) {
                 WaypointManager.add(center, string)
             }
 
@@ -126,7 +127,7 @@ internal object StashLogger : Module(
 
         var hot = false
 
-        private val tileEntities = Collections.synchronizedList(ArrayList<TileEntity>())
+        private val tileEntities = ArrayList<TileEntity>().synchronized()
 
         fun add(tileEntity: TileEntity) {
             when (tileEntity) {

@@ -1,5 +1,15 @@
 package org.kamiblue.client.module.modules.combat
 
+import net.minecraft.client.audio.PositionedSoundRecord
+import net.minecraft.client.gui.GuiMainMenu
+import net.minecraft.client.gui.GuiMultiplayer
+import net.minecraft.client.multiplayer.WorldClient
+import net.minecraft.entity.monster.EntityCreeper
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.Items
+import net.minecraft.init.SoundEvents
+import net.minecraft.util.text.TextComponentString
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.mc.KamiGuiDisconnected
 import org.kamiblue.client.manager.managers.CombatManager
@@ -12,16 +22,6 @@ import org.kamiblue.client.util.combat.CombatUtils
 import org.kamiblue.client.util.items.allSlots
 import org.kamiblue.client.util.items.countItem
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.client.audio.PositionedSoundRecord
-import net.minecraft.client.gui.GuiMainMenu
-import net.minecraft.client.gui.GuiMultiplayer
-import net.minecraft.client.multiplayer.WorldClient
-import net.minecraft.entity.monster.EntityCreeper
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.Items
-import net.minecraft.init.SoundEvents
-import net.minecraft.util.text.TextComponentString
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 import java.time.LocalTime
 
@@ -65,14 +65,14 @@ internal object AutoLog : Module(
         }
     }
 
-    private fun SafeClientEvent.checkTotems() : Boolean {
+    private fun SafeClientEvent.checkTotems(): Boolean {
         val slots = player.allSlots
         return slots.any { it.hasStack }
             && slots.countItem(Items.TOTEM_OF_UNDYING) < minTotems
     }
 
     private fun SafeClientEvent.checkCrystals(): Boolean {
-        val maxSelfDamage = CombatManager.crystalMap.values.maxByOrNull { it.second }?.second ?: 0.0f
+        val maxSelfDamage = CombatManager.crystalMap.values.maxOfOrNull { it.selfDamage } ?: 0.0f
         return CombatUtils.getHealthSmart(player) - maxSelfDamage < health
     }
 

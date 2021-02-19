@@ -1,10 +1,10 @@
 package org.kamiblue.client.mixin.client.render;
 
-import org.kamiblue.client.module.modules.movement.EntitySpeed;
-import org.kamiblue.client.util.Wrapper;
 import net.minecraft.client.model.ModelBoat;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import org.kamiblue.client.module.modules.movement.EntitySpeed;
+import org.kamiblue.client.util.Wrapper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

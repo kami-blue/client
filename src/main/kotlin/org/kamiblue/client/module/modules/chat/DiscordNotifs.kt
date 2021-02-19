@@ -3,6 +3,9 @@ package org.kamiblue.client.module.modules.chat
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.minecraft.network.play.server.SPacketChat
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.apache.commons.io.IOUtils
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.event.events.ConnectionEvent
@@ -14,9 +17,6 @@ import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.text.*
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.network.play.server.SPacketChat
-import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.apache.commons.io.IOUtils
 import org.kamiblue.commons.utils.ConnectionUtils
 import org.kamiblue.event.listener.listener
 

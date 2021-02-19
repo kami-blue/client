@@ -1,8 +1,8 @@
 package org.kamiblue.client.mixin.client.render;
 
-import org.kamiblue.client.module.modules.render.NoRender;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.tileentity.TileEntity;
+import org.kamiblue.client.module.modules.render.NoRender;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

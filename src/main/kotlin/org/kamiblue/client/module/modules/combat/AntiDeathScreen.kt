@@ -1,9 +1,9 @@
 package org.kamiblue.client.module.modules.combat
 
+import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.client.event.events.GuiEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.event.listener.listener
 
 internal object AntiDeathScreen : Module(

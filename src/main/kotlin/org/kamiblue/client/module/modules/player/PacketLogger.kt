@@ -2,6 +2,10 @@ package org.kamiblue.client.module.modules.player
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.minecraft.network.Packet
+import net.minecraft.network.play.client.*
+import net.minecraft.network.play.server.*
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.PacketEvent
@@ -13,10 +17,6 @@ import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.network.Packet
-import net.minecraft.network.play.client.*
-import net.minecraft.network.play.server.*
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.interfaces.DisplayEnum
 import java.io.*
 import java.time.LocalTime
@@ -45,6 +45,7 @@ internal object PacketLogger : Module(
     private var last = 0L
     private val timer = TickTimer(TimeUnit.SECONDS)
 
+    private const val directory = "${KamiMod.DIRECTORY}packetLogs"
     private var filename = ""
     private var lines = ArrayList<String>()
 
@@ -95,11 +96,11 @@ internal object PacketLogger : Module(
                     is SPacketEntityTeleport -> {
                         add(PacketSide.SERVER, it.packet,
                             "x: ${it.packet.x} " +
-                            "y: ${it.packet.y} " +
-                            "z: ${it.packet.z} " +
-                            "pitch: ${it.packet.pitch} " +
-                            "yaw: ${it.packet.yaw} " +
-                            "entityID: ${it.packet.entityId}")
+                                "y: ${it.packet.y} " +
+                                "z: ${it.packet.z} " +
+                                "pitch: ${it.packet.pitch} " +
+                                "yaw: ${it.packet.yaw} " +
+                                "entityID: ${it.packet.entityId}")
                     }
                     is SPacketEntityMetadata -> {
                         val dataEntry = StringBuilder().run {
@@ -116,7 +117,7 @@ internal object PacketLogger : Module(
                         if (!ignoreChunkLoading) {
                             add(PacketSide.SERVER, it.packet,
                                 "x: ${it.packet.x} " +
-                                "z: ${it.packet.z}")
+                                    "z: ${it.packet.z}")
                         }
                     }
                     is SPacketDestroyEntities -> {
@@ -152,8 +153,8 @@ internal object PacketLogger : Module(
                     is SPacketBlockChange -> {
                         add(PacketSide.SERVER, it.packet,
                             "x: ${it.packet.blockPosition.x} " +
-                            "y: ${it.packet.blockPosition.y} " +
-                            "z: ${it.packet.blockPosition.z}")
+                                "y: ${it.packet.blockPosition.y} " +
+                                "z: ${it.packet.blockPosition.z}")
                     }
                     is SPacketMultiBlockChange -> {
                         val changedBlock = StringBuilder().run {
@@ -169,27 +170,27 @@ internal object PacketLogger : Module(
                     is SPacketTimeUpdate -> {
                         add(PacketSide.SERVER, it.packet,
                             "totalWorldTime: ${it.packet.totalWorldTime} " +
-                            "worldTime: ${it.packet.worldTime}")
+                                "worldTime: ${it.packet.worldTime}")
                     }
                     is SPacketChat -> {
                         if (!ignoreChat) {
                             add(PacketSide.SERVER, it.packet,
                                 "unformattedText: ${it.packet.chatComponent.unformattedText} " +
-                                "type: ${it.packet.type} " +
-                                "isSystem: ${it.packet.isSystem}")
+                                    "type: ${it.packet.type} " +
+                                    "isSystem: ${it.packet.isSystem}")
                         }
                     }
                     is SPacketTeams -> {
                         add(PacketSide.SERVER, it.packet,
-                        "action: ${it.packet.action} " +
-                            "displayName: ${it.packet.displayName} " +
-                            "color: ${it.packet.color}")
+                            "action: ${it.packet.action} " +
+                                "displayName: ${it.packet.displayName} " +
+                                "color: ${it.packet.color}")
                     }
                     is SPacketChunkData -> {
                         add(PacketSide.SERVER, it.packet,
                             "chunkX: ${it.packet.chunkX} " +
-                            "chunkZ: ${it.packet.chunkZ} " +
-                            "extractedSize: ${it.packet.extractedSize}")
+                                "chunkZ: ${it.packet.chunkZ} " +
+                                "extractedSize: ${it.packet.extractedSize}")
                     }
                     is SPacketEntityProperties -> {
                         add(PacketSide.SERVER, it.packet,
@@ -198,13 +199,13 @@ internal object PacketLogger : Module(
                     is SPacketUpdateTileEntity -> {
                         add(PacketSide.SERVER, it.packet,
                             "posX: ${it.packet.pos.x} " +
-                            "posY: ${it.packet.pos.y} " +
-                            "posZ: ${it.packet.pos.z}")
+                                "posY: ${it.packet.pos.y} " +
+                                "posZ: ${it.packet.pos.z}")
                     }
                     is SPacketSpawnObject -> {
                         add(PacketSide.SERVER, it.packet,
                             "entityID: ${it.packet.entityID} " +
-                            "data: ${it.packet.data}")
+                                "data: ${it.packet.data}")
                     }
                     is SPacketKeepAlive -> {
                         if (!ignoreKeepAlive) {
@@ -233,45 +234,45 @@ internal object PacketLogger : Module(
                     is CPacketPlayer.Rotation -> {
                         add(PacketSide.CLIENT, it.packet,
                             "pitch: ${it.packet.pitch} " +
-                            "yaw: ${it.packet.yaw} " +
-                            "onGround: ${it.packet.isOnGround}")
+                                "yaw: ${it.packet.yaw} " +
+                                "onGround: ${it.packet.isOnGround}")
                     }
                     is CPacketPlayer.Position -> {
                         add(PacketSide.CLIENT, it.packet,
                             "x: ${it.packet.x} " +
-                            "y: ${it.packet.y} " +
-                            "z: ${it.packet.z} " +
-                            "onGround: ${it.packet.isOnGround}")
+                                "y: ${it.packet.y} " +
+                                "z: ${it.packet.z} " +
+                                "onGround: ${it.packet.isOnGround}")
                     }
                     is CPacketPlayer.PositionRotation -> {
                         add(PacketSide.CLIENT, it.packet,
                             "x: ${it.packet.x} " +
-                            "y: ${it.packet.y} " +
-                            "z: ${it.packet.z} " +
-                            "pitch: ${it.packet.pitch} " +
-                            "yaw: ${it.packet.yaw} " +
-                            "onGround: ${it.packet.isOnGround}")
+                                "y: ${it.packet.y} " +
+                                "z: ${it.packet.z} " +
+                                "pitch: ${it.packet.pitch} " +
+                                "yaw: ${it.packet.yaw} " +
+                                "onGround: ${it.packet.isOnGround}")
                     }
                     is CPacketPlayerDigging -> {
                         add(PacketSide.CLIENT, it.packet,
                             "positionX: ${it.packet.position.x} " +
-                            "positionY: ${it.packet.position.y} " +
-                            "positionZ: ${it.packet.position.z} " +
-                            "facing: ${it.packet.facing} " +
-                            "action: ${it.packet.action} ")
+                                "positionY: ${it.packet.position.y} " +
+                                "positionZ: ${it.packet.position.z} " +
+                                "facing: ${it.packet.facing} " +
+                                "action: ${it.packet.action} ")
                     }
                     is CPacketEntityAction -> {
                         add(PacketSide.CLIENT, it.packet,
                             "action: ${it.packet.action} " +
-                            "auxData: ${it.packet.auxData}")
+                                "auxData: ${it.packet.auxData}")
                     }
                     is CPacketUseEntity -> {
                         add(PacketSide.CLIENT, it.packet,
                             "action: ${it.packet.action} " +
-                            "hand: ${it.packet.hand} " +
-                            "hitVecX: ${it.packet.hitVec.x} " +
-                            "hitVecY: ${it.packet.hitVec.y} " +
-                            "hitVecZ: ${it.packet.hitVec.z}")
+                                "hand: ${it.packet.hand} " +
+                                "hitVecX: ${it.packet.hitVec.x} " +
+                                "hitVecY: ${it.packet.hitVec.y} " +
+                                "hitVecZ: ${it.packet.hitVec.z}")
                     }
                     is CPacketPlayerTryUseItem -> {
                         add(PacketSide.CLIENT, it.packet,
@@ -312,7 +313,11 @@ internal object PacketLogger : Module(
 
         defaultScope.launch(Dispatchers.IO) {
             try {
-                FileWriter("${KamiMod.DIRECTORY}packetLogs/${filename}", true).buffered().use {
+                with(File(directory)) {
+                    if (!exists()) mkdir()
+                }
+
+                FileWriter("$directory/${filename}", true).buffered().use {
                     for (line in lines) it.write(line)
                 }
             } catch (e: Exception) {

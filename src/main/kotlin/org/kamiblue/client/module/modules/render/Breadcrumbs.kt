@@ -1,5 +1,9 @@
 package org.kamiblue.client.module.modules.render
 
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.realms.RealmsMth.sin
+import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
@@ -10,10 +14,6 @@ import org.kamiblue.client.util.graphics.KamiTessellator
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
 import org.kamiblue.client.util.text.MessageSendHelper.sendChatMessage
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.realms.RealmsMth.sin
-import net.minecraft.util.math.Vec3d
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 import java.util.*

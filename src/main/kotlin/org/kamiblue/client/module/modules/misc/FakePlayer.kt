@@ -2,6 +2,15 @@ package org.kamiblue.client.module.modules.misc
 
 import com.mojang.authlib.GameProfile
 import kotlinx.coroutines.runBlocking
+import net.minecraft.client.entity.EntityOtherPlayerMP
+import net.minecraft.client.gui.GuiGameOver
+import net.minecraft.enchantment.Enchantment
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.Enchantments
+import net.minecraft.init.Items
+import net.minecraft.init.MobEffects
+import net.minecraft.item.ItemStack
+import net.minecraft.potion.PotionEffect
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.ConnectionEvent
@@ -13,15 +22,6 @@ import org.kamiblue.client.util.text.formatValue
 import org.kamiblue.client.util.threads.onMainThread
 import org.kamiblue.client.util.threads.onMainThreadSafe
 import org.kamiblue.client.util.threads.runSafeR
-import net.minecraft.client.entity.EntityOtherPlayerMP
-import net.minecraft.client.gui.GuiGameOver
-import net.minecraft.enchantment.Enchantment
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.Enchantments
-import net.minecraft.init.Items
-import net.minecraft.init.MobEffects
-import net.minecraft.item.ItemStack
-import net.minecraft.potion.PotionEffect
 import org.kamiblue.event.listener.listener
 import java.util.*
 

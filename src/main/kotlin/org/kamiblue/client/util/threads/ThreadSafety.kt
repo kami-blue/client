@@ -1,8 +1,6 @@
 package org.kamiblue.client.util.threads
 
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.event.ClientEvent
 import org.kamiblue.client.event.ClientExecuteEvent
 import org.kamiblue.client.event.SafeClientEvent

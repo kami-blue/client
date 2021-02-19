@@ -1,6 +1,10 @@
 package org.kamiblue.client.util.text
 
 import baritone.api.event.events.ChatEvent
+import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.text.TextComponentBase
+import net.minecraft.util.text.TextComponentString
+import net.minecraft.util.text.TextFormatting
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.manager.managers.MessageManager
@@ -8,13 +12,17 @@ import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.util.BaritoneUtils
 import org.kamiblue.client.util.TaskState
 import org.kamiblue.client.util.Wrapper
-import net.minecraft.util.text.ITextComponent
-import net.minecraft.util.text.TextComponentBase
-import net.minecraft.util.text.TextFormatting
 import java.util.regex.Pattern
 
 object MessageSendHelper {
     private val mc = Wrapper.minecraft
+
+    fun sendChatMessage(message: ITextComponent) {
+        val component = TextComponentString("")
+        component.appendSibling(ChatMessage(coloredName('9')))
+        component.appendSibling(message)
+        sendRawChatMessage(component)
+    }
 
     fun sendChatMessage(message: String) {
         sendRawChatMessage(coloredName('9') + message)
@@ -54,6 +62,11 @@ object MessageSendHelper {
         mc.player?.sendMessage(ChatMessage(message))
     }
 
+    fun sendRawChatMessage(message: ITextComponent?) {
+        if (message == null) return
+        mc.ingameGUI.chatGUI.printChatMessage(message)
+    }
+
     fun Any.sendServerMessage(message: String?): TaskState {
         if (message.isNullOrBlank()) return TaskState(true)
         val priority = if (this is AbstractModule) modulePriority else 0
@@ -84,4 +97,5 @@ object MessageSendHelper {
     }
 
     private fun coloredName(colorCode: Char) = "&7[&$colorCode" + KamiMod.KAMI_KATAKANA + "&7] &r"
+
 }

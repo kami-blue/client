@@ -1,5 +1,8 @@
 package org.kamiblue.client.gui.hudgui.elements.combat
 
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.init.Items
+import net.minecraft.item.ItemStack
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.gui.hudgui.LabelHud
@@ -8,9 +11,6 @@ import org.kamiblue.client.util.graphics.RenderUtils2D
 import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.items.allSlots
 import org.kamiblue.client.util.items.countItem
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.init.Items
-import net.minecraft.item.ItemStack
 
 object CombatItemCount : LabelHud(
     name = "CombatItemCount",

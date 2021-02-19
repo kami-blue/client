@@ -1,7 +1,7 @@
 package org.kamiblue.client.util.text
 
-import org.kamiblue.client.util.color.EnumTextColor
 import net.minecraft.util.text.TextFormatting
+import org.kamiblue.client.util.color.EnumTextColor
 
 fun formatValue(any: Any) = TextFormatting.GRAY format "[$any]"
 

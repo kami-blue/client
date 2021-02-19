@@ -1,13 +1,13 @@
 package org.kamiblue.client.module.modules.combat
 
+import net.minecraft.init.Items
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.items.swapToItem
 import org.kamiblue.client.util.math.RotationUtils.faceEntityClosest
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.init.Items
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
 internal object AimBot : Module(

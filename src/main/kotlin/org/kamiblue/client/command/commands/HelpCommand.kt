@@ -1,11 +1,11 @@
 package org.kamiblue.client.command.commands
 
+import net.minecraft.util.text.TextFormatting
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.formatValue
-import net.minecraft.util.text.TextFormatting
 
 object HelpCommand : ClientCommand(
     name = "help",

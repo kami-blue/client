@@ -1,5 +1,7 @@
 package org.kamiblue.client.manager.managers
 
+import net.minecraft.network.play.client.CPacketChatMessage
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.mixin.extension.packetMessage
@@ -9,8 +11,6 @@ import org.kamiblue.client.util.TaskState
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.Wrapper
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.network.play.client.CPacketChatMessage
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.HashSet

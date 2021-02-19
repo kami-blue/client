@@ -3,6 +3,12 @@ package org.kamiblue.client.module.modules.render
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import net.minecraft.entity.Entity
+import net.minecraft.entity.item.*
+import net.minecraft.item.ItemShulkerBox
+import net.minecraft.tileentity.*
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
@@ -13,12 +19,6 @@ import org.kamiblue.client.util.color.HueCycler
 import org.kamiblue.client.util.graphics.ESPRenderer
 import org.kamiblue.client.util.graphics.GeometryMasks
 import org.kamiblue.client.util.threads.safeAsyncListener
-import net.minecraft.entity.Entity
-import net.minecraft.entity.item.*
-import net.minecraft.item.ItemShulkerBox
-import net.minecraft.tileentity.*
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 internal object StorageESP : Module(

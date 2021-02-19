@@ -1,8 +1,9 @@
 package org.kamiblue.client.util
 
-import org.kamiblue.client.event.SafeClientEvent
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
+import net.minecraft.init.MobEffects
+import org.kamiblue.client.event.SafeClientEvent
 import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
@@ -10,9 +11,10 @@ import kotlin.math.sin
 object MovementUtils {
     private val mc = Minecraft.getMinecraft()
 
-    val isInputting get() = mc.player?.movementInput?.let {
-        it.moveForward != 0f || it.moveStrafe != 0f
-    } ?: false
+    val isInputting
+        get() = mc.player?.movementInput?.let {
+            it.moveForward != 0f || it.moveStrafe != 0f
+        } ?: false
 
     val Entity.isMoving get() = speed > 0.0001
     val Entity.speed get() = hypot(motionX, motionZ)
@@ -43,4 +45,9 @@ object MovementUtils {
         player.motionX = -sin(yaw) * speed
         player.motionZ = cos(yaw) * speed
     }
+
+    fun SafeClientEvent.applySpeedPotionEffects(speed: Double) =
+        player.getActivePotionEffect(MobEffects.SPEED)?.let {
+            speed * (1.0 + (it.amplifier + 1) * 0.2)
+        } ?: speed
 }

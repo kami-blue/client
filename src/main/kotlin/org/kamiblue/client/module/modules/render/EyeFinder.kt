@@ -1,5 +1,11 @@
 package org.kamiblue.client.module.modules.render
 
+import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.Entity
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.RayTraceResult
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -9,12 +15,6 @@ import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.ESPRenderer
 import org.kamiblue.client.util.graphics.KamiTessellator
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.entity.Entity
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.RayTraceResult
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_LINES
 import kotlin.math.min

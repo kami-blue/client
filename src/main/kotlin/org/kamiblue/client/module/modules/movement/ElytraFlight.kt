@@ -1,5 +1,11 @@
 package org.kamiblue.client.module.modules.movement
 
+import net.minecraft.client.audio.PositionedSoundRecord
+import net.minecraft.init.Items
+import net.minecraft.init.SoundEvents
+import net.minecraft.network.play.client.CPacketEntityAction
+import net.minecraft.network.play.server.SPacketEntityMetadata
+import net.minecraft.network.play.server.SPacketPlayerPosLook
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
@@ -18,12 +24,6 @@ import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.text.MessageSendHelper.sendChatMessage
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.client.audio.PositionedSoundRecord
-import net.minecraft.init.Items
-import net.minecraft.init.SoundEvents
-import net.minecraft.network.play.client.CPacketEntityAction
-import net.minecraft.network.play.server.SPacketEntityMetadata
-import net.minecraft.network.play.server.SPacketPlayerPosLook
 import org.kamiblue.commons.extension.toRadian
 import kotlin.math.*
 

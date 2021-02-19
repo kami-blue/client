@@ -1,17 +1,5 @@
 package org.kamiblue.client.module.modules.render
 
-import org.kamiblue.client.event.events.RenderOverlayEvent
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.EnchantmentUtils
-import org.kamiblue.client.util.EntityUtils
-import org.kamiblue.client.util.color.ColorGradient
-import org.kamiblue.client.util.color.ColorHolder
-import org.kamiblue.client.util.graphics.*
-import org.kamiblue.client.util.graphics.font.*
-import org.kamiblue.client.util.items.originalName
-import org.kamiblue.client.util.math.Vec2d
-import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.Entity
@@ -24,6 +12,18 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.EnumHandSide
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.event.events.RenderOverlayEvent
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.EnchantmentUtils
+import org.kamiblue.client.util.EntityUtils
+import org.kamiblue.client.util.color.ColorGradient
+import org.kamiblue.client.util.color.ColorHolder
+import org.kamiblue.client.util.graphics.*
+import org.kamiblue.client.util.graphics.font.*
+import org.kamiblue.client.util.items.originalName
+import org.kamiblue.client.util.math.Vec2d
+import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*

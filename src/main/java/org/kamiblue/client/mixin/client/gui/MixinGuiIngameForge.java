@@ -1,8 +1,8 @@
 package org.kamiblue.client.mixin.client.gui;
 
-import org.kamiblue.client.module.modules.player.Freecam;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.GuiIngameForge;
+import org.kamiblue.client.module.modules.player.Freecam;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;

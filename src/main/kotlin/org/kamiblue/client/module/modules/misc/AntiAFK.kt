@@ -1,6 +1,11 @@
 package org.kamiblue.client.module.modules.misc
 
 import baritone.api.pathing.goals.GoalXZ
+import net.minecraft.network.play.server.SPacketChat
+import net.minecraft.util.EnumHand
+import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.BaritoneSettingsInitEvent
 import org.kamiblue.client.event.events.PacketEvent
@@ -13,11 +18,6 @@ import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.text.MessageDetection
 import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.network.play.server.SPacketChat
-import net.minecraft.util.EnumHand
-import net.minecraft.util.math.BlockPos
-import net.minecraftforge.fml.common.gameevent.InputEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import kotlin.random.Random
 

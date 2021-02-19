@@ -1,13 +1,13 @@
 package org.kamiblue.client.module.modules.player
 
+import net.minecraft.network.play.server.SPacketDisconnect
+import net.minecraft.network.play.server.SPacketRespawn
+import net.minecraft.util.text.TextComponentString
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.network.play.server.SPacketDisconnect
-import net.minecraft.network.play.server.SPacketRespawn
-import net.minecraft.util.text.TextComponentString
 
 internal object EndTeleport : Module(
     name = "EndTeleport",

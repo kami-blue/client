@@ -1,14 +1,14 @@
 package org.kamiblue.client.module.modules.render
 
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.tutorial.TutorialSteps
 import net.minecraft.init.MobEffects
 import net.minecraftforge.client.event.RenderBlockOverlayEvent
 import net.minecraftforge.client.event.RenderBlockOverlayEvent.OverlayType
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
 
 internal object AntiOverlay : Module(

@@ -1,9 +1,5 @@
 package org.kamiblue.client.util.combat
 
-import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.util.Wrapper
-import org.kamiblue.client.util.math.VectorUtils
-import org.kamiblue.client.util.math.VectorUtils.distanceTo
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -14,6 +10,10 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.Explosion
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.util.Wrapper
+import org.kamiblue.client.util.math.VectorUtils
+import org.kamiblue.client.util.math.VectorUtils.distanceTo
 import kotlin.math.max
 
 object CrystalUtils {
@@ -26,18 +26,10 @@ object CrystalUtils {
         return VectorUtils.getBlockPosInSphere(centerPos, radius).filter { canPlace(it, target) }
     }
 
-    fun SafeClientEvent.getCrystalList(center: Vec3d, range: Float): ArrayList<EntityEnderCrystal> {
-        val crystalList = ArrayList<EntityEnderCrystal>()
-
-        for (entity in world.loadedEntityList.toList()) {
-            if (entity !is EntityEnderCrystal) continue
-            if (entity.isDead) continue
-            if (entity.distanceTo(center) > range) continue
-            crystalList.add(entity)
-        }
-
-        return crystalList
-    }
+    fun SafeClientEvent.getCrystalList(center: Vec3d, range: Float): List<EntityEnderCrystal> =
+        world.loadedEntityList.toList()
+            .filterIsInstance<EntityEnderCrystal>()
+            .filter { entity -> entity.isEntityAlive && entity.distanceTo(center) <= range }
 
     /** Checks colliding with blocks and given entity */
     fun SafeClientEvent.canPlace(pos: BlockPos, entity: EntityLivingBase? = null): Boolean {

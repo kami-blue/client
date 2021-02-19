@@ -2,7 +2,6 @@ package org.kamiblue.client.event
 
 import io.netty.util.internal.ConcurrentSet
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.util.Wrapper
@@ -14,11 +13,11 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentSkipListSet
 
 object KamiEventBus : AbstractAsyncEventBus() {
-    override val subscribedObjects = ConcurrentHashMap<Any, MutableSet<Listener<*>>>()
+    override val subscribedObjects = ConcurrentHashMap<Any, List<Listener<*>>>()
     override val subscribedListeners = ConcurrentHashMap<Class<*>, MutableSet<Listener<*>>>()
     override val newSet get() = ConcurrentSkipListSet<Listener<*>>(Comparator.reverseOrder())
 
-    override val subscribedObjectsAsync = ConcurrentHashMap<Any, MutableSet<AsyncListener<*>>>()
+    override val subscribedObjectsAsync = ConcurrentHashMap<Any, List<AsyncListener<*>>>()
     override val subscribedListenersAsync = ConcurrentHashMap<Class<*>, MutableSet<AsyncListener<*>>>()
     override val newSetAsync get() = ConcurrentSet<AsyncListener<*>>()
 
@@ -60,12 +59,10 @@ object KamiEventBus : AbstractAsyncEventBus() {
 
         if (listeners.isNotEmpty()) {
             runBlocking {
-                coroutineScope {
-                    listeners.forEach {
-                        launch(Dispatchers.Default) {
-                            @Suppress("UNCHECKED_CAST") // IDE meme
-                            (it as AsyncListener<Any>).function.invoke(event)
-                        }
+                listeners.forEach {
+                    launch(Dispatchers.Default) {
+                        @Suppress("UNCHECKED_CAST") // IDE meme
+                        (it as AsyncListener<Any>).function.invoke(event)
                     }
                 }
             }

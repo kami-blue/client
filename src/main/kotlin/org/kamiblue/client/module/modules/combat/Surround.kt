@@ -2,6 +2,9 @@ package org.kamiblue.client.module.modules.combat
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import net.minecraft.init.Blocks
+import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
@@ -14,6 +17,7 @@ import org.kamiblue.client.util.WorldUtils.buildStructure
 import org.kamiblue.client.util.WorldUtils.getPlaceInfo
 import org.kamiblue.client.util.WorldUtils.isPlaceable
 import org.kamiblue.client.util.combat.SurroundUtils
+import org.kamiblue.client.util.combat.SurroundUtils.checkHole
 import org.kamiblue.client.util.items.firstBlock
 import org.kamiblue.client.util.items.hotbarSlots
 import org.kamiblue.client.util.math.VectorUtils.toBlockPos
@@ -21,9 +25,6 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.isActiveOrFalse
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.init.Blocks
-import net.minecraft.util.math.BlockPos
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
 internal object Surround : Module(
@@ -119,7 +120,7 @@ internal object Surround : Module(
         }
     }
 
-    private fun SafeClientEvent.inHoleCheck() = player.onGround && player.speed < 0.15 && SurroundUtils.checkHole(player) == SurroundUtils.HoleType.OBBY
+    private fun SafeClientEvent.inHoleCheck() = player.onGround && player.speed < 0.15 && checkHole(player) == SurroundUtils.HoleType.OBBY
 
     private fun outOfHoleCheck() {
         if (autoDisable.value == AutoDisableMode.OUT_OF_HOLE) {

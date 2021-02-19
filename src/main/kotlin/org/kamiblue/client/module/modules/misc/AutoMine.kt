@@ -1,5 +1,6 @@
 package org.kamiblue.client.module.modules.misc
 
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.BaritoneCommandEvent
@@ -13,7 +14,6 @@ import org.kamiblue.client.util.text.formatValue
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.runSafeR
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 internal object AutoMine : Module(
@@ -24,7 +24,7 @@ internal object AutoMine : Module(
 
     private val manual by setting("Manual", false)
     private val iron = setting("Iron", false)
-    private val diamond = setting("Diamond", false)
+    private val diamond = setting("Diamond", true)
     private val gold = setting("Gold", false)
     private val coal = setting("Coal", false)
     private val log = setting("Logs", false)

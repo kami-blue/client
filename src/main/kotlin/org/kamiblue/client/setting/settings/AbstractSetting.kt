@@ -20,6 +20,8 @@ abstract class AbstractSetting<T : Any> : Nameable {
 
     val isVisible get() = visibility()
 
+    val isModified get() = this.value != this.defaultValue
+
     operator fun getValue(thisRef: Any?, property: KProperty<*>) = value
 
     open fun setValue(valueIn: String) {
@@ -47,5 +49,4 @@ abstract class AbstractSetting<T : Any> : Nameable {
         val gson: Gson = GsonBuilder().setPrettyPrinting().create()
         val parser = JsonParser()
     }
-
 }

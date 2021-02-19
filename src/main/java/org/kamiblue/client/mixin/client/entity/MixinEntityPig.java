@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.client.entity;
 
-import org.kamiblue.client.module.modules.movement.EntitySpeed;
 import net.minecraft.entity.passive.EntityPig;
+import org.kamiblue.client.module.modules.movement.EntitySpeed;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

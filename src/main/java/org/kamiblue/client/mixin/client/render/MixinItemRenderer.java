@@ -1,13 +1,13 @@
 package org.kamiblue.client.mixin.client.render;
 
-import org.kamiblue.client.module.modules.player.Freecam;
-import org.kamiblue.client.module.modules.render.ItemModel;
-import org.kamiblue.client.util.math.Vec3f;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import org.kamiblue.client.module.modules.player.Freecam;
+import org.kamiblue.client.module.modules.render.ItemModel;
+import org.kamiblue.client.util.math.Vec3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

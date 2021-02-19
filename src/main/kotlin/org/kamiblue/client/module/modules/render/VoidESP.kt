@@ -1,6 +1,8 @@
 package org.kamiblue.client.module.modules.render
 
 import kotlinx.coroutines.launch
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
@@ -12,8 +14,6 @@ import org.kamiblue.client.util.graphics.GeometryMasks
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.BlockPos
 
 internal object VoidESP : Module(
     name = "VoidESP",

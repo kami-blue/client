@@ -1,5 +1,15 @@
 package org.kamiblue.client.module.modules.render
 
+import net.minecraft.block.material.Material
+import net.minecraft.client.renderer.ActiveRenderInfo
+import net.minecraft.init.Items
+import net.minecraft.item.ItemStack
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.EnumHandSide
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.RayTraceResult
+import net.minecraft.util.math.Vec3d
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
@@ -11,16 +21,6 @@ import org.kamiblue.client.util.graphics.ESPRenderer
 import org.kamiblue.client.util.graphics.GeometryMasks
 import org.kamiblue.client.util.graphics.GlStateUtils
 import org.kamiblue.client.util.graphics.KamiTessellator
-import net.minecraft.block.material.Material
-import net.minecraft.client.renderer.ActiveRenderInfo
-import net.minecraft.init.Items
-import net.minecraft.item.ItemStack
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.EnumHandSide
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.RayTraceResult
-import net.minecraft.util.math.Vec3d
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 import org.lwjgl.opengl.GL11.glLineWidth

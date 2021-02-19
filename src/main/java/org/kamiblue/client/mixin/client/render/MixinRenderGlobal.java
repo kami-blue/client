@@ -1,10 +1,5 @@
 package org.kamiblue.client.mixin.client.render;
 
-import org.kamiblue.client.event.KamiEventBus;
-import org.kamiblue.client.event.events.BlockBreakEvent;
-import org.kamiblue.client.mixin.client.accessor.render.AccessorViewFrustum;
-import org.kamiblue.client.module.modules.player.Freecam;
-import org.kamiblue.client.module.modules.render.SelectionHighlight;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.ViewFrustum;
@@ -14,6 +9,11 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.BlockBreakEvent;
+import org.kamiblue.client.mixin.client.accessor.render.AccessorViewFrustum;
+import org.kamiblue.client.module.modules.player.Freecam;
+import org.kamiblue.client.module.modules.render.SelectionHighlight;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

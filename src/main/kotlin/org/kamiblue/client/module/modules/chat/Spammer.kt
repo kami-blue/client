@@ -2,6 +2,7 @@ package org.kamiblue.client.module.modules.chat
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -12,7 +13,7 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.extension.synchronized
 import java.io.File
 import java.net.URL
 import java.util.*
@@ -30,7 +31,7 @@ internal object Spammer : Module(
     private val remoteURL = setting("Remote URL", "Unchanged", { loadRemote.value })
 
     private val file = File(KamiMod.DIRECTORY + "spammer.txt")
-    private val spammer = Collections.synchronizedList(ArrayList<String>())
+    private val spammer = ArrayList<String>().synchronized()
     private val timer = TickTimer(TimeUnit.SECONDS)
     private var currentLine = 0
 

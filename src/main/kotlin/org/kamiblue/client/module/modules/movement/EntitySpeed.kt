@@ -1,13 +1,5 @@
 package org.kamiblue.client.module.modules.movement
 
-import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.event.events.PacketEvent
-import org.kamiblue.client.event.events.PlayerTravelEvent
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.MovementUtils
-import org.kamiblue.client.util.MovementUtils.calcMoveYaw
-import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
 import net.minecraft.entity.passive.AbstractHorse
@@ -19,6 +11,14 @@ import net.minecraft.network.play.client.CPacketVehicleMove
 import net.minecraft.network.play.server.SPacketMoveVehicle
 import net.minecraft.util.EnumHand
 import net.minecraft.world.chunk.EmptyChunk
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.PacketEvent
+import org.kamiblue.client.event.events.PlayerTravelEvent
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.MovementUtils
+import org.kamiblue.client.util.MovementUtils.calcMoveYaw
+import org.kamiblue.client.util.threads.safeListener
 import kotlin.math.cos
 import kotlin.math.sin
 

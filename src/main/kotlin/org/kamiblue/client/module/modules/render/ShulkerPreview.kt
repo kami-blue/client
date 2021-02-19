@@ -1,8 +1,5 @@
 package org.kamiblue.client.module.modules.render
 
-import org.kamiblue.client.mixin.client.gui.MixinGuiScreen
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
@@ -14,6 +11,9 @@ import net.minecraft.item.ItemShulkerBox
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.NonNullList
+import org.kamiblue.client.mixin.client.gui.MixinGuiScreen
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
 
 /**
  * @see MixinGuiScreen.renderToolTip

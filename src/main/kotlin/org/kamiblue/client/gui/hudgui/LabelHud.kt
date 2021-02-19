@@ -1,11 +1,11 @@
 package org.kamiblue.client.gui.hudgui
 
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.graphics.font.TextComponent
 import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.threads.safeAsyncListener
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 abstract class LabelHud(
     name: String,

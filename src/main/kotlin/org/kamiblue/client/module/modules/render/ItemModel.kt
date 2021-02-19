@@ -1,15 +1,16 @@
 package org.kamiblue.client.module.modules.render
 
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.math.Vec3f
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
 import net.minecraft.util.EnumHandSide
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.math.Vec3f
 
 internal object ItemModel : Module(
     name = "ItemModel",
+    alias = arrayOf("SmallShield"),
     description = "Modify hand item rendering in first person",
     category = Category.RENDER
 ) {

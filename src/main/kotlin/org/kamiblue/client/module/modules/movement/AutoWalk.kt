@@ -1,6 +1,9 @@
 package org.kamiblue.client.module.modules.movement
 
 import baritone.api.pathing.goals.GoalXZ
+import net.minecraft.util.MovementInputFromOptions
+import net.minecraftforge.client.event.InputUpdateEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.BaritoneCommandEvent
 import org.kamiblue.client.event.events.ConnectionEvent
@@ -14,9 +17,6 @@ import org.kamiblue.client.util.math.Direction
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.util.MovementInputFromOptions
-import net.minecraftforge.client.event.InputUpdateEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
@@ -29,7 +29,7 @@ internal object AutoWalk : Module(
     private val mode = setting("Direction", AutoWalkMode.BARITONE)
     private val disableOnDisconnect by setting("Disable On Disconnect", true)
 
-    private enum class AutoWalkMode(override val displayName: String): DisplayEnum {
+    private enum class AutoWalkMode(override val displayName: String) : DisplayEnum {
         FORWARD("Forward"),
         BACKWARD("Backward"),
         BARITONE("Baritone")

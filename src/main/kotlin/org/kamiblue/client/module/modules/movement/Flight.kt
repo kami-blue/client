@@ -1,5 +1,7 @@
 package org.kamiblue.client.module.modules.movement
 
+import net.minecraft.network.play.client.CPacketPlayer
+import net.minecraft.network.play.server.SPacketCloseWindow
 import org.kamiblue.client.event.Phase
 import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
 import org.kamiblue.client.event.events.PacketEvent
@@ -11,8 +13,6 @@ import org.kamiblue.client.util.MovementUtils
 import org.kamiblue.client.util.MovementUtils.calcMoveYaw
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.network.play.client.CPacketPlayer
-import net.minecraft.network.play.server.SPacketCloseWindow
 import org.kamiblue.event.listener.listener
 import kotlin.math.cos
 import kotlin.math.sin

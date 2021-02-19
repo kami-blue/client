@@ -1,11 +1,11 @@
 package org.kamiblue.client.mixin.client.gui;
 
-import org.kamiblue.client.gui.mc.KamiGuiStealButton;
-import org.kamiblue.client.gui.mc.KamiGuiStoreButton;
-import org.kamiblue.client.module.modules.player.ChestStealer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import org.kamiblue.client.gui.mc.KamiGuiStealButton;
+import org.kamiblue.client.gui.mc.KamiGuiStoreButton;
+import org.kamiblue.client.module.modules.player.ChestStealer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

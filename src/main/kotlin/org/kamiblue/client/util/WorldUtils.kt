@@ -1,11 +1,6 @@
 package org.kamiblue.client.util
 
 import kotlinx.coroutines.delay
-import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.manager.managers.PlayerPacketManager
-import org.kamiblue.client.util.math.RotationUtils.getRotationTo
-import org.kamiblue.client.util.math.corners
-import org.kamiblue.client.util.threads.runSafeSuspend
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
@@ -18,6 +13,11 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.util.math.RotationUtils.getRotationTo
+import org.kamiblue.client.util.math.corners
+import org.kamiblue.client.util.threads.runSafeSuspend
 import org.kamiblue.commons.extension.add
 import kotlin.math.floor
 

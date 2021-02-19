@@ -1,5 +1,8 @@
 package org.kamiblue.client.module.modules.misc
 
+import net.minecraft.client.gui.GuiDisconnected
+import net.minecraft.client.multiplayer.GuiConnecting
+import net.minecraft.client.multiplayer.ServerData
 import org.kamiblue.client.event.events.GuiEvent
 import org.kamiblue.client.mixin.extension.message
 import org.kamiblue.client.mixin.extension.parentScreen
@@ -7,9 +10,6 @@ import org.kamiblue.client.mixin.extension.reason
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.StopTimer
-import net.minecraft.client.gui.GuiDisconnected
-import net.minecraft.client.multiplayer.GuiConnecting
-import net.minecraft.client.multiplayer.ServerData
 import org.kamiblue.event.listener.listener
 import kotlin.math.max
 

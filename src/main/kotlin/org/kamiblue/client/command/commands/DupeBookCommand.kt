@@ -1,12 +1,12 @@
 package org.kamiblue.client.command.commands
 
+import net.minecraft.item.ItemWritableBook
+import net.minecraft.nbt.NBTTagList
+import net.minecraft.nbt.NBTTagString
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.event.SafeExecuteEvent
 import org.kamiblue.client.util.items.itemPayload
 import org.kamiblue.client.util.text.MessageSendHelper
-import net.minecraft.item.ItemWritableBook
-import net.minecraft.nbt.NBTTagList
-import net.minecraft.nbt.NBTTagString
 import java.util.*
 import java.util.stream.Collectors
 

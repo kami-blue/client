@@ -1,9 +1,9 @@
 package org.kamiblue.client.gui.hudgui.elements.player
 
+import net.minecraft.util.EnumHand
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.setting.GuiConfig.setting
-import net.minecraft.util.EnumHand
 import org.kamiblue.commons.utils.MathUtils
 
 object Durability : LabelHud(

@@ -1,16 +1,16 @@
 package org.kamiblue.client.module.modules.movement
 
-import org.kamiblue.client.KamiMod
-import org.kamiblue.client.gui.AbstractKamiGui
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.GuiRepair
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiEditSign
 import net.minecraft.util.MovementInputFromOptions
 import net.minecraftforge.client.event.InputUpdateEvent
+import org.kamiblue.client.KamiMod
+import org.kamiblue.client.gui.AbstractKamiGui
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.threads.safeListener
 import org.lwjgl.input.Keyboard
 
 internal object InventoryMove : Module(

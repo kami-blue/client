@@ -1,11 +1,11 @@
 package org.kamiblue.client.manager.managers
 
-import org.kamiblue.client.KamiMod
-import org.kamiblue.client.manager.Manager
-import org.kamiblue.client.util.Wrapper
 import org.kamiblue.capeapi.AbstractUUIDManager
 import org.kamiblue.capeapi.PlayerProfile
 import org.kamiblue.capeapi.UUIDUtils
+import org.kamiblue.client.KamiMod
+import org.kamiblue.client.manager.Manager
+import org.kamiblue.client.util.Wrapper
 
 object UUIDManager : AbstractUUIDManager(KamiMod.DIRECTORY + "uuid_cache.json", KamiMod.LOG, maxCacheSize = 1000), Manager {
 

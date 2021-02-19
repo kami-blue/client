@@ -1,11 +1,11 @@
 package org.kamiblue.client.mixin.client.network;
 
 import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.PacketEvent;
 import org.kamiblue.client.module.modules.player.NoPacketKick;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

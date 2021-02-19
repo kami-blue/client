@@ -1,5 +1,13 @@
 package org.kamiblue.client.module.modules.render
 
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.item.ItemMap
+import net.minecraft.item.ItemStack
+import net.minecraft.util.ResourceLocation
+import net.minecraft.world.storage.MapData
 import org.kamiblue.client.mixin.client.gui.MixinGuiScreen
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -11,14 +19,6 @@ import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.graphics.font.FontRenderAdapter.getFontHeight
 import org.kamiblue.client.util.graphics.font.FontRenderAdapter.getStringWidth
 import org.kamiblue.client.util.math.Vec2d
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.item.ItemMap
-import net.minecraft.item.ItemStack
-import net.minecraft.util.ResourceLocation
-import net.minecraft.world.storage.MapData
 import java.awt.Color
 
 /**

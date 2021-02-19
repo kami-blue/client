@@ -1,5 +1,12 @@
 package org.kamiblue.client.module.modules.movement
 
+import net.minecraft.block.BlockLiquid
+import net.minecraft.entity.Entity
+import net.minecraft.entity.item.EntityBoat
+import net.minecraft.network.play.client.CPacketPlayer
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.events.AddCollisionBoxToListEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.mixin.extension.y
@@ -8,13 +15,6 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.BaritoneUtils
 import org.kamiblue.client.util.EntityUtils
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.block.BlockLiquid
-import net.minecraft.entity.Entity
-import net.minecraft.entity.item.EntityBoat
-import net.minecraft.network.play.client.CPacketPlayer
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.BlockPos
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.event.listener.listener

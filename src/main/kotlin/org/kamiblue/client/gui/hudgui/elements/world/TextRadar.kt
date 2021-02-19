@@ -1,5 +1,7 @@
 package org.kamiblue.client.gui.hudgui.elements.world
 
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.MobEffects
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.manager.managers.FriendManager
@@ -10,8 +12,6 @@ import org.kamiblue.client.util.color.ColorGradient
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.color.DyeColors
 import org.kamiblue.client.util.threads.runSafeR
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.MobEffects
 import org.kamiblue.commons.utils.MathUtils
 
 object TextRadar : LabelHud(

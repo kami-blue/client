@@ -20,7 +20,6 @@ import org.kamiblue.client.util.*
 import org.kamiblue.client.util.combat.CombatUtils
 import org.kamiblue.client.util.combat.CombatUtils.calcDamageFromMob
 import org.kamiblue.client.util.combat.CombatUtils.calcDamageFromPlayer
-import org.kamiblue.client.util.combat.CrystalUtils.calcCrystalDamage
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
@@ -34,38 +33,42 @@ internal object AutoOffhand : Module(
     description = "Manages item in your offhand",
     category = Category.COMBAT
 ) {
-    private val type = setting("Type", Type.TOTEM)
+    private val type by setting("Type", Type.TOTEM)
 
     // Totem
-    private val hpThreshold = setting("HpThreshold", 5f, 1f..20f, 0.5f, { type.value == Type.TOTEM })
-    private val bindTotem = setting("BindTotem", Bind(), { type.value == Type.TOTEM })
-    private val checkDamage = setting("CheckDamage", true, { type.value == Type.TOTEM })
-    private val mob = setting("Mob", true, { type.value == Type.TOTEM && checkDamage.value })
-    private val player = setting("Player", true, { type.value == Type.TOTEM && checkDamage.value })
-    private val crystal = setting("Crystal", true, { type.value == Type.TOTEM && checkDamage.value })
-    private val falling = setting("Falling", true, { type.value == Type.TOTEM && checkDamage.value })
+    private val hpThreshold by setting("Hp Threshold", 5f, 1f..20f, 0.5f, { type == Type.TOTEM })
+    private val bindTotem by setting("Bind Totem", Bind(), { type == Type.TOTEM })
+    private val checkDamage by setting("Check Damage", true, { type == Type.TOTEM })
+    private val mob by setting("Mob", true, { type == Type.TOTEM && checkDamage })
+    private val player by setting("Player", true, { type == Type.TOTEM && checkDamage })
+    private val crystal by setting("Crystal", true, { type == Type.TOTEM && checkDamage })
+    private val falling by setting("Falling", true, { type == Type.TOTEM && checkDamage })
 
     // Gapple
-    private val offhandGapple = setting("OffhandGapple", false, { type.value == Type.GAPPLE })
-    private val bindGapple = setting("BindGapple", Bind(), { type.value == Type.GAPPLE && offhandGapple.value })
-    private val checkAuraG = setting("CheckAuraG", true, { type.value == Type.GAPPLE && offhandGapple.value })
-    private val checkWeaponG = setting("CheckWeaponG", false, { type.value == Type.GAPPLE && offhandGapple.value })
-    private val checkCAGapple = setting("CheckCrystalAuraG", true, { type.value == Type.GAPPLE && offhandGapple.value && !offhandCrystal.value })
+    private val offhandGapple by setting("Offhand Gapple", false, { type == Type.GAPPLE })
+    private val bindGapple by setting("Bind Gapple", Bind(), { type == Type.GAPPLE && offhandGapple })
+    private val checkAuraG by setting("Check Aura G", true, { type == Type.GAPPLE && offhandGapple })
+    private val checkWeaponG by setting("Check Weapon G", false, { type == Type.GAPPLE && offhandGapple })
+    private val checkCAGapple by setting("Check CrystalAura G", true, { type == Type.GAPPLE && offhandGapple && !offhandCrystal })
 
     // Strength
-    private val offhandStrength = setting("OffhandStrength", false, { type.value == Type.STRENGTH })
-    private val bindStrength = setting("BindStrength", Bind(), { type.value == Type.STRENGTH && offhandStrength.value })
-    private val checkAuraS = setting("CheckAuraS", true, { type.value == Type.STRENGTH && offhandStrength.value })
-    private val checkWeaponS = setting("CheckWeaponS", false, { type.value == Type.STRENGTH && offhandStrength.value })
+    private val offhandStrength by setting("Offhand Strength", false, { type == Type.STRENGTH })
+    private val bindStrength by setting("Bind Strength", Bind(), { type == Type.STRENGTH && offhandStrength })
+    private val checkAuraS by setting("Check Aura S", true, { type == Type.STRENGTH && offhandStrength })
+    private val checkWeaponS by setting("Check Weapon S", false, { type == Type.STRENGTH && offhandStrength })
 
     // Crystal
-    private val offhandCrystal = setting("OffhandCrystal", false, { type.value == Type.CRYSTAL })
-    private val bindCrystal = setting("BindCrystal", Bind(), { type.value == Type.CRYSTAL && offhandCrystal.value })
-    private val checkCACrystal = setting("CheckCrystalAuraC", false, { type.value == Type.CRYSTAL && offhandCrystal.value })
+    private val offhandCrystal by setting("Offhand Crystal", false, { type == Type.CRYSTAL })
+    private val bindCrystal by setting("Bind Crystal", Bind(), { type == Type.CRYSTAL && offhandCrystal })
+    private val checkCACrystal by setting("Check Crystal Aura C", false, { type == Type.CRYSTAL && offhandCrystal })
 
     // General
-    private val priority = setting("Priority", Priority.HOTBAR)
-    private val switchMessage = setting("SwitchMessage", true)
+    private val priority by setting("Priority", Priority.HOTBAR)
+    private val switchMessage by setting("Switch Message", true)
+    private val delay by setting("Delay", 2, 1..20, 1,
+        description = "Ticks to wait between each move")
+    private val confirmTimeout by setting("Confirm Timeout", 5, 1..20, 1,
+        description = "Maximum ticks to wait for confirm packets from server")
 
     private enum class Type(val filter: (ItemStack) -> Boolean) {
         TOTEM({ it.item.id == 449 }),
@@ -80,7 +83,8 @@ internal object AutoOffhand : Module(
     }
 
     private val transactionLog = HashMap<Short, Boolean>()
-    private val movingTimer = TickTimer()
+    private val confirmTimer = TickTimer(TimeUnit.TICKS)
+    private val movingTimer = TickTimer(TimeUnit.TICKS)
     private var maxDamage = 0f
 
     init {
@@ -99,24 +103,28 @@ internal object AutoOffhand : Module(
 
             transactionLog[it.packet.actionNumber] = it.packet.wasAccepted()
             if (!transactionLog.containsValue(false)) {
-                movingTimer.reset(-175L) // If all the click packets were accepted then we reset the timer for next moving
+                confirmTimer.reset(confirmTimeout * -50L) // If all the click packets were accepted then we reset the timer for next moving
             }
         }
 
         safeListener<TickEvent.ClientTickEvent>(1100) {
-            if (player.isDead || !movingTimer.tick(200L, false)) return@safeListener // Delays 4 ticks by default
+            if (player.isDead || player.health <= 0.0f) return@safeListener
+
+            if (!confirmTimer.tick(confirmTimeout.toLong(), false)) return@safeListener
+            if (!movingTimer.tick(delay.toLong(), false)) return@safeListener // Delays `delay` ticks
+
+            updateDamage()
 
             if (!player.inventory.itemStack.isEmpty) { // If player is holding an in inventory
-                if (mc.currentScreen is GuiContainer) {// If inventory is open (playing moving item)
-                    movingTimer.reset() // delay for 5 ticks
+                if (mc.currentScreen is GuiContainer) { // If inventory is open (playing moving item)
+                    movingTimer.reset() // reset movingTimer as the user is currently interacting with the inventory.
                 } else { // If inventory is not open (ex. inventory desync)
                     removeHoldingItem()
                 }
-            } else { // If player is not holding an item in inventory
-                switchToType(getType(), true)
+                return@safeListener
             }
 
-            updateDamage()
+            switchToType(getType(), true)
         }
     }
 
@@ -129,37 +137,42 @@ internal object AutoOffhand : Module(
         else -> null
     }
 
-    private fun SafeClientEvent.checkTotem() = CombatUtils.getHealthSmart(player) < hpThreshold.value
-        || (checkDamage.value && CombatUtils.getHealthSmart(player) - maxDamage < hpThreshold.value)
+    private fun SafeClientEvent.checkTotem() = CombatUtils.getHealthSmart(player) < hpThreshold
+        || (checkDamage && CombatUtils.getHealthSmart(player) - maxDamage < hpThreshold)
 
-    private fun SafeClientEvent.checkGapple() = offhandGapple.value
-        && (checkAuraS.value && CombatManager.isActiveAndTopPriority(KillAura)
-        || checkWeaponG.value && player.heldItemMainhand.item.isWeapon
-        || (checkCAGapple.value && !offhandCrystal.value) && CombatManager.isOnTopPriority(CrystalAura))
+    private fun SafeClientEvent.checkGapple() = offhandGapple
+        && (checkAuraG && CombatManager.isActiveAndTopPriority(KillAura)
+        || checkWeaponG && player.heldItemMainhand.item.isWeapon
+        || (checkCAGapple && !offhandCrystal) && CombatManager.isOnTopPriority(CrystalAura))
 
-    private fun checkCrystal() = offhandCrystal.value
-        && checkCACrystal.value && CrystalAura.isEnabled && CombatManager.isOnTopPriority(CrystalAura)
+    private fun checkCrystal() = offhandCrystal
+        && checkCACrystal && CrystalAura.isEnabled && CombatManager.isOnTopPriority(CrystalAura)
 
-    private fun SafeClientEvent.checkStrength() = offhandStrength.value
+    private fun SafeClientEvent.checkStrength() = offhandStrength
         && !player.isPotionActive(MobEffects.STRENGTH)
-        && (checkAuraG.value && CombatManager.isActiveAndTopPriority(KillAura)
-        || checkWeaponS.value && player.heldItemMainhand.item.isWeapon)
+        && player.inventoryContainer.inventory.any(Type.STRENGTH.filter)
+        && (checkAuraS && CombatManager.isActiveAndTopPriority(KillAura)
+        || checkWeaponS && player.heldItemMainhand.item.isWeapon)
 
     private fun SafeClientEvent.switchToType(typeOriginal: Type?, alternativeType: Boolean = false) {
         // First check for whether player is holding the right item already or not
-        if (typeOriginal != null && !checkOffhandItem(typeOriginal)) {
-            getItemSlot(typeOriginal)?.let { (slot, typeAlt) ->
-                // Second check is for case of when player ran out of the original type of item
-                if (!alternativeType && typeAlt != typeOriginal || checkOffhandItem(typeAlt)) return@let
+        if (typeOriginal == null || checkOffhandItem(typeOriginal)) return
 
-                transactionLog.clear()
-                transactionLog.putAll(moveToSlot(slot, player.offhandSlot).associate { it to false })
+        getItemSlot(typeOriginal)?.let { (slot, typeAlt) ->
+            // Second check is for case of when player ran out of the original type of item
+            if (!alternativeType && typeAlt != typeOriginal || checkOffhandItem(typeAlt)) return
 
-                playerController.updateController()
-                movingTimer.reset()
-
-                if (switchMessage.value) MessageSendHelper.sendChatMessage("$chatName Offhand now has a ${typeAlt.toString().toLowerCase()}")
+            transactionLog.clear()
+            moveToSlot(slot.slotNumber, 45).forEach {
+                transactionLog[it] = false
             }
+
+            playerController.updateController()
+
+            confirmTimer.reset()
+            movingTimer.reset()
+
+            if (switchMessage) MessageSendHelper.sendChatMessage("$chatName Offhand now has a ${typeAlt.toString().toLowerCase()}")
         }
     }
 
@@ -176,7 +189,7 @@ internal object AutoOffhand : Module(
     private fun SafeClientEvent.getSlot(type: Type): Slot? {
         val slots = player.inventorySlots
 
-        return if (priority.value == Priority.HOTBAR) {
+        return if (priority == Priority.HOTBAR) {
             slots.lastOrNull { type.filter(it.stack) }
         } else {
             slots.firstOrNull { type.filter(it.stack) }
@@ -185,27 +198,28 @@ internal object AutoOffhand : Module(
 
     private fun SafeClientEvent.updateDamage() {
         maxDamage = 0f
-        if (!checkDamage.value) return
+        if (!checkDamage) return
 
         for (entity in world.loadedEntityList) {
             if (entity.name == player.name) continue
             if (entity !is EntityMob && entity !is EntityPlayer && entity !is EntityEnderCrystal) continue
-            if (player.getDistance(entity) > 10f) continue
+            if (player.getDistance(entity) > 10.0f) continue
 
-            if (mob.value && entity is EntityMob) {
-                maxDamage = max(calcDamageFromMob(entity), maxDamage)
-            }
-
-            if (this@AutoOffhand.player.value && entity is EntityPlayer) {
-                maxDamage = max(calcDamageFromPlayer(entity, true), maxDamage)
-            }
-
-            if (crystal.value && entity is EntityEnderCrystal) {
-                maxDamage = max(calcCrystalDamage(entity, player), maxDamage)
+            when {
+                mob && entity is EntityMob -> {
+                    maxDamage = max(calcDamageFromMob(entity), maxDamage)
+                }
+                this@AutoOffhand.player && entity is EntityPlayer -> {
+                    maxDamage = max(calcDamageFromPlayer(entity, true), maxDamage)
+                }
+                crystal && entity is EntityEnderCrystal -> {
+                    val damage = CombatManager.crystalMap[entity] ?: continue
+                    maxDamage = max(damage.selfDamage, maxDamage)
+                }
             }
         }
 
-        if (falling.value && nextFallDist > 3.0f) maxDamage = max(ceil(nextFallDist - 3.0f), maxDamage)
+        if (falling && nextFallDist > 3.0f) maxDamage = max(ceil(nextFallDist - 3.0f), maxDamage)
     }
 
     private val SafeClientEvent.nextFallDist get() = player.fallDistance - player.motionY.toFloat()

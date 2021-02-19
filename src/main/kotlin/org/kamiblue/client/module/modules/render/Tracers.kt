@@ -1,5 +1,8 @@
 package org.kamiblue.client.module.modules.render
 
+import net.minecraft.entity.Entity
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.module.Category
@@ -12,9 +15,6 @@ import org.kamiblue.client.util.color.DyeColors
 import org.kamiblue.client.util.color.HueCycler
 import org.kamiblue.client.util.graphics.ESPRenderer
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.entity.Entity
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils.convertRange
 import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
@@ -36,7 +36,7 @@ internal object Tracers : Module(
     private val neutral = setting("Neutral Mobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
     private val hostile = setting("Hostile Mobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
     private val invisible = setting("Invisible", true, { page.value == Page.ENTITY_TYPE })
-    private val range = setting("Range", 64, 8..256, 8, { page.value == Page.ENTITY_TYPE })
+    private val range = setting("Range", 64, 8..512, 8, { page.value == Page.ENTITY_TYPE })
 
     /* Color settings */
     private val colorPlayer = setting("Player Color", DyeColors.KAMI, { page.value == Page.COLOR })

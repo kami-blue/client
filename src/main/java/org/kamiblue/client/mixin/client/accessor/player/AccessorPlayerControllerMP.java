@@ -14,6 +14,9 @@ public interface AccessorPlayerControllerMP {
     @Accessor("blockHitDelay")
     void setBlockHitDelay(int value);
 
+    @Accessor("isHittingBlock")
+    void kbSetIsHittingBlock(boolean value);
+
     @Accessor("currentPlayerItem")
     int getCurrentPlayerItem();
 

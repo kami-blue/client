@@ -1,15 +1,15 @@
 package org.kamiblue.client.mixin.extension
 
-import org.kamiblue.client.mixin.client.accessor.render.AccessorRenderGlobal
-import org.kamiblue.client.mixin.client.accessor.render.AccessorRenderManager
-import org.kamiblue.client.mixin.client.accessor.render.AccessorShaderGroup
-import org.kamiblue.client.mixin.client.accessor.render.AccessorViewFrustum
 import net.minecraft.client.renderer.RenderGlobal
 import net.minecraft.client.renderer.ViewFrustum
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.shader.Shader
 import net.minecraft.client.shader.ShaderGroup
 import net.minecraft.util.math.BlockPos
+import org.kamiblue.client.mixin.client.accessor.render.AccessorRenderGlobal
+import org.kamiblue.client.mixin.client.accessor.render.AccessorRenderManager
+import org.kamiblue.client.mixin.client.accessor.render.AccessorShaderGroup
+import org.kamiblue.client.mixin.client.accessor.render.AccessorViewFrustum
 
 val RenderGlobal.entityOutlineShader: ShaderGroup get() = (this as AccessorRenderGlobal).entityOutlineShader
 

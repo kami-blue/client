@@ -1,5 +1,10 @@
 package org.kamiblue.client.module.modules.combat
 
+import net.minecraft.client.audio.PositionedSoundRecord
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.SoundEvents
+import net.minecraft.util.text.TextFormatting
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.manager.managers.WaypointManager
 import org.kamiblue.client.module.Category
@@ -12,11 +17,6 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
 import org.kamiblue.client.util.text.format
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.client.audio.PositionedSoundRecord
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.SoundEvents
-import net.minecraft.util.text.TextFormatting
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
 
 internal object VisualRange : Module(

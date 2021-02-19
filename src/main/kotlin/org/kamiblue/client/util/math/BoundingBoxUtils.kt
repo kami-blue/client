@@ -1,11 +1,11 @@
 package org.kamiblue.client.util.math
 
-import org.kamiblue.client.util.math.VectorUtils.plus
-import org.kamiblue.client.util.math.VectorUtils.times
-import org.kamiblue.client.util.math.VectorUtils.toVec3d
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.client.util.math.VectorUtils.plus
+import org.kamiblue.client.util.math.VectorUtils.times
+import org.kamiblue.client.util.math.VectorUtils.toVec3d
 
 val AxisAlignedBB.xLength get() = maxX - minX
 

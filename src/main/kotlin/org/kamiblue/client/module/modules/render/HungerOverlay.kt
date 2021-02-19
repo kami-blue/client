@@ -1,10 +1,5 @@
 package org.kamiblue.client.module.modules.render
 
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.graphics.GlStateUtils
-import org.kamiblue.client.util.items.foodValue
-import org.kamiblue.client.util.items.saturation
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.init.MobEffects
@@ -12,6 +7,11 @@ import net.minecraft.item.ItemFood
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.GuiIngameForge
 import net.minecraftforge.client.event.RenderGameOverlayEvent
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.graphics.GlStateUtils
+import org.kamiblue.client.util.items.foodValue
+import org.kamiblue.client.util.items.saturation
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.glColor4f

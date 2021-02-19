@@ -1,5 +1,16 @@
 package org.kamiblue.client.module.modules.combat
 
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.init.Blocks
+import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.EnumHand
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.manager.managers.CombatManager
@@ -20,17 +31,6 @@ import org.kamiblue.client.util.math.RotationUtils.getRotationTo
 import org.kamiblue.client.util.math.VectorUtils
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.entity.EntityLivingBase
-import net.minecraft.init.Blocks
-import net.minecraft.item.ItemStack
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.EnumHand
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
-import net.minecraftforge.fml.common.gameevent.InputEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import java.util.*
@@ -110,7 +110,7 @@ internal object CrystalBasePlace : Module(
 
     private val SafeClientEvent.isHoldingObby
         get() = isObby(player.heldItemMainhand)
-                || isObby(player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
+            || isObby(player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
 
     private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
 
@@ -138,7 +138,7 @@ internal object CrystalBasePlace : Module(
         val posList = VectorUtils.getBlockPosInSphere(eyePos, range.value)
         val maxCurrentDamage = CombatManager.placeMap.entries
             .filter { eyePos.distanceTo(it.key) < range.value }
-            .map { it.value.first }
+            .map { it.value.targetDamage }
             .maxOrNull() ?: 0.0f
 
         for (pos in posList) {

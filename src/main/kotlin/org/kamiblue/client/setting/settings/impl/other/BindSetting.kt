@@ -23,7 +23,7 @@ class BindSetting(
         var string = valueIn
 
         if (string.equals("None", ignoreCase = true)) {
-            value.setBind(0)
+            value.setBind(ctrlIn = false, altIn = false, shiftIn = false, keyIn = 0)
             return
         }
 

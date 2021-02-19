@@ -1,5 +1,11 @@
 package org.kamiblue.client.gui.hudgui.elements.world
 
+import net.minecraft.entity.Entity
+import net.minecraft.entity.item.*
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.projectile.EntityEgg
+import net.minecraft.entity.projectile.EntitySnowball
+import net.minecraft.entity.projectile.EntityWitherSkull
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.setting.GuiConfig.setting
@@ -9,12 +15,6 @@ import org.kamiblue.client.util.EntityUtils.isNeutral
 import org.kamiblue.client.util.EntityUtils.isPassive
 import org.kamiblue.client.util.items.originalName
 import org.kamiblue.client.util.threads.runSafe
-import net.minecraft.entity.Entity
-import net.minecraft.entity.item.*
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.projectile.EntityEgg
-import net.minecraft.entity.projectile.EntitySnowball
-import net.minecraft.entity.projectile.EntityWitherSkull
 import java.util.*
 
 object EntityList : LabelHud(

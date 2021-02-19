@@ -8,6 +8,7 @@ import org.kamiblue.client.util.StopTimer
 import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.commons.collections.AliasSet
 import org.kamiblue.commons.utils.ClassUtils
+import org.kamiblue.commons.utils.ClassUtils.instance
 import org.lwjgl.input.Keyboard
 import java.lang.reflect.Modifier
 
@@ -22,8 +23,10 @@ object ModuleManager : AsyncLoader<List<Class<out AbstractModule>>> {
     override fun preLoad0(): List<Class<out AbstractModule>> {
         val stopTimer = StopTimer()
 
-        val list = ClassUtils.findClasses("org.kamiblue.client.module.modules", AbstractModule::class.java)
-            .filter { Modifier.isFinal(it.modifiers) }
+        val list = ClassUtils.findClasses<AbstractModule>("org.kamiblue.client.module.modules") {
+            filter { Modifier.isFinal(it.modifiers) }
+        }
+
         val time = stopTimer.stop()
 
         KamiMod.LOG.info("${list.size} modules found, took ${time}ms")
@@ -34,7 +37,7 @@ object ModuleManager : AsyncLoader<List<Class<out AbstractModule>>> {
         val stopTimer = StopTimer()
 
         for (clazz in input) {
-            moduleSet.add(ClassUtils.getInstance(clazz).apply { postInit() })
+            moduleSet.add(clazz.instance.apply { postInit() })
         }
 
         val time = stopTimer.stop()

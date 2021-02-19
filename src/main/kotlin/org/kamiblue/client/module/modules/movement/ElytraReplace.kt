@@ -1,9 +1,5 @@
 package org.kamiblue.client.module.modules.movement
 
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.text.MessageSendHelper
-import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
@@ -13,6 +9,10 @@ import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemElytra
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.threads.safeListener
 
 internal object ElytraReplace : Module(
     name = "ElytraReplace",

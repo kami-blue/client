@@ -1,14 +1,14 @@
 package org.kamiblue.client.module.modules.misc
 
+import net.minecraft.client.gui.GuiButton
+import net.minecraft.client.gui.inventory.GuiEditSign
+import net.minecraft.tileentity.TileEntitySign
+import net.minecraft.util.text.TextComponentString
 import org.kamiblue.client.event.events.GuiEvent
 import org.kamiblue.client.mixin.extension.editLine
 import org.kamiblue.client.mixin.extension.tileSign
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import net.minecraft.client.gui.GuiButton
-import net.minecraft.client.gui.inventory.GuiEditSign
-import net.minecraft.tileentity.TileEntitySign
-import net.minecraft.util.text.TextComponentString
 import org.kamiblue.event.listener.listener
 import java.io.IOException
 

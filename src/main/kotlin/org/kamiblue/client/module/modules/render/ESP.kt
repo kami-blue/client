@@ -1,5 +1,14 @@
 package org.kamiblue.client.module.modules.render
 
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.shader.Shader
+import net.minecraft.entity.Entity
+import net.minecraft.entity.item.EntityItem
+import net.minecraft.entity.item.EntityXPOrb
+import net.minecraft.entity.projectile.EntityArrow
+import net.minecraft.entity.projectile.EntityThrowable
+import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.Phase
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderEntityEvent
@@ -16,15 +25,6 @@ import org.kamiblue.client.util.graphics.KamiTessellator
 import org.kamiblue.client.util.graphics.ShaderHelper
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.shader.Shader
-import net.minecraft.entity.Entity
-import net.minecraft.entity.item.EntityItem
-import net.minecraft.entity.item.EntityXPOrb
-import net.minecraft.entity.projectile.EntityArrow
-import net.minecraft.entity.projectile.EntityThrowable
-import net.minecraft.util.ResourceLocation
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 

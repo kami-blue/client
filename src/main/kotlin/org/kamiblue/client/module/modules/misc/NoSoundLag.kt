@@ -1,11 +1,11 @@
 package org.kamiblue.client.module.modules.misc
 
-import org.kamiblue.client.event.events.PacketEvent
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
 import net.minecraft.init.SoundEvents
 import net.minecraft.network.play.server.SPacketSoundEffect
 import net.minecraft.util.SoundCategory
+import org.kamiblue.client.event.events.PacketEvent
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
 import org.kamiblue.event.listener.listener
 
 internal object NoSoundLag : Module(

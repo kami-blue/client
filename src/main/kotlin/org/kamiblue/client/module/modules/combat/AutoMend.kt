@@ -1,5 +1,12 @@
 package org.kamiblue.client.module.modules.combat
 
+import net.minecraft.enchantment.EnchantmentHelper
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.Enchantments
+import net.minecraft.init.Items
+import net.minecraft.util.EnumHand
+import net.minecraft.util.math.RayTraceResult
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.GuiEvent
 import org.kamiblue.client.manager.managers.FriendManager
@@ -15,13 +22,6 @@ import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.enchantment.EnchantmentHelper
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.Enchantments
-import net.minecraft.init.Items
-import net.minecraft.util.EnumHand
-import net.minecraft.util.math.RayTraceResult
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils.reverseNumber
 import org.kamiblue.event.listener.listener
 

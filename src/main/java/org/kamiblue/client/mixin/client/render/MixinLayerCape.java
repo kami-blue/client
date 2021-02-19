@@ -1,9 +1,9 @@
 package org.kamiblue.client.mixin.client.render;
 
-import org.kamiblue.client.module.modules.client.Capes;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.layers.LayerCape;
+import org.kamiblue.client.module.modules.client.Capes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

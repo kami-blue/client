@@ -1,14 +1,5 @@
 package org.kamiblue.client.module.modules.player
 
-import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.event.events.PacketEvent
-import org.kamiblue.client.mixin.extension.onGround
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.EntityUtils
-import org.kamiblue.client.util.WorldUtils.getGroundPos
-import org.kamiblue.client.util.text.MessageSendHelper
-import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
@@ -20,6 +11,15 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.PacketEvent
+import org.kamiblue.client.mixin.extension.onGround
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.EntityUtils
+import org.kamiblue.client.util.WorldUtils.getGroundPos
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.threads.safeListener
 
 internal object NoFall : Module(
     name = "NoFall",

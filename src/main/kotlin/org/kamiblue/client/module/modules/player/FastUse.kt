@@ -1,10 +1,5 @@
 package org.kamiblue.client.module.modules.player
 
-import org.kamiblue.client.event.events.PacketEvent
-import org.kamiblue.client.mixin.extension.rightClickDelayTimer
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.item.*
 import net.minecraft.network.play.client.CPacketPlayerDigging
@@ -13,6 +8,11 @@ import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.event.events.PacketEvent
+import org.kamiblue.client.mixin.extension.rightClickDelayTimer
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
 
 /**

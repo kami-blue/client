@@ -1,5 +1,12 @@
 package org.kamiblue.client.module.modules.render
 
+import net.minecraft.client.audio.PositionedSoundRecord
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.init.Blocks
+import net.minecraft.init.SoundEvents
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.events.BlockBreakEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
@@ -11,13 +18,6 @@ import org.kamiblue.client.util.graphics.font.FontRenderAdapter
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
 import org.kamiblue.client.util.text.MessageSendHelper.sendChatMessage
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.client.audio.PositionedSoundRecord
-import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.init.Blocks
-import net.minecraft.init.SoundEvents
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.BlockPos
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 internal object BreakingESP : Module(

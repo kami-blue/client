@@ -1,7 +1,5 @@
 package org.kamiblue.client.mixin.client;
 
-import org.kamiblue.client.event.KamiEventBus;
-import org.kamiblue.client.event.events.AddCollisionBoxToListEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -9,6 +7,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.AddCollisionBoxToListEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

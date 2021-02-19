@@ -2,6 +2,10 @@ package org.kamiblue.client.module.modules.combat
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import net.minecraft.init.Blocks
+import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
@@ -20,10 +24,6 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.isActiveOrFalse
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.init.Blocks
-import net.minecraft.util.math.BlockPos
-import net.minecraftforge.fml.common.gameevent.InputEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 

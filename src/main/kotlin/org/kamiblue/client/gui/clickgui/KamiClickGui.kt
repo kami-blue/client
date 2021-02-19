@@ -20,15 +20,21 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, AbstractModule>() {
             .groupBy { it.category.displayName }
             .mapValues { (_, modules) -> modules.map { ModuleButton(it) } }
 
-        var posX = 10.0f
+        var posX = 0.0f
+        var posY = 0.0f
+        val screenWidth = mc.displayWidth / ClickGUI.getScaleFactorFloat()
 
         for ((category, buttons) in allButtons) {
-            val window = ListWindow(category, posX, 10.0f, 100.0f, 300.0f, Component.SettingGroup.CLICK_GUI)
+            val window = ListWindow(category, posX, posY, 90.0f, 300.0f, Component.SettingGroup.CLICK_GUI)
 
             window.children.addAll(buttons)
             moduleWindows.add(window)
+            posX += 90.0f
 
-            posX += 110.0f
+            if (posX > screenWidth) {
+                posX = 0.0f
+                posY += 100.0f
+            }
         }
 
         windowList.addAll(moduleWindows)

@@ -3,11 +3,13 @@ package org.kamiblue.client.gui.hudgui
 import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.gui.AbstractKamiGui
 import org.kamiblue.client.gui.GuiManager
+import org.kamiblue.client.gui.clickgui.KamiClickGui
 import org.kamiblue.client.gui.hudgui.component.HudButton
 import org.kamiblue.client.gui.hudgui.elements.client.WaterMark
 import org.kamiblue.client.gui.hudgui.window.HudSettingWindow
 import org.kamiblue.client.gui.rgui.Component
 import org.kamiblue.client.gui.rgui.windows.ListWindow
+import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.module.modules.client.Hud
 import org.kamiblue.client.module.modules.client.HudEditor
 import org.kamiblue.client.util.graphics.GlStateUtils
@@ -23,13 +25,23 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
 
     init {
         val allButtons = GuiManager.hudElementsMap.values.map { HudButton(it) }
-        var posX = 10.0f
+
+        var posX = 0.0f
+        var posY = 0.0f
+        val screenWidth = KamiClickGui.mc.displayWidth / ClickGUI.getScaleFactorFloat()
 
         for (category in HudElement.Category.values()) {
-            val buttons = allButtons.filter { it.hudElement.category == category }.toTypedArray()
-            if (buttons.isNullOrEmpty()) continue
-            windowList.add(ListWindow(category.displayName, posX, 10.0f, 100.0f, 256.0f, Component.SettingGroup.HUD_GUI, *buttons))
-            posX += 110.0f
+            val window = ListWindow(category.displayName, posX, 0.0f, 90.0f, 300.0f, Component.SettingGroup.HUD_GUI)
+            val buttons = allButtons.filter { it.hudElement.category == category }
+            window.children.addAll(buttons)
+
+            windowList.add(window)
+            posX += 90.0f
+
+            if (posX > screenWidth) {
+                posX = 0.0f
+                posY += 100.0f
+            }
         }
 
         windowList.addAll(GuiManager.hudElementsMap.values)

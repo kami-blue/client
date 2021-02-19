@@ -1,11 +1,11 @@
 package org.kamiblue.client.util
 
-import org.kamiblue.client.KamiMod
-import org.kamiblue.client.event.events.ShutdownEvent
-import org.kamiblue.client.util.ConfigUtils.saveAll
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.multiplayer.WorldClient
+import org.kamiblue.client.KamiMod
+import org.kamiblue.client.event.events.ShutdownEvent
+import org.kamiblue.client.util.ConfigUtils.saveAll
 
 object Wrapper {
     @JvmStatic
@@ -22,7 +22,7 @@ object Wrapper {
 
     @JvmStatic
     fun saveAndShutdown() {
-        if (!KamiMod.isReady()) return
+        if (!KamiMod.ready) return
 
         ShutdownEvent.post()
 

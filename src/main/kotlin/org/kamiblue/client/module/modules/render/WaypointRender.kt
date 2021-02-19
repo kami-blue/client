@@ -1,5 +1,8 @@
 package org.kamiblue.client.module.modules.render
 
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.events.*
 import org.kamiblue.client.manager.managers.WaypointManager
 import org.kamiblue.client.manager.managers.WaypointManager.Waypoint
@@ -16,9 +19,6 @@ import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
 import org.kamiblue.client.util.math.VectorUtils.toVec3dCenter
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.BlockPos
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.util.*

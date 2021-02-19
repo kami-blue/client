@@ -1,5 +1,9 @@
 package org.kamiblue.client.module.modules.player
 
+import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.inventory.Slot
+import net.minecraft.item.ItemStack
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
 import org.kamiblue.client.mixin.extension.syncCurrentPlayItem
@@ -11,10 +15,6 @@ import org.kamiblue.client.setting.settings.impl.collection.CollectionSetting
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.client.gui.inventory.GuiContainer
-import net.minecraft.inventory.Slot
-import net.minecraft.item.ItemStack
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.ceilToInt
 
 internal object InventoryManager : Module(

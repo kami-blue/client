@@ -1,5 +1,10 @@
 package org.kamiblue.client.module.modules.combat
 
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.network.play.client.CPacketAnimation
+import net.minecraft.network.play.client.CPacketPlayer
+import net.minecraft.network.play.client.CPacketUseEntity
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.module.Category
@@ -7,11 +12,6 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.MovementUtils.setSpeed
 import org.kamiblue.client.util.MovementUtils.speed
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.entity.EntityLivingBase
-import net.minecraft.network.play.client.CPacketAnimation
-import net.minecraft.network.play.client.CPacketPlayer
-import net.minecraft.network.play.client.CPacketUseEntity
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 internal object Criticals : Module(
     name = "Criticals",

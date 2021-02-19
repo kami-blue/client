@@ -1,9 +1,9 @@
 package org.kamiblue.client.mixin.client.gui;
 
-import org.kamiblue.client.module.modules.render.ExtraTab;
-import org.kamiblue.client.module.modules.render.TabFriends;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetworkPlayerInfo;
+import org.kamiblue.client.module.modules.render.ExtraTab;
+import org.kamiblue.client.module.modules.render.TabFriends;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

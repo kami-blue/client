@@ -1,5 +1,7 @@
 package org.kamiblue.client.gui.hudgui.elements.client
 
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.ModuleManager
@@ -17,8 +19,6 @@ import org.kamiblue.client.util.graphics.font.HAlign
 import org.kamiblue.client.util.graphics.font.TextComponent
 import org.kamiblue.client.util.graphics.font.VAlign
 import org.kamiblue.client.util.threads.safeAsyncListener
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.sumByFloat
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.lwjgl.opengl.GL11.*
@@ -34,10 +34,10 @@ object ModuleList : HudElement(
     enabledByDefault = true
 ) {
 
-    private val sortingMode = setting("Sorting Mode", SortingMode.LENGTH)
+    private val sortingMode by setting("Sorting Mode", SortingMode.LENGTH)
     private val showInvisible by setting("Show Invisible", false)
-    private val rainbow = setting("Rainbow", true)
-    private val rainbowLength by setting("Rainbow Length", 10.0f, 1.0f..20.0f, 0.5f, { rainbow.value })
+    private val rainbow by setting("Rainbow", true)
+    private val rainbowLength by setting("Rainbow Length", 10.0f, 1.0f..20.0f, 0.5f, { rainbow })
     private val indexedHue by setting("Indexed Hue", 0.5f, 0.0f..1.0f, 0.05f)
     private val primary by setting("Primary Color", ColorHolder(155, 144, 255), false)
     private val secondary by setting("Secondary Color", ColorHolder(255, 255, 255), false)
@@ -57,8 +57,8 @@ object ModuleList : HudElement(
     override val hudWidth: Float get() = cacheWidth
     override val hudHeight: Float get() = cacheHeight
 
-    private val sortedModuleListCache = AsyncCachedValue(5L, TimeUnit.SECONDS) {
-        ModuleManager.modules.sortedWith(sortingMode.value.comparator)
+    private val sortedModuleListCache = AsyncCachedValue(1L, TimeUnit.SECONDS) {
+        ModuleManager.modules.sortedWith(sortingMode.comparator)
     }
 
     private val sortedModuleList by sortedModuleListCache
@@ -133,7 +133,7 @@ object ModuleList : HudElement(
 
             GlStateManager.translate(animationXOffset - stringPosX - margin, 0.0f, 0.0f)
 
-            if (rainbow.value) {
+            if (rainbow) {
                 val hue = timedHue + indexedHue * 0.05f * index++
                 val color = ColorConverter.hexToRgb(Color.HSBtoRGB(hue, primaryHsb[1], primaryHsb[2]))
                 module.newTextLine(color).drawLine(progress, true, HAlign.LEFT, FontRenderAdapter.useCustomFont)
@@ -176,10 +176,6 @@ object ModuleList : HudElement(
         relativePosX = -2.0f
         relativePosY = 2.0f
         dockingH = HAlign.RIGHT
-
-        sortingMode.listeners.add {
-            sortedModuleListCache.update()
-        }
     }
 
 }

@@ -1,10 +1,10 @@
 package org.kamiblue.client.util.graphics
 
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.util.Quad
 import org.kamiblue.client.util.Wrapper
-import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11.*
 
 object GlStateUtils {

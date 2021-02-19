@@ -2,6 +2,13 @@ package org.kamiblue.client.module.modules.player
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import net.minecraft.item.ItemBlock
+import net.minecraft.network.play.client.CPacketEntityAction
+import net.minecraft.network.play.server.SPacketPlayerPosLook
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.RayTraceResult
+import net.minecraft.util.math.Vec3d
 import org.kamiblue.client.event.Phase
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
@@ -26,13 +33,6 @@ import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.onMainThreadSafe
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.item.ItemBlock
-import net.minecraft.network.play.client.CPacketEntityAction
-import net.minecraft.network.play.server.SPacketPlayerPosLook
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.RayTraceResult
-import net.minecraft.util.math.Vec3d
 import org.kamiblue.event.listener.listener
 import kotlin.math.floor
 import kotlin.math.roundToInt

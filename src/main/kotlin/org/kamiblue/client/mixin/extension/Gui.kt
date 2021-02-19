@@ -1,14 +1,14 @@
 package org.kamiblue.client.mixin.extension
 
-import org.kamiblue.client.mixin.client.accessor.gui.AccessorGuiBossOverlay
-import org.kamiblue.client.mixin.client.accessor.gui.AccessorGuiChat
-import org.kamiblue.client.mixin.client.accessor.gui.AccessorGuiDisconnected
-import org.kamiblue.client.mixin.client.accessor.gui.AccessorGuiEditSign
 import net.minecraft.client.gui.*
 import net.minecraft.client.gui.inventory.GuiEditSign
 import net.minecraft.tileentity.TileEntitySign
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.world.BossInfo
+import org.kamiblue.client.mixin.client.accessor.gui.AccessorGuiBossOverlay
+import org.kamiblue.client.mixin.client.accessor.gui.AccessorGuiChat
+import org.kamiblue.client.mixin.client.accessor.gui.AccessorGuiDisconnected
+import org.kamiblue.client.mixin.client.accessor.gui.AccessorGuiEditSign
 import java.util.*
 
 val GuiBossOverlay.mapBossInfos: Map<UUID, BossInfoClient>? get() = (this as AccessorGuiBossOverlay).mapBossInfos

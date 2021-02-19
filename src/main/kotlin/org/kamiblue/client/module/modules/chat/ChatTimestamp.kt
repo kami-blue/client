@@ -1,12 +1,12 @@
 package org.kamiblue.client.module.modules.chat
 
+import net.minecraft.util.text.TextComponentString
+import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TimeUtils
 import org.kamiblue.client.util.color.EnumTextColor
 import org.kamiblue.client.util.text.format
-import net.minecraft.util.text.TextComponentString
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
 

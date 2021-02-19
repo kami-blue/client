@@ -1,15 +1,15 @@
 package org.kamiblue.client.gui.hudgui.elements.player
 
+import net.minecraft.client.gui.inventory.GuiInventory
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.util.math.MathHelper
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.graphics.GlStateUtils
 import org.kamiblue.client.util.graphics.KamiTessellator
 import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.threads.runSafe
-import net.minecraft.client.gui.inventory.GuiInventory
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.entity.EntityLivingBase
-import net.minecraft.util.math.MathHelper
 import org.lwjgl.opengl.GL11.*
 
 object PlayerModel : HudElement(

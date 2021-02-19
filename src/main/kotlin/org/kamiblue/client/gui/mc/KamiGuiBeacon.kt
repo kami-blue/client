@@ -1,6 +1,5 @@
 package org.kamiblue.client.gui.mc
 
-import org.kamiblue.client.module.modules.misc.BeaconSelector
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiBeacon
@@ -13,6 +12,7 @@ import net.minecraft.potion.Potion
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import org.kamiblue.client.module.modules.misc.BeaconSelector
 import java.io.IOException
 
 /**

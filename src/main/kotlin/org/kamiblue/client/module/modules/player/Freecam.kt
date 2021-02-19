@@ -2,20 +2,6 @@ package org.kamiblue.client.module.modules.player
 
 import baritone.api.pathing.goals.GoalTwoBlocks
 import kotlinx.coroutines.runBlocking
-import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.event.events.ConnectionEvent
-import org.kamiblue.client.event.events.PacketEvent
-import org.kamiblue.client.event.events.PlayerAttackEvent
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.*
-import org.kamiblue.client.util.MovementUtils.calcMoveYaw
-import org.kamiblue.client.util.math.RotationUtils
-import org.kamiblue.client.util.math.RotationUtils.getRotationTo
-import org.kamiblue.client.util.math.VectorUtils.toBlockPos
-import org.kamiblue.client.util.threads.onMainThreadSafe
-import org.kamiblue.client.util.threads.runSafeR
-import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.multiplayer.WorldClient
@@ -30,6 +16,20 @@ import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.InputUpdateEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.ConnectionEvent
+import org.kamiblue.client.event.events.PacketEvent
+import org.kamiblue.client.event.events.PlayerAttackEvent
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.*
+import org.kamiblue.client.util.MovementUtils.calcMoveYaw
+import org.kamiblue.client.util.math.RotationUtils
+import org.kamiblue.client.util.math.RotationUtils.getRotationTo
+import org.kamiblue.client.util.math.VectorUtils.toBlockPos
+import org.kamiblue.client.util.threads.onMainThreadSafe
+import org.kamiblue.client.util.threads.runSafeR
+import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.commons.extension.toRadian
 import org.kamiblue.commons.interfaces.DisplayEnum
@@ -224,7 +224,6 @@ internal object Freecam : Module(
             onMainThreadSafe {
                 world.removeEntityFromWorld(ENTITY_ID)
                 mc.renderViewEntity = player
-                mc.renderGlobal.loadRenderers()
                 if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
             }
         }

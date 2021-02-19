@@ -1,9 +1,5 @@
 package org.kamiblue.client.util.graphics
 
-import org.kamiblue.client.KamiMod
-import org.kamiblue.client.event.KamiEventBus
-import org.kamiblue.client.event.events.ResolutionUpdateEvent
-import org.kamiblue.client.util.Wrapper
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.shader.Framebuffer
@@ -11,6 +7,10 @@ import net.minecraft.client.shader.ShaderGroup
 import net.minecraft.client.shader.ShaderLinkHelper
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.KamiMod
+import org.kamiblue.client.event.KamiEventBus
+import org.kamiblue.client.event.events.ResolutionUpdateEvent
+import org.kamiblue.client.util.Wrapper
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_VENDOR
 

@@ -1,7 +1,7 @@
 package org.kamiblue.client.event.events
 
-import org.kamiblue.client.event.*
 import net.minecraft.entity.Entity
+import org.kamiblue.client.event.*
 
 class RenderEntityEvent(
     val entity: Entity,

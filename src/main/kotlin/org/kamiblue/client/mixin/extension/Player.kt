@@ -1,7 +1,7 @@
 package org.kamiblue.client.mixin.extension
 
-import org.kamiblue.client.mixin.client.accessor.player.AccessorPlayerControllerMP
 import net.minecraft.client.multiplayer.PlayerControllerMP
+import org.kamiblue.client.mixin.client.accessor.player.AccessorPlayerControllerMP
 
 var PlayerControllerMP.blockHitDelay: Int
     get() = (this as AccessorPlayerControllerMP).blockHitDelay

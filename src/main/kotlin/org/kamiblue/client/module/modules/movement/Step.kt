@@ -1,5 +1,8 @@
 package org.kamiblue.client.module.modules.movement
 
+import net.minecraft.network.play.client.CPacketPlayer
+import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.manager.managers.PlayerPacketManager
@@ -12,9 +15,6 @@ import org.kamiblue.client.util.Bind
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.network.play.client.CPacketPlayer
-import net.minecraftforge.fml.common.gameevent.InputEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 

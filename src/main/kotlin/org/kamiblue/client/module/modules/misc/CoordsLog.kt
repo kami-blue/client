@@ -1,5 +1,6 @@
 package org.kamiblue.client.module.modules.misc
 
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.manager.managers.WaypointManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -10,7 +11,6 @@ import org.kamiblue.client.util.math.CoordinateConverter.asString
 import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 internal object CoordsLog : Module(
     name = "CoordsLog",

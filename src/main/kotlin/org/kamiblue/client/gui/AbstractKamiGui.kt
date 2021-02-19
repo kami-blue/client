@@ -1,5 +1,10 @@
 package org.kamiblue.client.gui
 
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.gui.rgui.WindowComponent
 import org.kamiblue.client.gui.rgui.windows.ColorPicker
@@ -15,16 +20,12 @@ import org.kamiblue.client.util.graphics.font.FontRenderAdapter
 import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.util.ResourceLocation
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.math.min
 
 abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
 
@@ -110,17 +111,27 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
 
     fun displaySettingWindow(element: E) {
         val mousePos = getRealMousePos()
+
         settingMap.getOrPut(element) {
             newSettingWindow(element, mousePos)
         }.apply {
-            posX = mousePos.x
-            posY = mousePos.y
-        }.also {
-            lastClickedWindow = it
-            settingWindow = it
-            windowList.add(it)
-            it.onGuiInit()
-            it.onDisplayed()
+            lastClickedWindow = this
+            settingWindow = this
+            windowList.add(this)
+
+            val screenWidth = mc.displayWidth / ClickGUI.getScaleFactorFloat()
+            val screenHeight = mc.displayHeight / ClickGUI.getScaleFactorFloat()
+
+            posX = if (mousePos.x + this.width <= screenWidth) {
+                mousePos.x
+            } else {
+                mousePos.x - this.width
+            }
+
+            posY = min(mousePos.y, screenHeight - this.height)
+
+            onGuiInit()
+            onDisplayed()
         }
     }
 

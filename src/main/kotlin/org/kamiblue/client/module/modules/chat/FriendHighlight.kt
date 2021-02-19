@@ -1,15 +1,15 @@
 package org.kamiblue.client.module.modules.chat
 
-import org.kamiblue.client.manager.managers.FriendManager
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.color.EnumTextColor
-import org.kamiblue.client.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.client.event.ClientChatReceivedEvent
+import org.kamiblue.client.manager.managers.FriendManager
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.color.EnumTextColor
+import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.event.listener.listener
 
 internal object FriendHighlight : Module(

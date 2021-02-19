@@ -1,11 +1,11 @@
 package org.kamiblue.client.module.modules.misc
 
 import io.netty.buffer.Unpooled
+import net.minecraft.network.PacketBuffer
+import net.minecraft.network.play.client.CPacketCustomPayload
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import net.minecraft.network.PacketBuffer
-import net.minecraft.network.play.client.CPacketCustomPayload
 import org.kamiblue.event.listener.listener
 
 internal object BeaconSelector : Module(

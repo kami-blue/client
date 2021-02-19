@@ -1,10 +1,10 @@
 package org.kamiblue.client.module.modules.client
 
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.Display
 

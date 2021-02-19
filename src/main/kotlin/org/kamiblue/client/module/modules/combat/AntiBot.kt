@@ -1,5 +1,8 @@
 package org.kamiblue.client.module.modules.combat
 
+import net.minecraft.entity.Entity
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.PlayerAttackEvent
@@ -8,9 +11,6 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.misc.FakePlayer
 import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.entity.Entity
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import kotlin.math.abs
 

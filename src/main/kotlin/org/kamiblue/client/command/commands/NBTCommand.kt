@@ -1,11 +1,11 @@
 package org.kamiblue.client.command.commands
 
+import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagCompound
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.event.SafeExecuteEvent
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.formatValue
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
 
 object NBTCommand : ClientCommand(
     name = "nbt",

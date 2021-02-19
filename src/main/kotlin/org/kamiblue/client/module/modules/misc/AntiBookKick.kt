@@ -1,11 +1,11 @@
 package org.kamiblue.client.module.modules.misc
 
+import net.minecraft.item.ItemWrittenBook
+import net.minecraft.network.play.client.CPacketClickWindow
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.text.MessageSendHelper
-import net.minecraft.item.ItemWrittenBook
-import net.minecraft.network.play.client.CPacketClickWindow
 import org.kamiblue.event.listener.listener
 
 /**

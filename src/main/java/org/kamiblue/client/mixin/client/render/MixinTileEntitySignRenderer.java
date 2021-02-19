@@ -1,12 +1,12 @@
 package org.kamiblue.client.mixin.client.render;
 
-import org.kamiblue.client.module.modules.render.NoRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.renderer.tileentity.TileEntitySignRenderer;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.text.ITextComponent;
+import org.kamiblue.client.module.modules.render.NoRender;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

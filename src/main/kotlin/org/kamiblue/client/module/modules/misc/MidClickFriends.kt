@@ -1,15 +1,15 @@
 package org.kamiblue.client.module.modules.misc
 
 import kotlinx.coroutines.launch
+import net.minecraft.client.entity.EntityOtherPlayerMP
+import net.minecraft.util.math.RayTraceResult
+import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
-import net.minecraft.client.entity.EntityOtherPlayerMP
-import net.minecraft.util.math.RayTraceResult
-import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 

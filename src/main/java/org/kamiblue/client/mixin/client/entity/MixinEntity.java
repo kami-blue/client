@@ -1,12 +1,12 @@
 package org.kamiblue.client.mixin.client.entity;
 
+import net.minecraft.entity.Entity;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.EntityCollisionEvent;
 import org.kamiblue.client.module.modules.movement.SafeWalk;
 import org.kamiblue.client.module.modules.player.Freecam;
 import org.kamiblue.client.module.modules.player.Scaffold;
 import org.kamiblue.client.util.Wrapper;
-import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

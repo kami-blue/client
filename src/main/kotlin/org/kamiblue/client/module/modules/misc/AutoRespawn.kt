@@ -1,5 +1,6 @@
 package org.kamiblue.client.module.modules.misc
 
+import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.client.event.events.GuiEvent
 import org.kamiblue.client.manager.managers.WaypointManager
 import org.kamiblue.client.module.Category
@@ -7,7 +8,6 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.InfoCalculator
 import org.kamiblue.client.util.math.CoordinateConverter.asString
 import org.kamiblue.client.util.text.MessageSendHelper
-import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.event.listener.listener
 
 internal object AutoRespawn : Module(

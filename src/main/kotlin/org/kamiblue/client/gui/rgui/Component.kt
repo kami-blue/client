@@ -32,9 +32,9 @@ open class Component(
     var height by setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minHeight, max(scaledHeight, minHeight)) })
 
     protected var relativePosX by setting("Pos X", posXIn, -69420.911f..69420.911f, 0.1f, { false },
-        { _, it -> if (this is WindowComponent && KamiMod.isReady()) absToRelativeX(relativeToAbsX(it).coerceIn(2.0f, max(scaledWidth - width - 2.0f, 2.0f))) else it })
+        { _, it -> if (this is WindowComponent && KamiMod.ready) absToRelativeX(relativeToAbsX(it).coerceIn(2.0f, max(scaledWidth - width - 2.0f, 2.0f))) else it })
     protected var relativePosY by setting("Pos Y", posYIn, -69420.911f..69420.911f, 0.1f, { false },
-        { _, it -> if (this is WindowComponent && KamiMod.isReady()) absToRelativeY(relativeToAbsY(it).coerceIn(2.0f, max(scaledHeight - height - 2.0f, 2.0f))) else it })
+        { _, it -> if (this is WindowComponent && KamiMod.ready) absToRelativeY(relativeToAbsY(it).coerceIn(2.0f, max(scaledHeight - height - 2.0f, 2.0f))) else it })
 
     var dockingH by dockingHSetting
     var dockingV by dockingVSetting
@@ -44,7 +44,7 @@ open class Component(
             return relativeToAbsX(relativePosX)
         }
         set(value) {
-            if (!KamiMod.isReady()) return
+            if (!KamiMod.ready) return
             relativePosX = absToRelativeX(value)
         }
 
@@ -53,7 +53,7 @@ open class Component(
             return relativeToAbsY(relativePosY)
         }
         set(value) {
-            if (!KamiMod.isReady()) return
+            if (!KamiMod.ready) return
             relativePosY = absToRelativeY(value)
         }
 

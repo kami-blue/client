@@ -1,13 +1,13 @@
 package org.kamiblue.client.util
 
-import org.kamiblue.client.event.KamiEventBus
-import org.kamiblue.client.util.graphics.KamiTessellator
-import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.event.KamiEventBus
+import org.kamiblue.client.util.graphics.KamiTessellator
+import org.kamiblue.client.util.threads.safeListener
 import java.util.*
 import kotlin.collections.ArrayDeque
 

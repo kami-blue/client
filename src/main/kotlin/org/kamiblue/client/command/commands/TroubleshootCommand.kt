@@ -1,12 +1,12 @@
 package org.kamiblue.client.command.commands
 
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.OpenGlHelper
+import net.minecraftforge.common.ForgeVersion
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.util.text.MessageSendHelper
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.OpenGlHelper
-import net.minecraftforge.common.ForgeVersion
 import org.lwjgl.opengl.GL11
 
 object TroubleshootCommand : ClientCommand(

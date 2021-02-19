@@ -1,15 +1,15 @@
 package org.kamiblue.client.mixin.client.player;
 
-import org.kamiblue.client.event.KamiEventBus;
-import org.kamiblue.client.event.events.PlayerAttackEvent;
-import org.kamiblue.client.module.modules.player.TpsSync;
-import org.kamiblue.client.util.TpsCalculator;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.PlayerAttackEvent;
+import org.kamiblue.client.module.modules.player.TpsSync;
+import org.kamiblue.client.util.TpsCalculator;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

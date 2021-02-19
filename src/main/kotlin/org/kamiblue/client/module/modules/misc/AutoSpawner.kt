@@ -1,13 +1,5 @@
 package org.kamiblue.client.module.modules.misc
 
-import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.*
-import org.kamiblue.client.util.items.swapToSlot
-import org.kamiblue.client.util.math.VectorUtils
-import org.kamiblue.client.util.text.MessageSendHelper.sendChatMessage
-import org.kamiblue.client.util.threads.safeListener
 import net.minecraft.block.BlockDeadBush
 import net.minecraft.block.BlockSoulSand
 import net.minecraft.block.BlockTallGrass
@@ -22,6 +14,14 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.*
+import org.kamiblue.client.util.items.swapToSlot
+import org.kamiblue.client.util.math.VectorUtils
+import org.kamiblue.client.util.text.MessageSendHelper.sendChatMessage
+import org.kamiblue.client.util.threads.safeListener
 
 /**
  * TODO: Rewrite

@@ -1,10 +1,10 @@
 package org.kamiblue.client.mixin.client.gui;
 
-import org.kamiblue.client.util.graphics.KamiTessellator;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import org.kamiblue.client.util.graphics.KamiTessellator;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;

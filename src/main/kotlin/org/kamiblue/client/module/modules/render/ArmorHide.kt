@@ -1,12 +1,12 @@
 package org.kamiblue.client.module.modules.render
 
-import org.kamiblue.client.module.Category
-import org.kamiblue.client.module.Module
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.EntityEquipmentSlot
+import org.kamiblue.client.module.Category
+import org.kamiblue.client.module.Module
 
 internal object ArmorHide : Module(
     name = "ArmorHide",

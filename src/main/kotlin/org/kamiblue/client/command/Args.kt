@@ -1,19 +1,19 @@
 package org.kamiblue.client.command
 
 import kotlinx.coroutines.Dispatchers
+import net.minecraft.block.Block
+import net.minecraft.item.Item
+import net.minecraft.util.math.BlockPos
+import org.kamiblue.capeapi.PlayerProfile
 import org.kamiblue.client.manager.managers.UUIDManager
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.threads.runSafeR
-import net.minecraft.block.Block
-import net.minecraft.item.Item
-import net.minecraft.util.math.BlockPos
-import org.kamiblue.capeapi.PlayerProfile
-import org.kamiblue.command.AbstractArg
-import org.kamiblue.command.AutoComplete
-import org.kamiblue.command.DynamicPrefixMatch
-import org.kamiblue.command.StaticPrefixMatch
+import org.kamiblue.command.args.AbstractArg
+import org.kamiblue.command.args.AutoComplete
+import org.kamiblue.command.args.DynamicPrefixMatch
+import org.kamiblue.command.args.StaticPrefixMatch
 import java.io.File
 import java.util.*
 import kotlin.streams.toList

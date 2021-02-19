@@ -1,13 +1,13 @@
 package org.kamiblue.client.mixin.extension
 
-import org.kamiblue.client.mixin.client.accessor.AccessorEntity
-import org.kamiblue.client.mixin.client.accessor.AccessorItemTool
-import org.kamiblue.client.mixin.client.accessor.AccessorMinecraft
-import org.kamiblue.client.mixin.client.accessor.AccessorTimer
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.item.ItemTool
 import net.minecraft.util.Timer
+import org.kamiblue.client.mixin.client.accessor.AccessorEntity
+import org.kamiblue.client.mixin.client.accessor.AccessorItemTool
+import org.kamiblue.client.mixin.client.accessor.AccessorMinecraft
+import org.kamiblue.client.mixin.client.accessor.AccessorTimer
 
 val Entity.isInWeb: Boolean get() = (this as AccessorEntity).isInWeb
 

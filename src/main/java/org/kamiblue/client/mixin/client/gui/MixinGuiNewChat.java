@@ -1,12 +1,12 @@
 package org.kamiblue.client.mixin.client.gui;
 
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiNewChat;
+import net.minecraft.util.text.ITextComponent;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.PrintChatMessageEvent;
 import org.kamiblue.client.module.modules.chat.ExtraChatHistory;
 import org.kamiblue.client.module.modules.render.CleanGUI;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiNewChat;
-import net.minecraft.util.text.ITextComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

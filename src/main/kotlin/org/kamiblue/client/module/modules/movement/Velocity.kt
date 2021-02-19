@@ -1,5 +1,7 @@
 package org.kamiblue.client.module.modules.movement
 
+import net.minecraft.network.play.server.SPacketEntityVelocity
+import net.minecraft.network.play.server.SPacketExplosion
 import org.kamiblue.client.event.events.EntityCollisionEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.mixin.client.world.MixinBlockLiquid
@@ -8,8 +10,6 @@ import org.kamiblue.client.mixin.extension.packetMotionY
 import org.kamiblue.client.mixin.extension.packetMotionZ
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import net.minecraft.network.play.server.SPacketEntityVelocity
-import net.minecraft.network.play.server.SPacketExplosion
 import org.kamiblue.event.listener.listener
 
 /**

@@ -1,5 +1,6 @@
 package org.kamiblue.client.gui.rgui.windows
 
+import net.minecraft.client.renderer.GlStateManager
 import org.kamiblue.client.gui.AbstractKamiGui
 import org.kamiblue.client.gui.rgui.component.Button
 import org.kamiblue.client.gui.rgui.component.SettingSlider
@@ -14,7 +15,6 @@ import org.kamiblue.client.util.graphics.font.HAlign
 import org.kamiblue.client.util.graphics.font.VAlign
 import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.math.Vec2f
-import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 

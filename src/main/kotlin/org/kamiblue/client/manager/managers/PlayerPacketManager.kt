@@ -1,5 +1,10 @@
 package org.kamiblue.client.manager.managers
 
+import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.CPacketHeldItemChange
+import net.minecraft.network.play.client.CPacketPlayer
+import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.Phase
 import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
 import org.kamiblue.client.event.events.PacketEvent
@@ -15,11 +20,6 @@ import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.Wrapper
 import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.item.ItemStack
-import net.minecraft.network.play.client.CPacketHeldItemChange
-import net.minecraft.network.play.client.CPacketPlayer
-import net.minecraft.util.math.Vec3d
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.util.*
 

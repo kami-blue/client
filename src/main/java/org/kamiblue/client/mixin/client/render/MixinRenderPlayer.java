@@ -1,13 +1,13 @@
 package org.kamiblue.client.mixin.client.render;
 
-import org.kamiblue.client.module.modules.movement.ElytraFlight;
-import org.kamiblue.client.util.Wrapper;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
+import org.kamiblue.client.module.modules.movement.ElytraFlight;
+import org.kamiblue.client.util.Wrapper;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

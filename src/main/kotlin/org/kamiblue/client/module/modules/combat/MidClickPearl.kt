@@ -1,5 +1,10 @@
 package org.kamiblue.client.module.modules.combat
 
+import net.minecraft.init.Items
+import net.minecraft.util.EnumHand
+import net.minecraft.util.math.RayTraceResult.Type
+import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.items.firstItem
@@ -7,11 +12,6 @@ import org.kamiblue.client.util.items.hotbarSlots
 import org.kamiblue.client.util.items.swapToSlot
 import org.kamiblue.client.util.text.MessageSendHelper.sendChatMessage
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.init.Items
-import net.minecraft.util.EnumHand
-import net.minecraft.util.math.RayTraceResult.Type
-import net.minecraftforge.fml.common.gameevent.InputEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Mouse
 
 internal object MidClickPearl : Module(

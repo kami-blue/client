@@ -1,5 +1,6 @@
 package org.kamiblue.client.command.commands
 
+import net.minecraft.util.math.BlockPos
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.manager.managers.WaypointManager
 import org.kamiblue.client.manager.managers.WaypointManager.Waypoint
@@ -9,7 +10,6 @@ import org.kamiblue.client.util.math.CoordinateConverter.asString
 import org.kamiblue.client.util.math.CoordinateConverter.bothConverted
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.formatValue
-import net.minecraft.util.math.BlockPos
 
 object WaypointCommand : ClientCommand(
     name = "waypoint",

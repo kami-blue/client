@@ -1,10 +1,10 @@
 package org.kamiblue.client.command.commands
 
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.passive.AbstractHorse
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.manager.managers.UUIDManager
 import org.kamiblue.client.util.text.MessageSendHelper
-import net.minecraft.entity.EntityLivingBase
-import net.minecraft.entity.passive.AbstractHorse
 import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.pow
 

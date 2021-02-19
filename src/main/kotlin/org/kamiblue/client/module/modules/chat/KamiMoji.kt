@@ -1,13 +1,13 @@
 package org.kamiblue.client.module.modules.chat
 
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.kamiblue.client.manager.managers.KamiMojiManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.graphics.GlStateUtils
 import org.kamiblue.client.util.graphics.texture.MipmapTexture
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.kamiblue.commons.extension.ceilToInt
 import org.lwjgl.opengl.GL11.*
 

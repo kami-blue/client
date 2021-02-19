@@ -2,14 +2,14 @@ package org.kamiblue.client.gui.mc
 
 import com.google.gson.JsonParser
 import kotlinx.coroutines.launch
-import org.kamiblue.client.KamiMod
-import org.kamiblue.client.util.WebUtils
-import org.kamiblue.client.util.color.ColorConverter
-import org.kamiblue.client.util.threads.mainScope
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiMainMenu
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.text.TextFormatting
+import org.kamiblue.client.KamiMod
+import org.kamiblue.client.util.WebUtils
+import org.kamiblue.client.util.color.ColorConverter
+import org.kamiblue.client.util.threads.mainScope
 import org.kamiblue.commons.utils.ConnectionUtils
 import java.io.IOException
 

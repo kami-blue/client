@@ -1,14 +1,14 @@
 package org.kamiblue.client.util.items
 
 import kotlinx.coroutines.runBlocking
-import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.util.threads.onMainThreadSafe
 import net.minecraft.block.Block
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.Slot
 import net.minecraft.network.play.client.CPacketClickWindow
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.util.threads.onMainThreadSafe
 
 /**
  * Move the item in [slotFrom]  to [slotTo] in player inventory,

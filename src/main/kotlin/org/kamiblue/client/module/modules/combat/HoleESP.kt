@@ -1,6 +1,7 @@
 package org.kamiblue.client.module.modules.combat
 
 import kotlinx.coroutines.launch
+import net.minecraft.util.math.AxisAlignedBB
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
@@ -14,7 +15,6 @@ import org.kamiblue.client.util.graphics.GeometryMasks
 import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.safeListener
-import net.minecraft.util.math.AxisAlignedBB
 
 internal object HoleESP : Module(
     name = "HoleESP",

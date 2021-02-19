@@ -1,11 +1,11 @@
 package org.kamiblue.client.event.events
 
+import net.minecraft.util.math.Vec3d
 import org.kamiblue.client.event.Cancellable
 import org.kamiblue.client.event.Event
 import org.kamiblue.client.event.IMultiPhase
 import org.kamiblue.client.event.Phase
 import org.kamiblue.client.util.math.Vec2f
-import net.minecraft.util.math.Vec3d
 import org.kamiblue.commons.extension.next
 
 class OnUpdateWalkingPlayerEvent private constructor(

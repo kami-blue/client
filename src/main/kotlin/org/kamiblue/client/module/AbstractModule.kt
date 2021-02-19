@@ -1,5 +1,6 @@
 package org.kamiblue.client.module
 
+import net.minecraft.client.Minecraft
 import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.module.modules.client.CommandConfig
@@ -11,7 +12,6 @@ import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import org.kamiblue.client.util.Bind
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.runSafe
-import net.minecraft.client.Minecraft
 import org.kamiblue.commons.interfaces.Alias
 import org.kamiblue.commons.interfaces.Nameable
 

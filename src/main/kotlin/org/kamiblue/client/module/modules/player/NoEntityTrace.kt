@@ -1,8 +1,8 @@
 package org.kamiblue.client.module.modules.player
 
+import net.minecraft.item.ItemPickaxe
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import net.minecraft.item.ItemPickaxe
 
 internal object NoEntityTrace : Module(
     name = "NoEntityTrace",

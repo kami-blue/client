@@ -1,8 +1,5 @@
 package org.kamiblue.client.util
 
-import org.kamiblue.client.manager.managers.FriendManager
-import org.kamiblue.client.util.items.id
-import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
@@ -18,6 +15,10 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.manager.managers.FriendManager
+import org.kamiblue.client.util.items.id
+import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import kotlin.math.floor
 
 object EntityUtils {
@@ -36,6 +37,8 @@ object EntityUtils {
     val Entity.isNeutral get() = isNeutralMob(this) && !isMobAggressive(this)
 
     val Entity.isHostile get() = isMobAggressive(this)
+
+    val Entity.isInOrAboveLiquid get() = world.containsAnyLiquid(entityBoundingBox.grow(0.0, -1.0, 0.0).shrink(0.001))
 
     val EntityPlayer.isFakeOrSelf get() = this == mc.player || this == mc.renderViewEntity || this.entityId < 0
 
@@ -140,20 +143,21 @@ object EntityUtils {
         return mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), entityIn.positionVector, false, true, false) == null
     }
 
-    fun getDroppedItems(itemId: Int, range: Float): ArrayList<EntityItem> {
+    fun SafeClientEvent.getDroppedItems(itemId: Int, range: Float): ArrayList<EntityItem> {
         val entityList = ArrayList<EntityItem>()
-        for (currentEntity in mc.world.loadedEntityList) {
-            if (currentEntity.getDistance(mc.player) > range) continue /* Entities within specified  blocks radius */
-            if (currentEntity !is EntityItem) continue /* Entites that are dropped item */
-            if (currentEntity.item.item.id != itemId) continue /* Dropped items that are has give item id */
-            entityList.add(currentEntity)
+        for (entity in world.loadedEntityList) {
+            if (entity !is EntityItem) continue /* Entites that are dropped item */
+            if (entity.item.item.id != itemId) continue /* Dropped items that are has give item id */
+            if (entity.getDistance(player) > range) continue /* Entities within specified  blocks radius */
+
+            entityList.add(entity)
         }
         return entityList
     }
 
-    fun getDroppedItem(itemId: Int, range: Float) =
+    fun SafeClientEvent.getDroppedItem(itemId: Int, range: Float) =
         getDroppedItems(itemId, range)
-            .minByOrNull { mc.player.getDistance(it) }
+            .minByOrNull { player.getDistance(it) }
             ?.positionVector
             ?.toBlockPos()
 }

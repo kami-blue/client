@@ -2,14 +2,14 @@ package org.kamiblue.client.command.commands
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.kamiblue.client.command.ClientCommand
-import org.kamiblue.client.util.text.MessageSendHelper
-import org.kamiblue.client.util.threads.defaultScope
-import org.kamiblue.client.util.threads.onMainThreadSafe
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiShulkerBox
 import net.minecraft.item.ItemShulkerBox
 import net.minecraft.tileentity.TileEntityShulkerBox
+import org.kamiblue.client.command.ClientCommand
+import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.threads.defaultScope
+import org.kamiblue.client.util.threads.onMainThreadSafe
 import java.util.*
 
 object PeekCommand : ClientCommand(
