@@ -3,7 +3,7 @@ package org.kamiblue.client.module.modules.client
 import kotlinx.coroutines.runBlocking
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.AsyncCachedValue
+import org.kamiblue.client.util.delegate.AsyncCachedValue
 import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.graphics.font.KamiFontRenderer
 import org.kamiblue.client.util.threads.onMainThread

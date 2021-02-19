@@ -7,7 +7,7 @@ import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.module.modules.combat.AntiBot
 import org.kamiblue.client.setting.GuiConfig.setting
-import org.kamiblue.client.util.AsyncCachedValue
+import org.kamiblue.client.util.delegate.AsyncCachedValue
 import org.kamiblue.client.util.color.ColorGradient
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.color.DyeColors

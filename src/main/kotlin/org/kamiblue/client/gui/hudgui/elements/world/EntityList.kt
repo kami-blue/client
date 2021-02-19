@@ -9,7 +9,7 @@ import net.minecraft.entity.projectile.EntityWitherSkull
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.setting.GuiConfig.setting
-import org.kamiblue.client.util.AsyncCachedValue
+import org.kamiblue.client.util.delegate.AsyncCachedValue
 import org.kamiblue.client.util.EntityUtils.isHostile
 import org.kamiblue.client.util.EntityUtils.isNeutral
 import org.kamiblue.client.util.EntityUtils.isPassive

@@ -3,7 +3,7 @@ package org.kamiblue.client.module
 import kotlinx.coroutines.Deferred
 import org.kamiblue.client.AsyncLoader
 import org.kamiblue.client.KamiMod
-import org.kamiblue.client.util.AsyncCachedValue
+import org.kamiblue.client.util.delegate.AsyncCachedValue
 import org.kamiblue.client.util.StopTimer
 import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.commons.collections.AliasSet

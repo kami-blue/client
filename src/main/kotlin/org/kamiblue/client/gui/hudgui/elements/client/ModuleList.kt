@@ -6,7 +6,7 @@ import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.setting.GuiConfig.setting
-import org.kamiblue.client.util.AsyncCachedValue
+import org.kamiblue.client.util.delegate.AsyncCachedValue
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.TimedFlag

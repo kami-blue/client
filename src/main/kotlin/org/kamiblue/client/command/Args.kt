@@ -9,6 +9,8 @@ import org.kamiblue.client.manager.managers.UUIDManager
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.util.*
+import org.kamiblue.client.util.delegate.AsyncCachedValue
+import org.kamiblue.client.util.delegate.CachedValue
 import org.kamiblue.client.util.threads.runSafeR
 import org.kamiblue.command.args.AbstractArg
 import org.kamiblue.command.args.AutoComplete
