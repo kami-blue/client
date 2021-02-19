@@ -36,7 +36,9 @@ fun Iterable<Slot>.countByStack(predicate: (ItemStack) -> Boolean = { true }) =
 
 
 fun <T : Slot> Iterable<T>.firstEmpty() =
-    firstByStack { it.isEmpty }
+    firstByStack {
+        it.isEmpty
+    }
 
 inline fun <reified B : Block, T : Slot> Iterable<T>.firstBlock(crossinline predicate: (ItemStack) -> Boolean = { true }) =
     firstByStack { itemStack ->
@@ -64,11 +66,10 @@ fun <T : Slot> Iterable<T>.firstID(itemID: Int, predicate: (ItemStack) -> Boolea
     }
 
 fun <T : Slot> Iterable<T>.firstByStack(predicate: (ItemStack) -> Boolean): T? =
-    firstOrNull { predicate(it.stack) }
+    firstOrNull {
+        predicate(it.stack)
+    }
 
-
-inline fun <reified B : Block, T : Slot> Iterable<T>.forEmpty() =
-    filterByStack { it.isEmpty }
 
 inline fun <reified B : Block, T : Slot> Iterable<T>.filterByBlock(crossinline predicate: (ItemStack) -> Boolean = { true }) =
     filterByStack { itemStack ->
@@ -91,7 +92,11 @@ fun <T : Slot> Iterable<T>.filterByItem(item: Item, predicate: (ItemStack) -> Bo
     }
 
 fun <T : Slot> Iterable<T>.filterByID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
-    filterByStack { it.item.id == itemID && predicate(it) }
+    filterByStack {
+        it.item.id == itemID && predicate(it)
+    }
 
 fun <T : Slot> Iterable<T>.filterByStack(predicate: (ItemStack) -> Boolean = { true }) =
-    filter { predicate(it.stack) }
+    filter {
+        predicate(it.stack)
+    }
