@@ -1,7 +1,6 @@
 package org.kamiblue.client.util
 
 import net.minecraft.network.play.server.SPacketTimeUpdate
-import net.minecraft.util.math.MathHelper
 import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.PacketEvent
@@ -15,9 +14,13 @@ object TpsCalculator {
     private var timeLastTimeUpdate: Long = 0
 
     val tickRate: Float
-        get() = tickRates.average().coerceIn(0.0f, 20.0f)
+        get() = tickRates.average()
 
-    val adjustTicks: Float get() = tickRates.average() - 20f
+    val adjustTicks: Float
+        get() = tickRates.average() - 20.0f
+
+    val multiplier: Float
+        get() = 20.0f / tickRate
 
     init {
         listener<PacketEvent.Receive> {

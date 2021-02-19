@@ -33,10 +33,10 @@ class ClickTask private constructor(
     private val clicks: Array<ClickInfo>
 ) : Comparable<ClickTask> {
     val executed by ComputeFlag {
-        cancelled || System.currentTimeMillis() - finishTime > postDelay
+        cancelled || finishTime != -1L && System.currentTimeMillis() - finishTime > postDelay
     }
     val confirmed by ComputeFlag {
-        cancelled || executed && futures.all { it?.timeout(timeout + postDelay) ?: false }
+        cancelled || executed && futures.all { it?.timeout(timeout) ?: true }
     }
 
     private val futures = arrayOfNulls<ClickFuture?>(clicks.size)
