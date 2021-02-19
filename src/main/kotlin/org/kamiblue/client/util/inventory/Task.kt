@@ -69,7 +69,6 @@ class ClickTask private constructor(
 
     override fun hashCode() = id
 
-
     class Builder {
         private val clicks = ArrayList<ClickInfo>()
         private var priority = 0
@@ -114,33 +113,5 @@ class ClickTask private constructor(
         }.thenBy {
             it.id
         }
-    }
-}
-
-class ClickInfo(
-    private val windowID: Int,
-    private val slot: Slot,
-    private val mouseButton: Int,
-    private val type: ClickType
-) {
-    fun runClick(event: SafeClientEvent): ClickFuture {
-        val id = event.clickSlot(windowID, slot, mouseButton, type)
-        event.playerController.updateController()
-        return ClickFuture(id)
-    }
-}
-
-class ClickFuture(
-    val id: Short,
-) {
-    val time = System.currentTimeMillis()
-    var confirmed = false; private set
-
-    fun timeout(timeout: Long): Boolean {
-        return confirmed || System.currentTimeMillis() - time > timeout
-    }
-
-    fun confirm() {
-        confirmed = true
     }
 }
