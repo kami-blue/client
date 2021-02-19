@@ -91,10 +91,10 @@ internal object AutoOffhand : Module(
         safeListener<InputEvent.KeyInputEvent> {
             val key = Keyboard.getEventKey()
             when {
-                bindTotem.value.isDown(key) -> switchToType(Type.TOTEM)
-                bindGapple.value.isDown(key) -> switchToType(Type.GAPPLE)
-                bindStrength.value.isDown(key) -> switchToType(Type.STRENGTH)
-                bindCrystal.value.isDown(key) -> switchToType(Type.CRYSTAL)
+                bindTotem.isDown(key) -> switchToType(Type.TOTEM)
+                bindGapple.isDown(key) -> switchToType(Type.GAPPLE)
+                bindStrength.isDown(key) -> switchToType(Type.STRENGTH)
+                bindCrystal.isDown(key) -> switchToType(Type.CRYSTAL)
             }
         }
 
@@ -163,7 +163,7 @@ internal object AutoOffhand : Module(
             if (!alternativeType && typeAlt != typeOriginal || checkOffhandItem(typeAlt)) return
 
             transactionLog.clear()
-            moveToSlot(slot.slotNumber, 45).forEach {
+            moveToSlot(slot, player.offhandSlot).forEach {
                 transactionLog[it] = false
             }
 
