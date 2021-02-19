@@ -20,6 +20,8 @@ import org.kamiblue.client.util.*
 import org.kamiblue.client.util.combat.CombatUtils
 import org.kamiblue.client.util.combat.CombatUtils.calcDamageFromMob
 import org.kamiblue.client.util.combat.CombatUtils.calcDamageFromPlayer
+import org.kamiblue.client.util.inventory.slot.inventorySlots
+import org.kamiblue.client.util.inventory.slot.offhandSlot
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener

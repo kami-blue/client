@@ -16,9 +16,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.ConnectionEvent
+import org.kamiblue.client.util.inventory.slot.filterByStack
+import org.kamiblue.client.util.inventory.slot.hotbarSlots
 import org.kamiblue.client.util.items.attackDamage
-import org.kamiblue.client.util.items.filterByStack
-import org.kamiblue.client.util.items.hotbarSlots
 import org.kamiblue.client.util.items.swapToSlot
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener

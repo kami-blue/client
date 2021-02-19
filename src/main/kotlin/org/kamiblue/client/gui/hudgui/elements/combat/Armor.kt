@@ -13,8 +13,8 @@ import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.graphics.font.FontRenderAdapter
 import org.kamiblue.client.util.graphics.font.HAlign
 import org.kamiblue.client.util.graphics.font.VAlign
-import org.kamiblue.client.util.items.allSlots
-import org.kamiblue.client.util.items.countItem
+import org.kamiblue.client.util.inventory.slot.allSlots
+import org.kamiblue.client.util.inventory.slot.countItem
 import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeAsyncListener

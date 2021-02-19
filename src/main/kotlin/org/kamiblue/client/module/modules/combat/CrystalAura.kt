@@ -39,6 +39,10 @@ import org.kamiblue.client.util.combat.CrystalUtils.calcCrystalDamage
 import org.kamiblue.client.util.combat.CrystalUtils.canPlaceCollide
 import org.kamiblue.client.util.combat.CrystalUtils.getCrystalBB
 import org.kamiblue.client.util.combat.CrystalUtils.getCrystalList
+import org.kamiblue.client.util.inventory.slot.allSlots
+import org.kamiblue.client.util.inventory.slot.countItem
+import org.kamiblue.client.util.inventory.slot.firstItem
+import org.kamiblue.client.util.inventory.slot.hotbarSlots
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.math.RotationUtils
 import org.kamiblue.client.util.math.RotationUtils.getRotationTo

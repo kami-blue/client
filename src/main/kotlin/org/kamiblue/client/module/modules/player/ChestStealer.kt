@@ -12,6 +12,9 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.inventory.slot.firstByStack
+import org.kamiblue.client.util.inventory.slot.firstEmpty
+import org.kamiblue.client.util.inventory.slot.getSlots
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener

@@ -24,9 +24,9 @@ import org.kamiblue.client.util.WorldUtils.isPlaceable
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.combat.CrystalUtils.calcCrystalDamage
 import org.kamiblue.client.util.graphics.ESPRenderer
+import org.kamiblue.client.util.inventory.slot.firstBlock
+import org.kamiblue.client.util.inventory.slot.hotbarSlots
 import org.kamiblue.client.util.items.block
-import org.kamiblue.client.util.items.firstBlock
-import org.kamiblue.client.util.items.hotbarSlots
 import org.kamiblue.client.util.math.RotationUtils.getRotationTo
 import org.kamiblue.client.util.math.VectorUtils
 import org.kamiblue.client.util.math.VectorUtils.distanceTo

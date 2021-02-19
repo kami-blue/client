@@ -42,6 +42,8 @@ import org.kamiblue.client.util.WorldUtils.isPlaceable
 import org.kamiblue.client.util.WorldUtils.placeBlock
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.ESPRenderer
+import org.kamiblue.client.util.inventory.*
+import org.kamiblue.client.util.inventory.slot.*
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.math.RotationUtils.getRotationTo
 import org.kamiblue.client.util.math.VectorUtils

@@ -1,13 +1,15 @@
 package org.kamiblue.client.util.items
 
 import kotlinx.coroutines.runBlocking
-import net.minecraft.block.Block
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.Slot
 import net.minecraft.network.play.client.CPacketClickWindow
 import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.util.inventory.slot.craftingSlots
+import org.kamiblue.client.util.inventory.slot.firstItem
+import org.kamiblue.client.util.inventory.slot.getSlots
 import org.kamiblue.client.util.threads.onMainThreadSafe
 
 /**

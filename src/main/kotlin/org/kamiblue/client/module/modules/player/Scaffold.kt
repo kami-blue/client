@@ -23,9 +23,9 @@ import org.kamiblue.client.util.*
 import org.kamiblue.client.util.EntityUtils.prevPosVector
 import org.kamiblue.client.util.WorldUtils.getNeighbour
 import org.kamiblue.client.util.WorldUtils.placeBlock
-import org.kamiblue.client.util.items.HotbarSlot
-import org.kamiblue.client.util.items.firstItem
-import org.kamiblue.client.util.items.hotbarSlots
+import org.kamiblue.client.util.inventory.slot.HotbarSlot
+import org.kamiblue.client.util.inventory.slot.firstItem
+import org.kamiblue.client.util.inventory.slot.hotbarSlots
 import org.kamiblue.client.util.items.swapToSlot
 import org.kamiblue.client.util.math.RotationUtils.getRotationTo
 import org.kamiblue.client.util.math.Vec2f

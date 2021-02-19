@@ -11,7 +11,7 @@ import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.GlStateUtils
 import org.kamiblue.client.util.graphics.RenderUtils2D
 import org.kamiblue.client.util.graphics.VertexHelper
-import org.kamiblue.client.util.items.storageSlots
+import org.kamiblue.client.util.inventory.slot.storageSlots
 import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.threads.runSafe
 import org.lwjgl.opengl.GL11.*

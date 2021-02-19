@@ -19,8 +19,8 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.combat.AutoLog.Reasons.*
 import org.kamiblue.client.util.EntityUtils.isFakeOrSelf
 import org.kamiblue.client.util.combat.CombatUtils
-import org.kamiblue.client.util.items.allSlots
-import org.kamiblue.client.util.items.countItem
+import org.kamiblue.client.util.inventory.slot.allSlots
+import org.kamiblue.client.util.inventory.slot.countItem
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.commons.utils.MathUtils
 import java.time.LocalTime

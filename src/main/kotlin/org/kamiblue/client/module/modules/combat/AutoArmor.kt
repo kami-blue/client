@@ -11,10 +11,10 @@ import org.kamiblue.client.manager.managers.PlayerInventoryManager.addInventoryT
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
+import org.kamiblue.client.util.inventory.slot.armorSlots
+import org.kamiblue.client.util.inventory.slot.chestSlot
+import org.kamiblue.client.util.inventory.slot.inventorySlots
 import org.kamiblue.client.util.items.ClickInfo
-import org.kamiblue.client.util.items.armorSlots
-import org.kamiblue.client.util.items.chestSlot
-import org.kamiblue.client.util.items.inventorySlots
 import org.kamiblue.client.util.threads.safeListener
 
 internal object AutoArmor : Module(

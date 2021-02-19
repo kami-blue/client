@@ -1,12 +1,13 @@
 package org.kamiblue.client.util.items
 
-import org.kamiblue.client.event.SafeClientEvent
 import net.minecraft.block.Block
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
 import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.util.inventory.slot.*
 
 /**
  * Try to swap selected hotbar slot to [I] that matches with [predicate]

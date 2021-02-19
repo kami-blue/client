@@ -13,6 +13,8 @@ import org.kamiblue.client.process.PauseProcess.pauseBaritone
 import org.kamiblue.client.process.PauseProcess.unpauseBaritone
 import org.kamiblue.client.setting.settings.impl.collection.CollectionSetting
 import org.kamiblue.client.util.*
+import org.kamiblue.client.util.inventory.*
+import org.kamiblue.client.util.inventory.slot.*
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.commons.extension.ceilToInt

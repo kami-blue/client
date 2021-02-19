@@ -9,8 +9,8 @@ import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.graphics.RenderUtils2D
 import org.kamiblue.client.util.graphics.VertexHelper
-import org.kamiblue.client.util.items.allSlots
-import org.kamiblue.client.util.items.countItem
+import org.kamiblue.client.util.inventory.slot.allSlots
+import org.kamiblue.client.util.inventory.slot.countItem
 
 object CombatItemCount : LabelHud(
     name = "CombatItemCount",

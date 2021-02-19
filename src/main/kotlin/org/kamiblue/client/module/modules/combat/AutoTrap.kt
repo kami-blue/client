@@ -16,9 +16,9 @@ import org.kamiblue.client.util.*
 import org.kamiblue.client.util.WorldUtils.buildStructure
 import org.kamiblue.client.util.WorldUtils.getPlaceInfo
 import org.kamiblue.client.util.WorldUtils.isPlaceable
-import org.kamiblue.client.util.items.HotbarSlot
-import org.kamiblue.client.util.items.firstBlock
-import org.kamiblue.client.util.items.hotbarSlots
+import org.kamiblue.client.util.inventory.slot.HotbarSlot
+import org.kamiblue.client.util.inventory.slot.firstBlock
+import org.kamiblue.client.util.inventory.slot.hotbarSlots
 import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope

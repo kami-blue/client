@@ -17,6 +17,8 @@ import org.kamiblue.client.process.PauseProcess.pauseBaritone
 import org.kamiblue.client.process.PauseProcess.unpauseBaritone
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.combat.CombatUtils
+import org.kamiblue.client.util.inventory.slot.firstItem
+import org.kamiblue.client.util.inventory.slot.storageSlots
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
