@@ -10,23 +10,24 @@ import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TpsCalculator
 import org.kamiblue.client.util.inventory.ClickFuture
-import org.kamiblue.client.util.inventory.ClickTask
+import org.kamiblue.client.util.inventory.InventoryTask
+import org.kamiblue.client.util.inventory.TaskFuture
 import org.kamiblue.client.util.items.removeHoldingItem
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.HashMap
 
-internal object InventoryClickManager : Manager {
+internal object InventoryTaskManager : Manager {
     private val confirmMap = HashMap<Short, ClickFuture>()
-    private val taskQueue = PriorityQueue<ClickTask>()
+    private val taskQueue = PriorityQueue<InventoryTask>()
     private val timer = TickTimer()
-    private var lastTask: ClickTask? = null
+    private var lastTask: InventoryTask? = null
 
     init {
         listener<PacketEvent.Receive> {
             if (it.packet !is SPacketConfirmTransaction) return@listener
-            synchronized(InventoryClickManager) {
+            synchronized(InventoryTaskManager) {
                 confirmMap.remove(it.packet.actionNumber)?.confirm()
             }
         }
@@ -45,22 +46,24 @@ internal object InventoryClickManager : Manager {
         }
     }
 
-    fun addTask(task: ClickTask) {
-        synchronized(InventoryClickManager) {
+    fun addTask(task: InventoryTask) {
+        synchronized(InventoryTaskManager) {
             taskQueue.add(task)
         }
     }
 
-    fun runNow(event: SafeClientEvent, task: ClickTask) {
+    fun runNow(event: SafeClientEvent, task: InventoryTask) {
         while (!task.executed) {
-            task.runTask(event)?.addToMap()
+            task.runTask(event)?.let {
+                handleFuture(it)
+            }
         }
         timer.reset((task.postDelay * TpsCalculator.multiplier).toLong())
     }
 
-    private fun SafeClientEvent.lastTaskOrNext(): ClickTask? {
+    private fun SafeClientEvent.lastTaskOrNext(): InventoryTask? {
         return lastTask ?: run {
-            val newTask = synchronized(InventoryClickManager) {
+            val newTask = synchronized(InventoryTaskManager) {
                 taskQueue.poll()?.also { lastTask = it }
             } ?: return null
 
@@ -73,7 +76,7 @@ internal object InventoryClickManager : Manager {
         }
     }
 
-    private fun SafeClientEvent.runTask(task: ClickTask) {
+    private fun SafeClientEvent.runTask(task: InventoryTask) {
         if (!player.inventory.itemStack.isEmpty && !task.runInGui && mc.currentScreen is GuiContainer) {
             timer.reset(500L)
             return
@@ -82,7 +85,9 @@ internal object InventoryClickManager : Manager {
         if (task.delay == 0L) {
             runNow(this, task)
         } else {
-            task.runTask(this)?.addToMap()
+            task.runTask(this)?.let {
+                handleFuture(it)
+            }
             timer.reset((task.delay * TpsCalculator.multiplier).toLong())
         }
 
@@ -93,14 +98,16 @@ internal object InventoryClickManager : Manager {
         }
     }
 
-    private fun ClickFuture.addToMap() {
-        synchronized(InventoryClickManager) {
-            confirmMap[this.id] = this
+    private fun handleFuture(future: TaskFuture) {
+        if (future !is ClickFuture) return
+
+        synchronized(InventoryTaskManager) {
+            confirmMap[future.id] = future
         }
     }
 
     private fun reset() {
-        synchronized(InventoryClickManager) {
+        synchronized(InventoryTaskManager) {
             confirmMap.clear()
             lastTask?.cancel()
             lastTask = null

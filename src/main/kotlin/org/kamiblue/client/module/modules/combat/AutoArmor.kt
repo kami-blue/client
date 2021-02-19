@@ -9,8 +9,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
-import org.kamiblue.client.util.inventory.ClickTask
-import org.kamiblue.client.util.inventory.clickTask
+import org.kamiblue.client.util.inventory.InventoryTask
+import org.kamiblue.client.util.inventory.inventoryTask
 import org.kamiblue.client.util.inventory.confirmedOrTrue
 import org.kamiblue.client.util.inventory.operation.click
 import org.kamiblue.client.util.inventory.operation.shiftClick
@@ -28,7 +28,7 @@ internal object AutoArmor : Module(
     private val confirmTimeout by setting("Confirm Timeout", 5, 1..20, 1)
     private val delay by setting("Delay", 2, 1..10, 1)
 
-    private var lastTask: ClickTask? = null
+    private var lastTask: InventoryTask? = null
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
@@ -87,7 +87,7 @@ internal object AutoArmor : Module(
 
             val armorSlot = armorSlots[index]
 
-            lastTask = clickTask {
+            lastTask = inventoryTask {
                 postDelay(delay.toLong(), TimeUnit.TICKS)
                 timeout(confirmTimeout.toLong(), TimeUnit.TICKS)
 

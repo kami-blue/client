@@ -1,37 +1,34 @@
 package org.kamiblue.client.util.inventory
 
-import net.minecraft.inventory.ClickType
-import net.minecraft.inventory.Slot
 import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.manager.managers.InventoryClickManager
+import org.kamiblue.client.manager.managers.InventoryTaskManager
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.delegate.ComputeFlag
-import org.kamiblue.client.util.items.clickSlot
 
-fun SafeClientEvent.clickTaskNow(block: ClickTask.Builder.() -> Unit) =
-    ClickTask.Builder().apply { priority(Int.MAX_VALUE) }.apply(block).build().also {
-        InventoryClickManager.runNow(this, it)
+fun SafeClientEvent.inventoryTaskNow(block: InventoryTask.Builder.() -> Unit) =
+    InventoryTask.Builder().apply { priority(Int.MAX_VALUE) }.apply(block).build().also {
+        InventoryTaskManager.runNow(this, it)
     }
 
-fun AbstractModule.clickTask(block: ClickTask.Builder.() -> Unit) =
-    ClickTask.Builder().apply { priority(modulePriority) }.apply(block).build().also {
-        InventoryClickManager.addTask(it)
+fun AbstractModule.inventoryTask(block: InventoryTask.Builder.() -> Unit) =
+    InventoryTask.Builder().apply { priority(modulePriority) }.apply(block).build().also {
+        InventoryTaskManager.addTask(it)
     }
 
-val ClickTask?.executedOrTrue get() = this == null || this.executed
+val InventoryTask?.executedOrTrue get() = this == null || this.executed
 
-val ClickTask?.confirmedOrTrue get() = this == null || this.confirmed
+val InventoryTask?.confirmedOrTrue get() = this == null || this.confirmed
 
-class ClickTask private constructor(
+class InventoryTask private constructor(
     private val id: Int,
     private val priority: Int,
     val delay: Long,
     val postDelay: Long,
     val timeout: Long,
     val runInGui: Boolean,
-    private val clicks: Array<ClickInfo>
-) : Comparable<ClickTask> {
+    private val clicks: Array<TaskStep>
+) : Comparable<InventoryTask> {
     val executed by ComputeFlag {
         cancelled || finishTime != -1L && System.currentTimeMillis() - finishTime > postDelay
     }
@@ -39,38 +36,45 @@ class ClickTask private constructor(
         cancelled || executed && futures.all { it?.timeout(timeout) ?: true }
     }
 
-    private val futures = arrayOfNulls<ClickFuture?>(clicks.size)
+    private val futures = arrayOfNulls<TaskFuture?>(clicks.size)
     private var finishTime = -1L
     private var index = 0
     private var cancelled = false
 
-    fun runTask(event: SafeClientEvent): ClickFuture? {
+    fun runTask(event: SafeClientEvent): TaskFuture? {
         if (cancelled || index >= clicks.size) {
-            if (finishTime == -1L) finishTime = System.currentTimeMillis()
+            if (finishTime == -1L) {
+                event.playerController.updateController()
+                finishTime = System.currentTimeMillis()
+            }
+
             return null
         }
 
         val currentIndex = index++
-        return clicks[currentIndex].runClick(event).also { futures[currentIndex] = it }
+        val future = clicks[currentIndex].run(event)
+        futures[currentIndex] = future
+
+        return future
     }
 
     fun cancel() {
         cancelled = true
     }
 
-    override fun compareTo(other: ClickTask): Int {
+    override fun compareTo(other: InventoryTask): Int {
         return comparator.compare(this, other)
     }
 
     override fun equals(other: Any?) =
         this === other
-            || (other is ClickTask
+            || (other is InventoryTask
             && this.id == other.id)
 
     override fun hashCode() = id
 
     class Builder {
-        private val clicks = ArrayList<ClickInfo>()
+        private val infos = ArrayList<TaskStep>()
         private var priority = 0
         private var delay = 50L
         private var postDelay = 100L
@@ -97,18 +101,18 @@ class ClickTask private constructor(
             runInGui = true
         }
 
-        operator fun ClickInfo.unaryPlus() {
-            clicks.add(this)
+        operator fun TaskStep.unaryPlus() {
+            infos.add(this)
         }
 
-        fun build(): ClickTask {
-            return ClickTask(currentID++, priority, delay, postDelay, timeout, runInGui, clicks.toTypedArray())
+        fun build(): InventoryTask {
+            return InventoryTask(currentID++, priority, delay, postDelay, timeout, runInGui, infos.toTypedArray())
         }
     }
 
     private companion object {
         var currentID = Int.MIN_VALUE
-        val comparator = compareByDescending<ClickTask> {
+        val comparator = compareByDescending<InventoryTask> {
             it.priority
         }.thenBy {
             it.id

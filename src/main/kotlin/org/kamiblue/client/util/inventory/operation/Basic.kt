@@ -2,30 +2,40 @@ package org.kamiblue.client.util.inventory.operation
 
 import net.minecraft.inventory.ClickType
 import net.minecraft.inventory.Slot
-import org.kamiblue.client.util.inventory.ClickInfo
-import org.kamiblue.client.util.inventory.ClickTask
+import org.kamiblue.client.util.inventory.Click
+import org.kamiblue.client.util.inventory.InventoryTask
+import org.kamiblue.client.util.inventory.SwapSlot
 import org.kamiblue.client.util.inventory.slot.HotbarSlot
 
-fun ClickTask.Builder.click(slot: Slot) {
+fun InventoryTask.Builder.swapSlot(slot: HotbarSlot) {
+    + SwapSlot(slot.hotbarSlot)
+}
+
+fun InventoryTask.Builder.swapSlot(slot: Int) {
+    if (slot !in 0..8) return
+    + SwapSlot(slot)
+}
+
+fun InventoryTask.Builder.click(slot: Slot) {
     click(0, slot)
 }
 
-fun ClickTask.Builder.click(windowID: Int, slot: Slot) {
-    + ClickInfo(windowID, slot, 0, ClickType.PICKUP)
+fun InventoryTask.Builder.click(windowID: Int, slot: Slot) {
+    + Click(windowID, slot, 0, ClickType.PICKUP)
 }
 
-fun ClickTask.Builder.shiftClick(slot: Slot) {
+fun InventoryTask.Builder.shiftClick(slot: Slot) {
     shiftClick(0, slot)
 }
 
-fun ClickTask.Builder.shiftClick(windowID: Int, slot: Slot) {
-    + ClickInfo(windowID, slot, 0, ClickType.QUICK_MOVE)
+fun InventoryTask.Builder.shiftClick(windowID: Int, slot: Slot) {
+    + Click(windowID, slot, 0, ClickType.QUICK_MOVE)
 }
 
-fun ClickTask.Builder.swapWith(slot: Slot, hotbarSlot: HotbarSlot) {
+fun InventoryTask.Builder.swapWith(slot: Slot, hotbarSlot: HotbarSlot) {
     swapWith(0, slot, hotbarSlot)
 }
 
-fun ClickTask.Builder.swapWith(windowID: Int, slot: Slot, hotbarSlot: HotbarSlot) {
-    + ClickInfo(windowID, slot, hotbarSlot.hotbarSlot, ClickType.SWAP)
+fun InventoryTask.Builder.swapWith(windowID: Int, slot: Slot, hotbarSlot: HotbarSlot) {
+    + Click(windowID, slot, hotbarSlot.hotbarSlot, ClickType.SWAP)
 }
