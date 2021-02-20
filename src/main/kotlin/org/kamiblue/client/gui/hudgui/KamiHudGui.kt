@@ -1,5 +1,6 @@
 package org.kamiblue.client.gui.hudgui
 
+import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.gui.AbstractKamiGui
 import org.kamiblue.client.gui.clickgui.KamiClickGui
@@ -18,6 +19,7 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11.*
 import java.util.*
+import kotlin.collections.LinkedHashSet
 
 object KamiHudGui : AbstractKamiGui<HudSettingWindow, AbstractHudElement>() {
 
@@ -39,6 +41,18 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, AbstractHudElement>() {
             if (posX > screenWidth) {
                 posX = 0.0f
                 posY += 100.0f
+            }
+        }
+
+        listener<InputEvent.KeyInputEvent> {
+            val eventKey = Keyboard.getEventKey()
+
+            if (eventKey == Keyboard.KEY_NONE || Keyboard.isKeyDown(Keyboard.KEY_F3)) return@listener
+
+            for (child in windowList) {
+                if (child !is AbstractHudElement) continue
+                if (!child.bind.isDown(eventKey)) continue
+                child.visible = !child.visible
             }
         }
     }

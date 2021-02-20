@@ -8,6 +8,7 @@ import org.kamiblue.client.module.modules.client.Hud
 import org.kamiblue.client.setting.GuiConfig
 import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.setting.configs.AbstractConfig
+import org.kamiblue.client.util.Bind
 import org.kamiblue.client.util.graphics.RenderUtils2D
 import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.graphics.font.FontRenderAdapter
@@ -30,6 +31,7 @@ abstract class AbstractHudElement(
     config: AbstractConfig<out Nameable>
 ) : BasicWindow(name, 20.0f, 20.0f, 100.0f, 50.0f, SettingGroup.HUD_GUI, config), Alias {
 
+    val bind by setting("Bind", Bind())
     val scale by setting("Scale", 1.0f, 0.1f..4.0f, 0.05f)
     val default = setting("Default", false)
 

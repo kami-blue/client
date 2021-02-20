@@ -79,7 +79,6 @@ internal object ForgeEventProcessor {
         }
 
         KamiEventBus.post(event)
-        GuiManager.onBind(Keyboard.getEventKey())
         ModuleManager.onBind(Keyboard.getEventKey())
     }
 

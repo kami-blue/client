@@ -45,11 +45,4 @@ internal object GuiManager : AsyncLoader<List<Class<out AbstractHudElement>>> {
         KamiEventBus.subscribe(KamiClickGui)
         KamiEventBus.subscribe(KamiHudGui)
     }
-
-    internal fun onBind(eventKey: Int) {
-        if (eventKey == 0 || Keyboard.isKeyDown(Keyboard.KEY_F3)) return  // if key is the 'none' key (stuff like mod key in i3 might return 0)
-        for (hudElement in hudElementsMap) {
-            if (hudElement.value.bind.isDown(eventKey)) hudElement.value.visible = !hudElement.value.visible
-        }
-    }
 }
