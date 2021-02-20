@@ -12,8 +12,8 @@ import org.kamiblue.client.util.*
 import org.kamiblue.client.util.inventory.InventoryTask
 import org.kamiblue.client.util.inventory.inventoryTask
 import org.kamiblue.client.util.inventory.confirmedOrTrue
-import org.kamiblue.client.util.inventory.operation.click
-import org.kamiblue.client.util.inventory.operation.shiftClick
+import org.kamiblue.client.util.inventory.operation.pickUp
+import org.kamiblue.client.util.inventory.operation.quickMove
 import org.kamiblue.client.util.inventory.slot.armorSlots
 import org.kamiblue.client.util.inventory.slot.chestSlot
 import org.kamiblue.client.util.inventory.slot.inventorySlots
@@ -88,15 +88,15 @@ internal object AutoArmor : Module(
             val armorSlot = armorSlots[index]
 
             lastTask = inventoryTask {
-                postDelay(delay.toLong(), TimeUnit.TICKS)
-                timeout(confirmTimeout.toLong(), TimeUnit.TICKS)
+                postDelay(delay, TimeUnit.TICKS)
+                timeout(confirmTimeout, TimeUnit.TICKS)
 
                 if (!armorSlot.hasStack) {
-                    shiftClick(pair.first) // Move the new one into armor slot
+                    quickMove(pair.first) // Move the new one into armor slot
                 } else {
-                    click(armorSlot)  // Pick up the old armor from armor slot
-                    shiftClick(pair.first) // Move the new one into armor slot
-                    click(pair.first) // Put the old one into the empty slot
+                    pickUp(armorSlot)  // Pick up the old armor from armor slot
+                    quickMove(pair.first) // Move the new one into armor slot
+                    pickUp(pair.first) // Put the old one into the empty slot
                 }
             }
 
