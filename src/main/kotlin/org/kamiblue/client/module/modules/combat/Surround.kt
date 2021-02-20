@@ -17,6 +17,7 @@ import org.kamiblue.client.util.WorldUtils.buildStructure
 import org.kamiblue.client.util.WorldUtils.getPlaceInfo
 import org.kamiblue.client.util.WorldUtils.isPlaceable
 import org.kamiblue.client.util.combat.SurroundUtils
+import org.kamiblue.client.util.combat.SurroundUtils.checkHole
 import org.kamiblue.client.util.items.firstBlock
 import org.kamiblue.client.util.items.hotbarSlots
 import org.kamiblue.client.util.math.VectorUtils.toBlockPos
@@ -119,7 +120,7 @@ internal object Surround : Module(
         }
     }
 
-    private fun SafeClientEvent.inHoleCheck() = player.onGround && player.speed < 0.15 && SurroundUtils.checkHole(player) == SurroundUtils.HoleType.OBBY
+    private fun SafeClientEvent.inHoleCheck() = player.onGround && player.speed < 0.15 && checkHole(player) == SurroundUtils.HoleType.OBBY
 
     private fun outOfHoleCheck() {
         if (autoDisable.value == AutoDisableMode.OUT_OF_HOLE) {

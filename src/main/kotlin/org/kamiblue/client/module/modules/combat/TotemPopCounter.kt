@@ -14,6 +14,7 @@ import org.kamiblue.client.util.color.EnumTextColor
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.commons.extension.synchronized
 import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.ArrayList
@@ -35,7 +36,7 @@ internal object TotemPopCounter : Module(
         CLIENT, EVERYONE
     }
 
-    private val playerList = Collections.synchronizedMap(HashMap<EntityPlayer, Int>())
+    private val playerList = HashMap<EntityPlayer, Int>().synchronized()
     private var wasDead = false
 
     init {

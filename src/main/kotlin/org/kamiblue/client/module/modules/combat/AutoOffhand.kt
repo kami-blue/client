@@ -214,7 +214,7 @@ internal object AutoOffhand : Module(
                 }
                 crystal && entity is EntityEnderCrystal -> {
                     val damage = CombatManager.crystalMap[entity] ?: continue
-                    maxDamage = max(damage.second, maxDamage)
+                    maxDamage = max(damage.selfDamage, maxDamage)
                 }
             }
         }

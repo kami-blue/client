@@ -33,6 +33,7 @@ import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.process.AutoObsidianProcess
+import org.kamiblue.client.process.PauseProcess
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.EntityUtils.getDroppedItem
 import org.kamiblue.client.util.EntityUtils.getDroppedItems
@@ -163,7 +164,7 @@ internal object AutoObsidian : Module(
         }
 
         safeListener<TickEvent.ClientTickEvent>(69) {
-            if (it.phase != TickEvent.Phase.START) return@safeListener
+            if (it.phase != TickEvent.Phase.START || PauseProcess.isActive) return@safeListener
 
             runAutoObby()
             doRotation()

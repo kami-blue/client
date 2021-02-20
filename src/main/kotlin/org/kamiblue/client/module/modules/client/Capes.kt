@@ -31,6 +31,7 @@ import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.color.DyeColors
 import org.kamiblue.client.util.threads.BackgroundScope
 import org.kamiblue.client.util.threads.defaultScope
+import org.kamiblue.commons.extension.synchronized
 import org.kamiblue.commons.utils.ConnectionUtils
 import java.util.*
 import kotlin.collections.HashMap
@@ -44,7 +45,7 @@ internal object Capes : Module(
     showOnArray = false,
     enabledByDefault = true
 ) {
-    private val capeUsers = Collections.synchronizedMap(HashMap<UUID, Cape>())
+    private val capeUsers = HashMap<UUID, Cape>().synchronized()
 
     var updated = false; private set
     var isPremium = false; private set

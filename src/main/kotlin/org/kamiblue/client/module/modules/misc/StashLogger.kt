@@ -20,6 +20,7 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.onMainThread
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.commons.extension.synchronized
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
@@ -126,7 +127,7 @@ internal object StashLogger : Module(
 
         var hot = false
 
-        private val tileEntities = Collections.synchronizedList(ArrayList<TileEntity>())
+        private val tileEntities = ArrayList<TileEntity>().synchronized()
 
         fun add(tileEntity: TileEntity) {
             when (tileEntity) {

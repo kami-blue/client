@@ -8,6 +8,7 @@ import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -17,7 +18,11 @@ import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.GuiEvent;
 import org.kamiblue.client.event.events.RenderEvent;
 import org.kamiblue.client.gui.mc.KamiGuiUpdateNotification;
+import org.kamiblue.client.manager.managers.PlayerPacketManager;
+import org.kamiblue.client.mixin.client.accessor.player.AccessorEntityPlayerSP;
+import org.kamiblue.client.mixin.client.accessor.player.AccessorPlayerControllerMP;
 import org.kamiblue.client.module.modules.combat.CrystalAura;
+import org.kamiblue.client.module.modules.player.MultiTask;
 import org.kamiblue.client.plugin.PluginError;
 import org.kamiblue.client.util.Wrapper;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,24 +42,12 @@ public class MixinMinecraft {
     @Shadow public EntityPlayerSP player;
     @Shadow public GuiScreen currentScreen;
     @Shadow public GameSettings gameSettings;
-    @Shadow public RayTraceResult objectMouseOver;
     @Shadow public PlayerControllerMP playerController;
-    @Shadow public EntityRenderer entityRenderer;
 
-    @Inject(method = "rightClickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;getHeldItem(Lnet/minecraft/util/EnumHand;)Lnet/minecraft/item/ItemStack;"), cancellable = true)
-    public void processRightClickBlock(CallbackInfo ci) {
-        if (CrystalAura.INSTANCE.isActive()) {
-            ci.cancel();
-            for (EnumHand enumhand : EnumHand.values()) {
-                ItemStack itemstack = this.player.getHeldItem(enumhand);
-                if (itemstack.isEmpty() && (this.objectMouseOver == null || this.objectMouseOver.typeOfHit == RayTraceResult.Type.MISS))
-                    net.minecraftforge.common.ForgeHooks.onEmptyClick(this.player, enumhand);
-                if (!itemstack.isEmpty() && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS) {
-                    this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
-                }
-            }
-        }
-    }
+    @Shadow public RayTraceResult objectMouseOver;
+    @Shadow public EntityRenderer entityRenderer;
+    private boolean handActive = false;
+    private boolean isHittingBlock = false;
 
     @ModifyVariable(method = "displayGuiScreen", at = @At("HEAD"), argsOnly = true)
     public GuiScreen editDisplayGuiScreen(GuiScreen guiScreenIn) {
@@ -68,6 +61,57 @@ public class MixinMinecraft {
     @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/shader/Framebuffer;framebufferRender(II)V"))
     public void runGameLoop(CallbackInfo ci) {
         KamiEventBus.INSTANCE.post(new RenderEvent());
+    }
+
+    // Fix random crystal placing when eating gapple in offhand
+    @Inject(method = "rightClickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;getHeldItem(Lnet/minecraft/util/EnumHand;)Lnet/minecraft/item/ItemStack;"), cancellable = true)
+    public void rightClickMouseAtInvokeGetHeldItem(CallbackInfo ci) {
+        if (CrystalAura.INSTANCE.isDisabled() || CrystalAura.INSTANCE.getInactiveTicks() > 2) return;
+        if (player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL) return;
+        if (PlayerPacketManager.INSTANCE.getHoldingItemStack().getItem() != Items.END_CRYSTAL) return;
+
+        ci.cancel();
+
+        for (EnumHand enumhand : EnumHand.values()) {
+            ItemStack itemstack = this.player.getHeldItem(enumhand);
+            if (itemstack.isEmpty() && (this.objectMouseOver == null || this.objectMouseOver.typeOfHit == RayTraceResult.Type.MISS)) {
+                net.minecraftforge.common.ForgeHooks.onEmptyClick(this.player, enumhand);
+            }
+            if (!itemstack.isEmpty() && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS) {
+                this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
+            }
+        }
+    }
+
+    // Hacky but safer than using @Redirect
+    @Inject(method = "rightClickMouse", at = @At("HEAD"))
+    public void rightClickMousePre(CallbackInfo ci) {
+        if (MultiTask.INSTANCE.isEnabled()) {
+            isHittingBlock = playerController.getIsHittingBlock();
+            ((AccessorPlayerControllerMP) playerController).kbSetIsHittingBlock(false);
+        }
+    }
+
+    @Inject(method = "rightClickMouse", at = @At("RETURN"))
+    public void rightClickMousePost(CallbackInfo ci) {
+        if (MultiTask.INSTANCE.isEnabled() && !playerController.getIsHittingBlock()) {
+            ((AccessorPlayerControllerMP) playerController).kbSetIsHittingBlock(isHittingBlock);
+        }
+    }
+
+    @Inject(method = "sendClickBlockToController", at = @At("HEAD"))
+    public void sendClickBlockToControllerPre(boolean leftClick, CallbackInfo ci) {
+        if (MultiTask.INSTANCE.isEnabled()) {
+            handActive = player.isHandActive();
+            ((AccessorEntityPlayerSP) player).kbSetHandActive(false);
+        }
+    }
+
+    @Inject(method = "sendClickBlockToController", at = @At("RETURN"))
+    public void sendClickBlockToControllerPost(boolean leftClick, CallbackInfo ci) {
+        if (MultiTask.INSTANCE.isEnabled() && !player.isHandActive()) {
+            ((AccessorEntityPlayerSP) player).kbSetHandActive(handActive);
+        }
     }
 
     @Inject(method = "run", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayCrashReport(Lnet/minecraft/crash/CrashReport;)V", shift = At.Shift.BEFORE))

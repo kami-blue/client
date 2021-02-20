@@ -31,9 +31,12 @@ internal object AutoEat : Module(
     private val eatBadFood by setting("Eat Bad Food", false)
     private val pauseBaritone by setting("Pause Baritone", true)
 
-    private val timer = TickTimer(TimeUnit.TICKS)
     private var lastSlot = -1
     private var eating = false
+
+    override fun isActive(): Boolean {
+        return isEnabled && eating
+    }
 
     init {
         onDisable {
@@ -42,15 +45,20 @@ internal object AutoEat : Module(
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase != TickEvent.Phase.START || CombatSetting.isActive()) return@safeListener
+            if (it.phase != TickEvent.Phase.START || !player.isEntityAlive || CombatSetting.isActive()) return@safeListener
 
-            if (shouldEat()) {
-                if (isValid(player.heldItemOffhand)) {
-                    eat(EnumHand.OFF_HAND)
-                } else if (swapToFood()) {
-                    eat(EnumHand.MAIN_HAND)
-                }
-            } else if (timer.tick(2)) {
+            val hand = when {
+                !shouldEat() -> null // Null = stop eating
+                isValid(player.heldItemOffhand) -> EnumHand.OFF_HAND
+                isValid(player.heldItemMainhand) -> EnumHand.MAIN_HAND
+                swapToFood() -> return@safeListener // If we found valid food and moved the return and wait until next tick
+                else -> null // If we can't find any valid food then stop eating
+            }
+
+            if (hand != null) {
+                eat(hand)
+            } else {
+                // Stop eating first and swap back in the next tick
                 if (eating) {
                     stopEating()
                 } else {
@@ -67,10 +75,13 @@ internal object AutoEat : Module(
     private fun SafeClientEvent.eat(hand: EnumHand) {
         if (pauseBaritone) pauseBaritone()
 
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
-        playerController.processRightClick(player, world, hand)
+        if (!eating || !player.isHandActive) {
+            KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
 
-        timer.reset()
+            // Vanilla Minecraft prioritize offhand so we need to force it using the specific hand
+            playerController.processRightClick(player, world, hand)
+        }
+
         eating = true
     }
 
@@ -79,7 +90,6 @@ internal object AutoEat : Module(
 
         runSafe {
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
-            playerController.onStoppedUsingItem(player)
         }
 
         eating = false
@@ -95,37 +105,44 @@ internal object AutoEat : Module(
         }
     }
 
+    /**
+     * @return `true` if food found and moved
+     */
     private fun SafeClientEvent.swapToFood(): Boolean {
-        if (isValid(player.heldItemMainhand)) return true
-
         lastSlot = player.inventory.currentItem
-        val hasFoodInSlot = swapToItem<ItemFood> { isValid(it) }
+        val hasFoodInSlots = swapToItem<ItemFood> { isValid(it) }
 
-        if (!hasFoodInSlot) {
+        return if (hasFoodInSlots) {
+            true
+        } else {
             lastSlot = -1
             moveFoodToHotbar()
         }
-
-        return false
     }
 
-    private fun SafeClientEvent.moveFoodToHotbar() {
+    /**
+     * @return `true` if food found and moved
+     */
+    private fun SafeClientEvent.moveFoodToHotbar(): Boolean {
         val slotFrom = player.storageSlots.firstItem<ItemFood, Slot> {
             isValid(it)
-        } ?: return
+        } ?: return false
 
         moveToHotbar(slotFrom) {
             val item = it.item
             item !is ItemTool && item !is ItemBlock
         }
+
+        return true
     }
 
-    private fun isValid(itemStack: ItemStack): Boolean {
+    private fun SafeClientEvent.isValid(itemStack: ItemStack): Boolean {
         val item = itemStack.item
 
         return item is ItemFood
             && item != Items.CHORUS_FRUIT
             && (eatBadFood || !isBadFood(itemStack, item))
+            && player.canEat(item == Items.GOLDEN_APPLE)
     }
 
     private fun isBadFood(itemStack: ItemStack, item: ItemFood) =

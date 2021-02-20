@@ -72,7 +72,7 @@ internal object AutoLog : Module(
     }
 
     private fun SafeClientEvent.checkCrystals(): Boolean {
-        val maxSelfDamage = CombatManager.crystalMap.values.maxByOrNull { it.second }?.second ?: 0.0f
+        val maxSelfDamage = CombatManager.crystalMap.values.maxOfOrNull { it.selfDamage } ?: 0.0f
         return CombatUtils.getHealthSmart(player) - maxSelfDamage < health
     }
 

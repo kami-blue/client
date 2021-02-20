@@ -51,6 +51,7 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.runSafeR
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.commons.extension.synchronized
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import java.util.*
@@ -129,14 +130,14 @@ internal object CrystalAura : Module(
     }
 
     /* Variables */
-    private val placedBBMap = Collections.synchronizedMap(HashMap<BlockPos, Pair<AxisAlignedBB, Long>>()) // <CrystalBoundingBox, Added Time>
+    private val placedBBMap = HashMap<BlockPos, Pair<AxisAlignedBB, Long>>().synchronized() // <CrystalBoundingBox, Added Time>
     private val ignoredList = HashSet<EntityEnderCrystal>()
     private val packetList = ArrayList<Packet<*>>(3)
     private val yawDiffList = FloatArray(20)
     private val lockObject = Any()
 
-    private var placeMap = emptyMap<BlockPos, Triple<Float, Float, Double>>() // <BlockPos, Target Damage, Self Damage>
-    private var crystalMap = emptyMap<EntityEnderCrystal, Triple<Float, Float, Double>>() // <Crystal, <Target Damage, Self Damage>>
+    private var placeMap = emptyMap<BlockPos, CombatManager.CrystalDamage>()
+    private var crystalMap = emptyMap<EntityEnderCrystal, CombatManager.CrystalDamage>()
     private var lastCrystal: EntityEnderCrystal? = null
     private var lastLookAt = Vec3d.ZERO
     private var forcePlacing = false
@@ -325,11 +326,11 @@ internal object CrystalAura : Module(
     private fun SafeClientEvent.packetExplode(entityID: Int, pos: BlockPos, vec3d: Vec3d) {
         if (!preExplode()) return
 
-        val triple = placeMap[pos] ?: return
+        val calculation = placeMap[pos] ?: return
 
-        if (!noSuicideCheck(triple.second)) return
-        if (!checkDamageExplode(triple.first, triple.second)) return
-        if (triple.third > explodeRange) return
+        if (!noSuicideCheck(calculation.selfDamage)) return
+        if (!checkDamageExplode(calculation.targetDamage, calculation.selfDamage)) return
+        if (calculation.distance > explodeRange) return
 
         val attackPacket = CPacketUseEntity().apply {
             id = entityID
@@ -396,18 +397,18 @@ internal object CrystalAura : Module(
 
         val eyePos = player.getPositionEyes(1f)
 
-        for ((pos, triple) in placeMap) {
+        for ((pos, calculation) in placeMap) {
             // Damage check
-            if (!noSuicideCheck(triple.second)) continue
-            if (!checkDamagePlace(triple.first, triple.second)) continue
+            if (!noSuicideCheck(calculation.selfDamage)) continue
+            if (!checkDamagePlace(calculation.targetDamage, calculation.selfDamage)) continue
 
             // Distance check
-            if (triple.third > placeRange) continue
+            if (calculation.distance > placeRange) continue
 
             // Wall distance check
             val rayTraceResult = world.rayTraceBlocks(eyePos, pos.toVec3dCenter())
             val hitBlockPos = rayTraceResult?.blockPos ?: pos
-            if (hitBlockPos.distanceTo(pos) > 1.0 && triple.third > wallPlaceRange) continue
+            if (hitBlockPos.distanceTo(pos) > 1.0 && calculation.distance > wallPlaceRange) continue
 
             // Collide check
             if (!canPlaceCollide(pos)) continue
@@ -441,15 +442,15 @@ internal object CrystalAura : Module(
         val filteredCrystal = crystalMap.entries.filter { (crystal, triple) ->
             !ignoredList.contains(crystal)
                 && !crystal.isDead
-                && checkDamageExplode(triple.first, triple.second)
+                && checkDamageExplode(triple.targetDamage, triple.selfDamage)
                 && checkYawSpeed(getRotationToEntity(crystal).x)
         }
 
-        return (filteredCrystal.firstOrNull { (crystal, triple) ->
-            triple.third <= explodeRange
+        return (filteredCrystal.firstOrNull { (crystal, calculation) ->
+            calculation.distance <= explodeRange
                 && (player.canEntityBeSeen(crystal) || EntityUtils.canEntityFeetBeSeen(crystal))
-        } ?: filteredCrystal.firstOrNull { (_, triple) ->
-            triple.third <= wallExplodeRange
+        } ?: filteredCrystal.firstOrNull { (_, calculation) ->
+            calculation.distance <= wallExplodeRange
         })?.key
     }
 
@@ -459,7 +460,7 @@ internal object CrystalAura : Module(
 
     private fun shouldForceExplode() = autoForceExplode
         && placeMap.values.any {
-        it.first > minDamage && it.second <= maxSelfDamage && it.third <= placeRange
+        it.targetDamage > minDamage && it.selfDamage <= maxSelfDamage && it.distance <= placeRange
     }
     /* End of exploding */
 
@@ -514,9 +515,9 @@ internal object CrystalAura : Module(
                 }
             }
 
-            for ((crystal, pair) in crystalMap) {
+            for ((crystal, calculation) in crystalMap) {
                 if (ignoredList.contains(crystal)) continue
-                if (!checkDamagePlace(pair.first, pair.second)) continue
+                if (!checkDamagePlace(calculation.targetDamage, calculation.selfDamage)) continue
                 if (crystal.positionVector.distanceTo(eyePos) > placeRange) continue
                 if (!checkYawSpeed(getRotationToEntity(crystal).x)) continue
                 count++
