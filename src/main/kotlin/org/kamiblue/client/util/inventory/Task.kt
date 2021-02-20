@@ -29,8 +29,11 @@ class InventoryTask private constructor(
     val runInGui: Boolean,
     private val clicks: Array<TaskStep>
 ) : Comparable<InventoryTask> {
+    val finished by ComputeFlag {
+        cancelled || finishTime != -1L
+    }
     val executed by ComputeFlag {
-        cancelled || finishTime != -1L && System.currentTimeMillis() - finishTime > postDelay
+        cancelled || finished && System.currentTimeMillis() - finishTime > postDelay
     }
     val confirmed by ComputeFlag {
         cancelled || executed && futures.all { it?.timeout(timeout) ?: true }
@@ -43,17 +46,17 @@ class InventoryTask private constructor(
 
     fun runTask(event: SafeClientEvent): TaskFuture? {
         if (cancelled || index >= clicks.size) {
-            if (finishTime == -1L) {
-                event.playerController.updateController()
-                finishTime = System.currentTimeMillis()
-            }
-
             return null
         }
 
         val currentIndex = index++
         val future = clicks[currentIndex].run(event)
         futures[currentIndex] = future
+
+        if (index >= clicks.size && finishTime == -1L) {
+            event.playerController.updateController()
+            finishTime = System.currentTimeMillis()
+        }
 
         return future
     }

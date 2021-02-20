@@ -87,11 +87,11 @@ internal object InventoryTaskManager : Manager {
         } else {
             task.runTask(this)?.let {
                 handleFuture(it)
+                timer.reset((task.delay * TpsCalculator.multiplier).toLong())
             }
-            timer.reset((task.delay * TpsCalculator.multiplier).toLong())
         }
 
-        if (task.executed) {
+        if (task.finished) {
             timer.reset((task.postDelay * TpsCalculator.multiplier).toLong())
             lastTask = null
             return
