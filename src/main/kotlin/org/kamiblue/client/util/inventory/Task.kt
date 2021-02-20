@@ -85,12 +85,24 @@ class InventoryTask private constructor(
             priority = value
         }
 
+        fun delay(value: Int, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) {
+            delay = value * timeUnit.multiplier
+        }
+
         fun delay(value: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) {
             delay = value * timeUnit.multiplier
         }
 
+        fun postDelay(value: Int, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) {
+            postDelay = value * timeUnit.multiplier
+        }
+
         fun postDelay(value: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) {
             postDelay = value * timeUnit.multiplier
+        }
+
+        fun timeout(value: Int, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) {
+            timeout = value * timeUnit.multiplier
         }
 
         fun timeout(value: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) {
