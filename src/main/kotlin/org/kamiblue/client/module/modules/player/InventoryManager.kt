@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
-import org.kamiblue.client.mixin.extension.syncCurrentPlayItem
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.process.PauseProcess.pauseBaritone
@@ -14,6 +13,7 @@ import org.kamiblue.client.process.PauseProcess.unpauseBaritone
 import org.kamiblue.client.setting.settings.impl.collection.CollectionSetting
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.inventory.*
+import org.kamiblue.client.util.inventory.operation.*
 import org.kamiblue.client.util.inventory.slot.*
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.threads.safeListener
@@ -22,7 +22,8 @@ import org.kamiblue.commons.extension.ceilToInt
 internal object InventoryManager : Module(
     name = "InventoryManager",
     category = Category.PLAYER,
-    description = "Manages your inventory automatically"
+    description = "Manages your inventory automatically",
+    modulePriority = 10
 ) {
     private val defaultEjectList = linkedSetOf(
         "minecraft:grass",
@@ -51,8 +52,7 @@ internal object InventoryManager : Module(
     }
 
     private var currentState = State.IDLE
-    private var paused = false
-    private val timer = TickTimer(TimeUnit.TICKS)
+    private var lastTask: InventoryTask? = null
 
     override fun isActive(): Boolean {
         return isEnabled && currentState != State.IDLE
@@ -60,32 +60,49 @@ internal object InventoryManager : Module(
 
     init {
         onDisable {
-            paused = false
+            lastTask = null
             unpauseBaritone()
         }
 
         safeListener<PlayerTravelEvent> {
-            if (player.isSpectator || !pauseMovement || !paused) return@safeListener
-            player.setVelocity(0.0, mc.player.motionY, 0.0)
-            it.cancel()
+            if (player.isSpectator || !pauseMovement) return@safeListener
+
+            // Pause if it is not null and not confirmed
+            val shouldPause = lastTask?.confirmed == false
+
+            if (shouldPause) {
+                player.setVelocity(0.0, mc.player.motionY, 0.0)
+                it.cancel()
+                pauseBaritone()
+            } else {
+                unpauseBaritone()
+            }
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase != TickEvent.Phase.START || player.isSpectator || mc.currentScreen is GuiContainer) return@safeListener
-
-            if (!timer.tick(delay.toLong())) return@safeListener
+            if (it.phase != TickEvent.Phase.START || player.isSpectator
+                || mc.currentScreen is GuiContainer || !lastTask.confirmedOrTrue) return@safeListener
 
             setState()
 
-            when (currentState) {
-                State.SAVING_ITEM -> saveItem()
-                State.REFILLING_BUILDING -> refillBuilding()
-                State.REFILLING -> refill()
-                State.EJECTING -> eject()
-                State.IDLE -> removeHoldingItem()
+            lastTask = when (currentState) {
+                State.SAVING_ITEM -> {
+                    saveItem()
+                }
+                State.REFILLING_BUILDING -> {
+                    refillBuilding()
+                }
+                State.REFILLING -> {
+                    refill()
+                }
+                State.EJECTING -> {
+                    eject()
+                }
+                State.IDLE -> {
+                    removeHoldingItem()
+                    null
+                }
             }
-
-            playerController.syncCurrentPlayItem()
         }
     }
 
@@ -96,14 +113,6 @@ internal object InventoryManager : Module(
             refillCheck() -> State.REFILLING
             ejectCheck() -> State.EJECTING
             else -> State.IDLE
-        }
-
-        paused = if (currentState != State.IDLE && pauseMovement) {
-            pauseBaritone()
-            true
-        } else {
-            unpauseBaritone()
-            false
         }
     }
 
@@ -135,44 +144,58 @@ internal object InventoryManager : Module(
     /* End of state checks */
 
     /* Tasks */
-    private fun SafeClientEvent.saveItem() {
+    private fun SafeClientEvent.saveItem(): InventoryTask? {
         val currentSlot = player.currentHotbarSlot
         val itemStack = player.heldItemMainhand
 
         val undamagedItem = getUndamagedItem(itemStack.item.id)
         val emptySlot = player.inventorySlots.firstEmpty()
 
-        when {
+        return when {
             autoRefill && undamagedItem != null -> {
-                moveToHotbar(undamagedItem, currentSlot)
+                inventoryTask {
+                    postDelay(delay, TimeUnit.TICKS)
+                    swapWith(undamagedItem, currentSlot)
+                }
             }
             emptySlot != null -> {
-                moveToHotbar(emptySlot, currentSlot)
+                inventoryTask {
+                    postDelay(delay, TimeUnit.TICKS)
+                    swapWith(emptySlot, currentSlot)
+                }
             }
             else -> {
                 player.dropItem(false)
+                null
             }
         }
     }
 
-    private fun SafeClientEvent.refillBuilding() {
+    private fun SafeClientEvent.refillBuilding() =
         player.storageSlots.firstID(buildingBlockID)?.let {
-            quickMoveSlot(it)
+            inventoryTask {
+                postDelay(delay, TimeUnit.TICKS)
+                quickMove(it)
+            }
         }
-    }
 
-    private fun SafeClientEvent.refill() {
-        val slotTo = getRefillableSlot() ?: return
-        val slotFrom = getCompatibleStack(slotTo.stack) ?: return
+    private fun SafeClientEvent.refill() =
+        getRefillableSlot()?.let { slotTo ->
+            getCompatibleStack(slotTo.stack)?.let { slotFrom ->
+                inventoryTask {
+                    postDelay(delay, TimeUnit.TICKS)
+                    moveTo(slotFrom, slotTo)
+                }
+            }
+        }
 
-        moveToSlot(slotFrom, slotTo)
-    }
-
-    private fun SafeClientEvent.eject() {
+    private fun SafeClientEvent.eject() =
         getEjectSlot()?.let {
-            throwAllInSlot(it)
+            inventoryTask {
+                postDelay(delay, TimeUnit.TICKS)
+                throwAll(it)
+            }
         }
-    }
     /* End of tasks */
 
     /**
