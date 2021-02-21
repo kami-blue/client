@@ -1,0 +1,228 @@
+package org.kamiblue.client.installer
+
+import org.kamiblue.client.KamiMod
+import org.kamiblue.client.util.WebUtils
+import org.kamiblue.client.util.filesystem.FolderUtils
+import java.awt.Dimension
+import java.io.File
+import java.io.IOException
+import java.net.JarURLConnection
+import java.net.URL
+import java.nio.file.Files
+import java.util.*
+import javax.imageio.ImageIO
+import javax.swing.*
+import kotlin.collections.ArrayList
+import kotlin.system.exitProcess
+
+
+object Installer : JPanel() {
+
+    private val downloadsApi = WebUtils.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"")
+
+    // Gson can't be included in the shadow jar, therefore we can't use it to parse the json.
+    private var stableVersion = ""
+    private var stableUrl = ""
+    private var betaVersion = ""
+    private var betaUrl = ""
+    private var frame = JFrame() // make sure that it is free to use in main, however not have to deal with nullability.
+
+    @JvmStatic
+    fun main(args: Array<String>) {
+        println("Running the ${KamiMod.NAME} ${KamiMod.VERSION} installer")
+
+        if (downloadsApi.size < 19) {
+            notify("Error while locating versions, couldn't connect to the URL or response is invalid. Either your Firewall / ISP is blocking it or you're offline")
+        }
+
+        stableVersion = downloadsApi[5]
+        stableUrl = downloadsApi[9]
+        betaVersion = downloadsApi[15]
+        betaUrl = downloadsApi[19]
+
+        File(FolderUtils.modsFolder).mkdir() // make sure that the mods folder exists.
+
+        val logoFile = Installer.javaClass.getResource("/installer/kami.png")
+        frame = JFrame("KAMI Blue Installer")
+        frame.iconImage = ImageIO.read(logoFile)
+        frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+        frame.setSize(600, 355)
+
+        frame.contentPane.add(this)
+
+        frame.pack()
+        frame.setLocationRelativeTo(null)
+        frame.isResizable = false
+        frame.isVisible = true
+
+        val kamiJars = getKamiJars()
+
+        val hasForge = checkForForge()
+
+        if (!hasForge) {
+            val action = confirm("Attention! It seems like you don't have forge installed, would you like to continue?")
+            if (action == JOptionPane.NO_OPTION) {
+                exitProcess(0)
+            }
+        }
+
+        if (kamiJars.size > 0) {
+            val action = confirm("Attention! It looks like you have installed KAMI blue before. Do you want to delete these older versions?")
+            if (action == JOptionPane.YES_OPTION) {
+                kamiJars.deleteFiles()
+            }
+        }
+    }
+
+    init {
+        val stableButton = JButton()
+        val betaButton = JButton()
+        val rand = Random()
+
+        stableButton.isOpaque = true
+        stableButton.isContentAreaFilled = false
+        stableButton.isBorderPainted = true
+
+        betaButton.isOpaque = true
+        betaButton.isContentAreaFilled = false
+        betaButton.isBorderPainted = true
+
+        stableButton.toolTipText = "This version of KAMI Blue is the latest major release"
+        betaButton.toolTipText = "A beta version of KAMI Blue, with frequent updates and fixes"
+
+        // Load images and icons
+        val backgroundImage = this.javaClass.getResource("/installer/0${rand.nextInt(4)}.jpg")
+        val backgroundPane = JLabel(ImageIcon(ImageIO.read(backgroundImage)))
+
+        val stableButtonImage = this.javaClass.getResource("/installer/stable.png")
+        val stableButtonIcon = JLabel(ImageIcon(ImageIO.read(stableButtonImage)))
+
+        val betaButtonImage = this.javaClass.getResource("/installer/beta.png")
+        val betaButtonIcon = JLabel(ImageIcon(ImageIO.read(betaButtonImage)))
+
+        val kamiImage = this.javaClass.getResource("/installer/kami.png")
+        val kamiIcon = JLabel(ImageIcon(ImageIO.read(kamiImage)))
+
+        val breadImage = this.javaClass.getResource("/installer/bread.png")
+        val breadIcon = JLabel(ImageIcon(ImageIO.read(breadImage)))
+
+        preferredSize = Dimension(600, 335)
+        layout = null
+
+        add(stableButton)
+        add(betaButton)
+        add(stableButtonIcon)
+        add(betaButtonIcon)
+        add(kamiIcon)
+
+        val bread = rand.nextInt(50)
+
+        if (bread == 1) {
+            add(breadIcon)
+        }
+
+        add(backgroundPane) // make sure that this is added last
+
+        stableButtonIcon.setBounds(90, 245, 200, 50)
+        stableButton.setBounds(90, 245, 200, 50)
+        betaButtonIcon.setBounds(310, 245, 200, 50)
+        betaButton.setBounds(310, 245, 200, 50)
+        kamiIcon.setBounds(236, 70, 128, 128)
+        breadIcon.setBounds(200, 150, 128, 128)
+        backgroundPane.setBounds(0, 0, 600, 355)
+
+        betaButton.addActionListener {
+            stableButton.isEnabled = false
+            betaButton.isEnabled = false
+            stableButton.isOpaque = false
+            betaButton.isOpaque = false
+            download(betaUrl)
+            notify("KAMI Blue $betaVersion has been installed")
+            exitProcess(0)
+        }
+
+        stableButton.addActionListener {
+            stableButton.isEnabled = false
+            betaButton.isEnabled = false
+            stableButton.isOpaque = false
+            betaButton.isOpaque = false
+            download(stableUrl)
+            notify("KAMI Blue $stableVersion has been installed")
+            exitProcess(0)
+        }
+    }
+
+    fun getKamiJars(): ArrayList<File> {
+
+        val mods = File(FolderUtils.modsFolder)
+        val files = mods.listFiles() ?: return ArrayList()
+        val foundFiles = ArrayList<File>()
+
+        for (file in files) {
+            val jarUrl = URL("jar:file:/${file.absolutePath}!/")
+            val jarFile = (jarUrl.openConnection() as JarURLConnection).jarFile
+            val manifest = jarFile.manifest
+            println("scanning $jarUrl")
+
+            if (manifest.mainAttributes.getValue("MixinConfigs") == "mixins.kami.json") {// this is the most unique unchanged thing.
+                foundFiles.add(file)
+            }
+            jarFile.close()
+        }
+
+        return foundFiles
+    }
+
+    fun ArrayList<File>.deleteFiles() {
+        forEach { file -> Files.delete(file.toPath()) }
+    }
+
+    private fun notify(message: String) {
+        JOptionPane.showMessageDialog(frame, message, "KAMI Blue installer", JOptionPane.WARNING_MESSAGE)
+    }
+
+    private fun confirm(message: String): Int {
+        return JOptionPane.showConfirmDialog(frame, message, "KAMI Blue installer", JOptionPane.YES_NO_OPTION)
+    }
+
+    fun download(url: String) {
+        val dialog = arrayOf<JDialog?>(null)
+
+        Thread {
+            dialog[0] = JOptionPane("", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION).createDialog(null, "KAMI Blue - Downloading")
+
+            dialog[0]?.isResizable = false
+            dialog[0]?.setSize(300, 0)
+            dialog[0]?.isVisible = true
+        }.start()
+
+        println("Download started")
+
+        try {
+            WebUtils.downloadUsingNIO(url, FolderUtils.modsFolder + getJarName(url))
+        } catch (e: IOException) {
+            notify("Error while downloading, couldn't connect to the URL. Either your Firewall / ISP is blocking it or you're offline")
+        }
+
+        dialog[0]?.dispose()
+
+        println("Download finished.")
+    }
+
+    fun getJarName(url: String): String {
+        return url.split("/".toRegex()).last()
+    }
+
+    fun checkForForge(): Boolean {
+        val versionFolder = File(FolderUtils.versionsFolder)
+
+        val versionList = versionFolder.listFiles() ?: return false
+
+        for (file in versionList) {
+            if (file.name.matches(".*1.12.2.*[Ff]orge.*".toRegex())) {
+                return true
+            }
+        }
+        return false
+    }
+}
