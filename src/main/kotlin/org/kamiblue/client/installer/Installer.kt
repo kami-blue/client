@@ -30,7 +30,8 @@ object Installer : JPanel() {
 
         if (downloadsApi.size < 19) {
             notify("Error while loading the KAMI Blue Downloads API, couldn't connect to the URL or response is invalid. " +
-                "Either your Firewall / ISP is blocking it or you're not connected to the internet!"
+                "Either your Firewall / ISP is blocking it or you're not connected to the internet!",
+                "Error!"
             )
         }
 
@@ -135,7 +136,7 @@ object Installer : JPanel() {
             stableButton.isOpaque = false
             betaButton.isOpaque = false
             download(betaUrl)
-            notify("KAMI Blue $betaVersion has been installed")
+            notify("KAMI Blue $betaVersion has been installed", "Installed", JOptionPane.INFORMATION_MESSAGE)
             exitProcess(0)
         }
 
@@ -145,7 +146,7 @@ object Installer : JPanel() {
             stableButton.isOpaque = false
             betaButton.isOpaque = false
             download(stableUrl)
-            notify("KAMI Blue $stableVersion has been installed")
+            notify("KAMI Blue $stableVersion has been installed", "Installed", JOptionPane.INFORMATION_MESSAGE)
             exitProcess(0)
         }
     }
@@ -175,12 +176,12 @@ object Installer : JPanel() {
         forEach { file -> Files.delete(file.toPath()) }
     }
 
-    private fun notify(message: String) {
-        JOptionPane.showMessageDialog(frame, message, "KAMI Blue Installer", JOptionPane.WARNING_MESSAGE)
+    private fun notify(message: String, title: String = "KAMI Blue Installer", type: Int = JOptionPane.WARNING_MESSAGE) {
+        JOptionPane.showMessageDialog(frame, message, title, type)
     }
 
     private fun confirm(message: String): Int {
-        return JOptionPane.showConfirmDialog(frame, message, "KAMI Blue Installer", JOptionPane.YES_NO_OPTION)
+        return JOptionPane.showConfirmDialog(frame, message, "Attention!", JOptionPane.YES_NO_OPTION)
     }
 
     private fun download(url: String) {
@@ -200,7 +201,10 @@ object Installer : JPanel() {
         try {
             WebUtils.downloadUsingNIO(url, FolderUtils.modsFolder + getJarName(url))
         } catch (e: IOException) {
-            notify("Error while downloading, couldn't connect to the URL. Either your Firewall / ISP is blocking it or you're offline")
+            notify("Error while downloading, couldn't connect to the URL. " +
+                "Either your Firewall / ISP is blocking it or you're not connected to the internet",
+                "Error!"
+            )
         }
 
         dialog[0]?.dispose()
