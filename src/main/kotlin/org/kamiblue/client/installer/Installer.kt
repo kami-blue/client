@@ -155,8 +155,14 @@ object Installer : JPanel() {
     fun getKamiJars(): ArrayList<File> {
 
         val mods = File(FolderUtils.modsFolder)
-        val files = mods.listFiles() ?: return ArrayList()
+        var files = mods.listFiles() ?: return ArrayList()
         val foundFiles = ArrayList<File>()
+
+        val forgeSubfile = files.firstOrNull { (it.isDirectory and (it.name == "1.12.2")) }
+
+        if (forgeSubfile != null) {
+            files = arrayOf(*forgeSubfile.listFiles() ?: return ArrayList(), *files)
+        }
 
         for (file in files) {
             val jarUrl = URL("jar:file:/${file.absolutePath}!/")
