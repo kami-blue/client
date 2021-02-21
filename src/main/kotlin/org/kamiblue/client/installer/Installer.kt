@@ -15,26 +15,26 @@ import javax.swing.*
 import kotlin.collections.ArrayList
 import kotlin.system.exitProcess
 
-
 object Installer : JPanel() {
 
+    private var frame = JFrame()
     private val downloadsApi = WebUtils.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"")
-
-    // Gson can't be included in the shadow jar, therefore we can't use it to parse the json.
     private var stableVersion = ""
     private var stableUrl = ""
     private var betaVersion = ""
     private var betaUrl = ""
-    private var frame = JFrame() // make sure that it is free to use in main, however not have to deal with nullability.
 
     @JvmStatic
     fun main(args: Array<String>) {
-        println("Running the ${KamiMod.NAME} ${KamiMod.VERSION} installer")
+        println("Running the ${KamiMod.NAME} ${KamiMod.VERSION} Installer")
 
         if (downloadsApi.size < 19) {
-            notify("Error while locating versions, couldn't connect to the URL or response is invalid. Either your Firewall / ISP is blocking it or you're offline")
+            notify("Error while loading the KAMI Blue Downloads API, couldn't connect to the URL or response is invalid. " +
+                "Either your Firewall / ISP is blocking it or you're not connected to the internet!"
+            )
         }
 
+        // Gson can't be included in the shadow jar, therefore we can't use it to parse the json.
         stableVersion = downloadsApi[5]
         stableUrl = downloadsApi[9]
         betaVersion = downloadsApi[15]
@@ -56,18 +56,17 @@ object Installer : JPanel() {
         frame.isVisible = true
 
         val kamiJars = getKamiJars()
-
         val hasForge = checkForForge()
 
         if (!hasForge) {
-            val action = confirm("Attention! It seems like you don't have forge installed, would you like to continue?")
+            val action = confirm("Attention! It seems like you don't have Forge installed, would you like to continue?")
             if (action == JOptionPane.NO_OPTION) {
                 exitProcess(0)
             }
         }
 
         if (kamiJars.size > 0) {
-            val action = confirm("Attention! It looks like you have installed KAMI blue before. Do you want to delete these older versions?")
+            val action = confirm("Attention! It looks like you have installed KAMI Blue before. Do you want to delete these older versions?")
             if (action == JOptionPane.YES_OPTION) {
                 kamiJars.deleteFiles()
             }
@@ -116,7 +115,6 @@ object Installer : JPanel() {
         add(kamiIcon)
 
         val bread = rand.nextInt(50)
-
         if (bread == 1) {
             add(breadIcon)
         }
@@ -152,8 +150,7 @@ object Installer : JPanel() {
         }
     }
 
-    fun getKamiJars(): ArrayList<File> {
-
+    private fun getKamiJars(): ArrayList<File> {
         val mods = File(FolderUtils.modsFolder)
         val files = mods.listFiles() ?: return ArrayList()
         val foundFiles = ArrayList<File>()
@@ -162,34 +159,36 @@ object Installer : JPanel() {
             val jarUrl = URL("jar:file:/${file.absolutePath}!/")
             val jarFile = (jarUrl.openConnection() as JarURLConnection).jarFile
             val manifest = jarFile.manifest
-            println("scanning $jarUrl")
+            println("Scanning $jarUrl")
 
-            if (manifest.mainAttributes.getValue("MixinConfigs") == "mixins.kami.json") {// this is the most unique unchanged thing.
+            if (manifest.mainAttributes.getValue("MixinConfigs") == "mixins.kami.json") { // this is the most unique unchanged thing.
                 foundFiles.add(file)
             }
+
             jarFile.close()
         }
 
         return foundFiles
     }
 
-    fun ArrayList<File>.deleteFiles() {
+    private fun ArrayList<File>.deleteFiles() {
         forEach { file -> Files.delete(file.toPath()) }
     }
 
     private fun notify(message: String) {
-        JOptionPane.showMessageDialog(frame, message, "KAMI Blue installer", JOptionPane.WARNING_MESSAGE)
+        JOptionPane.showMessageDialog(frame, message, "KAMI Blue Installer", JOptionPane.WARNING_MESSAGE)
     }
 
     private fun confirm(message: String): Int {
-        return JOptionPane.showConfirmDialog(frame, message, "KAMI Blue installer", JOptionPane.YES_NO_OPTION)
+        return JOptionPane.showConfirmDialog(frame, message, "KAMI Blue Installer", JOptionPane.YES_NO_OPTION)
     }
 
-    fun download(url: String) {
+    private fun download(url: String) {
         val dialog = arrayOf<JDialog?>(null)
 
         Thread {
-            dialog[0] = JOptionPane("", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION).createDialog(null, "KAMI Blue - Downloading")
+            dialog[0] = JOptionPane("", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION)
+                .createDialog(null, "KAMI Blue - Downloading")
 
             dialog[0]?.isResizable = false
             dialog[0]?.setSize(300, 0)
@@ -209,11 +208,11 @@ object Installer : JPanel() {
         println("Download finished.")
     }
 
-    fun getJarName(url: String): String {
-        return url.split("/".toRegex()).last()
+    private fun getJarName(url: String): String {
+        return url.split("/").last()
     }
 
-    fun checkForForge(): Boolean {
+    private fun checkForForge(): Boolean {
         val versionFolder = File(FolderUtils.versionsFolder)
 
         val versionList = versionFolder.listFiles() ?: return false
