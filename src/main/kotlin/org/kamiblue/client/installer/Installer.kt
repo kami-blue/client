@@ -162,18 +162,29 @@ object Installer : JPanel() {
             files = arrayOf(*forgeSubfile.listFiles() ?: return ArrayList(), *files)
         }
 
-        for (file in files) {
-            if (file.extension != "jar") continue
-            val jarUrl = URL("jar:file:/${file.absolutePath}!/")
-            val jarFile = (jarUrl.openConnection() as JarURLConnection).jarFile
-            val manifest = jarFile.manifest
-            println("Scanning $jarUrl")
 
-            if (manifest.mainAttributes.getValue("MixinConfigs") == "mixins.kami.json") { // this is the most unique unchanged thing.
-                foundFiles.add(file)
+        try {
+            for (file in files) {
+                if (file.extension != "jar") continue
+                val jarUrl = URL("jar:file:/${file.absolutePath}!/")
+                val jarFile = (jarUrl.openConnection() as JarURLConnection).jarFile
+                val manifest = jarFile.manifest
+                println("Scanning $jarUrl")
+
+                if (manifest.mainAttributes.getValue("MixinConfigs") == "mixins.kami.json") { // this is the most unique unchanged thing.
+                    foundFiles.add(file)
+                }
+
+                jarFile.close()
             }
+        } catch (e: Exception) {
+            println("Error whilst checking the jar, defaulting to name checking")
 
-            jarFile.close()
+            for (file in files) {
+                if (file.name.matches(".*[Kk][Aa][Mm][Ii].*".toRegex())) {
+                    foundFiles.add(file)
+                }
+            }
         }
 
         return foundFiles
