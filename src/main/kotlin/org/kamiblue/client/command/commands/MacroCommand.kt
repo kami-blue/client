@@ -15,22 +15,23 @@ object MacroCommand : ClientCommand(
         literal("list") {
             string("key") { keyArg ->
                 execute("List macros for a key") {
-                    val key = KeyboardUtils.getKey(keyArg.value)
+                    val input = keyArg.value
+                    val key = KeyboardUtils.getKey(input)
 
-                    if (key < 1) {
-                        KeyboardUtils.sendUnknownKeyError(keyArg.value)
+                    if (key !in 1..255) {
+                        KeyboardUtils.sendUnknownKeyError(input)
                         return@execute
                     }
 
-                    val macros = MacroManager.macros.filter { it.key == key }
-                    val formattedName = formatValue(KeyboardUtils.getKeyName(key))
+                    val macros = MacroManager.macros[key]
+                    val formattedName = formatValue(KeyboardUtils.getDisplayName(key) ?: "Unknown")
 
-                    if (macros.isEmpty()) {
+                    if (macros.isNullOrEmpty()) {
                         MessageSendHelper.sendChatMessage("&cYou have no macros for the key $formattedName")
                     } else {
                         MessageSendHelper.sendChatMessage("You have has the following macros for $formattedName: ")
-                        for ((_, value) in macros) {
-                            MessageSendHelper.sendRawChatMessage("$formattedName $value")
+                        for (macro in macros) {
+                            MessageSendHelper.sendRawChatMessage("$formattedName $macro")
                         }
                     }
                 }
@@ -41,47 +42,52 @@ object MacroCommand : ClientCommand(
                     MessageSendHelper.sendChatMessage("&cYou have no macros")
                 } else {
                     MessageSendHelper.sendChatMessage("You have the following macros: ")
-                    for ((key, value) in MacroManager.macros.entries.sortedBy { it.key }) {
-                        MessageSendHelper.sendRawChatMessage("${formatValue(KeyboardUtils.getKeyName(key))} $value")
+                    for ((key, value) in MacroManager.macros) {
+                        val formattedName = formatValue(KeyboardUtils.getDisplayName(key) ?: "Unknown")
+                        MessageSendHelper.sendRawChatMessage("$formattedName $value")
                     }
                 }
-
             }
         }
 
         literal("clear") {
             string("key") { keyArg ->
                 execute("Clear macros for a key") {
-                    val key = KeyboardUtils.getKey(keyArg.value)
+                    val input = keyArg.value
+                    val key = KeyboardUtils.getKey(input)
 
-                    if (key < 1) {
-                        KeyboardUtils.sendUnknownKeyError(keyArg.value)
+                    if (key !in 1..255) {
+                        KeyboardUtils.sendUnknownKeyError(input)
                         return@execute
                     }
+
+                    val formattedName = formatValue(KeyboardUtils.getDisplayName(key) ?: "Unknown")
 
                     MacroManager.removeMacro(key)
                     MacroManager.saveMacros()
                     MacroManager.loadMacros()
-                    MessageSendHelper.sendChatMessage("Cleared macros for ${formatValue(KeyboardUtils.getKeyName(key))}")
+                    MessageSendHelper.sendChatMessage("Cleared macros for $formattedName")
                 }
             }
         }
 
         string("key") { keyArg ->
-            greedy("command / message") { greedyArg ->
+            greedy("command / message") { macroArg ->
                 execute("Set a command / message for a key") {
-                    val key = KeyboardUtils.getKey(keyArg.value)
+                    val input = keyArg.value
+                    val key = KeyboardUtils.getKey(input)
 
-                    if (key < 1) {
-                        KeyboardUtils.sendUnknownKeyError(keyArg.value)
+                    if (key !in 1..255) {
+                        KeyboardUtils.sendUnknownKeyError(input)
                         return@execute
                     }
 
-                    MacroManager.addMacroToKey(key, greedyArg.value)
+                    val macro = macroArg.value
+                    val formattedName = formatValue(KeyboardUtils.getDisplayName(key) ?: "Unknown")
+
+                    MacroManager.addMacroToKey(key, macro)
                     MacroManager.saveMacros()
-                    MessageSendHelper.sendChatMessage("Added macro ${formatValue(greedyArg.value)} for key " +
-                        formatValue(KeyboardUtils.getKeyName(key))
-                    )
+                    MessageSendHelper.sendChatMessage("Added macro ${formatValue(macro)} for key $formattedName")
                 }
             }
         }

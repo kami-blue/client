@@ -13,14 +13,16 @@ import org.lwjgl.input.Keyboard
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
+import java.util.*
+import kotlin.collections.ArrayList
 
 object MacroManager : Manager {
-    private var macroMap = LinkedHashMap<Int, ArrayList<String>>()
+    private var macroMap = TreeMap<Int, ArrayList<String>>()
     val isEmpty get() = macroMap.isEmpty()
     val macros: Map<Int, List<String>> get() = macroMap
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
-    private val type = object : TypeToken<LinkedHashMap<Int, List<String>>>() {}.type
+    private val type = object : TypeToken<TreeMap<Int, List<String>>>() {}.type
     private val file get() = File(KamiMod.DIRECTORY + "macros.json")
 
     init {
