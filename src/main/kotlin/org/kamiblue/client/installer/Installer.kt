@@ -163,6 +163,7 @@ object Installer : JPanel() {
         }
 
         for (file in files) {
+            if (file.extension != "jar") continue
             val jarUrl = URL("jar:file:/${file.absolutePath}!/")
             val jarFile = (jarUrl.openConnection() as JarURLConnection).jarFile
             val manifest = jarFile.manifest
