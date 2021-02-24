@@ -33,7 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Created by 086 on 17/11/2017.
  */
 @Mixin(Minecraft.class)
-public class MixinMinecraft {
+public abstract class MixinMinecraft {
 
     @Shadow public WorldClient world;
     @Shadow public EntityPlayerSP player;
@@ -43,6 +43,9 @@ public class MixinMinecraft {
 
     @Shadow public RayTraceResult objectMouseOver;
     @Shadow public EntityRenderer entityRenderer;
+
+    @Shadow protected abstract void clickMouse();
+
     private boolean handActive = false;
     private boolean isHittingBlock = false;
 
@@ -99,6 +102,16 @@ public class MixinMinecraft {
             }
             if (!itemstack.isEmpty() && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS) {
                 this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
+            }
+        }
+    }
+
+    // Allows left click attack while eating lol
+    @Inject(method = "processKeyBinds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isKeyDown()Z", shift = At.Shift.BEFORE, ordinal = 2))
+    public void processKeyBindsInvokeIsKeyDown(CallbackInfo ci) {
+        if (BlockInteraction.isMultiTaskEnabled()) {
+            while (this.gameSettings.keyBindAttack.isPressed()) {
+                this.clickMouse();
             }
         }
     }
