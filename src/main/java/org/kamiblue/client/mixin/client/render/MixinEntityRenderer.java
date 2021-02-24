@@ -1,6 +1,5 @@
 package org.kamiblue.client.mixin.client.render;
 
-import com.google.common.base.Predicate;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -9,7 +8,6 @@ import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -23,15 +21,13 @@ import org.kamiblue.client.module.modules.render.AntiFog;
 import org.kamiblue.client.module.modules.render.AntiOverlay;
 import org.kamiblue.client.module.modules.render.CameraClip;
 import org.kamiblue.client.module.modules.render.NoHurtCam;
+import org.kamiblue.client.util.Wrapper;
 import org.kamiblue.client.util.math.Vec2f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Mixin(value = EntityRenderer.class, priority = Integer.MAX_VALUE)
 public class MixinEntityRenderer {
@@ -75,12 +71,11 @@ public class MixinEntityRenderer {
         if (NoHurtCam.INSTANCE.isEnabled()) info.cancel();
     }
 
-    @Redirect(method = "getMouseOver", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;getEntitiesInAABBexcluding(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;Lcom/google/common/base/Predicate;)Ljava/util/List;"))
-    public List<Entity> getEntitiesInAABBexcluding(WorldClient worldClient, Entity entityIn, AxisAlignedBB boundingBox, Predicate<? super Entity> predicate) {
+    @Inject(method = "getMouseOver", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;getPositionEyes(F)Lnet/minecraft/util/math/Vec3d;", shift = At.Shift.BEFORE), cancellable = true)
+    public void getEntitiesInAABBexcluding(float partialTicks, CallbackInfo ci) {
         if (BlockInteraction.isNoEntityTraceEnabled()) {
-            return new ArrayList<>();
-        } else {
-            return worldClient.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
+            ci.cancel();
+            Wrapper.getMinecraft().profiler.endSection();
         }
     }
 
