@@ -25,10 +25,10 @@ open class ClientEvent : AbstractClientEvent() {
 }
 
 open class SafeClientEvent internal constructor(
-    override val world: WorldClient,
-    override val player: EntityPlayerSP,
-    override val playerController: PlayerControllerMP,
-    override val connection: NetHandlerPlayClient
+    @JvmField override val world: WorldClient,
+    @JvmField override val player: EntityPlayerSP,
+    @JvmField override val playerController: PlayerControllerMP,
+    @JvmField override val connection: NetHandlerPlayClient
 ) : AbstractClientEvent()
 
 class ClientExecuteEvent(

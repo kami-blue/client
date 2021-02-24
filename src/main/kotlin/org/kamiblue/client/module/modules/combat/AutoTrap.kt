@@ -8,6 +8,8 @@ import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.HotbarManager.resetHotbar
+import org.kamiblue.client.manager.managers.HotbarManager.spoofHotbar
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
@@ -49,7 +51,7 @@ internal object AutoTrap : Module(
 
     init {
         onDisable {
-            PlayerPacketManager.resetHotbar()
+            resetHotbar()
         }
 
         safeListener<TickEvent.ClientTickEvent> {
@@ -57,13 +59,13 @@ internal object AutoTrap : Module(
 
             if (job.isActiveOrFalse) {
                 getObby()?.let {
-                    PlayerPacketManager.spoofHotbar(it.hotbarSlot)
+                    spoofHotbar(it)
                 } ?: return@safeListener
                 sendPlayerPacket {
                     cancelRotate()
                 }
             } else if (CombatManager.isOnTopPriority(AutoTrap)) {
-                PlayerPacketManager.resetHotbar()
+                resetHotbar()
             }
         }
 

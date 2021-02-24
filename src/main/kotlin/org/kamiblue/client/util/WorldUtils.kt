@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.manager.managers.HotbarManager.serverSideItem
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.util.math.RotationUtils.getRotationTo
 import org.kamiblue.client.util.math.corners
@@ -251,7 +252,7 @@ object WorldUtils {
         connection.sendPacket(placePacket)
         player.swingArm(EnumHand.MAIN_HAND)
 
-        val itemStack = PlayerPacketManager.getHoldingItemStack()
+        val itemStack = player.serverSideItem
         val block = (itemStack.item as? ItemBlock?)?.block ?: return
         val metaData = itemStack.metadata
         val blockState = block.getStateForPlacement(world, pos, side, hitVecOffset.x.toFloat(), hitVecOffset.y.toFloat(), hitVecOffset.z.toFloat(), metaData, player, EnumHand.MAIN_HAND)

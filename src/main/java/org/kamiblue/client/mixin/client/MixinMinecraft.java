@@ -16,6 +16,7 @@ import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.GuiEvent;
 import org.kamiblue.client.event.events.RunGameLoopEvent;
 import org.kamiblue.client.gui.mc.KamiGuiUpdateNotification;
+import org.kamiblue.client.manager.managers.HotbarManager;
 import org.kamiblue.client.manager.managers.PlayerPacketManager;
 import org.kamiblue.client.mixin.client.accessor.player.AccessorEntityPlayerSP;
 import org.kamiblue.client.mixin.client.accessor.player.AccessorPlayerControllerMP;
@@ -35,14 +36,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Minecraft.class)
 public class MixinMinecraft {
 
-    @Shadow public WorldClient world;
     @Shadow public EntityPlayerSP player;
     @Shadow public GuiScreen currentScreen;
     @Shadow public GameSettings gameSettings;
     @Shadow public PlayerControllerMP playerController;
 
-    @Shadow public RayTraceResult objectMouseOver;
-    @Shadow public EntityRenderer entityRenderer;
     private boolean handActive = false;
     private boolean isHittingBlock = false;
 
@@ -86,19 +84,26 @@ public class MixinMinecraft {
     // Fix random crystal placing when eating gapple in offhand
     @Inject(method = "rightClickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;getHeldItem(Lnet/minecraft/util/EnumHand;)Lnet/minecraft/item/ItemStack;"), cancellable = true)
     public void rightClickMouseAtInvokeGetHeldItem(CallbackInfo ci) {
+        EntityPlayerSP player = Wrapper.getPlayer();
+        WorldClient world = Wrapper.getWorld();
+        PlayerControllerMP playerController = Wrapper.getMinecraft().playerController;
+        RayTraceResult objectMouseOver = Wrapper.getMinecraft().objectMouseOver;
+
+        if (player == null || world == null || playerController == null) return;
+
         if (CrystalAura.INSTANCE.isDisabled() || CrystalAura.INSTANCE.getInactiveTicks() > 2) return;
         if (player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL) return;
-        if (PlayerPacketManager.INSTANCE.getHoldingItemStack().getItem() != Items.END_CRYSTAL) return;
+        if (HotbarManager.INSTANCE.getServerSideItem(player).getItem() != Items.END_CRYSTAL) return;
 
         ci.cancel();
 
         for (EnumHand enumhand : EnumHand.values()) {
-            ItemStack itemstack = this.player.getHeldItem(enumhand);
-            if (itemstack.isEmpty() && (this.objectMouseOver == null || this.objectMouseOver.typeOfHit == RayTraceResult.Type.MISS)) {
-                net.minecraftforge.common.ForgeHooks.onEmptyClick(this.player, enumhand);
+            ItemStack itemstack = player.getHeldItem(enumhand);
+            if (itemstack.isEmpty() && (objectMouseOver == null || objectMouseOver.typeOfHit == RayTraceResult.Type.MISS)) {
+                net.minecraftforge.common.ForgeHooks.onEmptyClick(player, enumhand);
             }
-            if (!itemstack.isEmpty() && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS) {
-                this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
+            if (!itemstack.isEmpty() && playerController.processRightClick(player, world, enumhand) == EnumActionResult.SUCCESS) {
+                Wrapper.getMinecraft().entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
             }
         }
     }

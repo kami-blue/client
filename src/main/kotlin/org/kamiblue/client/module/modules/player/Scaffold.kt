@@ -14,6 +14,9 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
+import org.kamiblue.client.manager.managers.HotbarManager.resetHotbar
+import org.kamiblue.client.manager.managers.HotbarManager.serverSideItem
+import org.kamiblue.client.manager.managers.HotbarManager.spoofHotbar
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.mixin.client.entity.MixinEntity
@@ -86,8 +89,8 @@ internal object Scaffold : Module(
         }
     }
 
-    private val isHoldingBlock: Boolean
-        get() = PlayerPacketManager.getHoldingItemStack().item is ItemBlock
+    private val SafeClientEvent.isHoldingBlock: Boolean
+        get() = player.serverSideItem.item is ItemBlock
 
     private val SafeClientEvent.shouldTower: Boolean
         get() = !player.onGround
@@ -109,7 +112,7 @@ internal object Scaffold : Module(
             }
 
             if (inactiveTicks > 5) {
-                PlayerPacketManager.resetHotbar()
+                resetHotbar()
             } else if (isHoldingBlock) {
                 lastHitVec?.let {
                     sendPlayerPacket {
@@ -148,7 +151,7 @@ internal object Scaffold : Module(
 
     private fun SafeClientEvent.swapAndPlace(pos: BlockPos, side: EnumFacing) {
         getBlockSlot()?.let { slot ->
-            if (spoofHotbar) PlayerPacketManager.spoofHotbar(slot.hotbarSlot)
+            if (spoofHotbar) spoofHotbar(slot)
             else swapToSlot(slot)
 
             inactiveTicks = 0

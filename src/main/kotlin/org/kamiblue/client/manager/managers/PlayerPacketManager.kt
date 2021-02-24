@@ -1,6 +1,5 @@
 package org.kamiblue.client.manager.managers
 
-import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketHeldItemChange
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.math.Vec3d
@@ -36,11 +35,7 @@ object PlayerPacketManager : Manager {
 
     var clientSidePitch = Vec2f.ZERO; private set
 
-    var serverSideHotbar = 0; private set
     var lastSwapTime = 0L; private set
-
-    private var spoofingHotbar = false
-    private var hotbarResetTimer = TickTimer(TimeUnit.SECONDS)
 
     init {
         listener<OnUpdateWalkingPlayerEvent>(Int.MIN_VALUE) {
@@ -50,33 +45,16 @@ object PlayerPacketManager : Manager {
             packetList.clear()
         }
 
-        listener<PacketEvent.Send>(-69420) {
-            if (it.packet is CPacketHeldItemChange && spoofingHotbar && it.packet.slotId != serverSideHotbar) {
-                if (hotbarResetTimer.tick(2L)) {
-                    spoofingHotbar = false
-                } else {
-                    it.cancel()
-                }
-            }
-        }
-
         listener<PacketEvent.PostSend>(-6969) {
-            if (it.cancelled) return@listener
-            when (it.packet) {
-                is CPacketPlayer -> {
-                    if (it.packet.moving) {
-                        serverSidePosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
-                    }
+            if (it.cancelled || it.packet !is CPacketPlayer) return@listener
 
-                    if (it.packet.rotating) {
-                        serverSideRotation = Vec2f(it.packet.yaw, it.packet.pitch)
-                        Wrapper.player?.let { player -> player.rotationYawHead = it.packet.yaw }
-                    }
-                }
-                is CPacketHeldItemChange -> {
-                    serverSideHotbar = it.packet.slotId
-                    lastSwapTime = System.currentTimeMillis()
-                }
+            if (it.packet.moving) {
+                serverSidePosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
+            }
+
+            if (it.packet.rotating) {
+                serverSideRotation = Vec2f(it.packet.yaw, it.packet.pitch)
+                Wrapper.player?.let { player -> player.rotationYawHead = it.packet.yaw }
             }
         }
 
@@ -114,27 +92,6 @@ object PlayerPacketManager : Manager {
         Packet.Builder().apply(block).build()?.let {
             packetList[this] = it
         }
-    }
-
-    fun getHoldingItemStack(): ItemStack =
-        Wrapper.player?.inventory?.mainInventory?.get(serverSideHotbar) ?: ItemStack.EMPTY
-
-    fun spoofHotbar(slot: Int) {
-        Wrapper.minecraft.connection?.let {
-            if (serverSideHotbar != slot) {
-                serverSideHotbar = slot
-                it.sendPacket(CPacketHeldItemChange(slot))
-                spoofingHotbar = true
-            }
-            hotbarResetTimer.reset()
-        }
-    }
-
-    fun resetHotbar() {
-        if (!spoofingHotbar) return
-        spoofingHotbar = false
-        Wrapper.minecraft.connection?.sendPacket(CPacketHeldItemChange(Wrapper.minecraft.playerController?.currentPlayerItem
-            ?: 0))
     }
 
     class Packet private constructor(

@@ -16,7 +16,6 @@ import java.util.*
 import kotlin.collections.HashSet
 
 object MessageManager : Manager {
-    private val mc = Wrapper.minecraft
     private val lockObject = Any()
 
     private val messageQueue = TreeSet<QueuedMessage>(Comparator.reverseOrder())

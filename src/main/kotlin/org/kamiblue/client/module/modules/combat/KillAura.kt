@@ -6,6 +6,7 @@ import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.HotbarManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
@@ -81,7 +82,7 @@ internal object KillAura : Module(
             if (player.getDistance(target) >= range) return@safeListener
             if (player.scaledHealth > minSwapHealth && autoWeapon) equipBestWeapon(prefer)
             if (weaponOnly && !player.heldItemMainhand.item.isWeapon) return@safeListener
-            if (swapDelay > 0 && System.currentTimeMillis() - PlayerPacketManager.lastSwapTime < swapDelay * 50L) return@safeListener
+            if (swapDelay > 0 && System.currentTimeMillis() - HotbarManager.swapTime < swapDelay * 50L) return@safeListener
 
             inactiveTicks = 0
             rotate(target)

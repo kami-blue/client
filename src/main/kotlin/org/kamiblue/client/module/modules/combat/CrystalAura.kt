@@ -26,6 +26,10 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.HotbarManager
+import org.kamiblue.client.manager.managers.HotbarManager.resetHotbar
+import org.kamiblue.client.manager.managers.HotbarManager.serverSideItem
+import org.kamiblue.client.manager.managers.HotbarManager.spoofHotbar
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.mixin.extension.id
@@ -114,7 +118,7 @@ internal object CrystalAura : Module(
     /* Explode page two */
     private val minDamageE by setting("Min Damage Explode", 6.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
     private val maxSelfDamageE by setting("Max Self Damage Explode", 3.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
-    private val swapDelay by setting("Swap Delay", 10, 1..50, 1, { page == Page.EXPLODE_TWO })
+    private val swapDelay by setting("Swap Delay", 10, 1..20, 1, { page == Page.EXPLODE_TWO })
     private val hitDelay by setting("Hit Delay", 1, 1..10, 1, { page == Page.EXPLODE_TWO })
     private val hitAttempts by setting("Hit Attempts", 4, 0..8, 1, { page == Page.EXPLODE_TWO })
     private val explodeRange by setting("Explode Range", 4.0f, 0.0f..5.0f, 0.25f, { page == Page.EXPLODE_TWO })
@@ -168,7 +172,7 @@ internal object CrystalAura : Module(
             hitTimer = 0
             hitCount = 0
             inactiveTicks = 10
-            PlayerPacketManager.resetHotbar()
+            resetHotbar()
         }
 
         listener<InputEvent.KeyInputEvent> {
@@ -242,8 +246,13 @@ internal object CrystalAura : Module(
             }
 
             if (it.phase == TickEvent.Phase.END) {
-                if (inactiveTicks > 5 || getHand() == EnumHand.OFF_HAND) PlayerPacketManager.resetHotbar()
-                if (inactiveTicks > 20) resetRotation()
+                if (getHand() == EnumHand.OFF_HAND) {
+                    resetHotbar()
+                }
+                if (inactiveTicks > 20) {
+                    resetHotbar()
+                    resetRotation()
+                }
             }
         }
     }
@@ -274,21 +283,19 @@ internal object CrystalAura : Module(
 
     private fun SafeClientEvent.place() {
         getPlacingPos()?.let { pos ->
-            val hand = getHand()
-
-            if (hand == null) {
-                if (autoSwap) {
-                    player.hotbarSlots.firstItem(Items.END_CRYSTAL)?.let {
-                        if (spoofHotbar) PlayerPacketManager.spoofHotbar(it.hotbarSlot)
-                        else swapToSlot(it)
-                    }
+            if (autoSwap) {
+                player.hotbarSlots.firstItem(Items.END_CRYSTAL)?.let {
+                    if (spoofHotbar) spoofHotbar(it.hotbarSlot, 1000L)
+                    else swapToSlot(it)
                 }
-                return
             }
 
-            placeTimer = 0
+            val hand = getHand()
             inactiveTicks = 0
             lastLookAt = Vec3d(pos).add(0.5, placeOffset.toDouble(), 0.5)
+
+            if (hand == null) return
+            placeTimer = 0
 
             sendOrQueuePacket(getPlacePacket(pos, hand))
             if (extraPlacePacket) sendOrQueuePacket(getPlacePacket(pos, hand))
@@ -313,12 +320,12 @@ internal object CrystalAura : Module(
     private fun SafeClientEvent.preExplode(): Boolean {
         if (antiWeakness && player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) {
             equipBestWeapon(allowTool = true)
-            PlayerPacketManager.resetHotbar()
+            resetHotbar()
             return false
         }
 
         // Anticheat doesn't allow you attack right after changing item
-        if (System.currentTimeMillis() - PlayerPacketManager.lastSwapTime < swapDelay * 50) {
+        if (System.currentTimeMillis() - HotbarManager.swapTime < swapDelay * 50L) {
             return false
         }
 
@@ -468,12 +475,9 @@ internal object CrystalAura : Module(
 
     /* General */
     private fun SafeClientEvent.getHand(): EnumHand? {
-        val serverSideItem = if (spoofHotbar) player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).item else null
-
         return when (Items.END_CRYSTAL) {
             player.heldItemOffhand.item -> EnumHand.OFF_HAND
-            player.heldItemMainhand.item -> EnumHand.MAIN_HAND
-            serverSideItem -> EnumHand.MAIN_HAND
+            player.serverSideItem.item -> EnumHand.MAIN_HAND
             else -> null
         }
     }

@@ -14,6 +14,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.HotbarManager.resetHotbar
+import org.kamiblue.client.manager.managers.HotbarManager.serverSideItem
+import org.kamiblue.client.manager.managers.HotbarManager.spoofHotbar
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
@@ -62,7 +65,7 @@ internal object CrystalBasePlace : Module(
         onDisable {
             inactiveTicks = 0
             placePacket = null
-            PlayerPacketManager.resetHotbar()
+            resetHotbar()
         }
 
         listener<RenderWorldEvent> {
@@ -88,10 +91,10 @@ internal object CrystalBasePlace : Module(
 
             placePacket?.let { packet ->
                 if (inactiveTicks > 1) {
-                    if (!isHoldingObby) PlayerPacketManager.spoofHotbar(slot.hotbarSlot)
+                    if (!isHoldingObby) spoofHotbar(slot.hotbarSlot)
                     player.swingArm(EnumHand.MAIN_HAND)
                     connection.sendPacket(packet)
-                    PlayerPacketManager.resetHotbar()
+                    resetHotbar()
                     placePacket = null
                 }
             }
@@ -112,7 +115,7 @@ internal object CrystalBasePlace : Module(
 
     private val SafeClientEvent.isHoldingObby
         get() = isObby(player.heldItemMainhand)
-            || isObby(player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
+            || isObby(player.serverSideItem)
 
     private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
 
