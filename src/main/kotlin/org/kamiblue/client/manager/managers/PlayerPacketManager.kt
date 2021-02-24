@@ -1,6 +1,5 @@
 package org.kamiblue.client.manager.managers
 
-import net.minecraft.network.play.client.CPacketHeldItemChange
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -14,8 +13,6 @@ import org.kamiblue.client.mixin.client.accessor.*
 import org.kamiblue.client.mixin.client.accessor.network.*
 import org.kamiblue.client.mixin.extension.*
 import org.kamiblue.client.module.AbstractModule
-import org.kamiblue.client.util.TickTimer
-import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.Wrapper
 import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.threads.safeListener
@@ -25,7 +22,7 @@ import java.util.*
 object PlayerPacketManager : Manager {
 
     /** TreeMap for all packets to be sent, sorted by their callers' priority */
-    private val packetList = TreeMap<AbstractModule, Packet>(compareByDescending { it.modulePriority })
+    private val packetMap = TreeMap<AbstractModule, Packet>(compareByDescending { it.modulePriority })
 
     var serverSidePosition: Vec3d = Vec3d.ZERO; private set
     var prevServerSidePosition: Vec3d = Vec3d.ZERO; private set
@@ -33,16 +30,14 @@ object PlayerPacketManager : Manager {
     var serverSideRotation = Vec2f.ZERO; private set
     var prevServerSideRotation = Vec2f.ZERO; private set
 
-    var clientSidePitch = Vec2f.ZERO; private set
-
-    var lastSwapTime = 0L; private set
+    private var clientSidePitch = Vec2f.ZERO
 
     init {
         listener<OnUpdateWalkingPlayerEvent>(Int.MIN_VALUE) {
-            if (it.phase != Phase.PERI || packetList.isEmpty()) return@listener
+            if (it.phase != Phase.PERI || packetMap.isEmpty()) return@listener
 
-            it.apply(packetList.values.first())
-            packetList.clear()
+            it.apply(packetMap.values.first())
+            packetMap.clear()
         }
 
         listener<PacketEvent.PostSend>(-6969) {
@@ -90,7 +85,7 @@ object PlayerPacketManager : Manager {
 
     fun AbstractModule.sendPlayerPacket(block: Packet.Builder.() -> Unit) {
         Packet.Builder().apply(block).build()?.let {
-            packetList[this] = it
+            packetMap[this] = it
         }
     }
 
@@ -108,25 +103,25 @@ object PlayerPacketManager : Manager {
 
             private var empty = true
 
-            fun move(position: Vec3d)  {
+            fun move(position: Vec3d) {
                 this.position = position
                 this.moving = true
                 this.empty = false
             }
 
-            fun rotate(rotation: Vec2f)  {
+            fun rotate(rotation: Vec2f) {
                 this.rotation = rotation
                 this.rotating = true
                 this.empty = false
             }
 
-            fun cancelMove()  {
+            fun cancelMove() {
                 this.position = null
                 this.moving = false
                 this.empty = false
             }
 
-            fun cancelRotate()  {
+            fun cancelRotate() {
                 this.rotation = null
                 this.rotating = false
                 this.empty = false
