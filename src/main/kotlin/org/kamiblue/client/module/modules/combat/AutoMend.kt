@@ -11,7 +11,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.GuiEvent
 import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
-import org.kamiblue.client.manager.managers.PlayerPacketManager.PlayerPacket
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.isFakeOrSelf
@@ -103,8 +103,9 @@ internal object AutoMend : Module(
                     player.inventory.currentItem = xpSlot
                 }
                 if (autoThrow && player.heldItemMainhand.item === Items.EXPERIENCE_BOTTLE) {
-                    val packet = PlayerPacket(rotating = true, rotation = Vec2f(player.rotationYaw, 90.0f))
-                    PlayerPacketManager.addPacket(AutoMend, packet)
+                    sendPlayerPacket {
+                        rotate(Vec2f(player.rotationYaw, 90.0f))
+                    }
                     if (validServerSideRotation() && throwDelayTimer.tick(throwDelay.value.toLong())) {
                         playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
                     }

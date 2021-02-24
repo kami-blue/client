@@ -7,6 +7,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
@@ -91,8 +92,9 @@ internal object KillAura : Module(
     private fun SafeClientEvent.rotate(target: EntityLivingBase) {
         when (rotationMode) {
             RotationMode.SPOOF -> {
-                val rotation = getRotationToEntityClosest(target)
-                PlayerPacketManager.addPacket(this@KillAura, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
+                sendPlayerPacket {
+                    rotate(getRotationToEntityClosest(target))
+                }
             }
             RotationMode.VIEW_LOCK -> {
                 faceEntityClosest(target)

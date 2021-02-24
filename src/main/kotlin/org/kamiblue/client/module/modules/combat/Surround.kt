@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.movement.Strafe
@@ -102,7 +103,10 @@ internal object Surround : Module(
                 job = runSurround()
             } else if (job.isActiveOrFalse) {
                 spoofHotbar()
-                PlayerPacketManager.addPacket(Surround, PlayerPacketManager.PlayerPacket(rotating = false))
+                sendPlayerPacket {
+                    cancelMove()
+                    cancelRotate()
+                }
             } else if (isEnabled && CombatManager.isOnTopPriority(Surround)) {
                 PlayerPacketManager.resetHotbar()
             }

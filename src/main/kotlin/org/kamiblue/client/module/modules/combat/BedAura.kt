@@ -16,6 +16,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
@@ -216,7 +217,9 @@ internal object BedAura : Module(
     }
 
     private fun sendRotation() {
-        PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = lastRotation))
+        sendPlayerPacket {
+            rotate(lastRotation)
+        }
     }
 
     private fun SafeClientEvent.resetRotation() {

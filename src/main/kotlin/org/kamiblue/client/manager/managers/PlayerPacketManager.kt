@@ -26,7 +26,7 @@ import java.util.*
 object PlayerPacketManager : Manager {
 
     /** TreeMap for all packets to be sent, sorted by their callers' priority */
-    private val packetList = TreeMap<AbstractModule, PlayerPacket>(compareByDescending { it.modulePriority })
+    private val packetList = TreeMap<AbstractModule, Packet>(compareByDescending { it.modulePriority })
 
     var serverSidePosition: Vec3d = Vec3d.ZERO; private set
     var prevServerSidePosition: Vec3d = Vec3d.ZERO; private set
@@ -43,12 +43,11 @@ object PlayerPacketManager : Manager {
     private var hotbarResetTimer = TickTimer(TimeUnit.SECONDS)
 
     init {
-        listener<OnUpdateWalkingPlayerEvent> {
-            if (it.phase != Phase.PERI) return@listener
-            if (packetList.isNotEmpty()) {
-                packetList.values.first().apply(it) // Apply the packet from the module that has the highest priority
-                packetList.clear()
-            }
+        listener<OnUpdateWalkingPlayerEvent>(Int.MIN_VALUE) {
+            if (it.phase != Phase.PERI || packetList.isEmpty()) return@listener
+
+            it.apply(packetList.values.first())
+            packetList.clear()
         }
 
         listener<PacketEvent.Send>(-69420) {
@@ -63,19 +62,21 @@ object PlayerPacketManager : Manager {
 
         listener<PacketEvent.PostSend>(-6969) {
             if (it.cancelled) return@listener
-            if (it.packet is CPacketPlayer) {
-                if (it.packet.moving) {
-                    serverSidePosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
-                }
-                if (it.packet.rotating) {
-                    serverSideRotation = Vec2f(it.packet.yaw, it.packet.pitch)
-                    Wrapper.player?.let { player -> player.rotationYawHead = it.packet.yaw }
-                }
-            }
+            when (it.packet) {
+                is CPacketPlayer -> {
+                    if (it.packet.moving) {
+                        serverSidePosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
+                    }
 
-            if (it.packet is CPacketHeldItemChange) {
-                serverSideHotbar = it.packet.slotId
-                lastSwapTime = System.currentTimeMillis()
+                    if (it.packet.rotating) {
+                        serverSideRotation = Vec2f(it.packet.yaw, it.packet.pitch)
+                        Wrapper.player?.let { player -> player.rotationYawHead = it.packet.yaw }
+                    }
+                }
+                is CPacketHeldItemChange -> {
+                    serverSideHotbar = it.packet.slotId
+                    lastSwapTime = System.currentTimeMillis()
+                }
             }
         }
 
@@ -88,31 +89,31 @@ object PlayerPacketManager : Manager {
         listener<RenderEntityEvent> {
             if (it.entity != Wrapper.player || it.entity.isRiding) return@listener
 
-            if (it.phase == Phase.PRE) {
-                with(it.entity) {
-                    clientSidePitch = Vec2f(prevRotationPitch, rotationPitch)
-                    prevRotationPitch = prevServerSideRotation.y
-                    rotationPitch = serverSideRotation.y
+            when (it.phase) {
+                Phase.PRE -> {
+                    with(it.entity) {
+                        clientSidePitch = Vec2f(prevRotationPitch, rotationPitch)
+                        prevRotationPitch = prevServerSideRotation.y
+                        rotationPitch = serverSideRotation.y
+                    }
                 }
-            }
-
-            if (it.phase == Phase.POST) {
-                with(it.entity) {
-                    prevRotationPitch = clientSidePitch.x
-                    rotationPitch = clientSidePitch.y
+                Phase.POST -> {
+                    with(it.entity) {
+                        prevRotationPitch = clientSidePitch.x
+                        rotationPitch = clientSidePitch.y
+                    }
+                }
+                else -> {
+                    // Ignored
                 }
             }
         }
     }
 
-    /**
-     * Adds a packet to the packet list
-     *
-     * @param packet Packet to be added
-     */
-    fun addPacket(caller: AbstractModule, packet: PlayerPacket) {
-        if (packet.isEmpty()) return
-        packetList[caller] = packet
+    fun AbstractModule.sendPlayerPacket(block: Packet.Builder.() -> Unit) {
+        Packet.Builder().apply(block).build()?.let {
+            packetList[this] = it
+        }
     }
 
     fun getHoldingItemStack(): ItemStack =
@@ -136,63 +137,46 @@ object PlayerPacketManager : Manager {
             ?: 0))
     }
 
-    /**
-     * Used for PlayerPacketManager. All constructor parameters are optional.
-     * They are null by default. null values would not be used for modifying
-     * the packet
-     */
-    class PlayerPacket(
-        var moving: Boolean? = null,
-        var rotating: Boolean? = null,
-        var sprinting: Boolean? = null,
-        var sneaking: Boolean? = null,
-        var onGround: Boolean? = null,
-        pos: Vec3d? = null,
-        rotation: Vec2f? = null
+    class Packet private constructor(
+        val moving: Boolean?,
+        val rotating: Boolean?,
+        val position: Vec3d?,
+        val rotation: Vec2f?
     ) {
-        var pos: Vec3d? = pos
-            set(value) {
-                moving = true
-                field = value
+        class Builder {
+            private var moving: Boolean? = null
+            private var rotating: Boolean? = null
+            private var position: Vec3d? = null
+            private var rotation: Vec2f? = null
+
+            private var empty = true
+
+            fun move(position: Vec3d)  {
+                this.position = position
+                this.moving = true
+                this.empty = false
             }
 
-        var rotation: Vec2f? = rotation
-            set(value) {
-                rotating = true
-                field = value
+            fun rotate(rotation: Vec2f)  {
+                this.rotation = rotation
+                this.rotating = true
+                this.empty = false
             }
 
-        /**
-         * Checks whether this packet contains values
-         *
-         * @return True if all values in this packet is null
-         */
-        fun isEmpty(): Boolean {
-            return moving == null
-                && rotating == null
-                && sprinting == null
-                && sneaking == null
-                && onGround == null
-                && pos == null
-                && rotation == null
-        }
+            fun cancelMove()  {
+                this.position = null
+                this.moving = false
+                this.empty = false
+            }
 
-        /**
-         * Apply this packet on an [event]
-         *
-         * @param event Event to apply on
-         */
-        fun apply(event: OnUpdateWalkingPlayerEvent) {
-            if (this.isEmpty()) return
-            event.cancel()
-            this.moving?.let { event.moving = it }
-            this.rotating?.let { event.rotating = it }
-            this.sprinting?.let { event.sprinting = it }
-            this.sneaking?.let { event.sneaking = it }
-            this.onGround?.let { event.onGround = it }
-            this.pos?.let { event.pos = it }
-            this.rotation?.let { event.rotation = it }
-        }
+            fun cancelRotate()  {
+                this.rotation = null
+                this.rotating = false
+                this.empty = false
+            }
 
+            fun build() =
+                if (!empty) Packet(moving, rotating, position, rotation) else null
+        }
     }
 }

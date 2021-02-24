@@ -15,6 +15,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
@@ -99,8 +100,9 @@ internal object CrystalBasePlace : Module(
 
             if (isActive()) {
                 rotationTo?.let { hitVec ->
-                    val rotation = getRotationTo(hitVec)
-                    PlayerPacketManager.addPacket(CrystalBasePlace, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
+                    sendPlayerPacket {
+                        rotate(getRotationTo(hitVec))
+                    }
                 }
             } else {
                 rotationTo = null

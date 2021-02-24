@@ -27,6 +27,7 @@ import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.mixin.extension.id
 import org.kamiblue.client.mixin.extension.packetAction
 import org.kamiblue.client.module.Category
@@ -213,8 +214,9 @@ internal object CrystalAura : Module(
             if (!CombatManager.isOnTopPriority(this@CrystalAura) || CombatSetting.pause) return@safeListener
 
             if (it.phase == Phase.PRE && inactiveTicks <= 20 && lastLookAt != Vec3d.ZERO) {
-                val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = getLastRotation())
-                PlayerPacketManager.addPacket(this@CrystalAura, packet)
+                sendPlayerPacket {
+                    rotate(getLastRotation())
+                }
             }
 
             if (it.phase == Phase.POST) {

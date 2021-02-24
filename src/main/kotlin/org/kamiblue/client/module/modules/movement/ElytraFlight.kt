@@ -10,6 +10,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
 import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.mixin.extension.rotationPitch
 import org.kamiblue.client.mixin.extension.tickLength
 import org.kamiblue.client.mixin.extension.timer
@@ -472,7 +473,8 @@ internal object ElytraFlight : Module(
 
     private fun SafeClientEvent.spoofRotation() {
         if (player.isSpectator || !elytraIsEquipped || elytraDurability <= 1 || !isFlying) return
-        val packet = PlayerPacketManager.PlayerPacket(rotating = true)
+
+        var cancelRotation = false
         var rotation = Vec2f(player)
 
         if (autoLanding) {
@@ -483,15 +485,17 @@ internal object ElytraFlight : Module(
                 if (!isStandingStill) rotation = Vec2f(rotation.x, packetPitch)
 
                 /* Cancels rotation packets if player is not moving and not clicking */
-                val cancelRotation = isStandingStill && ((!mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown && blockInteract) || !blockInteract)
-                if (cancelRotation) {
-                    packet.rotating = false
-                }
+                cancelRotation = isStandingStill && ((!mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown && blockInteract) || !blockInteract)
             }
         }
 
-        packet.rotation = rotation
-        PlayerPacketManager.addPacket(this@ElytraFlight, packet)
+        sendPlayerPacket {
+            if (cancelRotation) {
+                cancelRotate()
+            } else {
+                rotate(rotation)
+            }
+        }
     }
 
     init {
