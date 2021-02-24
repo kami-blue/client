@@ -16,6 +16,7 @@ import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent;
 import org.kamiblue.client.gui.mc.KamiGuiBeacon;
 import org.kamiblue.client.manager.managers.MessageManager;
+import org.kamiblue.client.manager.managers.PlayerPacketManager;
 import org.kamiblue.client.module.modules.chat.PortalChat;
 import org.kamiblue.client.module.modules.misc.BeaconSelector;
 import org.kamiblue.client.module.modules.movement.Sprint;
@@ -100,8 +101,21 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         MessageManager.INSTANCE.setLastPlayerMessage(message);
     }
 
+    @Inject(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;onUpdateWalkingPlayer()V", shift = At.Shift.AFTER))
+    private void onUpdateInvokeOnUpdateWalkingPlayer(CallbackInfo ci) {
+        Vec3d serverSidePos = PlayerPacketManager.INSTANCE.getServerSidePosition();
+        Vec2f serverSideRotation = PlayerPacketManager.INSTANCE.getPrevServerSideRotation();
+
+        this.lastReportedPosX = serverSidePos.x;
+        this.lastReportedPosY = serverSidePos.y;
+        this.lastReportedPosZ = serverSidePos.z;
+
+        this.lastReportedYaw = serverSideRotation.getX();
+        this.lastReportedPitch = serverSideRotation.getY();
+    }
+
     @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)
-    private void onUpdateWalkingPlayerPre(CallbackInfo ci) {
+    private void onUpdateWalkingPlayerHead(CallbackInfo ci) {
         // Setup flags
         Vec3d position = new Vec3d(this.posX, this.getEntityBoundingBox().minY, this.posZ);
         Vec2f rotation = new Vec2f(this.rotationYaw, this.rotationPitch);
@@ -123,10 +137,13 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
             position = event.getPosition();
             rotation = event.getRotation();
 
-            ++this.positionUpdateTicks;
             sendSprintPacket();
             sendSneakPacket();
             sendPlayerPacket(moving, rotating, position, rotation);
+
+            ++this.positionUpdateTicks;
+            this.prevOnGround = onGround;
+            this.autoJumpEnabled = this.mc.gameSettings.autoJump;
         }
 
         event = event.nextPhase();
@@ -176,19 +193,8 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         }
 
         if (moving) {
-            this.lastReportedPosX = position.x;
-            this.lastReportedPosY = position.y;
-            this.lastReportedPosZ = position.z;
             this.positionUpdateTicks = 0;
         }
-
-        if (rotating) {
-            this.lastReportedYaw = rotation.getX();
-            this.lastReportedPitch = rotation.getY();
-        }
-
-        this.prevOnGround = onGround;
-        this.autoJumpEnabled = this.mc.gameSettings.autoJump;
     }
 
     private boolean isMoving(Vec3d position) {
