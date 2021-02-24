@@ -16,8 +16,8 @@ import net.minecraft.world.World;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.RenderOverlayEvent;
 import org.kamiblue.client.module.modules.movement.ElytraFlight;
+import org.kamiblue.client.module.modules.player.BlockInteraction;
 import org.kamiblue.client.module.modules.player.Freecam;
-import org.kamiblue.client.module.modules.player.NoEntityTrace;
 import org.kamiblue.client.module.modules.player.ViewLock;
 import org.kamiblue.client.module.modules.render.AntiFog;
 import org.kamiblue.client.module.modules.render.AntiOverlay;
@@ -77,10 +77,11 @@ public class MixinEntityRenderer {
 
     @Redirect(method = "getMouseOver", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;getEntitiesInAABBexcluding(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;Lcom/google/common/base/Predicate;)Ljava/util/List;"))
     public List<Entity> getEntitiesInAABBexcluding(WorldClient worldClient, Entity entityIn, AxisAlignedBB boundingBox, Predicate<? super Entity> predicate) {
-        if (NoEntityTrace.INSTANCE.shouldIgnoreEntity())
+        if (BlockInteraction.isNoEntityTraceEnabled()) {
             return new ArrayList<>();
-        else
+        } else {
             return worldClient.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
+        }
     }
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;getEyeHeight()F"))
