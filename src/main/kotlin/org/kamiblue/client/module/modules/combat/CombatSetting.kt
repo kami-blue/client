@@ -19,9 +19,9 @@ import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.player.AutoEat
-import org.kamiblue.client.process.PauseProcess
-import org.kamiblue.client.process.PauseProcess.pauseBaritone
-import org.kamiblue.client.process.PauseProcess.unpauseBaritone
+import org.kamiblue.client.manager.managers.PauseProcessManager
+import org.kamiblue.client.manager.managers.PauseProcessManager.pauseBaritone
+import org.kamiblue.client.manager.managers.PauseProcessManager.unpauseBaritone
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.combat.CombatUtils
@@ -118,7 +118,7 @@ internal object CombatSetting : Module(
 
     private fun SafeClientEvent.checkEating() =
         pauseForEating.value
-            && (PauseProcess.isPausing(AutoEat) || player.isHandActive && player.activeItemStack.item is ItemFood)
+            && (PauseProcessManager.isPausing(AutoEat) || player.isHandActive && player.activeItemStack.item is ItemFood)
             && (!ignoreOffhandEating.value || player.activeHand != EnumHand.OFF_HAND)
 
     override fun isActive() = KillAura.isActive() || BedAura.isActive() || CrystalAura.isActive() || Surround.isActive()

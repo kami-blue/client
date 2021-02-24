@@ -37,7 +37,11 @@ object ModuleManager : AsyncLoader<List<Class<out AbstractModule>>> {
         val stopTimer = StopTimer()
 
         for (clazz in input) {
-            moduleSet.add(clazz.instance.apply { postInit() })
+            try {
+                moduleSet.add(clazz.instance.apply { postInit() })
+            } catch (e: NoClassDefFoundError) {
+                KamiMod.LOG.error("Failed to load module ${clazz.simpleName}", e)
+            }
         }
 
         val time = stopTimer.stop()

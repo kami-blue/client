@@ -12,8 +12,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.process.PauseProcess.pauseBaritone
-import org.kamiblue.client.process.PauseProcess.unpauseBaritone
+import org.kamiblue.client.manager.managers.PauseProcessManager.pauseBaritone
+import org.kamiblue.client.manager.managers.PauseProcessManager.unpauseBaritone
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
 import org.kamiblue.client.util.items.*

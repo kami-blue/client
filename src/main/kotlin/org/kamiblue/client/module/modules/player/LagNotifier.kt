@@ -9,8 +9,8 @@ import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.process.PauseProcess.pauseBaritone
-import org.kamiblue.client.process.PauseProcess.unpauseBaritone
+import org.kamiblue.client.manager.managers.PauseProcessManager.pauseBaritone
+import org.kamiblue.client.manager.managers.PauseProcessManager.unpauseBaritone
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.font.FontRenderAdapter
