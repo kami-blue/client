@@ -72,6 +72,7 @@
     "world.MixinBlockLiquid",
     "world.MixinBlockSoulSand",
     "world.MixinBlockWeb",
+    "render.MixinViewFrustum",
     "world.MixinWorld"
   ]
 }
