@@ -1,25 +1,29 @@
 package org.kamiblue.client.mixin.client.render;
 
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import org.kamiblue.client.module.modules.movement.ElytraFlight;
+import org.kamiblue.client.module.modules.player.Freecam;
 import org.kamiblue.client.util.Wrapper;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Created by 086 on 19/12/2017.
- */
 @Mixin(RenderPlayer.class)
-public class MixinRenderPlayer {
+public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientPlayer> {
+
+    public MixinRenderPlayer(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn) {
+        super(renderManagerIn, modelBaseIn, shadowSizeIn);
+    }
+
+    @Shadow protected abstract void setModelVisibilities(AbstractClientPlayer clientPlayer);
 
     @Inject(method = "applyRotations", at = @At("RETURN"))
     protected void applyRotations(AbstractClientPlayer entityLiving, float ageInTicks, float rotationYaw, float partialTicks, CallbackInfo ci) {
@@ -36,9 +40,20 @@ public class MixinRenderPlayer {
         }
     }
 
-    // Redirect it to the original player so the original player can be renderer correctly
-    @Redirect(method = "doRender", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/entity/RenderManager;renderViewEntity:Lnet/minecraft/entity/Entity;", opcode = Opcodes.GETFIELD))
-    public Entity getRenderViewEntity(RenderManager renderManager) {
-        return Wrapper.getPlayer();
+    // Force it to render the original player in Freecam
+    @Inject(method = "doRender", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/entity/RenderManager;renderViewEntity:Lnet/minecraft/entity/Entity;"))
+    public void doRenderGetRenderViewEntity(AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
+        if (Freecam.INSTANCE.isEnabled() && Wrapper.getMinecraft().getRenderViewEntity() != entity) {
+            double renderY = y;
+
+            if (entity.isSneaking()) {
+                renderY = y - 0.125D;
+            }
+
+            this.setModelVisibilities(entity);
+            GlStateManager.enableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
+            super.doRender(entity, x, renderY, z, entityYaw, partialTicks);
+            GlStateManager.disableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
+        }
     }
 }
