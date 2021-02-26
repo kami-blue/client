@@ -54,7 +54,7 @@ internal object Strafe : Module(
     }
 
     private var jumpTicks = 0
-    private var strafeTimer = TickTimer(TimeUnit.TICKS)
+    private val strafeTimer = TickTimer(TimeUnit.TICKS)
 
     /* If you skid this you omega gay */
     init {
@@ -63,9 +63,9 @@ internal object Strafe : Module(
         }
 
         safeListener<PlayerTravelEvent> {
-            if (!shouldStrafe()) {
+            if (!shouldStrafe) {
                 reset()
-                if (cancelInertia && !strafeTimer.tick(2L)) {
+                if (cancelInertia && !strafeTimer.tick(2L, false)) {
                     player.motionX = 0.0
                     player.motionZ = 0.0
                 }
@@ -90,12 +90,14 @@ internal object Strafe : Module(
         jumpTicks = 0
     }
 
-    private fun SafeClientEvent.shouldStrafe() = !BaritoneUtils.isPathing
-        && !player.capabilities.isFlying
-        && !player.isElytraFlying
-        && (!onHoldingSprint || mc.gameSettings.keyBindSprint.isKeyDown)
-        && MovementUtils.isInputting
-        && !(player.isInOrAboveLiquid || player.isInWeb)
+    private val SafeClientEvent.shouldStrafe: Boolean
+        get() = !player.capabilities.isFlying
+            && !player.isElytraFlying
+            && !mc.gameSettings.keyBindSneak.isKeyDown
+            && (!onHoldingSprint || mc.gameSettings.keyBindSprint.isKeyDown)
+            && !BaritoneUtils.isPathing
+            && MovementUtils.isInputting
+            && !(player.isInOrAboveLiquid || player.isInWeb)
 
     private fun SafeClientEvent.jump() {
         if (player.onGround && jumpTicks <= 0) {

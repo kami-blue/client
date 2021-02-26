@@ -1,32 +1,42 @@
 package org.kamiblue.client.module.modules.player
 
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.entity.Entity
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.threads.safeListener
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import java.util.*
 import kotlin.collections.ArrayDeque
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
+
 internal object ViewLock : Module(
     name = "ViewLock",
+    alias = arrayOf("YawLock", "PitchLock"),
     category = Category.PLAYER,
     description = "Locks your camera view"
 ) {
+    private val page by setting("Page", Page.YAW)
 
-    private val yaw = setting("Yaw", true)
-    private val pitch = setting("Pitch", true)
-    private val autoYaw = setting("Auto Yaw", true, { yaw.value })
-    private val autoPitch = setting("Auto Pitch", true, { pitch.value })
-    private val disableMouseYaw = setting("Disable Mouse Yaw", true, { yaw.value && yaw.value })
-    private val disableMousePitch = setting("Disable Mouse Pitch", true, { pitch.value && pitch.value })
-    private val specificYaw = setting("Specific Yaw", 180.0f, -180.0f..180.0f, 1.0f, { !autoYaw.value && yaw.value })
-    private val specificPitch = setting("Specific Pitch", 0.0f, -90.0f..90.0f, 1.0f, { !autoPitch.value && pitch.value })
-    private val yawSlice = setting("Yaw Slice", 8, 2..32, 1, { autoYaw.value && yaw.value })
-    private val pitchSlice = setting("Pitch Slice", 5, 2..32, 1, { autoPitch.value && pitch.value })
+    private val yaw by setting("Yaw", true, { page == Page.YAW })
+    private val autoYaw = setting("Auto Yaw", true, { page == Page.YAW && yaw })
+    private val disableMouseYaw by setting("Disable Mouse Yaw", false, { page == Page.YAW && yaw && yaw })
+    private val specificYaw by setting("Specific Yaw", 180.0f, -180.0f..180.0f, 1.0f, { page == Page.YAW && !autoYaw.value && yaw })
+    private val yawSlice = setting("Yaw Slice", 8, 2..32, 1, { page == Page.YAW && autoYaw.value && yaw })
+
+    private val pitch by setting("Pitch", true, { page == Page.PITCH })
+    private val autoPitch = setting("Auto Pitch", true, { page == Page.PITCH && pitch })
+    private val disableMousePitch by setting("Disable Mouse Pitch", false, { page == Page.PITCH && pitch && pitch })
+    private val specificPitch by setting("Specific Pitch", 0.0f, -90.0f..90.0f, 1.0f, { page == Page.PITCH && !autoPitch.value && pitch })
+    private val pitchSlice = setting("Pitch Slice", 5, 2..32, 1, { page == Page.PITCH && autoPitch.value && pitch })
+
+    private enum class Page {
+        YAW, PITCH
+    }
 
     private var yawSnap = 0
     private var pitchSnap = 0
@@ -44,32 +54,56 @@ internal object ViewLock : Module(
 
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.END) return@safeListener
+
             if (autoYaw.value || autoPitch.value) {
                 snapToSlice()
             }
-            if (yaw.value && !autoYaw.value) {
-                player.rotationYaw = specificYaw.value
+
+            if (yaw && !autoYaw.value) {
+                player.rotationYaw = specificYaw
             }
-            if (pitch.value && !autoPitch.value) {
-                player.rotationPitch = specificPitch.value
+
+            if (pitch && !autoPitch.value) {
+                player.rotationPitch = specificPitch
             }
         }
     }
 
-    fun handleTurn(deltaX: Float, deltaY: Float): Vec2f {
-        val yawChange = if (yaw.value && autoYaw.value) handleDelta(deltaX, deltaXQueue, yawSliceAngle) else 0
-        val pitchChange = if (pitch.value && autoPitch.value) handleDelta(-deltaY, deltaYQueue, pitchSliceAngle) else 0
-        changeDirection(yawChange, pitchChange)
+    @JvmStatic
+    fun handleTurn(entity: Entity, deltaX: Float, deltaY: Float, ci: CallbackInfo) {
+        if (isDisabled) return
+        val player = mc.player ?: return
+        if (entity != player) return
 
-        return Vec2f(
-            if (yaw.value && disableMouseYaw.value) 0.0f else deltaX,
-            if (pitch.value && disableMousePitch.value) 0.0f else deltaY
-        )
+        val multipliedX = deltaX * 0.15f
+        val multipliedY = deltaY * -0.15f
+
+        val yawChange = if (yaw && autoYaw.value) handleDelta(multipliedX, deltaXQueue, yawSliceAngle) else 0
+        val pitchChange = if (pitch && autoPitch.value) handleDelta(multipliedY, deltaYQueue, pitchSliceAngle) else 0
+
+        turn(player, multipliedX, multipliedY)
+        changeDirection(yawChange, pitchChange)
+        player.ridingEntity?.applyOrientationToEntity(player)
+
+        ci.cancel()
+    }
+
+    private fun turn(player: EntityPlayerSP, deltaX: Float, deltaY: Float) {
+        if (!yaw || !disableMouseYaw) {
+            player.prevRotationYaw += deltaX
+            player.rotationYaw += deltaX
+        }
+
+        if (!pitch || !disableMousePitch) {
+            player.prevRotationPitch += deltaY
+            player.rotationPitch += deltaY
+            player.rotationPitch = player.rotationPitch.coerceIn(-90.0f, 90.0f)
+        }
     }
 
     private fun handleDelta(delta: Float, list: ArrayDeque<Pair<Float, Long>>, slice: Float): Int {
         val currentTime = System.currentTimeMillis()
-        list.add(Pair(delta * 0.15f, currentTime))
+        list.add(Pair(delta, currentTime))
 
         val sum = list.sumByDouble { it.first.toDouble() }.toFloat()
         return if (abs(sum) > slice) {
@@ -83,7 +117,6 @@ internal object ViewLock : Module(
         }
     }
 
-
     private fun changeDirection(yawChange: Int, pitchChange: Int) {
         yawSnap = Math.floorMod(yawSnap + yawChange, yawSlice.value)
         pitchSnap = (pitchSnap + pitchChange).coerceIn(0, pitchSlice.value - 1)
@@ -93,18 +126,18 @@ internal object ViewLock : Module(
     private fun snapToNext() {
         mc.player?.let {
             yawSnap = (it.rotationYaw / yawSliceAngle).roundToInt()
-            pitchSnap = ((it.rotationPitch + 90) / pitchSliceAngle).roundToInt()
+            pitchSnap = ((it.rotationPitch + 90.0f) / pitchSliceAngle).roundToInt()
             snapToSlice()
         }
     }
 
     private fun snapToSlice() {
         mc.player?.let { player ->
-            if (yaw.value && autoYaw.value) {
+            if (yaw && autoYaw.value) {
                 player.rotationYaw = (yawSnap * yawSliceAngle).coerceIn(0f, 360f)
                 player.ridingEntity?.let { it.rotationYaw = player.rotationYaw }
             }
-            if (pitch.value && autoPitch.value) {
+            if (pitch && autoPitch.value) {
                 player.rotationPitch = (pitchSnap * pitchSliceAngle - 90).coerceIn(-90f, 90f)
             }
         }

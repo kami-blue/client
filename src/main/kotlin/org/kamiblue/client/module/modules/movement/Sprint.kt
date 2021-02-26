@@ -25,7 +25,6 @@ internal object Sprint : Module(
     private val multiDirection by setting("Multi Direction", false, description = "Sprint in any direction")
     private val checkFlying by setting("Check Flying", true, description = "Cancels while flying")
     private val checkCollide by setting("Check Collide", true, description = "Cancels on colliding with blocks")
-    private val checkHunger by setting("Check Hunger", true, description = "Cancels on low hunger")
     private val checkCriticals by setting("Check Criticals", false, description = "Cancels on attack for criticals")
 
     private val attackTimer = TickTimer()
@@ -59,12 +58,13 @@ internal object Sprint : Module(
     @JvmStatic
     fun shouldSprint() =
         runSafeR {
-            !player.isElytraFlying
+            !mc.gameSettings.keyBindSneak.isKeyDown
+                && !player.isElytraFlying
+                && player.foodStats.foodLevel > 6
                 && !BaritoneUtils.isPathing
                 && checkMovementInput()
                 && (!checkFlying || !player.capabilities.isFlying)
                 && (!checkCollide || !player.collidedHorizontally)
-                && (!checkHunger || player.foodStats.foodLevel > 6)
                 && (!checkCriticals || attackTimer.tick(100L, false))
         } ?: false
 

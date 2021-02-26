@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.multiplayer.WorldClient
+import net.minecraft.entity.Entity
 import net.minecraft.entity.MoverType
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
@@ -36,6 +37,7 @@ import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import kotlin.math.*
 
 internal object Freecam : Module(
@@ -61,6 +63,41 @@ internal object Freecam : Module(
     var cameraGuy: EntityPlayer? = null; private set
 
     private const val ENTITY_ID = -6969420
+
+    @JvmStatic
+    fun handleTurn(entity: Entity, yaw: Float, pitch: Float, ci: CallbackInfo): Boolean {
+        if (isDisabled) return false
+        val player = mc.player ?: return false
+        val cameraGuy = cameraGuy ?: return false
+
+        return if (entity == player) {
+            cameraGuy.turn(yaw, pitch)
+            ci.cancel()
+            true
+        } else {
+            false
+        }
+    }
+
+    @JvmStatic
+    fun getRenderChunkOffset(playerPos: BlockPos) =
+        runSafeR {
+            BlockPos(
+                (player.posX / 16).floorToInt() * 16,
+                (player.posY / 16).floorToInt() * 16,
+                (player.posZ / 16).floorToInt() * 16
+            )
+        } ?: playerPos
+
+    @JvmStatic
+    fun getRenderViewEntity(renderViewEntity: EntityPlayer): EntityPlayer {
+        val player = mc.player
+        return if (isEnabled && player != null) {
+            player
+        } else {
+            renderViewEntity
+        }
+    }
 
     init {
         onEnable {
@@ -127,26 +164,6 @@ internal object Freecam : Module(
                 BaritoneUtils.cancelEverything()
                 BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalTwoBlocks(result.hitVec.toBlockPos()))
             }
-        }
-    }
-
-    @JvmStatic
-    val renderChunkOffset
-        get() = runSafeR {
-            BlockPos(
-                (player.posX / 16).floorToInt() * 16,
-                (player.posY / 16).floorToInt() * 16,
-                (player.posZ / 16).floorToInt() * 16
-            )
-        }
-
-    @JvmStatic
-    fun getRenderViewEntity(renderViewEntity: EntityPlayer): EntityPlayer {
-        val player = mc.player
-        return if (isEnabled && player != null) {
-            player
-        } else {
-            renderViewEntity
         }
     }
 

@@ -80,11 +80,11 @@ internal object Criticals : Module(
         }
 
         safeListener<TickEvent.ClientTickEvent> { event ->
-            if (event.phase != TickEvent.Phase.END || mode == Mode.PACKET || !delaying()) return@safeListener
+            if (event.phase != TickEvent.Phase.END || mode == Mode.PACKET || delayTick <= -1) return@safeListener
 
             delayTick--
 
-            if (player.fallDistance >= attackFallDistance && canDoCriticals(!player.onGround)) {
+            if (target != null && player.fallDistance >= attackFallDistance && canDoCriticals(!player.onGround)) {
                 val target = target
                 reset()
 
@@ -113,9 +113,10 @@ internal object Criticals : Module(
                 player.attackTargetEntityWithCurrentItem(event.entity)
                 player.resetCooldown()
             }
+
+            delayTick = 20
         }
 
-        delayTick = 10
         event.cancel()
     }
 

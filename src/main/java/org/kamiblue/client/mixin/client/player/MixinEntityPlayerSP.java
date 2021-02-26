@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.network.play.client.CPacketEntityAction;
@@ -14,6 +15,7 @@ import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent;
+import org.kamiblue.client.event.events.PlayerMoveEvent;
 import org.kamiblue.client.gui.mc.KamiGuiBeacon;
 import org.kamiblue.client.manager.managers.MessageManager;
 import org.kamiblue.client.module.modules.chat.PortalChat;
@@ -34,7 +36,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = EntityPlayerSP.class, priority = Integer.MAX_VALUE)
 public abstract class MixinEntityPlayerSP extends EntityPlayer {
-
     @Shadow @Final public NetHandlerPlayClient connection;
     @Shadow protected Minecraft mc;
     @Shadow private double lastReportedPosX;
@@ -48,8 +49,8 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
     @Shadow private boolean prevOnGround;
     @Shadow private boolean autoJumpEnabled;
 
-    @Shadow
-    protected abstract boolean isCurrentViewEntity();
+    @Shadow protected abstract boolean isCurrentViewEntity();
+    @Shadow protected abstract void updateAutoJump(float p_189810_1_, float p_189810_2_);
 
     public MixinEntityPlayerSP(World worldIn, GameProfile gameProfileIn) {
         super(worldIn, gameProfileIn);
@@ -76,6 +77,25 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
                 Minecraft.getMinecraft().displayGuiScreen(new KamiGuiBeacon(this.inventory, chestInventory));
                 ci.cancel();
             }
+        }
+    }
+
+    @Inject(method = "move", at = @At("HEAD"), cancellable = true)
+    public void moveHead(MoverType type, double x, double y, double z, CallbackInfo ci) {
+        EntityPlayerSP player = Wrapper.getPlayer();
+        if (player == null) return;
+
+        PlayerMoveEvent event = new PlayerMoveEvent(player);
+        KamiEventBus.INSTANCE.post(event);
+
+        if (event.isModified()) {
+            double prevX = this.posX;
+            double prevZ = this.posZ;
+
+            super.move(type, player.motionX, player.motionY, player.motionZ);
+            this.updateAutoJump((float) (this.posX - prevX), (float) (this.posZ - prevZ));
+
+            ci.cancel();
         }
     }
 
