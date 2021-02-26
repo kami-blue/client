@@ -5,7 +5,7 @@ import net.minecraft.network.play.server.SPacketConfirmTransaction
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.PacketEvent
-import org.kamiblue.client.event.events.RenderEvent
+import org.kamiblue.client.event.events.RunGameLoopEvent
 import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TpsCalculator
@@ -32,7 +32,7 @@ internal object InventoryTaskManager : Manager {
             }
         }
 
-        safeListener<RenderEvent> {
+        safeListener<RunGameLoopEvent.Render> {
             if (lastTask == null && taskQueue.isEmpty()) return@safeListener
             if (!timer.tick(0L, false)) return@safeListener
 
