@@ -2,7 +2,6 @@ package org.kamiblue.client.module.modules.combat
 
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.MobEffects
 import net.minecraft.network.play.client.CPacketAnimation
 import net.minecraft.network.play.client.CPacketPlayer
@@ -16,7 +15,6 @@ import org.kamiblue.client.event.events.PlayerAttackEvent
 import org.kamiblue.client.mixin.extension.isInWeb
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.EntityUtils.isFakeOrSelf
 import org.kamiblue.client.util.EntityUtils.isInOrAboveLiquid
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.commons.interfaces.DisplayEnum
@@ -29,7 +27,7 @@ internal object Criticals : Module(
 ) {
     private val mode by setting("Mode", Mode.PACKET)
     private val jumpMotion by setting("Jump Motion", 0.25, 0.1..0.5, 0.01, { mode == Mode.MINI_JUMP }, fineStep = 0.001)
-    private val attackFallDistance by setting("Attack Fall Distance", 0.5, 0.05..1.0, 0.05, { mode != Mode.PACKET })
+    private val attackFallDistance by setting("Attack Fall Distance", 0.1, 0.05..1.0, 0.05, { mode != Mode.PACKET })
 
     private enum class Mode(override val displayName: String) : DisplayEnum {
         PACKET("Packet"),
@@ -61,9 +59,9 @@ internal object Criticals : Module(
         }
 
         safeListener<PlayerAttackEvent>(0) {
-            if (it.cancelled || attacking || !checkTarget(it.entity) || !canDoCriticals(true)) return@safeListener
+            if (it.cancelled || attacking || it.entity !is EntityLivingBase || !canDoCriticals(true)) return@safeListener
 
-            val cooldownReady = player.onGround && player.getCooledAttackStrength(0.5f) > 0.9f
+            val cooldownReady = player.getCooledAttackStrength(0.5f) > 0.9f
 
             when (mode) {
                 Mode.PACKET -> {
@@ -73,20 +71,20 @@ internal object Criticals : Module(
                     }
                 }
                 Mode.JUMP -> {
-                    jumpAndCancel(it, cooldownReady, null)
+                    jumpAndCancel(it, player.onGround && cooldownReady, null)
                 }
                 Mode.MINI_JUMP -> {
-                    jumpAndCancel(it, cooldownReady, jumpMotion)
+                    jumpAndCancel(it, player.onGround && cooldownReady, jumpMotion)
                 }
             }
         }
 
         safeListener<TickEvent.ClientTickEvent> { event ->
-            if (event.phase != TickEvent.Phase.END || mode == Mode.PACKET || !delaying()) return@safeListener
+            if (event.phase != TickEvent.Phase.END || mode == Mode.PACKET || delayTick <= -1) return@safeListener
 
             delayTick--
 
-            if (player.fallDistance >= attackFallDistance && canDoCriticals(!player.onGround)) {
+            if (target != null && player.fallDistance >= attackFallDistance && canDoCriticals(!player.onGround)) {
                 val target = target
                 reset()
 
@@ -115,18 +113,15 @@ internal object Criticals : Module(
                 player.attackTargetEntityWithCurrentItem(event.entity)
                 player.resetCooldown()
             }
+
+            delayTick = 20
         }
 
-        delayTick = 10
         event.cancel()
     }
 
     private fun delaying() =
         mode != Mode.PACKET && delayTick > -1 && target != null
-
-    private fun checkTarget(entity: Entity) =
-        entity is EntityLivingBase
-            && (entity !is EntityPlayer || !entity.isFakeOrSelf)
 
     private fun SafeClientEvent.canDoCriticals(onGround: Boolean) =
         onGround
