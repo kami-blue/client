@@ -18,7 +18,7 @@ import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.HashMap
 
-internal object InventoryTaskManager : Manager {
+object InventoryTaskManager : Manager {
     private val confirmMap = HashMap<Short, ClickFuture>()
     private val taskQueue = PriorityQueue<InventoryTask>()
     private val timer = TickTimer()

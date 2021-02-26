@@ -6,12 +6,12 @@ import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.delegate.ComputeFlag
 
-fun SafeClientEvent.inventoryTaskNow(block: InventoryTask.Builder.() -> Unit) =
+inline fun SafeClientEvent.inventoryTaskNow(block: InventoryTask.Builder.() -> Unit) =
     InventoryTask.Builder().apply { priority(Int.MAX_VALUE) }.apply(block).build().also {
         InventoryTaskManager.runNow(this, it)
     }
 
-fun AbstractModule.inventoryTask(block: InventoryTask.Builder.() -> Unit) =
+inline fun AbstractModule.inventoryTask(block: InventoryTask.Builder.() -> Unit) =
     InventoryTask.Builder().apply { priority(modulePriority) }.apply(block).build().also {
         InventoryTaskManager.addTask(it)
     }
@@ -66,7 +66,9 @@ class InventoryTask private constructor(
     }
 
     override fun compareTo(other: InventoryTask): Int {
-        return comparator.compare(this, other)
+        val result = this.priority.compareTo(other.priority)
+        if (result != 0) return result
+        else return this.id.compareTo(other.id)
     }
 
     override fun equals(other: Any?) =
@@ -126,11 +128,7 @@ class InventoryTask private constructor(
     }
 
     private companion object {
+        @JvmField
         var currentID = Int.MIN_VALUE
-        val comparator = compareByDescending<InventoryTask> {
-            it.priority
-        }.thenBy {
-            it.id
-        }
     }
 }
