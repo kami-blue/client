@@ -68,7 +68,7 @@ internal object NoFall : Module(
 
     // TODO: This really needs a rewrite to spoof placing and the such instead of manual rotations
     private fun SafeClientEvent.fallMode() {
-        if (fallModeSetting.value == FallMode.BUCKET && player.dimension != -1 && !EntityUtils.isAboveWater(player) && System.currentTimeMillis() - last > 100) {
+        if (fallModeSetting.value == FallMode.BUCKET && player.dimension != -1 && !EntityUtils.isAboveLiquid(player) && System.currentTimeMillis() - last > 100) {
             val posVec = player.positionVector
             val result = world.rayTraceBlocks(posVec, posVec.add(0.0, -5.33, 0.0), true, true, false)
 

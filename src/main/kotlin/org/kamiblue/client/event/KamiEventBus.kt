@@ -13,18 +13,17 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentSkipListSet
 
 object KamiEventBus : AbstractAsyncEventBus() {
-    override val subscribedObjects = ConcurrentHashMap<Any, List<Listener<*>>>()
     override val subscribedListeners = ConcurrentHashMap<Class<*>, MutableSet<Listener<*>>>()
-    override val newSet get() = ConcurrentSkipListSet<Listener<*>>(Comparator.reverseOrder())
-
-    override val subscribedObjectsAsync = ConcurrentHashMap<Any, List<AsyncListener<*>>>()
     override val subscribedListenersAsync = ConcurrentHashMap<Class<*>, MutableSet<AsyncListener<*>>>()
-    override val newSetAsync get() = ConcurrentSet<AsyncListener<*>>()
 
     override fun post(event: Any) {
         invokeSerial(event, false)
         invokeParallel(event)
     }
+
+    override fun newSet() = ConcurrentSkipListSet<Listener<*>>(Comparator.reverseOrder())
+
+    override fun newSetAsync() = ConcurrentSet<AsyncListener<*>>()
 
     fun post(event: ProfilerEvent) {
         Wrapper.minecraft.profiler.startSection(event.profilerName)

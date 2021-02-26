@@ -55,4 +55,7 @@ object PauseProcess : IBaritoneProcess {
     fun AbstractModule.unpauseBaritone() {
         pauseModules.remove(this)
     }
+
+    fun isPausing(module: AbstractModule) =
+        pauseModules.containsKey(module)
 }

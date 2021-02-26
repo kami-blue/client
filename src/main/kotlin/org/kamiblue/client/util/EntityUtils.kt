@@ -13,12 +13,13 @@ import net.minecraft.entity.monster.EntityPigZombie
 import net.minecraft.entity.passive.*
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.util.items.id
 import org.kamiblue.client.util.math.VectorUtils.toBlockPos
+import org.kamiblue.commons.extension.ceilToInt
+import org.kamiblue.commons.extension.floorToInt
 import kotlin.math.floor
 
 object EntityUtils {
@@ -80,15 +81,25 @@ object EntityUtils {
      */
     fun getInterpolatedAmount(entity: Entity, ticks: Float): Vec3d = entity.positionVector.subtract(entity.prevPosVector).scale(ticks.toDouble())
 
-    fun isAboveWater(entity: Entity?) = isAboveWater(entity, false)
+    fun isAboveLiquid(entity: Entity) = isAboveLiquid(entity, false)
 
-    fun isAboveWater(entity: Entity?, packet: Boolean): Boolean {
-        if (entity == null) return false
-        val y = entity.posY - if (packet) 0.03 else if (entity is EntityPlayer) 0.2 else 0.5 // increasing this seems to flag more in NCP but needs to be increased so the player lands on solid water
+    fun isAboveLiquid(entity: Entity, packet: Boolean): Boolean {
+        mc.world?.let {
+            val y = entity.posY -
+                // increasing this seems to flag more in NCP but needs to be increased so the player lands on solid water
+                when {
+                    packet -> 0.03
+                    entity is EntityPlayer -> 0.2
+                    else -> 0.5
+                }
 
-        for (x in MathHelper.floor(entity.posX) until MathHelper.ceil(entity.posX)) for (z in MathHelper.floor(entity.posZ) until MathHelper.ceil(entity.posZ)) {
-            val pos = BlockPos(x, MathHelper.floor(y), z)
-            if (mc.world.getBlockState(pos).block is BlockLiquid) return true
+            val flooredY = y.toInt()
+
+            for (x in entity.posX.floorToInt() until entity.posX.ceilToInt()) {
+                for (z in entity.posZ.floorToInt() until entity.posZ.ceilToInt()) {
+                    if (it.getBlockState(BlockPos(x, flooredY, z)).block is BlockLiquid) return true
+                }
+            }
         }
 
         return false

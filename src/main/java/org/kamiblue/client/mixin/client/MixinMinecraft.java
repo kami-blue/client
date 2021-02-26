@@ -14,7 +14,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.GuiEvent;
-import org.kamiblue.client.event.events.RenderEvent;
+import org.kamiblue.client.event.events.RunGameLoopEvent;
 import org.kamiblue.client.gui.mc.KamiGuiUpdateNotification;
 import org.kamiblue.client.manager.managers.PlayerPacketManager;
 import org.kamiblue.client.mixin.client.accessor.player.AccessorEntityPlayerSP;
@@ -55,9 +55,32 @@ public class MixinMinecraft {
         return screenEvent1.getScreen();
     }
 
-    @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/shader/Framebuffer;framebufferRender(II)V"))
-    public void runGameLoop(CallbackInfo ci) {
-        KamiEventBus.INSTANCE.post(new RenderEvent());
+    @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Timer;updateTimer()V", shift = At.Shift.BEFORE))
+    public void runGameLoopStart(CallbackInfo ci) {
+        Wrapper.getMinecraft().profiler.startSection("kbRunGameLoop");
+        KamiEventBus.INSTANCE.post(new RunGameLoopEvent.Start());
+        Wrapper.getMinecraft().profiler.endSection();
+    }
+
+    @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/Profiler;endSection()V", ordinal = 0, shift = At.Shift.BEFORE))
+    public void runGameLoopTick(CallbackInfo ci) {
+        Wrapper.getMinecraft().profiler.endStartSection("kbRunGameLoop");
+        KamiEventBus.INSTANCE.post(new RunGameLoopEvent.Tick());
+        Wrapper.getMinecraft().profiler.endStartSection("scheduledExecutables");
+    }
+
+    @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/Profiler;startSection(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.BEFORE))
+    public void runGameLoopRender(CallbackInfo ci) {
+        Wrapper.getMinecraft().profiler.startSection("kbRunGameLoop");
+        KamiEventBus.INSTANCE.post(new RunGameLoopEvent.Render());
+        Wrapper.getMinecraft().profiler.endSection();
+    }
+
+    @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isFramerateLimitBelowMax()Z", shift = At.Shift.BEFORE))
+    public void runGameLoopEnd(CallbackInfo ci) {
+        Wrapper.getMinecraft().profiler.startSection("kbRunGameLoop");
+        KamiEventBus.INSTANCE.post(new RunGameLoopEvent.End());
+        Wrapper.getMinecraft().profiler.endSection();
     }
 
     // Fix random crystal placing when eating gapple in offhand

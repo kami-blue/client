@@ -2,12 +2,11 @@ package org.kamiblue.client.gui.hudgui.elements.misc
 
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.event.events.RenderEvent
+import org.kamiblue.client.event.events.RunGameLoopEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.graphics.AnimationUtils
-import org.kamiblue.event.listener.asyncListener
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
@@ -31,7 +30,7 @@ object CPS : LabelHud(
             }
         }
 
-        asyncListener<RenderEvent> {
+        listener<RunGameLoopEvent.Render> {
             if ((currentCps == 0.0f && clicks.size > 0) || timer.tick(1000L)) {
                 val removeTime = System.currentTimeMillis() - (averageSpeedTime * 1000.0f).toLong()
                 while (clicks.isNotEmpty() && clicks.first() < removeTime) {

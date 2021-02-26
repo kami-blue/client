@@ -13,7 +13,7 @@ object MovementUtils {
 
     val isInputting
         get() = mc.player?.movementInput?.let {
-            it.moveForward != 0f || it.moveStrafe != 0f
+            it.moveForward != 0.0f || it.moveStrafe != 0.0f
         } ?: false
 
     val Entity.isMoving get() = speed > 0.0001
