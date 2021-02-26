@@ -24,9 +24,9 @@ internal object AutoTool : Module(
     category = Category.MISC
 ) {
     private val switchBack = setting("Switch Back", true)
-    private val timeout = setting("Timeout", 20, 1..100, 5, { switchBack.value })
-    private val swapWeapon = setting("Switch Weapon", false)
-    private val preferWeapon = setting("Prefer", CombatUtils.PreferWeapon.SWORD)
+    private val timeout by setting("Timeout", 20, 1..100, 5, { switchBack.value })
+    private val swapWeapon by setting("Switch Weapon", false)
+    private val preferWeapon by setting("Prefer", CombatUtils.PreferWeapon.SWORD)
 
     private var shouldMoveBack = false
     private var lastSlot = 0
@@ -38,7 +38,7 @@ internal object AutoTool : Module(
         }
 
         safeListener<PlayerAttackEvent> {
-            if (swapWeapon.value && it.entity is EntityLivingBase) equipBestWeapon(preferWeapon.value)
+            if (swapWeapon && it.entity is EntityLivingBase) equipBestWeapon(preferWeapon)
         }
 
         safeListener<TickEvent.ClientTickEvent> {
@@ -50,7 +50,7 @@ internal object AutoTool : Module(
                 shouldMoveBack = true
                 lastSlot = player.inventory.currentItem
                 playerController.syncCurrentPlayItem()
-            } else if (!mouse && shouldMoveBack && (lastChange + timeout.value * 10 < System.currentTimeMillis())) {
+            } else if (!mouse && shouldMoveBack && (lastChange + timeout * 10 < System.currentTimeMillis())) {
                 shouldMoveBack = false
                 player.inventory.currentItem = lastSlot
                 playerController.syncCurrentPlayItem()
@@ -85,6 +85,8 @@ internal object AutoTool : Module(
     }
 
     init {
-        switchBack.listeners.add { if (!switchBack.value) shouldMoveBack = false }
+        switchBack.valueListeners.add { _, it ->
+            if (!it) shouldMoveBack = false
+        }
     }
 }

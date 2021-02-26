@@ -18,6 +18,8 @@ import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.module.modules.player.AutoEat
+import org.kamiblue.client.process.PauseProcess
 import org.kamiblue.client.process.PauseProcess.pauseBaritone
 import org.kamiblue.client.process.PauseProcess.unpauseBaritone
 import org.kamiblue.client.util.*
@@ -105,9 +107,19 @@ internal object CombatSetting : Module(
     val pause
         get() = runSafeR {
             player.ticksExisted < 10
-                || pauseForDigging.value && player.heldItemMainhand.item is ItemPickaxe && playerController.isHittingBlock
-                || pauseForEating.value && player.isHandActive && player.activeItemStack.item is ItemFood && (player.activeHand != EnumHand.OFF_HAND || !ignoreOffhandEating.value)
+                || checkDigging()
+                || checkEating()
         } ?: false
+
+    private fun SafeClientEvent.checkDigging() =
+        pauseForDigging.value
+            && player.heldItemMainhand.item is ItemPickaxe
+            && playerController.isHittingBlock
+
+    private fun SafeClientEvent.checkEating() =
+        pauseForEating.value
+            && (PauseProcess.isPausing(AutoEat) || player.isHandActive && player.activeItemStack.item is ItemFood)
+            && (!ignoreOffhandEating.value || player.activeHand != EnumHand.OFF_HAND)
 
     override fun isActive() = KillAura.isActive() || BedAura.isActive() || CrystalAura.isActive() || Surround.isActive()
 
@@ -148,8 +160,8 @@ internal object CombatSetting : Module(
     }
 
     private fun SafeClientEvent.updateTarget() {
-        with(CombatManager.getTopModule()) {
-            overrideRange = if (this is KillAura) this.range.value else range.value
+        CombatManager.getTopModule()?.let {
+            overrideRange = if (it is KillAura) it.range else range.value
         }
 
         getTargetList().let {

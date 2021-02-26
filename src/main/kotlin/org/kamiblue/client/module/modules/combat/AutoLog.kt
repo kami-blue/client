@@ -18,7 +18,7 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.combat.AutoLog.Reasons.*
 import org.kamiblue.client.util.EntityUtils.isFakeOrSelf
-import org.kamiblue.client.util.combat.CombatUtils
+import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
 import org.kamiblue.client.util.items.allSlots
 import org.kamiblue.client.util.items.countItem
 import org.kamiblue.client.util.threads.safeListener
@@ -52,7 +52,7 @@ internal object AutoLog : Module(
             if (isDisabled || it.phase != TickEvent.Phase.END) return@safeListener
 
             when {
-                CombatUtils.getHealthSmart(player) < health -> log(HEALTH)
+                player.scaledHealth < health -> log(HEALTH)
                 totem && checkTotems() -> log(TOTEM)
                 crystals && checkCrystals() -> log(END_CRYSTAL)
                 creeper && checkCreeper() -> {
@@ -73,7 +73,7 @@ internal object AutoLog : Module(
 
     private fun SafeClientEvent.checkCrystals(): Boolean {
         val maxSelfDamage = CombatManager.crystalMap.values.maxOfOrNull { it.selfDamage } ?: 0.0f
-        return CombatUtils.getHealthSmart(player) - maxSelfDamage < health
+        return player.scaledHealth - maxSelfDamage < health
     }
 
     private fun SafeClientEvent.checkCreeper(): Boolean {

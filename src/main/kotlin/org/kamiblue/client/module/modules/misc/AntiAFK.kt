@@ -13,6 +13,7 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import org.kamiblue.client.util.BaritoneUtils
+import org.kamiblue.client.util.MovementUtils.realSpeed
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.text.MessageDetection
@@ -38,7 +39,7 @@ internal object AntiAFK : Module(
     private val turn = setting("Turn", true)
     private val walk = setting("Walk", true)
     private val radius by setting("Radius", 64, 8..128, 8, fineStep = 1)
-    private val inputTimeout by setting("Input Timeout", 0, 0..15, 1, description = "Minutes to be actually AFK before enabling AntiAfk. Set to 0 to disable.")
+    private val inputTimeout by setting("Idle Timeout", 0, 0..15, 1, description = "Starts AntiAFK after being idle for longer than specific minutes, 0 to disable")
     private val allowBreak by setting("Allow Breaking Blocks", false, { walk.value })
 
     private var startPos: BlockPos? = null
@@ -90,22 +91,26 @@ internal object AntiAFK : Module(
         }
 
         listener<InputEvent.MouseInputEvent> {
-            if (inputTimeout != 0 && isInputting()) {
+            if (inputTimeout > 0 && isClicking()) {
+                startPos = null
                 inputTimer.reset()
             }
         }
 
         listener<InputEvent.KeyInputEvent> {
-            if (inputTimeout != 0 && isInputting()) {
+            if (inputTimeout > 0 && isPressing()) {
+                startPos = null
                 inputTimer.reset()
             }
         }
     }
 
-    private fun isInputting() =
+    private fun isClicking() =
         mc.gameSettings.keyBindAttack.isKeyDown
             || mc.gameSettings.keyBindUseItem.isKeyDown
-            || mc.gameSettings.keyBindJump.isKeyDown
+
+    private fun isPressing() =
+        mc.gameSettings.keyBindJump.isKeyDown
             || mc.gameSettings.keyBindSneak.isKeyDown
             || mc.gameSettings.keyBindForward.isKeyDown
             || mc.gameSettings.keyBindBack.isKeyDown
@@ -114,10 +119,14 @@ internal object AntiAFK : Module(
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (inputTimeout != 0) {
-                if (BaritoneUtils.isActive) {
+            if (it.phase != TickEvent.Phase.END) return@safeListener
+
+            if (inputTimeout > 0) {
+                if ((startPos == null || !BaritoneUtils.isPathing) && player.realSpeed > 0.2) {
                     inputTimer.reset()
-                } else if (!inputTimer.tick(inputTimeout.toLong(), false)) {
+                }
+
+                if (!inputTimer.tick(inputTimeout.toLong(), false)) {
                     startPos = null
                     return@safeListener
                 }
@@ -173,7 +182,9 @@ internal object AntiAFK : Module(
 
     init {
         walk.listeners.add {
-            BaritoneUtils.cancelEverything()
+            if (isEnabled) {
+                BaritoneUtils.cancelEverything()
+            }
         }
     }
 }

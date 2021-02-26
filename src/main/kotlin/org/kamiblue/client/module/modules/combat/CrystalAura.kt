@@ -33,8 +33,8 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.WorldUtils.getHitSide
-import org.kamiblue.client.util.combat.CombatUtils
 import org.kamiblue.client.util.combat.CombatUtils.equipBestWeapon
+import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
 import org.kamiblue.client.util.combat.CrystalUtils.calcCrystalDamage
 import org.kamiblue.client.util.combat.CrystalUtils.canPlaceCollide
 import org.kamiblue.client.util.combat.CrystalUtils.getCrystalBB
@@ -310,7 +310,7 @@ internal object CrystalAura : Module(
 
     private fun SafeClientEvent.preExplode(): Boolean {
         if (antiWeakness && player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) {
-            equipBestWeapon()
+            equipBestWeapon(allowTool = true)
             PlayerPacketManager.resetHotbar()
             return false
         }
@@ -476,7 +476,7 @@ internal object CrystalAura : Module(
         }
     }
 
-    private fun SafeClientEvent.noSuicideCheck(selfDamage: Float) = CombatUtils.getHealthSmart(player) - selfDamage > noSuicideThreshold
+    private fun SafeClientEvent.noSuicideCheck(selfDamage: Float) = player.scaledHealth - selfDamage > noSuicideThreshold
 
     private fun SafeClientEvent.isHoldingTool(): Boolean {
         val item = player.heldItemMainhand.item
@@ -486,7 +486,7 @@ internal object CrystalAura : Module(
     private fun shouldFacePlace(damage: Float) =
         damage >= minDamageForcePlace
             && (forcePlacing
-            || forcePlaceHealth > 0.0f && CombatManager.target?.let { CombatUtils.getHealthSmart(it) <= forcePlaceHealth } ?: false
+            || forcePlaceHealth > 0.0f && CombatManager.target?.let { it.scaledHealth <= forcePlaceHealth } ?: false
             || forcePlaceArmorDura > 0.0f && getMinArmorDura() <= forcePlaceArmorDura)
 
     private fun getMinArmorDura() =
