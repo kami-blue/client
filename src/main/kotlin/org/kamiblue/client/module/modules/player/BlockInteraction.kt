@@ -22,9 +22,9 @@ internal object BlockInteraction : Module(
     private val liquidInteract by setting("Liquid Interact", false, description = "Place block on liquid")
     private val multiTask by setting("Multi Task", true, description = "Breaks block and uses item at the same time")
     private val noEntityTrace by setting("No Entity Trace", true, description = "Interact with blocks through entity")
-    private val checkBlocks by setting("Check Blocks", true, description = "Only ignores entity when there is block behind")
-    private val checkPickaxe by setting("Check Pickaxe", true, description = "Only ignores entity when holding pickaxe")
-    private val sneakOverridesPickaxe by setting("Sneak Override", true, { checkPickaxe }, description = "Overrides pickaxe check if sneaking")
+    private val checkBlocks by setting("Check Blocks", true, { noEntityTrace }, description = "Only ignores entity when there is block behind")
+    private val checkPickaxe by setting("Check Pickaxe", true, { noEntityTrace }, description = "Only ignores entity when holding pickaxe")
+    private val sneakOverrides by setting("Sneak Override", true, { noEntityTrace && checkPickaxe }, description = "Overrides pickaxe check if sneaking")
 
     @JvmStatic
     val isLiquidInteractEnabled
@@ -44,6 +44,6 @@ internal object BlockInteraction : Module(
 
         return (!checkBlocks || objectMouseOver != null && objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) // Blocks
             && (!checkPickaxe || holdingPickAxe // Pickaxe
-            || sneakOverridesPickaxe && sneaking) // Override
+            || sneakOverrides && sneaking) // Override
     }
 }
