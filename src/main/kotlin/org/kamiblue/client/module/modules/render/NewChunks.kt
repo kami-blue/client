@@ -11,6 +11,7 @@ import org.kamiblue.client.event.events.RenderRadarEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.BaritoneUtils
 import org.kamiblue.client.util.EntityUtils.getInterpolatedPos
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
@@ -38,7 +39,7 @@ internal object NewChunks : Module(
     private val relative by setting("Relative", false, description = "Renders the chunks at relative Y level to player")
     private val renderMode = setting("RenderMode", RenderMode.BOTH)
     private val chunkGridColor by setting("Radar Chunk grid color", ColorHolder(255, 0, 0, 100), true, { renderMode.value != RenderMode.WORLD })
-    private val distantChunkColor by setting("Radar Distant chunk color", ColorHolder(100, 100, 100, 100), true, { renderMode.value != RenderMode.WORLD }, "Chunks that are not in render distance")
+    private val distantChunkColor by setting("Radar Distant chunk color", ColorHolder(100, 100, 100, 100), true, { renderMode.value != RenderMode.WORLD }, "Chunks that are not in render distance and not in baritone cache")
     private val newChunkColor by setting("Radar New chunk color", ColorHolder(255, 0, 0, 100), true, { renderMode.value != RenderMode.WORLD })
     private val yOffset by setting("Y Offset", 0, -256..256, 4, fineStep = 1, description = "Render offset in Y axis")
     private val color by setting("Color", ColorHolder(255, 64, 64, 200), description = "Highlighting color")
@@ -58,7 +59,7 @@ internal object NewChunks : Module(
     }
 
     private val timer = TickTimer(TimeUnit.MINUTES)
-    val chunks = LinkedHashSet<ChunkPos>()
+    private val chunks = LinkedHashSet<ChunkPos>()
 
     init {
         onEnable {
@@ -117,7 +118,9 @@ internal object NewChunks : Module(
 
                     if (isSquareInRadius(pos0, pos1, it.radius)) {
                         val chunk = world.getChunk(player.chunkCoordX + chunkX, player.chunkCoordZ + chunkZ)
-                        if (!chunk.isLoaded)
+                        val isCachedChunk = BaritoneUtils.primary?.worldProvider?.currentWorld?.cachedWorld?.isCached((player.chunkCoordX + chunkX) shl 4, (player.chunkCoordZ + chunkZ) shl 4)
+                            ?: false
+                        if (!chunk.isLoaded && !isCachedChunk)
                             RenderUtils2D.drawRectFilled(it.vertexHelper, pos0, pos1, distantChunkColor)
                         RenderUtils2D.drawRectOutline(it.vertexHelper, pos0, pos1, 0.3f, chunkGridColor)
                     }
