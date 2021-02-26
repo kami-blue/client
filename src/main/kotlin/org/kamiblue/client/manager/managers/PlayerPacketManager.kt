@@ -83,10 +83,14 @@ object PlayerPacketManager : Manager {
         }
     }
 
-    fun AbstractModule.sendPlayerPacket(block: Packet.Builder.() -> Unit) {
+    inline fun AbstractModule.sendPlayerPacket(block: Packet.Builder.() -> Unit) {
         Packet.Builder().apply(block).build()?.let {
-            packetMap[this] = it
+            sendPlayerPacket(it)
         }
+    }
+
+    fun AbstractModule.sendPlayerPacket(packet: Packet) {
+        packetMap[this] = packet
     }
 
     class Packet private constructor(
