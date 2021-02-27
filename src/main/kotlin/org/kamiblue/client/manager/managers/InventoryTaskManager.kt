@@ -53,12 +53,19 @@ object InventoryTaskManager : Manager {
     }
 
     fun runNow(event: SafeClientEvent, task: InventoryTask) {
-        while (!task.executed) {
-            task.runTask(event)?.let {
-                handleFuture(it)
+        event {
+            if (!player.inventory.itemStack.isEmpty && mc.currentScreen !is GuiContainer) {
+                removeHoldingItem()
             }
+
+            while (!task.finished) {
+                task.runTask(event)?.let {
+                    handleFuture(it)
+                }
+            }
+
+            timer.reset((task.postDelay * TpsCalculator.multiplier).toLong())
         }
-        timer.reset((task.postDelay * TpsCalculator.multiplier).toLong())
     }
 
     private fun SafeClientEvent.lastTaskOrNext(): InventoryTask? {
@@ -77,7 +84,7 @@ object InventoryTaskManager : Manager {
     }
 
     private fun SafeClientEvent.runTask(task: InventoryTask) {
-        if (!player.inventory.itemStack.isEmpty && !task.runInGui && mc.currentScreen is GuiContainer) {
+        if (mc.currentScreen is GuiContainer && !task.runInGui && !player.inventory.itemStack.isEmpty) {
             timer.reset(500L)
             return
         }

@@ -9,7 +9,9 @@ import org.kamiblue.client.util.inventory.InventoryTask
  * if [slotTo] contains an item, then move it to [slotFrom]
  */
 inline fun InventoryTask.Builder.moveTo(slotFrom: Slot, slotTo: Slot) {
-    moveTo(0, slotFrom, slotTo)
+    pickUp(slotFrom)
+    pickUp(slotTo)
+    pickUp(slotFrom)
 }
 
 /**
@@ -26,7 +28,9 @@ inline fun InventoryTask.Builder.moveTo(windowID: Int, slotFrom: Slot, slotTo: S
  * Move all the item that equals to the item in [slotTo] to [slotTo] in player inventory
  */
 inline fun InventoryTask.Builder.moveAllTo(slotTo: Slot) {
-    moveAllTo(0, slotTo)
+    pickUp(slotTo)
+    pickUpAll(slotTo)
+    pickUp(slotTo)
 }
 
 /**

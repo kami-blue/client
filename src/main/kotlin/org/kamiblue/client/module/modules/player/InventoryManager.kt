@@ -99,7 +99,6 @@ internal object InventoryManager : Module(
                     eject()
                 }
                 State.IDLE -> {
-                    removeHoldingItem()
                     null
                 }
             }

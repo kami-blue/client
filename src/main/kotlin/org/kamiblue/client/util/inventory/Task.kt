@@ -7,14 +7,26 @@ import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.delegate.ComputeFlag
 
 inline fun SafeClientEvent.inventoryTaskNow(block: InventoryTask.Builder.() -> Unit) =
-    InventoryTask.Builder().apply { priority(Int.MAX_VALUE) }.apply(block).build().also {
-        InventoryTaskManager.runNow(this, it)
-    }
+    InventoryTask.Builder()
+        .apply {
+            priority(Int.MAX_VALUE)
+            delay(0)
+        }
+        .apply(block)
+        .build()
+        .also {
+            InventoryTaskManager.runNow(this, it)
+        }
 
 inline fun AbstractModule.inventoryTask(block: InventoryTask.Builder.() -> Unit) =
-    InventoryTask.Builder().apply { priority(modulePriority) }.apply(block).build().also {
-        InventoryTaskManager.addTask(it)
-    }
+    InventoryTask.Builder()
+        .apply {
+            priority(modulePriority)
+        }.apply(block)
+        .build()
+        .also {
+            InventoryTaskManager.addTask(it)
+        }
 
 val InventoryTask?.executedOrTrue get() = this == null || this.executed
 
@@ -67,8 +79,8 @@ class InventoryTask private constructor(
 
     override fun compareTo(other: InventoryTask): Int {
         val result = this.priority.compareTo(other.priority)
-        if (result != 0) return result
-        else return this.id.compareTo(other.id)
+        return if (result != 0) result
+        else this.id.compareTo(other.id)
     }
 
     override fun equals(other: Any?) =

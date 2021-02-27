@@ -22,6 +22,8 @@ open class ClientEvent : AbstractClientEvent() {
     final override val player: EntityPlayerSP? = mc.player
     final override val playerController: PlayerControllerMP? = mc.playerController
     final override val connection: NetHandlerPlayClient? = mc.connection
+
+    operator fun <T> invoke(block: ClientEvent.() -> T) = run(block)
 }
 
 open class SafeClientEvent internal constructor(
@@ -29,7 +31,9 @@ open class SafeClientEvent internal constructor(
     override val player: EntityPlayerSP,
     override val playerController: PlayerControllerMP,
     override val connection: NetHandlerPlayClient
-) : AbstractClientEvent()
+) : AbstractClientEvent() {
+    operator fun <T> invoke(block: SafeClientEvent.() -> T) = run(block)
+}
 
 class ClientExecuteEvent(
     args: Array<String>

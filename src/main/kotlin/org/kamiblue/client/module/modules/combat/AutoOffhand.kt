@@ -1,18 +1,15 @@
 package org.kamiblue.client.module.modules.combat
 
-import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.MobEffects
 import net.minecraft.inventory.Slot
 import net.minecraft.item.*
-import net.minecraft.network.play.server.SPacketConfirmTransaction
 import net.minecraft.potion.PotionUtils
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -20,6 +17,10 @@ import org.kamiblue.client.util.*
 import org.kamiblue.client.util.combat.CombatUtils.calcDamageFromMob
 import org.kamiblue.client.util.combat.CombatUtils.calcDamageFromPlayer
 import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
+import org.kamiblue.client.util.inventory.InventoryTask
+import org.kamiblue.client.util.inventory.confirmedOrTrue
+import org.kamiblue.client.util.inventory.inventoryTaskNow
+import org.kamiblue.client.util.inventory.operation.moveTo
 import org.kamiblue.client.util.inventory.slot.inventorySlots
 import org.kamiblue.client.util.inventory.slot.offhandSlot
 import org.kamiblue.client.util.items.*
@@ -84,10 +85,8 @@ internal object AutoOffhand : Module(
         HOTBAR, INVENTORY
     }
 
-    private val transactionLog = HashMap<Short, Boolean>()
-    private val confirmTimer = TickTimer(TimeUnit.TICKS)
-    private val movingTimer = TickTimer(TimeUnit.TICKS)
     private var maxDamage = 0f
+    private var lastTask: InventoryTask? = null
 
     init {
         safeListener<InputEvent.KeyInputEvent> {
@@ -100,32 +99,10 @@ internal object AutoOffhand : Module(
             }
         }
 
-        safeListener<PacketEvent.Receive> {
-            if (it.packet !is SPacketConfirmTransaction || it.packet.windowId != 0 || !transactionLog.containsKey(it.packet.actionNumber)) return@safeListener
-
-            transactionLog[it.packet.actionNumber] = it.packet.wasAccepted()
-            if (!transactionLog.containsValue(false)) {
-                confirmTimer.reset(confirmTimeout * -50L) // If all the click packets were accepted then we reset the timer for next moving
-            }
-        }
-
         safeListener<TickEvent.ClientTickEvent>(1100) {
-            if (player.isDead || player.health <= 0.0f) return@safeListener
-
-            if (!confirmTimer.tick(confirmTimeout.toLong(), false)) return@safeListener
-            if (!movingTimer.tick(delay.toLong(), false)) return@safeListener // Delays `delay` ticks
+            if (player.isDead || player.health <= 0.0f || !lastTask.confirmedOrTrue) return@safeListener
 
             updateDamage()
-
-            if (!player.inventory.itemStack.isEmpty) { // If player is holding an in inventory
-                if (mc.currentScreen is GuiContainer) { // If inventory is open (playing moving item)
-                    movingTimer.reset() // reset movingTimer as the user is currently interacting with the inventory.
-                } else { // If inventory is not open (ex. inventory desync)
-                    removeHoldingItem()
-                }
-                return@safeListener
-            }
-
             switchToType(getType(), true)
         }
     }
@@ -164,15 +141,12 @@ internal object AutoOffhand : Module(
             // Second check is for case of when player ran out of the original type of item
             if (!alternativeType && typeAlt != typeOriginal || checkOffhandItem(typeAlt)) return
 
-            transactionLog.clear()
-            moveToSlot(slot, player.offhandSlot).forEach {
-                transactionLog[it] = false
+            lastTask = inventoryTaskNow {
+                postDelay(delay, TimeUnit.TICKS)
+                timeout(confirmTimeout, TimeUnit.TICKS)
+
+                moveTo(slot, player.offhandSlot)
             }
-
-            playerController.updateController()
-
-            confirmTimer.reset()
-            movingTimer.reset()
 
             if (switchMessage) MessageSendHelper.sendChatMessage("$chatName Offhand now has a ${typeAlt.toString().toLowerCase()}")
         }
