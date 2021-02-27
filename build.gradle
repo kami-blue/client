@@ -113,11 +113,6 @@ dependencies {
         exclude module: 'gson'
     }
 
-    jarLibs('org.reflections:reflections:0.9.12') {
-        exclude module: 'gson'
-        exclude module: 'guava'
-    }
-
     jarLibs('club.minnced:java-discord-rpc:2.0.2') {
         exclude module: 'jna'
     }

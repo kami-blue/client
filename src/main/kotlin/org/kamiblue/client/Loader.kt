@@ -8,6 +8,8 @@ import org.kamiblue.client.gui.GuiManager
 import org.kamiblue.client.manager.ManagerLoader
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.util.threads.mainScope
+import org.kamiblue.commons.utils.ClassUtils
+import kotlin.system.measureTimeMillis
 
 internal object LoaderWrapper {
     private val loaderList = ArrayList<AsyncLoader<*>>()
@@ -47,6 +49,21 @@ interface AsyncLoader<T> {
         load0((deferred ?: preLoadAsync()).await())
     }
 
-    fun preLoad0(): T
-    fun load0(input: T)
+    suspend fun preLoad0(): T
+    suspend fun load0(input: T)
+
+    companion object {
+        val classes = mainScope.async {
+            val list: List<Class<*>>
+            val time = measureTimeMillis {
+                list = ClassUtils.findClasses("org.kamiblue.client") {
+                    val substring = it.substring(20).substringBefore('.')
+                    substring != "installer" && substring != "mixin"
+                }
+            }
+
+            KamiMod.LOG.info("${list.size} classes found, took ${time}ms")
+            list
+        }
+    }
 }

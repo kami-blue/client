@@ -13,25 +13,36 @@ import org.kamiblue.client.util.threads.onMainThread
 import org.kamiblue.command.AbstractCommandManager
 import org.kamiblue.command.utils.CommandNotFoundException
 import org.kamiblue.command.utils.SubCommandNotFoundException
-import org.kamiblue.commons.utils.ClassUtils
 import org.kamiblue.commons.utils.ClassUtils.instance
+import java.lang.reflect.Modifier
+import kotlin.system.measureTimeMillis
 
 object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoader<List<Class<out ClientCommand>>> {
     override var deferred: Deferred<List<Class<out ClientCommand>>>? = null
     val prefix: String get() = CommandConfig.prefix.value
 
-    override fun preLoad0(): List<Class<out ClientCommand>> {
-        val stopTimer = StopTimer()
+    override suspend fun preLoad0(): List<Class<out ClientCommand>> {
+        val classes = AsyncLoader.classes.await()
+        val list: List<Class<*>>
 
-        val list = ClassUtils.findClasses<ClientCommand>("org.kamiblue.client.command.commands")
+        val time = measureTimeMillis {
+            val clazz = ClientCommand::class.java
 
-        val time = stopTimer.stop()
+            list = classes.asSequence()
+                .filter { Modifier.isFinal(it.modifiers) }
+                .filter { it.name.startsWith("org.kamiblue.client.command.commands") }
+                .filter { clazz.isAssignableFrom(it) }
+                .sortedBy { it.simpleName }
+                .toList()
+        }
 
         KamiMod.LOG.info("${list.size} commands found, took ${time}ms")
-        return list
+
+        @Suppress("UNCHECKED_CAST")
+        return list as List<Class<out ClientCommand>>
     }
 
-    override fun load0(input: List<Class<out ClientCommand>>) {
+    override suspend fun load0(input: List<Class<out ClientCommand>>) {
         val stopTimer = StopTimer()
 
         for (clazz in input) {

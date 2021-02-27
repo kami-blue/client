@@ -7,10 +7,10 @@ import org.kamiblue.client.util.AsyncCachedValue
 import org.kamiblue.client.util.StopTimer
 import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.commons.collections.AliasSet
-import org.kamiblue.commons.utils.ClassUtils
 import org.kamiblue.commons.utils.ClassUtils.instance
 import org.lwjgl.input.Keyboard
 import java.lang.reflect.Modifier
+import kotlin.system.measureTimeMillis
 
 object ModuleManager : AsyncLoader<List<Class<out AbstractModule>>> {
     override var deferred: Deferred<List<Class<out AbstractModule>>>? = null
@@ -20,20 +20,28 @@ object ModuleManager : AsyncLoader<List<Class<out AbstractModule>>> {
         moduleSet.distinct().sortedBy { it.name }
     }
 
-    override fun preLoad0(): List<Class<out AbstractModule>> {
-        val stopTimer = StopTimer()
+    override suspend fun preLoad0(): List<Class<out AbstractModule>> {
+        val classes = AsyncLoader.classes.await()
+        val list: List<Class<*>>
 
-        val list = ClassUtils.findClasses<AbstractModule>("org.kamiblue.client.module.modules") {
-            filter { Modifier.isFinal(it.modifiers) }
+        val time = measureTimeMillis {
+            val clazz = AbstractModule::class.java
+
+            list = classes.asSequence()
+                .filter { Modifier.isFinal(it.modifiers) }
+                .filter { it.name.startsWith("org.kamiblue.client.module.modules") }
+                .filter { clazz.isAssignableFrom(it) }
+                .sortedBy { it.simpleName }
+                .toList()
         }
 
-        val time = stopTimer.stop()
-
         KamiMod.LOG.info("${list.size} modules found, took ${time}ms")
-        return list
+
+        @Suppress("UNCHECKED_CAST")
+        return list as List<Class<out AbstractModule>>
     }
 
-    override fun load0(input: List<Class<out AbstractModule>>) {
+    override suspend fun load0(input: List<Class<out AbstractModule>>) {
         val stopTimer = StopTimer()
 
         for (clazz in input) {

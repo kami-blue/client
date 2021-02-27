@@ -1,6 +1,7 @@
 package org.kamiblue.client.gui.mc
 
 import com.google.gson.JsonParser
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiMainMenu
@@ -9,6 +10,7 @@ import net.minecraft.util.text.TextFormatting
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.util.WebUtils
 import org.kamiblue.client.util.color.ColorConverter
+import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.mainScope
 import org.kamiblue.commons.utils.ConnectionUtils
 import java.io.IOException
@@ -45,7 +47,7 @@ class KamiGuiUpdateNotification : GuiScreen() {
 
         @JvmStatic
         fun updateCheck() {
-            mainScope.launch {
+            mainScope.launch(Dispatchers.IO) {
                 try {
                     KamiMod.LOG.info("Attempting KAMI Blue update check...")
 
