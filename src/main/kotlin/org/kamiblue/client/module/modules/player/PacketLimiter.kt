@@ -17,17 +17,19 @@ internal object PacketLimiter : Module(
     description = "Adjust timer automatically to ensure not sending too many movement packets",
     modulePriority = 1000
 ) {
-    private val maxPacketsLong by setting("Max Packets Long", 21.5f, 10.0f..40.0f, 0.25f,
+    private val maxPacketsLong by setting("Max Packets Long", 22.0f, 10.0f..40.0f, 0.25f,
         description = "Maximum packets per second in long term")
-    private val maxPacketsShort by setting("Max Packets Short", 24.0f, 10.0f..40.0f, 0.25f,
+    private val longTermTicks by setting("Long Term Ticks", 100, 20..250, 5)
+    private val maxPacketsShort by setting("Max Packets Short", 25.0f, 10.0f..40.0f, 0.25f,
         description = "Maximum packets per second in short term")
+    private val shortTermTicks by setting("Short Term Ticks", 20, 5..50, 1)
 
     private var lastPacketTime = -1L
 
-    private val longPacketTime = CircularArray.create<Short>(100, 50)
+    private val longPacketTime = ArrayDeque<Short>( 100)
     private var longPacketSpeed = 20.0f
 
-    private val shortPacketTime = CircularArray.create<Short>(10, 50)
+    private val shortPacketTime = ArrayDeque<Short>(20)
     private var shortPacketSpeed = 20.0f
 
     init {
@@ -44,8 +46,10 @@ internal object PacketLimiter : Module(
     private fun reset() {
         lastPacketTime = -1L
 
-        longPacketTime.reset()
-        shortPacketTime.reset()
+        synchronized(PacketLimiter) {
+            longPacketTime.clear()
+            shortPacketTime.clear()
+        }
 
         longPacketSpeed = 20.0f
         shortPacketSpeed = 20.0f
@@ -58,11 +62,13 @@ internal object PacketLimiter : Module(
             if (lastPacketTime != -1L) {
                 val duration = (System.currentTimeMillis() - lastPacketTime).toShort()
 
-                longPacketTime.add(duration)
-                shortPacketTime.add(duration)
+                synchronized(PacketLimiter) {
+                    longPacketTime.addAndTrim(duration, longTermTicks)
+                    shortPacketTime.addAndTrim(duration, shortTermTicks)
 
-                longPacketSpeed = 1000.0f / shortPacketTime.average()
-                shortPacketSpeed = 1000.0f / shortPacketTime.average()
+                    longPacketSpeed = (1000.0 / shortPacketTime.average()).toFloat()
+                    shortPacketSpeed = (1000.0 / shortPacketTime.average()).toFloat()
+                }
             }
 
             lastPacketTime = System.currentTimeMillis()
@@ -78,6 +84,14 @@ internal object PacketLimiter : Module(
             }?.let {
                 modifyTimer(50.0f * it)
             }
+        }
+    }
+
+    private fun ArrayDeque<Short>.addAndTrim(value: Short, max: Int) {
+        add(value)
+        val validMax = max.coerceAtLeast(0)
+        while (this.size > validMax){
+            this.removeFirst()
         }
     }
 
