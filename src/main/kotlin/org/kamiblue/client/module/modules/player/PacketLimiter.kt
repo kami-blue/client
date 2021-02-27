@@ -23,6 +23,7 @@ internal object PacketLimiter : Module(
     private val maxPacketsShort by setting("Max Packets Short", 25.0f, 10.0f..40.0f, 0.25f,
         description = "Maximum packets per second in short term")
     private val shortTermTicks by setting("Short Term Ticks", 20, 5..50, 1)
+    private val minTimer by setting("Min Timer", 0.8f, 0.1f..1.0f, 0.05f)
 
     private var lastPacketTime = -1L
 
@@ -82,7 +83,7 @@ internal object PacketLimiter : Module(
             } else {
                 limit(longPacketSpeed, maxPacketsLong) ?: limit(shortPacketSpeed, maxPacketsShort)
             }?.let {
-                modifyTimer(50.0f * it)
+                modifyTimer((50.0f * it).coerceAtLeast(minTimer))
             }
         }
     }
