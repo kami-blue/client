@@ -18,4 +18,9 @@ class RenderEntityEvent(
     override fun nextPhase(): RenderEntityEvent {
         throw UnsupportedOperationException()
     }
+
+    companion object {
+        @JvmStatic
+        var renderingEntities = false
+    }
 }
