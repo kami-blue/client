@@ -19,10 +19,10 @@ internal object Anchor : Module(
     category = Category.MOVEMENT,
     modulePriority = 10
 ) {
-    private val vRange by setting("vRange", 5, 1..10, 1)
+    private val vRange by setting("Range", 5, 1..10, 1)
     private val mode by setting("Mode", AnchorMode.BOTH)
-    private val turnOffAfter by setting("TurnOffAfter", false)
-    private val pitchTrigger by setting("PitchTrigger", false)
+    private val turnOffAfter by setting("Turn Off After", false)
+    private val pitchTrigger by setting("Pitch Trigger", false)
     private val pitch by setting("Pitch", 80, -90..90, 1, { pitchTrigger })
     private val strict by setting("Strict", true)
     private var prevInHole = false
