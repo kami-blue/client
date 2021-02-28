@@ -12,7 +12,7 @@ import org.kamiblue.client.util.TpsCalculator
 import org.kamiblue.client.util.inventory.ClickFuture
 import org.kamiblue.client.util.inventory.InventoryTask
 import org.kamiblue.client.util.inventory.TaskFuture
-import org.kamiblue.client.util.items.removeHoldingItem
+import org.kamiblue.client.util.inventory.removeHoldingItem
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
 import java.util.*

@@ -1,4 +1,4 @@
-package org.kamiblue.client.util.items
+package org.kamiblue.client.util.inventory
 
 import kotlinx.coroutines.runBlocking
 import net.minecraft.init.Items
@@ -22,7 +22,7 @@ fun SafeClientEvent.removeHoldingItem() {
         ?: player.craftingSlots.firstItem(Items.AIR)?.slotNumber // Get empty slots in crafting slot
         ?: -999 // Throw on the ground
 
-    clickSlot(slot = slot, type = ClickType.PICKUP)
+    clickSlot(0, slot, 0, ClickType.PICKUP)
 }
 
 /**
@@ -30,7 +30,7 @@ fun SafeClientEvent.removeHoldingItem() {
  *
  * @return Transaction id
  */
-fun SafeClientEvent.clickSlot(windowID: Int = 0, slot: Slot, mouseButton: Int = 0, type: ClickType): Short {
+fun SafeClientEvent.clickSlot(windowID: Int, slot: Slot, mouseButton: Int, type: ClickType): Short {
     return clickSlot(windowID, slot.slotNumber, mouseButton, type)
 }
 
@@ -39,7 +39,7 @@ fun SafeClientEvent.clickSlot(windowID: Int = 0, slot: Slot, mouseButton: Int = 
  *
  * @return Transaction id
  */
-fun SafeClientEvent.clickSlot(windowID: Int = 0, slot: Int, mouseButton: Int = 0, type: ClickType): Short {
+fun SafeClientEvent.clickSlot(windowID: Int, slot: Int, mouseButton: Int, type: ClickType): Short {
     val container = getContainerForID(windowID) ?: return -32768
 
     val playerInventory = player.inventory ?: return -32768
@@ -54,6 +54,6 @@ fun SafeClientEvent.clickSlot(windowID: Int = 0, slot: Int, mouseButton: Int = 0
     return transactionID
 }
 
-fun SafeClientEvent.getContainerForID(windowID: Int): Container? =
+private fun SafeClientEvent.getContainerForID(windowID: Int): Container? =
     if (windowID == 0) player.inventoryContainer
     else player.openContainer

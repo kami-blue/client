@@ -3,7 +3,7 @@ package org.kamiblue.client.util.inventory
 import net.minecraft.inventory.ClickType
 import net.minecraft.inventory.Slot
 import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.util.items.clickSlot
+import org.kamiblue.client.util.inventory.clickSlot
 
 class SwapSlot(
     private val slot: Int
