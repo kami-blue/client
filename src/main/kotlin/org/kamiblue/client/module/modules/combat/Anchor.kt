@@ -36,10 +36,19 @@ internal object Anchor : Module(
     /**
      * Checks whether the specified block position is a hole or not
      */
-    private fun checkHole(event: SafeClientEvent, pos: BlockPos): Boolean {
+    private fun isHole(event: SafeClientEvent, pos: BlockPos): Boolean {
         val type = event.checkHole(pos)
         return ((mode == AnchorMode.BOTH && type != SurroundUtils.HoleType.NONE) ||
             (mode == AnchorMode.BEDROCK && type == SurroundUtils.HoleType.BEDROCK))
+    }
+
+    private fun isReachable(holePos: BlockPos): Boolean{
+        for (y in holePos.y..mc.player.positionVector.y.toInt()) {
+            val checkPos = BlockPos(holePos.x, y, holePos.z)
+            if(!mc.world.isAirBlock(checkPos))
+                return false
+        }
+        return true
     }
 
     /**
@@ -49,7 +58,7 @@ internal object Anchor : Module(
         if (pitchTrigger && mc.player.rotationPitch < MathHelper.wrapDegrees(pitch)) return false
         for (dy in 1..vRange) {
             val pos = mc.player.positionVector.toBlockPos().add(0.0, -dy.toDouble(), 0.0)
-            if (checkHole(event, pos)) {
+            if (isHole(event, pos) && isReachable(pos)) {
                 return true
             }
         }
@@ -62,7 +71,7 @@ internal object Anchor : Module(
         }
 
         safeListener<PlayerTravelEvent> {
-            if (checkHole(this, player.positionVector.toBlockPos()) &&
+            if (isHole(this, player.positionVector.toBlockPos()) &&
                 !world.isAirBlock(player.positionVector.add(0.0, -0.1, 0.0).toBlockPos())) {
                 prevInHole = true
                 disableInput = false
