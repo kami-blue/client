@@ -11,7 +11,12 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.inventory.InventoryTask
+import org.kamiblue.client.util.inventory.confirmedOrTrue
+import org.kamiblue.client.util.inventory.inventoryTask
+import org.kamiblue.client.util.inventory.operation.moveTo
+import org.kamiblue.client.util.inventory.operation.quickMove
+import org.kamiblue.client.util.inventory.operation.throwAll
 import org.kamiblue.client.util.inventory.slot.firstByStack
 import org.kamiblue.client.util.inventory.slot.firstEmpty
 import org.kamiblue.client.util.inventory.slot.getSlots
@@ -44,7 +49,8 @@ internal object ChestStealer : Module(
 
     var stealing = false
     var storing = false
-    val timer = TickTimer()
+
+    private var lastTask: InventoryTask? = null
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
@@ -125,17 +131,25 @@ internal object ChestStealer : Module(
     private fun SafeClientEvent.stealOrStore(slot: Slot?, containerMode: ContainerMode): Boolean {
         if (slot == null) return false
 
-        val size = getContainerSlotSize()
-        val rangeStart = if (containerMode == ContainerMode.STEAL) size else 0
-        val slotTo = player.openContainer.getSlots(rangeStart until size + containerMode.offset).firstEmpty()
-            ?: return false
-        val windowID = player.openContainer.windowId
+        if (lastTask.confirmedOrTrue) {
+            val size = getContainerSlotSize()
+            val rangeStart = if (containerMode == ContainerMode.STEAL) size else 0
+            val slotTo = player.openContainer.getSlots(rangeStart until size + containerMode.offset).firstEmpty()
+                ?: return false
+            val windowID = player.openContainer.windowId
 
-        if (timer.tick(delay.toLong())) {
-            when (movingMode) {
-                MovingMode.QUICK_MOVE -> quickMoveSlot(windowID, slot)
-                MovingMode.PICKUP -> moveToSlot(windowID, slot, slotTo)
-                MovingMode.THROW -> throwAllInSlot(windowID, slot)
+            lastTask = inventoryTask {
+                when (movingMode) {
+                    MovingMode.QUICK_MOVE -> {
+                        quickMove(windowID, slot)
+                    }
+                    MovingMode.PICKUP -> {
+                        moveTo(windowID, slot, slotTo)
+                    }
+                    MovingMode.THROW -> {
+                        throwAll(windowID, slot)
+                    }
+                }
             }
         }
 

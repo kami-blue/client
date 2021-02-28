@@ -13,65 +13,6 @@ import org.kamiblue.client.util.inventory.slot.getSlots
 import org.kamiblue.client.util.threads.onMainThreadSafe
 
 /**
- * Move the item in [slotFrom]  to [slotTo] in player inventory,
- * if [slotTo] contains an item, then move it to [slotFrom]
- */
-fun SafeClientEvent.moveToSlot(slotFrom: Slot, slotTo: Slot): ShortArray {
-    return moveToSlot(0, slotFrom, slotTo)
-}
-
-/**
- * Move the item in [slotFrom] to [slotTo] in [windowID],
- * if [slotTo] contains an item, then move it to [slotFrom]
- */
-fun SafeClientEvent.moveToSlot(windowID: Int, slotFrom: Slot, slotTo: Slot): ShortArray {
-    return shortArrayOf(
-        clickSlot(windowID, slotFrom, type = ClickType.PICKUP),
-        clickSlot(windowID, slotTo, type = ClickType.PICKUP),
-        clickSlot(windowID, slotFrom, type = ClickType.PICKUP)
-    )
-}
-
-/**
- * Move all the item that equals to the item in [slotTo] to [slotTo] in player inventory
- */
-fun SafeClientEvent.moveAllToSlot(slotTo: Slot): ShortArray {
-    return shortArrayOf(
-        clickSlot(slot = slotTo, type = ClickType.PICKUP_ALL),
-        clickSlot(slot = slotTo, type = ClickType.PICKUP)
-    )
-}
-
-/**
- * Quick move (Shift + Click) the item in [slot] in player inventory
- */
-fun SafeClientEvent.quickMoveSlot(slot: Slot): Short {
-    return quickMoveSlot(0, slot)
-}
-
-/**
- * Quick move (Shift + Click) the item in [slot] in specified [windowID]
- */
-fun SafeClientEvent.quickMoveSlot(windowID: Int, slot: Slot): Short {
-    return clickSlot(windowID, slot, type = ClickType.QUICK_MOVE)
-}
-
-
-/**
- * Throw all the item in [slot] in player inventory
- */
-fun SafeClientEvent.throwAllInSlot(slot: Slot): Short {
-    return throwAllInSlot(0, slot)
-}
-
-/**
- * Throw all the item in [slot] in specified [windowID]
- */
-fun SafeClientEvent.throwAllInSlot(windowID: Int, slot: Slot): Short {
-    return clickSlot(windowID, slot, 1, ClickType.THROW)
-}
-
-/**
  * Put the item currently holding by mouse to somewhere or throw it
  */
 fun SafeClientEvent.removeHoldingItem() {
@@ -83,7 +24,6 @@ fun SafeClientEvent.removeHoldingItem() {
 
     clickSlot(slot = slot, type = ClickType.PICKUP)
 }
-
 
 /**
  * Performs inventory clicking in specific window, slot, mouseButton, and click type

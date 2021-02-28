@@ -23,6 +23,7 @@ import org.kamiblue.client.util.WorldUtils.getHitSide
 import org.kamiblue.client.util.WorldUtils.rayTraceTo
 import org.kamiblue.client.util.combat.CrystalUtils.calcCrystalDamage
 import org.kamiblue.client.util.inventory.*
+import org.kamiblue.client.util.inventory.operation.quickMove
 import org.kamiblue.client.util.inventory.slot.*
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.math.RotationUtils
@@ -99,9 +100,11 @@ internal object BedAura : Module(
             }
 
             inactiveTicks++
-            if (canRefill() && refillTimer.tick(refillDelay.value.toLong())) {
+            if (player.hotbarSlots.firstEmpty() != null && refillTimer.tick(refillDelay.value)) {
                 player.storageSlots.firstItem<ItemBed, Slot>()?.let {
-                    quickMoveSlot(it)
+                    inventoryTask {
+                        quickMove(it)
+                    }
                 }
             }
 
@@ -117,11 +120,6 @@ internal object BedAura : Module(
             if (inactiveTicks <= 5) sendRotation()
             else resetRotation()
         }
-    }
-
-    private fun SafeClientEvent.canRefill(): Boolean {
-        return player.hotbarSlots.firstEmpty() != null
-            && player.storageSlots.firstItem<ItemBed, Slot>() != null
     }
 
     private fun SafeClientEvent.updatePlaceMap() {
