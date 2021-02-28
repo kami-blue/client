@@ -16,7 +16,7 @@ public class MixinRenderManager {
     public void renderEntityPre(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
         if (entity == null || !RenderEntityEvent.getRenderingEntities()) return;
 
-        RenderEntityEvent event = new RenderEntityEvent(entity, x, y, z, yaw, partialTicks, Phase.PRE);
+        RenderEntityEvent event = new RenderEntityEvent(entity, Phase.PRE);
         KamiEventBus.INSTANCE.post(event);
 
         if (event.getCancelled()) ci.cancel();
@@ -26,7 +26,7 @@ public class MixinRenderManager {
     public void renderEntityPeri(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
         if (entity == null || !RenderEntityEvent.getRenderingEntities()) return;
 
-        RenderEntityEvent event = new RenderEntityEvent(entity, x, y, z, yaw, partialTicks, Phase.PERI);
+        RenderEntityEvent event = new RenderEntityEvent(entity, Phase.PERI);
         KamiEventBus.INSTANCE.post(event);
     }
 
@@ -34,7 +34,7 @@ public class MixinRenderManager {
     public void renderEntityPost(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
         if (entity == null || !RenderEntityEvent.getRenderingEntities()) return;
 
-        RenderEntityEvent event = new RenderEntityEvent(entity, x, y, z, yaw, partialTicks, Phase.POST);
+        RenderEntityEvent event = new RenderEntityEvent(entity, Phase.POST);
         KamiEventBus.INSTANCE.post(event);
     }
 }
