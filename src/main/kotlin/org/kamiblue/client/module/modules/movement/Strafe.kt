@@ -57,6 +57,7 @@ internal object Strafe : Module(
     private val strafeTimer = TickTimer(TimeUnit.TICKS)
 
     /* If you skid this you omega gay */
+    /* ^ ez ban for sexual harassment I'm not gay tho*/
     init {
         onDisable {
             reset()
