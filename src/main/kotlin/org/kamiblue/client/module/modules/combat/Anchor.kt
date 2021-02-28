@@ -24,7 +24,7 @@ internal object Anchor : Module(
     private val turnOffAfter by setting("TurnOffAfter", false)
     private val pitchTrigger by setting("PitchTrigger", false)
     private val pitch by setting("Pitch", 80, -90..90, 1, { pitchTrigger })
-    private val hard by setting("Hard", true)
+    private val strict by setting("Strict", true)
     private var prevInHole = false
     private var disableInput = false
 
@@ -79,8 +79,8 @@ internal object Anchor : Module(
                 if (prevInHole) return@safeListener
                 disableInput = true
 
-                SurroundUtils.centerPlayer(hard)
-                if (hard) {
+                SurroundUtils.centerPlayer(!strict)
+                if (!strict) {
                     player.motionX = 0.0
                     player.motionZ = 0.0
                 }
