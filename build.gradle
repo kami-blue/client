@@ -41,6 +41,7 @@ sourceSets.main.java {
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.useIR = true
 }
 
 compileJava {
