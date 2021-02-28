@@ -4,6 +4,7 @@ import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Enchantments
 import net.minecraft.init.Items
+import net.minecraft.inventory.ClickType
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -35,6 +36,8 @@ internal object AutoMend : Module(
     private val autoSwitch by setting("Auto Switch", true)
     private val autoDisableExp by setting("Disable on no Exp Bottle", false, { autoSwitch })
     private val autoDisableComplete by setting("Disable on Complete", false)
+    private val takeOff by setting("Take Off", true)
+    private val pauseAutoArmor by setting("Pause AutoArmor", true, { takeOff })
     private val cancelNearby by setting("Cancel Nearby", NearbyMode.OFF, description = "Don't mend when an enemy is nearby")
     private val pauseNearbyRadius by setting("Nearby Radius", 8, 1..8, 1, { cancelNearby != NearbyMode.OFF })
     private val threshold by setting("Repair At", 75, 1..100, 1, description = "Percentage to start repairing any armor piece")
@@ -43,6 +46,7 @@ internal object AutoMend : Module(
     private var initHotbarSlot = -1
     private var isGuiOpened = false
     private var paused = false
+    private var isAutoArmorPaused = false
 
     private val throwDelayTimer = TickTimer(TimeUnit.TICKS)
 
@@ -63,6 +67,9 @@ internal object AutoMend : Module(
 
         onDisable {
             switchback()
+            if (isAutoArmorPaused)
+                AutoArmor.enable()
+            isAutoArmorPaused = false
         }
 
         listener<GuiEvent.Displayed> {
@@ -87,9 +94,27 @@ internal object AutoMend : Module(
                 return@safeListener
             }
             paused = false
-            if(!shouldMend() && autoDisableComplete) {
+
+            if (!shouldMend() && autoDisableComplete) {
                 MessageSendHelper.sendChatMessage("$chatName Mending completed! disabling")
                 disable()
+            }
+
+            if (shouldMend() && pauseAutoArmor && AutoArmor.isEnabled) {
+                AutoArmor.disable()
+                isAutoArmorPaused = true
+            }
+
+            if (takeOff) {
+                var minSlot = 0
+                for (i in 0..3) {
+                    if (shouldMend(i) || !hasMending(i)) continue
+                    val emptySlot = findEmptySlot(minSlot)
+                    minSlot = emptySlot + 1
+                    if (emptySlot == -1) break
+                    playerController.windowClick(player.inventoryContainer.windowId, 8 - i, 0, ClickType.PICKUP, player)
+                    playerController.windowClick(player.inventoryContainer.windowId, emptySlot + 9, 0, ClickType.PICKUP, player)
+                }
             }
 
             if ((autoSwitch || autoThrow) // avoid checking if no actions are going to be done
@@ -117,6 +142,14 @@ internal object AutoMend : Module(
         }
     }
 
+    private fun SafeClientEvent.findEmptySlot(min: Int): Int {
+        for(i in min.coerceAtMost(9)..44) {
+            if(player.inventory.getStackInSlot(i).isEmpty)
+                return i
+        }
+        return -1
+    }
+
     private fun SafeClientEvent.findXpPots(): Int {
         var slot = -1
         for (i in 0..8) {
@@ -128,10 +161,14 @@ internal object AutoMend : Module(
         return slot
     }
 
+    private fun SafeClientEvent.hasMending(slot: Int): Boolean {
+        val stack = player.inventory.armorInventory[slot]
+        return EnchantmentHelper.getEnchantmentLevel(Enchantments.MENDING, stack) > 0
+    }
+
     private fun SafeClientEvent.shouldMend(i: Int): Boolean { // (100 * damage / max damage) >= (100 - 70)
         val stack = player.inventory.armorInventory[i]
-        val hasMending = EnchantmentHelper.getEnchantmentLevel(Enchantments.MENDING, stack) > 0
-        return hasMending && stack.isItemDamaged && 100 * stack.itemDamage / stack.maxDamage > reverseNumber(threshold, 1, 100)
+        return hasMending(i) && stack.isItemDamaged && 100 * stack.itemDamage / stack.maxDamage > reverseNumber(threshold, 1, 100)
     }
 
     private fun SafeClientEvent.shouldMend(): Boolean {
