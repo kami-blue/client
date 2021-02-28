@@ -70,7 +70,8 @@ internal object ForgeEventProcessor {
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     fun onKeyInput(event: InputEvent.KeyInputEvent) {
         if (!Keyboard.getEventKeyState()) return
-        if (!mc.player.isSneaking) {
+
+        if (!mc.gameSettings.keyBindSneak.isKeyDown) {
             val prefix = CommandManager.prefix
             val typedChar = Keyboard.getEventCharacter().toString()
             if (prefix.length == 1 && typedChar.equals(CommandManager.prefix, true)) {
@@ -95,11 +96,6 @@ internal object ForgeEventProcessor {
     }
 
     @SubscribeEvent
-    fun onChunkLoaded(event: ChunkEvent.Load) {
-        KamiEventBus.post(event)
-    }
-
-    @SubscribeEvent
     fun onEventMouse(event: InputEvent.MouseInputEvent) {
         KamiEventBus.post(event)
     }
@@ -115,8 +111,8 @@ internal object ForgeEventProcessor {
     }
 
     @SubscribeEvent
-    fun onLivingEntityUseItemEventTick(entityUseItemEvent: LivingEntityUseItemEvent.Tick) {
-        KamiEventBus.post(entityUseItemEvent)
+    fun onLivingEntityUseItemEventTick(event: LivingEntityUseItemEvent.Tick) {
+        KamiEventBus.post(event)
     }
 
     @SubscribeEvent
@@ -150,5 +146,10 @@ internal object ForgeEventProcessor {
     @Suppress("UNUSED_PARAMETER")
     fun onClientConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
         KamiEventBus.post(ConnectionEvent.Connect())
+    }
+
+    @SubscribeEvent
+    fun onClientConnect(event: EntityViewRenderEvent.FogColors) {
+        KamiEventBus.post(event)
     }
 }

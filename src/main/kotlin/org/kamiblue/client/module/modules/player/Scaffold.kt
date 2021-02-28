@@ -38,7 +38,8 @@ import kotlin.math.floor
 import kotlin.math.roundToInt
 
 /**
- * @see MixinEntity.isSneaking
+ * @see MixinEntity.moveInvokeIsSneakingPre
+ * @see MixinEntity.moveInvokeIsSneakingPost
  */
 internal object Scaffold : Module(
     name = "Scaffold",

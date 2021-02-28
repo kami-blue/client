@@ -10,9 +10,11 @@ import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
+import org.kamiblue.commons.extension.sumByFloat
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.max
+import kotlin.math.min
 
 open class ListWindow(
     name: String,
@@ -51,6 +53,8 @@ open class ListWindow(
     private var prevScrollProgress = 0.0f
     private val renderScrollProgress
         get() = prevScrollProgress + (scrollProgress - prevScrollProgress) * mc.renderPartialTicks
+
+    private var doubleClickTime = -1L
 
     init {
         children.addAll(childrenIn)
@@ -177,6 +181,9 @@ open class ListWindow(
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
+
+        handleDoubleClick(mousePos, buttonId)
+
         if (!minimized) (hoveredChild as? InteractiveComponent)?.let {
             it.onClick(getRelativeMousePos(mousePos, it), buttonId)
         }
@@ -199,6 +206,28 @@ open class ListWindow(
     override fun onKeyInput(keyCode: Int, keyState: Boolean) {
         super.onKeyInput(keyCode, keyState)
         if (!minimized) (hoveredChild as? InteractiveComponent)?.onKeyInput(keyCode, keyState)
+    }
+
+    private fun handleDoubleClick(mousePos: Vec2f, buttonId: Int) {
+        if (!visible || buttonId != 0 || mousePos.y - posY >= draggableHeight) {
+            doubleClickTime = -1L
+            return
+        }
+
+        val currentTime = System.currentTimeMillis()
+
+        doubleClickTime = if (currentTime - doubleClickTime > 500L) {
+            currentTime
+        } else {
+            val sum = children.filter(Component::visible).sumByFloat { it.height + lineSpace }
+            val targetHeight = max(height, sum + draggableHeight + lineSpace)
+            val maxHeight = scaledDisplayHeight - 2.0f
+
+            height = min(targetHeight, scaledDisplayHeight - 2.0f)
+            posY = min(posY, maxHeight - targetHeight)
+
+            -1L
+        }
     }
 
     private fun getRelativeMousePos(mousePos: Vec2f, component: InteractiveComponent) =

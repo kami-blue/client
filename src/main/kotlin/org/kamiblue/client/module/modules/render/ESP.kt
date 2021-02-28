@@ -8,12 +8,14 @@ import net.minecraft.entity.item.EntityXPOrb
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityThrowable
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.client.event.EntityViewRenderEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.Phase
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderEntityEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.mixin.extension.entityOutlineShader
+import org.kamiblue.client.mixin.extension.listFrameBuffers
 import org.kamiblue.client.mixin.extension.listShaders
 import org.kamiblue.client.mixin.extension.renderOutlines
 import org.kamiblue.client.module.Category
@@ -144,6 +146,12 @@ internal object ESP : Module(
     }
 
     init {
+        safeListener<EntityViewRenderEvent.FogColors> { event ->
+            shaderHelper.shader?.listFrameBuffers?.forEach {
+                it.setFramebufferColor(event.red, event.green, event.blue, 0.0f)
+            }
+        }
+
         safeListener<RenderWorldEvent> {
             if (mc.renderManager.options == null) return@safeListener
 

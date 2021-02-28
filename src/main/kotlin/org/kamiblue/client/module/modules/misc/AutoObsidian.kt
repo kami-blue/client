@@ -4,6 +4,7 @@ import baritone.api.pathing.goals.Goal
 import baritone.api.pathing.goals.GoalNear
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.minecraft.block.BlockEnderChest
 import net.minecraft.block.BlockShulkerBox
 import net.minecraft.block.state.IBlockState
@@ -27,6 +28,7 @@ import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.BlockBreakEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.manager.managers.PlayerPacketManager
@@ -47,10 +49,7 @@ import org.kamiblue.client.util.math.RotationUtils.getRotationTo
 import org.kamiblue.client.util.math.VectorUtils
 import org.kamiblue.client.util.math.VectorUtils.toVec3dCenter
 import org.kamiblue.client.util.text.MessageSendHelper
-import org.kamiblue.client.util.threads.defaultScope
-import org.kamiblue.client.util.threads.onMainThreadSafe
-import org.kamiblue.client.util.threads.safeAsyncListener
-import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.util.threads.*
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.asyncListener
 import org.kamiblue.event.listener.listener
@@ -120,6 +119,8 @@ internal object AutoObsidian : Module(
     private val miningTimer = TickTimer(TimeUnit.TICKS)
     private val miningTimeoutTimer = TickTimer(TimeUnit.SECONDS)
 
+    private val miningMap = HashMap<BlockPos, Pair<Int, Long>>() // <BlockPos, <Breaker ID, Last Update Time>>
+
     private val renderer = ESPRenderer().apply { aFilled = 33; aOutline = 233 }
 
     override fun isActive(): Boolean {
@@ -133,6 +134,12 @@ internal object AutoObsidian : Module(
 
         onDisable {
             reset()
+        }
+
+        safeListener<BlockBreakEvent> {
+            if (it.breakerID != player.entityId) {
+                miningMap[it.position] = it.breakerID to System.currentTimeMillis()
+            }
         }
 
         asyncListener<PacketEvent.PostSend> {
@@ -166,9 +173,15 @@ internal object AutoObsidian : Module(
         safeListener<TickEvent.ClientTickEvent>(69) {
             if (it.phase != TickEvent.Phase.START || PauseProcess.isActive) return@safeListener
 
+            updateMiningMap()
             runAutoObby()
             doRotation()
         }
+    }
+
+    private fun updateMiningMap() {
+        val removeTime = System.currentTimeMillis() - 5000L
+        miningMap.values.removeIf { it.second < removeTime }
     }
 
     private fun SafeClientEvent.doRotation() {
@@ -246,9 +259,10 @@ internal object AutoObsidian : Module(
         val eyePos = player.getPositionEyes(1f)
         if (isPositionValid(placingPos, world.getBlockState(placingPos), eyePos)) return
 
-        val posList = VectorUtils.getBlockPosInSphere(eyePos, maxReach)
-            .sortedBy { it.distanceSqToCenter(eyePos.x, eyePos.y, eyePos.z) }
+        val posList = VectorUtils.getBlockPosInSphere(eyePos, maxReach).asSequence()
+            .filter { !miningMap.contains(it) }
             .map { it to world.getBlockState(it) }
+            .sortedBy { it.first.distanceSqToCenter(eyePos.x, eyePos.y, eyePos.z) }
             .toList()
 
         val pair = posList.find { it.second.block == Blocks.ENDER_CHEST || it.second.block is BlockShulkerBox }
@@ -640,5 +654,11 @@ internal object AutoObsidian : Module(
         lastHitVec = null
         lastMiningSide = EnumFacing.UP
         canInstantMine = false
+
+        runBlocking {
+            onMainThread {
+                miningMap.clear()
+            }
+        }
     }
 }

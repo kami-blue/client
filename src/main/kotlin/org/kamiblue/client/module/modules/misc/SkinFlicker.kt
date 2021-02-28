@@ -1,7 +1,7 @@
 package org.kamiblue.client.module.modules.misc
 
 import net.minecraft.entity.player.EnumPlayerModelParts
-import org.kamiblue.client.event.events.RenderEvent
+import org.kamiblue.client.event.events.RunGameLoopEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
@@ -23,7 +23,7 @@ internal object SkinFlicker : Module(
     private var lastIndex = 0
 
     init {
-        safeListener<RenderEvent> {
+        safeListener<RunGameLoopEvent.Tick> {
             if (!timer.tick(delay.toLong())) return@safeListener
 
             val part = when (mode) {

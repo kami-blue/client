@@ -14,7 +14,7 @@ internal object PlayerSpeed : LabelHud(
 ) {
 
     private val speedUnit by setting("Speed Unit", SpeedUnit.MPS)
-    private val averageSpeedTime by setting("Average Speed Time", 1.0f, 0.25f..5.0f, 0.25f)
+    private val averageSpeedTime by setting("Average Speed Ticks", 10, 1..50, 1)
 
     @Suppress("UNUSED")
     private enum class SpeedUnit(override val displayName: String, val multiplier: Double) : DisplayEnum {
@@ -46,7 +46,7 @@ internal object PlayerSpeed : LabelHud(
             speedList.pollFirst()
         }
 
-        while (speedList.size > averageSpeedTime * 20.0f) speedList.pollFirst()
+        while (speedList.size > averageSpeedTime) speedList.pollFirst()
     }
 
 }

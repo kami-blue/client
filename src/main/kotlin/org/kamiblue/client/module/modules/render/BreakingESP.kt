@@ -94,22 +94,22 @@ internal object BreakingESP : Module(
 
         listener<BlockBreakEvent> {
             if (mc.player == null || mc.player.distanceTo(it.position) > range.value) return@listener
-            val breaker = mc.world.getEntityByID(it.breakId) ?: return@listener
+            val breaker = mc.world.getEntityByID(it.breakerID) ?: return@listener
             if (it.progress in 0..9) {
                 val render = mc.player != breaker || espSelf.value
-                breakingBlockList.putIfAbsent(it.breakId, Triple(it.position, it.progress, Pair(false, render)))
-                breakingBlockList.computeIfPresent(it.breakId) { _, triple -> Triple(it.position, it.progress, triple.third) }
-                if (warning.value && (mc.player != breaker || warnSelf.value) && it.progress >= warningProgress.value && !breakingBlockList[it.breakId]!!.third.first
+                breakingBlockList.putIfAbsent(it.breakerID, Triple(it.position, it.progress, Pair(false, render)))
+                breakingBlockList.computeIfPresent(it.breakerID) { _, triple -> Triple(it.position, it.progress, triple.third) }
+                if (warning.value && (mc.player != breaker || warnSelf.value) && it.progress >= warningProgress.value && !breakingBlockList[it.breakerID]!!.third.first
                     && ((obsidianOnly.value && mc.world.getBlockState(it.position).block == Blocks.OBSIDIAN) || !obsidianOnly.value)) {
                     if (soundWarn.value) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                     warningText = "${breaker.name} is breaking near you!"
                     if (chatWarn.value) sendChatMessage(warningText)
                     delay = 0
                     warn = true
-                    breakingBlockList[it.breakId] = Triple(it.position, it.progress, Pair(true, render))
+                    breakingBlockList[it.breakerID] = Triple(it.position, it.progress, Pair(true, render))
                 }
             } else {
-                breakingBlockList.remove(it.breakId)
+                breakingBlockList.remove(it.breakerID)
             }
         }
 

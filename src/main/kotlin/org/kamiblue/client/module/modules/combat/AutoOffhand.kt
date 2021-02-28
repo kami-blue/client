@@ -17,9 +17,9 @@ import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
-import org.kamiblue.client.util.combat.CombatUtils
 import org.kamiblue.client.util.combat.CombatUtils.calcDamageFromMob
 import org.kamiblue.client.util.combat.CombatUtils.calcDamageFromPlayer
+import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
@@ -137,8 +137,8 @@ internal object AutoOffhand : Module(
         else -> null
     }
 
-    private fun SafeClientEvent.checkTotem() = CombatUtils.getHealthSmart(player) < hpThreshold
-        || (checkDamage && CombatUtils.getHealthSmart(player) - maxDamage < hpThreshold)
+    private fun SafeClientEvent.checkTotem() = player.scaledHealth < hpThreshold
+        || (checkDamage && player.scaledHealth - maxDamage < hpThreshold)
 
     private fun SafeClientEvent.checkGapple() = offhandGapple
         && (checkAuraG && CombatManager.isActiveAndTopPriority(KillAura)

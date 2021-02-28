@@ -15,11 +15,13 @@ class HudButton(val hudElement: AbstractHudElement) : BooleanSlider(hudElement.n
         value = if (hudElement.visible) 1.0 else 0.0
     }
 
+    override fun onClick(mousePos: Vec2f, buttonId: Int) {
+        super.onClick(mousePos, buttonId)
+        if (buttonId == 0) hudElement.visible = !hudElement.visible
+    }
+
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
-        if (prevState != MouseState.DRAG) {
-            if (buttonId == 0) hudElement.visible = !hudElement.visible
-            else if (buttonId == 1) KamiHudGui.displaySettingWindow(hudElement)
-        }
+        if (buttonId == 1) KamiHudGui.displaySettingWindow(hudElement)
     }
 }

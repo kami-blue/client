@@ -1,6 +1,7 @@
 package org.kamiblue.client.mixin.extension
 
 import net.minecraft.network.play.client.CPacketChatMessage
+import net.minecraft.network.play.client.CPacketCloseWindow
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraft.network.play.server.SPacketChat
@@ -15,6 +16,10 @@ var CPacketChatMessage.packetMessage: String
     set(value) {
         (this as AccessorCPacketChatMessage).setMessage(value)
     }
+
+val CPacketCloseWindow.windowID: Int
+    get() = (this as AccessorCPacketCloseWindow).kbGetWindowID()
+
 
 var CPacketPlayer.x: Double
     get() = this.getX(0.0)

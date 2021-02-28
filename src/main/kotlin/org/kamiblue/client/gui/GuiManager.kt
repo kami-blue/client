@@ -7,14 +7,21 @@ import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.gui.clickgui.KamiClickGui
 import org.kamiblue.client.gui.hudgui.AbstractHudElement
 import org.kamiblue.client.gui.hudgui.KamiHudGui
+import org.kamiblue.client.util.AsyncCachedValue
 import org.kamiblue.client.util.StopTimer
+import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.commons.collections.AliasSet
 import org.kamiblue.commons.utils.ClassUtils
 import org.kamiblue.commons.utils.ClassUtils.instance
-import org.lwjgl.input.Keyboard
 import java.lang.reflect.Modifier
 
 internal object GuiManager : AsyncLoader<List<Class<out AbstractHudElement>>> {
     override var deferred: Deferred<List<Class<out AbstractHudElement>>>? = null
+    private val hudElementSet = AliasSet<AbstractHudElement>()
+
+    val hudElements by AsyncCachedValue(5L, TimeUnit.SECONDS) {
+        hudElementSet.distinct().sortedBy { it.name }
+    }
 
     override fun preLoad0(): List<Class<out AbstractHudElement>> {
         val stopTimer = StopTimer()
@@ -33,7 +40,7 @@ internal object GuiManager : AsyncLoader<List<Class<out AbstractHudElement>>> {
         val stopTimer = StopTimer()
 
         for (clazz in input) {
-            KamiHudGui.register(clazz.instance)
+            register(clazz.instance)
         }
 
         val time = stopTimer.stop()
@@ -45,4 +52,16 @@ internal object GuiManager : AsyncLoader<List<Class<out AbstractHudElement>>> {
         KamiEventBus.subscribe(KamiClickGui)
         KamiEventBus.subscribe(KamiHudGui)
     }
+
+    internal fun register(hudElement: AbstractHudElement) {
+        hudElementSet.add(hudElement)
+        KamiHudGui.register(hudElement)
+    }
+
+    internal fun unregister(hudElement: AbstractHudElement) {
+        hudElementSet.remove(hudElement)
+        KamiHudGui.unregister(hudElement)
+    }
+
+    fun getHudElementOrNull(name: String?) = name?.let { hudElementSet[it] }
 }

@@ -12,6 +12,10 @@ open class Timer {
 }
 
 class TickTimer(val timeUnit: TimeUnit = TimeUnit.MILLISECONDS) : Timer() {
+    fun tick(delay: Int, resetIfTick: Boolean = true): Boolean {
+        return tick(delay.toLong(), resetIfTick)
+    }
+
     fun tick(delay: Long, resetIfTick: Boolean = true): Boolean {
         return if (currentTime - time > delay * timeUnit.multiplier) {
             if (resetIfTick) time = currentTime

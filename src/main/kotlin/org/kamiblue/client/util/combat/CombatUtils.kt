@@ -84,10 +84,10 @@ object CombatUtils {
         return 1.0f - modifier / 25.0f
     }
 
-    fun SafeClientEvent.equipBestWeapon(preferWeapon: PreferWeapon = PreferWeapon.NONE) {
+    fun SafeClientEvent.equipBestWeapon(preferWeapon: PreferWeapon = PreferWeapon.NONE, allowTool: Boolean = false) {
         player.hotbarSlots.filterByStack {
             val item = it.item
-            item is ItemSword || item is ItemTool
+            item is ItemSword || item is ItemAxe || allowTool && item is ItemTool
         }.maxByOrNull {
             val itemStack = it.stack
             val item = itemStack.item
@@ -103,7 +103,8 @@ object CombatUtils {
         }
     }
 
-    fun getHealthSmart(entity: EntityLivingBase) = entity.health + entity.absorptionAmount * (entity.health / entity.maxHealth)
+    val EntityLivingBase.scaledHealth: Float
+        get() = this.health + this.absorptionAmount * (this.health / this.maxHealth)
 
     init {
         safeListener<TickEvent.ClientTickEvent> {

@@ -3,6 +3,7 @@ package org.kamiblue.client.plugin.api
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.event.KamiEventBus
+import org.kamiblue.client.gui.GuiManager
 import org.kamiblue.client.gui.hudgui.KamiHudGui
 import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.module.ModuleManager
@@ -90,7 +91,7 @@ open class Plugin : Nameable {
         managers.forEach(KamiEventBus::subscribe)
         commands.forEach(CommandManager::register)
         modules.forEach(ModuleManager::register)
-        hudElements.forEach(KamiHudGui::register)
+        hudElements.forEach(GuiManager::register)
         bgJobs.forEach(BackgroundScope::launchLooping)
 
         ConfigManager.load(config)
@@ -117,7 +118,7 @@ open class Plugin : Nameable {
             ListenerManager.unregister(it)
         }
         hudElements.forEach {
-            KamiHudGui.unregister(it)
+            GuiManager.unregister(it)
             ListenerManager.unregister(it)
         }
         bgJobs.forEach(BackgroundScope::cancel)

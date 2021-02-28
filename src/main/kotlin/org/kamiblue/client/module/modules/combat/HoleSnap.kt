@@ -5,6 +5,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
+import org.kamiblue.client.event.events.PlayerMoveEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -34,7 +35,7 @@ internal object HoleSnap : Module(
             if (it.packet is SPacketPlayerPosLook) disable()
         }
 
-        safeAsyncListener<PlayerTravelEvent> {
+        safeAsyncListener<PlayerMoveEvent> {
             if (checkHole(player) != SurroundUtils.HoleType.NONE) {
                 disable()
                 return@safeAsyncListener
@@ -48,7 +49,7 @@ internal object HoleSnap : Module(
 
                     val yawRad = RotationUtils.getRotationTo(playerPos, targetPos).x.toRadian()
                     val dist = playerPos.distanceTo(targetPos)
-                    val speed = min(0.26, dist / 2.0)
+                    val speed = min(0.2805, dist / 2.0)
 
                     player.motionX = -sin(yawRad) * speed
                     player.motionZ = cos(yawRad) * speed
