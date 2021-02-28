@@ -16,7 +16,7 @@ import org.kamiblue.client.util.threads.safeListener
 internal object Anchor : Module(
     name = "Anchor",
     description = "Automatically stops when you are above hole",
-    category = Category.COMBAT,
+    category = Category.MOVEMENT,
     modulePriority = 10
 ) {
     private val vRange by setting("vRange", 5, 1..10, 1)
