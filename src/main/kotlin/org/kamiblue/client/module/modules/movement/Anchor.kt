@@ -1,4 +1,4 @@
-package org.kamiblue.client.module.modules.combat
+package org.kamiblue.client.module.modules.movement
 
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
