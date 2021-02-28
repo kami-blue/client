@@ -33,7 +33,8 @@ internal object AutoMend : Module(
     private val autoThrow by setting("Auto Throw", true)
     private val throwDelay = setting("Throw Delay", 2, 0..5, 1, description = "Number of ticks between throws to allow absorption")
     private val autoSwitch by setting("Auto Switch", true)
-    private val autoDisable by setting("Auto Disable", false, { autoSwitch })
+    private val autoDisableExp by setting("Disable on no Exp Bottle", false, { autoSwitch })
+    private val autoDisableComplete by setting("Disable on Complete", false)
     private val cancelNearby by setting("Cancel Nearby", NearbyMode.OFF, description = "Don't mend when an enemy is nearby")
     private val pauseNearbyRadius by setting("Nearby Radius", 8, 1..8, 1, { cancelNearby != NearbyMode.OFF })
     private val threshold by setting("Repair At", 75, 1..100, 1, description = "Percentage to start repairing any armor piece")
@@ -86,15 +87,18 @@ internal object AutoMend : Module(
                 return@safeListener
             }
             paused = false
+            if(!shouldMend() && autoDisableComplete) {
+                MessageSendHelper.sendChatMessage("$chatName Mending completed! disabling")
+                disable()
+            }
 
             if ((autoSwitch || autoThrow) // avoid checking if no actions are going to be done
-                && hasBlockUnder()
-                && (shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3))) {
+                && hasBlockUnder() && shouldMend()) {
                 if (autoSwitch && player.heldItemMainhand.item !== Items.EXPERIENCE_BOTTLE) {
                     val xpSlot = findXpPots()
 
                     if (xpSlot == -1) {
-                        if (autoDisable) {
+                        if (autoDisableExp) {
                             MessageSendHelper.sendWarningMessage("$chatName No XP in hotbar, disabling")
                             disable()
                         }
@@ -128,6 +132,10 @@ internal object AutoMend : Module(
         val stack = player.inventory.armorInventory[i]
         val hasMending = EnchantmentHelper.getEnchantmentLevel(Enchantments.MENDING, stack) > 0
         return hasMending && stack.isItemDamaged && 100 * stack.itemDamage / stack.maxDamage > reverseNumber(threshold, 1, 100)
+    }
+
+    private fun SafeClientEvent.shouldMend(): Boolean {
+        return shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3)
     }
 
     private fun switchback() {
