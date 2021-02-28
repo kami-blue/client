@@ -31,7 +31,6 @@ internal object Anchor : Module(
         BOTH, BEDROCK
     }
 
-
     /**
      * Checks whether the specified block position is a hole or not
      */
@@ -41,10 +40,10 @@ internal object Anchor : Module(
             (mode == AnchorMode.BEDROCK && type == SurroundUtils.HoleType.BEDROCK))
     }
 
-    private fun isReachable(holePos: BlockPos): Boolean{
+    private fun isReachable(holePos: BlockPos): Boolean {
         for (y in holePos.y..mc.player.positionVector.y.toInt()) {
             val checkPos = BlockPos(holePos.x, y, holePos.z)
-            if(!mc.world.isAirBlock(checkPos))
+            if (!mc.world.isAirBlock(checkPos))
                 return false
         }
         return true
@@ -77,18 +76,16 @@ internal object Anchor : Module(
                     disable()
                 return@safeListener
             }
-            for (dy in -vRange..0) {
-                if (!shouldStop()) {
-                    prevInHole = false
-                    return@safeListener
-                }
-                if (prevInHole) return@safeListener
+            if (!shouldStop()) {
+                prevInHole = false
+                return@safeListener
+            }
+            if (prevInHole) return@safeListener
 
-                SurroundUtils.centerPlayer(!strict)
-                if (!strict) {
-                    player.motionX = 0.0
-                    player.motionZ = 0.0
-                }
+            SurroundUtils.centerPlayer(!strict)
+            if (!strict) {
+                player.motionX = 0.0
+                player.motionZ = 0.0
             }
         }
     }
