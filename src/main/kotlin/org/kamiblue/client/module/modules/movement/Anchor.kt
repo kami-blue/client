@@ -26,7 +26,6 @@ internal object Anchor : Module(
     private val pitch by setting("Pitch", 80, -90..90, 1, { pitchTrigger })
     private val strict by setting("Strict", true)
     private var prevInHole = false
-    private var disableInput = false
 
     private enum class AnchorMode {
         BOTH, BEDROCK
@@ -74,7 +73,6 @@ internal object Anchor : Module(
             if (isHole(this, player.positionVector.toBlockPos()) &&
                 !world.isAirBlock(player.positionVector.add(0.0, -0.1, 0.0).toBlockPos())) {
                 prevInHole = true
-                disableInput = false
                 if (turnOffAfter)
                     disable()
                 return@safeListener
@@ -82,11 +80,9 @@ internal object Anchor : Module(
             for (dy in -vRange..0) {
                 if (!shouldStop(this)) {
                     prevInHole = false
-                    disableInput = false
                     return@safeListener
                 }
                 if (prevInHole) return@safeListener
-                disableInput = true
 
                 SurroundUtils.centerPlayer(!strict)
                 if (!strict) {
