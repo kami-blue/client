@@ -57,7 +57,7 @@ internal object Anchor : Module(
         if (pitchTrigger && mc.player.rotationPitch < MathHelper.wrapDegrees(pitch)) return false
         for (dy in 1..vRange) {
             val pos = mc.player.positionVector.toBlockPos().add(0.0, -dy.toDouble(), 0.0)
-            if (isHole(pos)) {
+            if (isHole(pos) && isReachable(pos)) {
                 return true
             }
         }
