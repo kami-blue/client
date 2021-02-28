@@ -28,13 +28,13 @@ open class Component(
     protected val dockingHSetting = setting("Docking H", HAlign.LEFT)
     protected val dockingVSetting = setting("Docking V", VAlign.TOP)
 
-    var width by setting("Width", widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minWidth, max(scaledWidth, minWidth)) })
-    var height by setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minHeight, max(scaledHeight, minHeight)) })
+    var width by setting("Width", widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minWidth, max(scaledDisplayWidth, minWidth)) })
+    var height by setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minHeight, max(scaledDisplayHeight, minHeight)) })
 
     protected var relativePosX by setting("Pos X", posXIn, -69420.911f..69420.911f, 0.1f, { false },
-        { _, it -> if (this is WindowComponent && KamiMod.ready) absToRelativeX(relativeToAbsX(it).coerceIn(2.0f, max(scaledWidth - width - 2.0f, 2.0f))) else it })
+        { _, it -> if (this is WindowComponent && KamiMod.ready) absToRelativeX(relativeToAbsX(it).coerceIn(1.0f, max(scaledDisplayWidth - width - 1.0f, 1.0f))) else it })
     protected var relativePosY by setting("Pos Y", posYIn, -69420.911f..69420.911f, 0.1f, { false },
-        { _, it -> if (this is WindowComponent && KamiMod.ready) absToRelativeY(relativeToAbsY(it).coerceIn(2.0f, max(scaledHeight - height - 2.0f, 2.0f))) else it })
+        { _, it -> if (this is WindowComponent && KamiMod.ready) absToRelativeY(relativeToAbsY(it).coerceIn(1.0f, max(scaledDisplayHeight - height - 1.0f, 1.0f))) else it })
 
     var dockingH by dockingHSetting
     var dockingV by dockingVSetting
@@ -81,13 +81,13 @@ open class Component(
     val renderWidth get() = prevWidth + (width - prevWidth) * mc.renderPartialTicks
     open val renderHeight get() = prevHeight + (height - prevHeight) * mc.renderPartialTicks
 
-    private fun relativeToAbsX(xIn: Float) = xIn + scaledWidth * dockingH.multiplier - dockWidth
-    private fun relativeToAbsY(yIn: Float) = yIn + scaledHeight * dockingV.multiplier - dockHeight
-    private fun absToRelativeX(xIn: Float) = xIn - scaledWidth * dockingH.multiplier + dockWidth
-    private fun absToRelativeY(yIn: Float) = yIn - scaledHeight * dockingV.multiplier + dockHeight
+    private fun relativeToAbsX(xIn: Float) = xIn + scaledDisplayWidth * dockingH.multiplier - dockWidth
+    private fun relativeToAbsY(yIn: Float) = yIn + scaledDisplayHeight * dockingV.multiplier - dockHeight
+    private fun absToRelativeX(xIn: Float) = xIn - scaledDisplayWidth * dockingH.multiplier + dockWidth
+    private fun absToRelativeY(yIn: Float) = yIn - scaledDisplayHeight * dockingV.multiplier + dockHeight
 
-    private val scaledWidth get() = mc.displayWidth / ClickGUI.getScaleFactorFloat()
-    private val scaledHeight get() = mc.displayHeight / ClickGUI.getScaleFactorFloat()
+    protected val scaledDisplayWidth get() = mc.displayWidth / ClickGUI.getScaleFactorFloat()
+    protected val scaledDisplayHeight get() = mc.displayHeight / ClickGUI.getScaleFactorFloat()
     private val dockWidth get() = width * dockingH.multiplier
     private val dockHeight get() = height * dockingV.multiplier
     private val prevDockWidth get() = prevWidth * dockingH.multiplier

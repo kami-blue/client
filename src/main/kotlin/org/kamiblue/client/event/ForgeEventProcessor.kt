@@ -148,4 +148,9 @@ object ForgeEventProcessor {
     fun onClientConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
         KamiEventBus.post(ConnectionEvent.Connect())
     }
+
+    @SubscribeEvent
+    fun onClientConnect(event: EntityViewRenderEvent.FogColors) {
+        KamiEventBus.post(event)
+    }
 }

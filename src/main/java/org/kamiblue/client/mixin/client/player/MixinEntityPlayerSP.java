@@ -92,7 +92,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
             double prevX = this.posX;
             double prevZ = this.posZ;
 
-            super.move(type, player.motionX, player.motionY, player.motionZ);
+            super.move(type, event.getX(), event.getY(), event.getZ());
             this.updateAutoJump((float) (this.posX - prevX), (float) (this.posZ - prevZ));
 
             ci.cancel();

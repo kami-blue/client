@@ -15,17 +15,18 @@ import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.commons.interfaces.Alias
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.lwjgl.opengl.GL11.glScalef
 
 open class HudElement(
     name: String,
-    val alias: Array<String> = emptyArray(),
+    override val alias: Array<String> = emptyArray(),
     val category: Category,
     val description: String,
     val alwaysListening: Boolean = false,
     enabledByDefault: Boolean = false
-) : BasicWindow(name, 20.0f, 20.0f, 100.0f, 50.0f, SettingGroup.HUD_GUI) {
+) : BasicWindow(name, 20.0f, 20.0f, 100.0f, 50.0f, SettingGroup.HUD_GUI), Alias {
 
     val bind by setting("Bind", Bind())
     val scale by setting("Scale", 1.0f, 0.1f..4.0f, 0.05f)
