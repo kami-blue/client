@@ -34,7 +34,7 @@ internal object AutoMend : Module(
     private val autoThrow by setting("Auto Throw", true)
     private val throwDelay = setting("Throw Delay", 2, 0..5, 1, description = "Number of ticks between throws to allow absorption")
     private val autoSwitch by setting("Auto Switch", true)
-    private val autoDisableExp by setting("Disable on no Exp Bottle", false, { autoSwitch })
+    private val autoDisableExp by setting("Disable on No Exp Bottle", false, { autoSwitch })
     private val autoDisableComplete by setting("Disable on Complete", false)
     private val takeOff by setting("Take Off", true)
     private val pauseAutoArmor by setting("Pause AutoArmor", true, { takeOff })
@@ -106,7 +106,7 @@ internal object AutoMend : Module(
             }
 
             if (takeOff) {
-                var minSlot = 0
+                var minSlot = 9
                 for (i in 0..3) {
                     if (shouldMend(i) || !hasMending(i)) continue
                     val emptySlot = findEmptySlot(minSlot)
@@ -143,7 +143,7 @@ internal object AutoMend : Module(
     }
 
     private fun SafeClientEvent.findEmptySlot(min: Int): Int {
-        for(i in min.coerceAtMost(9)..44) {
+        for(i in min..36) {
             if(player.inventory.getStackInSlot(i).isEmpty)
                 return i
         }
