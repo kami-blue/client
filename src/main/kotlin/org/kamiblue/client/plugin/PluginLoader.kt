@@ -2,10 +2,9 @@ package org.kamiblue.client.plugin
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.kamiblue.client.plugin.api.Plugin
 import org.kamiblue.client.KamiMod
+import org.kamiblue.client.plugin.api.Plugin
 import org.kamiblue.commons.interfaces.Nameable
-import org.kamiblue.commons.utils.ClassUtils
 import org.kamiblue.commons.utils.ClassUtils.instance
 import java.io.File
 import java.io.FileNotFoundException

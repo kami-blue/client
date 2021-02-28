@@ -37,7 +37,7 @@ internal class KamiGuiPluginError(
                     duplicate.add(pair.first.toString())
                 }
                 PluginError.UNSUPPORTED -> {
-                    unsupported.add("${pair.first} (${pair.first.info.kamiVersion})")
+                    unsupported.add("${pair.first} (${pair.first.info.minApiVersion})")
                 }
                 PluginError.REQUIRED_PLUGIN -> {
                     missing.addAll(pair.first.info.requiredPlugins.filter { !PluginManager.loadedPlugins.containsName(it) })

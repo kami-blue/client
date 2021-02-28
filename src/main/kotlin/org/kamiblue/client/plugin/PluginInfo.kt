@@ -12,7 +12,7 @@ class PluginInfo private constructor(
     @SerializedName("authors") private val authors0: Array<String>?,
     @SerializedName("description") private val description0: String?,
     @SerializedName("url") private val url0: String?,
-    @SerializedName("kami_version") private val kamiVersion0: String?,
+    @SerializedName("min_api_version") private val minApiVersion0: String?,
     @SerializedName("required_plugins") private val requiredPlugins0: Array<String>?,
     @SerializedName("main_class") private val mainClass0: String?,
     @SerializedName("hot_reload") private val hotReload0: Boolean?
@@ -34,7 +34,7 @@ class PluginInfo private constructor(
     val url get() = url0 ?: urlNull
 
     /** The minimum version of KAMI Blue required for the plugin to run. */
-    val kamiVersion: String get() = kamiVersion0.nonBlank("kami_version")
+    val minApiVersion: String get() = minApiVersion0.nonBlank("min_api_version")
 
     /** Other plugins that must be loaded in order for this plugin to work correctly.*/
     val requiredPlugins: Array<String> get() = requiredPlugins0 ?: requiredPluginsNull
@@ -63,7 +63,7 @@ class PluginInfo private constructor(
         "Version: ${version}\n" +
         "Authors: ${authors.joinToString(",")}\n" +
         "Description: ${description}\n" +
-        "KAMI Blue Version: ${kamiVersion}\n" +
+        "Min API Version: ${minApiVersion}\n" +
         "Required Plugins: ${requiredPlugins.joinToString(",")}"
 
     companion object {

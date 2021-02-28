@@ -71,7 +71,7 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
             }
 
             // Unsupported check
-            if (DefaultArtifactVersion(loader.info.kamiVersion) > kamiVersion) {
+            if (DefaultArtifactVersion(loader.info.minApiVersion) > kamiVersion) {
                 PluginError.UNSUPPORTED.handleError(loader)
                 invalids.add(loader)
             }
@@ -108,7 +108,7 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
         synchronized(this) {
             val hotReload = KamiMod.ready && !loader.info.hotReload
             val duplicate = loadedPlugins.containsName(loader.name)
-            val unsupported = DefaultArtifactVersion(loader.info.kamiVersion) > kamiVersion
+            val unsupported = DefaultArtifactVersion(loader.info.minApiVersion) > kamiVersion
             val missing = !loadedPlugins.containsNames(loader.info.requiredPlugins)
 
             if (hotReload) PluginError.HOT_RELOAD.handleError(loader)

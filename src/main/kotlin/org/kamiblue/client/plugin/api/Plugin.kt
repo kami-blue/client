@@ -27,7 +27,7 @@ open class Plugin : Nameable {
     private lateinit var info: PluginInfo
     override val name: String get() = info.name
     val version: String get() = info.version
-    val kamiVersion: String get() = info.kamiVersion
+    val kamiVersion: String get() = info.minApiVersion
     val description: String get() = info.description
     val authors: Array<String> get() = info.authors
     val requiredPlugins: Array<String> get() = info.requiredPlugins

@@ -21,7 +21,7 @@ internal enum class PluginError {
                 KamiMod.LOG.error("Duplicate plugin ${loader}.")
             }
             UNSUPPORTED -> {
-                KamiMod.LOG.error("Unsupported plugin ${loader}. Required version: ${loader.info.kamiVersion}")
+                KamiMod.LOG.error("Unsupported plugin ${loader}. Required version: ${loader.info.minApiVersion}")
             }
             REQUIRED_PLUGIN -> {
                 KamiMod.LOG.error("Missing required plugin for ${loader}. Required plugins: ${loader.info.requiredPlugins.joinToString()}")
