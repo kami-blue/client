@@ -78,7 +78,7 @@ internal object ESP : Module(
     private val frameBuffer = shaderHelper.getFrameBuffer("final")
 
     init {
-        listener<RenderEntityEvent> {
+        listener<RenderEntityEvent.All> {
             if (it.phase == Phase.PRE
                 && mode.value == ESPMode.SHADER
                 && !mc.renderManager.renderOutlines

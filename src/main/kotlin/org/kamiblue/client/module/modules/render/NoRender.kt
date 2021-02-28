@@ -133,7 +133,7 @@ internal object NoRender : Module(
             }
         }
 
-        listener<RenderEntityEvent> {
+        listener<RenderEntityEvent.All> {
             if (it.phase != Phase.PRE) return@listener
 
             if (entityList.contains(it.entity.javaClass)
