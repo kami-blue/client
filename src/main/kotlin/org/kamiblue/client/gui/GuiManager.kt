@@ -7,9 +7,9 @@ import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.gui.clickgui.KamiClickGui
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.gui.hudgui.KamiHudGui
-import org.kamiblue.client.util.AsyncCachedValue
 import org.kamiblue.client.util.StopTimer
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.delegate.AsyncCachedValue
 import org.kamiblue.commons.collections.AliasSet
 import org.kamiblue.commons.utils.ClassUtils
 import org.kamiblue.commons.utils.ClassUtils.instance

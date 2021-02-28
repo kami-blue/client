@@ -10,8 +10,8 @@ import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.setting.settings.AbstractSetting
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
-import org.kamiblue.client.util.delegate.AsyncCachedValue
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.delegate.AsyncCachedValue
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.format
 import org.kamiblue.client.util.text.formatValue
