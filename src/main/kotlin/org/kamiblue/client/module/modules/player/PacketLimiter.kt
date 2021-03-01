@@ -8,8 +8,8 @@ import org.kamiblue.client.manager.managers.TimerManager.modifyTimer
 import org.kamiblue.client.manager.managers.TimerManager.resetTimer
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.CircularArray
 import org.kamiblue.event.listener.listener
+import kotlin.math.min
 
 internal object PacketLimiter : Module(
     name = "PacketLimiter",
@@ -23,15 +23,16 @@ internal object PacketLimiter : Module(
     private val maxPacketsShort by setting("Max Packets Short", 25.0f, 10.0f..40.0f, 0.25f,
         description = "Maximum packets per second in short term")
     private val shortTermTicks by setting("Short Term Ticks", 20, 5..50, 1)
-    private val minTimer by setting("Min Timer", 0.8f, 0.1f..1.0f, 0.01f)
+    private val minTimer by setting("Min Timer", 0.6f, 0.1f..1.0f, 0.01f)
 
     private var lastPacketTime = -1L
 
     private val longPacketTime = ArrayDeque<Short>( 100)
-    private var longPacketSpeed = 20.0f
-
     private val shortPacketTime = ArrayDeque<Short>(20)
+
+    private var longPacketSpeed = 20.0f
     private var shortPacketSpeed = 20.0f
+    private var prevTimerSpeed = 1.0f
 
     init {
         onDisable {
@@ -83,7 +84,10 @@ internal object PacketLimiter : Module(
             } else {
                 limit(longPacketSpeed, maxPacketsLong) ?: limit(shortPacketSpeed, maxPacketsShort)
             }?.let {
-                modifyTimer(50.0f / it.coerceAtLeast(minTimer))
+                prevTimerSpeed = min(it, prevTimerSpeed).coerceAtLeast(minTimer)
+                modifyTimer(50.0f / prevTimerSpeed)
+            } ?: run {
+                prevTimerSpeed = 1.0f
             }
         }
     }
