@@ -32,7 +32,7 @@ internal object AutoArmor : Module(
             isPaused = false
         }
         safeListener<TickEvent.ClientTickEvent> {
-            if(isPaused) return@safeListener
+            if (isPaused) return@safeListener
             if (!timer.tick(delay.value.toLong()) || !lastTask.done) return@safeListener
 
             if (!player.inventory.itemStack.isEmpty) {

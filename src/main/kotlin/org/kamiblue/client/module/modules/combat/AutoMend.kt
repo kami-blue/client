@@ -111,7 +111,7 @@ internal object AutoMend : Module(
                     minSlot = emptySlot + 1
                     if (emptySlot == -1) break
                     clickSlot(player.inventoryContainer.windowId, 8 - i, 0, ClickType.PICKUP)
-                    clickSlot(player.inventoryContainer.windowId, emptySlot + 9, 0, ClickType.PICKUP)
+                    clickSlot(player.inventoryContainer.windowId, emptySlot, 0, ClickType.PICKUP)
                 }
             }
 
@@ -141,8 +141,8 @@ internal object AutoMend : Module(
     }
 
     private fun SafeClientEvent.findEmptySlot(min: Int): Int {
-        for(i in min..36) {
-            if(player.inventory.getStackInSlot(i).isEmpty)
+        for (i in min..36) {
+            if (player.inventory.getStackInSlot(i).isEmpty)
                 return i
         }
         return -1
