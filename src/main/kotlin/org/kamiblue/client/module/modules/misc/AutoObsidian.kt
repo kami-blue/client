@@ -154,7 +154,7 @@ internal object AutoObsidian : Module(
         }
 
         safeAsyncListener<PacketEvent.Receive> {
-            if (it.packet !is SPacketBlockChange) return@safeAsyncListener
+            if (!instantMining || it.packet !is SPacketBlockChange) return@safeAsyncListener
             if (it.packet.blockPosition != placingPos) return@safeAsyncListener
 
             val prevBlock = world.getBlockState(it.packet.blockPosition).block
@@ -578,7 +578,7 @@ internal object AutoObsidian : Module(
     }
 
     private fun SafeClientEvent.mineBlock(pos: BlockPos, pre: Boolean) {
-        if (pre && !swapToValidPickaxe()) return
+        if (!swapToValidPickaxe()) return
 
         val center = pos.toVec3dCenter()
         val diff = player.getPositionEyes(1.0f).subtract(center)
@@ -601,7 +601,7 @@ internal object AutoObsidian : Module(
         defaultScope.launch {
             delay(20L)
             onMainThreadSafe {
-                if (pre) {
+                if (pre || miningTimeoutTimer.tick(8L)) {
                     connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, side))
                     if (state != State.SEARCHING) state = State.MINING else searchingState = SearchingState.MINING
                 } else {
