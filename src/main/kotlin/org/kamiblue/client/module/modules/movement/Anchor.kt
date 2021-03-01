@@ -36,8 +36,8 @@ internal object Anchor : Module(
      */
     private fun SafeClientEvent.isHole(pos: BlockPos): Boolean {
         val type = checkHole(pos)
-        return (mode == AnchorMode.BOTH && type != SurroundUtils.HoleType.NONE) ||
-            (mode == AnchorMode.BEDROCK && type == SurroundUtils.HoleType.BEDROCK)
+        return mode == AnchorMode.BOTH && type != SurroundUtils.HoleType.NONE ||
+            mode == AnchorMode.BEDROCK && type == SurroundUtils.HoleType.BEDROCK
     }
 
     /**
