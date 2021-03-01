@@ -26,6 +26,7 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.EnumDifficulty
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.BlockBreakEvent
@@ -51,7 +52,6 @@ import org.kamiblue.client.util.math.VectorUtils.toVec3dCenter
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.*
 import org.kamiblue.commons.interfaces.DisplayEnum
-import org.kamiblue.event.listener.asyncListener
 import org.kamiblue.event.listener.listener
 import kotlin.math.ceil
 
@@ -65,13 +65,11 @@ internal object AutoObsidian : Module(
     private val searchShulker by setting("Search Shulker", false)
     private val leaveEmptyShulkers by setting("Leave Empty Shulkers", true, { searchShulker })
     private val autoRefill by setting("Auto Refill", false, { fillMode != FillMode.INFINITE })
-    private val instantMining by setting("Instant Mining", true)
-    private val instantMiningDelay by setting("Instant Mining Delay", 10, 1..20, 1, { instantMining })
     private val threshold by setting("Refill Threshold", 32, 1..64, 1, { autoRefill && fillMode != FillMode.INFINITE })
     private val targetStacks by setting("Target Stacks", 1, 1..20, 1, { fillMode == FillMode.TARGET_STACKS })
-    private val delayTicks by setting("Delay Ticks", 5, 1..10, 1)
+    private val delayTicks by setting("Delay Ticks", 4, 1..10, 1)
     private val rotationMode by setting("Rotation Mode", RotationMode.SPOOF)
-    private val maxReach by setting("Max Reach", 4.5f, 2.0f..6.0f, 0.1f)
+    private val maxReach by setting("Max Reach", 4.9f, 2.0f..6.0f, 0.1f)
 
     private enum class FillMode(override val displayName: String, val message: String) : DisplayEnum {
         TARGET_STACKS("Target Stacks", "Target stacks reached"),
@@ -82,6 +80,7 @@ internal object AutoObsidian : Module(
     enum class State(override val displayName: String) : DisplayEnum {
         SEARCHING("Searching"),
         PLACING("Placing"),
+        PRE_MINING("Pre Mining"),
         MINING("Mining"),
         COLLECTING("Collecting"),
         DONE("Done")
@@ -90,6 +89,7 @@ internal object AutoObsidian : Module(
     enum class SearchingState(override val displayName: String) : DisplayEnum {
         PLACING("Placing"),
         OPENING("Opening"),
+        PRE_MINING("Pre Mining"),
         MINING("Mining"),
         COLLECTING("Collecting"),
         DONE("Done")
@@ -142,16 +142,8 @@ internal object AutoObsidian : Module(
             }
         }
 
-        asyncListener<PacketEvent.PostSend> {
-            if (!instantMining || it.packet !is CPacketPlayerDigging) return@asyncListener
-
-            if (it.packet.position != placingPos || it.packet.facing != lastMiningSide) {
-                canInstantMine = false
-            }
-        }
-
         safeAsyncListener<PacketEvent.Receive> {
-            if (!instantMining || it.packet !is SPacketBlockChange) return@safeAsyncListener
+            if (it.packet !is SPacketBlockChange) return@safeAsyncListener
             if (it.packet.blockPosition != placingPos) return@safeAsyncListener
 
             val prevBlock = world.getBlockState(it.packet.blockPosition).block
@@ -171,7 +163,10 @@ internal object AutoObsidian : Module(
         }
 
         safeListener<TickEvent.ClientTickEvent>(69) {
-            if (it.phase != TickEvent.Phase.START || PauseProcess.isActive) return@safeListener
+            if (it.phase != TickEvent.Phase.START || PauseProcess.isActive ||
+                (world.difficulty == EnumDifficulty.PEACEFUL &&
+                    player.dimension == 1 &&
+                    player.serverBrand.contains("2b2t"))) return@safeListener
 
             updateMiningMap()
             runAutoObby()
@@ -215,8 +210,11 @@ internal object AutoObsidian : Module(
             State.PLACING -> {
                 placeEnderChest(placingPos)
             }
+            State.PRE_MINING -> {
+                mineBlock(placingPos, true)
+            }
             State.MINING -> {
-                mineBlock(placingPos)
+                mineBlock(placingPos, false)
             }
             State.COLLECTING -> {
                 collectDroppedItem(Blocks.OBSIDIAN.id)
@@ -307,7 +305,7 @@ internal object AutoObsidian : Module(
                 startPlacing()
             }
             state == State.PLACING && !world.isAirBlock(placingPos) -> {
-                State.MINING
+                State.PRE_MINING
             }
             state == State.SEARCHING && searchingState == SearchingState.DONE && passCountCheck -> {
                 startPlacing()
@@ -396,14 +394,14 @@ internal object AutoObsidian : Module(
                     }
                     searchingState == SearchingState.OPENING
                         && (enderChestCount > 0 || player.inventorySlots.firstEmpty() == null) -> {
-                        SearchingState.MINING
+                        SearchingState.PRE_MINING
                     }
                     searchingState == SearchingState.PLACING && !world.isAirBlock(placingPos) -> {
                         if (world.getBlockState(placingPos).block is BlockShulkerBox) {
                             SearchingState.OPENING
                         } else {
                             // In case if the shulker wasn't placed due to server lag
-                            SearchingState.MINING
+                            SearchingState.PRE_MINING
                         }
                     }
                     else -> {
@@ -425,8 +423,11 @@ internal object AutoObsidian : Module(
                 SearchingState.OPENING -> {
                     openShulker(placingPos)
                 }
+                SearchingState.PRE_MINING -> {
+                    mineBlock(placingPos, true)
+                }
                 SearchingState.MINING -> {
-                    mineBlock(placingPos)
+                    mineBlock(placingPos, false)
                 }
                 SearchingState.COLLECTING -> {
                     collectDroppedItem(shulkerID)
@@ -503,7 +504,7 @@ internal object AutoObsidian : Module(
                 player.closeScreen()
             } else if (shulkerOpenTimer.tick(100, false)) { // Wait for maximum of 5 seconds
                 if (leaveEmptyShulkers && container.inventory.subList(0, 27).all { it.isEmpty }) {
-                    searchingState = SearchingState.MINING
+                    searchingState = SearchingState.PRE_MINING
                     player.closeScreen()
                 } else {
                     MessageSendHelper.sendChatMessage("$chatName No ender chest was found in shulker, disabling.")
@@ -565,32 +566,26 @@ internal object AutoObsidian : Module(
         }
     }
 
-    private fun SafeClientEvent.mineBlock(pos: BlockPos) {
-        if (!swapToValidPickaxe()) return
+    private fun SafeClientEvent.mineBlock(pos: BlockPos, pre: Boolean) {
+        if (pre && !swapToValidPickaxe()) return
 
         val center = pos.toVec3dCenter()
         val diff = player.getPositionEyes(1.0f).subtract(center)
         val normalizedVec = diff.normalize()
-        var side = EnumFacing.getFacingFromVector(normalizedVec.x.toFloat(), normalizedVec.y.toFloat(), normalizedVec.z.toFloat())
+        val side = EnumFacing.getFacingFromVector(normalizedVec.x.toFloat(), normalizedVec.y.toFloat(), normalizedVec.z.toFloat())
 
         lastHitVec = center
         rotateTimer.reset()
 
-        if (instantMining && canInstantMine) {
-            if (!miningTimer.tick(instantMiningDelay.toLong(), false)) return
-
-            if (!miningTimeoutTimer.tick(2L, false)) {
-                side = side.opposite
-            } else {
-                canInstantMine = false
-            }
-        }
-
         defaultScope.launch {
             delay(20L)
             onMainThreadSafe {
-                connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, side))
-                connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, side))
+                if (pre) {
+                    connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, side))
+                    if (state != State.SEARCHING) state = State.MINING else searchingState = SearchingState.MINING
+                } else {
+                    connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, side))
+                }
                 player.swingArm(EnumHand.MAIN_HAND)
                 lastMiningSide = side
             }
