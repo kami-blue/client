@@ -9,10 +9,7 @@ import org.kamiblue.client.event.events.RunGameLoopEvent
 import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TpsCalculator
-import org.kamiblue.client.util.inventory.ClickFuture
-import org.kamiblue.client.util.inventory.InventoryTask
-import org.kamiblue.client.util.inventory.TaskFuture
-import org.kamiblue.client.util.inventory.removeHoldingItem
+import org.kamiblue.client.util.inventory.*
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
 import java.util.*
@@ -105,9 +102,7 @@ object InventoryTaskManager : Manager {
         }
     }
 
-    private fun handleFuture(future: TaskFuture) {
-        if (future !is ClickFuture) return
-
+    private fun handleFuture(future: ClickFuture) {
         synchronized(InventoryTaskManager) {
             confirmMap[future.id] = future
         }

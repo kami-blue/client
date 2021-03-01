@@ -39,7 +39,7 @@ class InventoryTask private constructor(
     val postDelay: Long,
     val timeout: Long,
     val runInGui: Boolean,
-    private val clicks: Array<TaskStep>
+    private val clicks: Array<Click>
 ) : Comparable<InventoryTask> {
     val finished by ComputeFlag {
         cancelled || finishTime != -1L
@@ -51,12 +51,12 @@ class InventoryTask private constructor(
         cancelled || executed && futures.all { it?.timeout(timeout) ?: true }
     }
 
-    private val futures = arrayOfNulls<TaskFuture?>(clicks.size)
+    private val futures = arrayOfNulls<ClickFuture?>(clicks.size)
     private var finishTime = -1L
     private var index = 0
     private var cancelled = false
 
-    fun runTask(event: SafeClientEvent): TaskFuture? {
+    fun runTask(event: SafeClientEvent): ClickFuture? {
         if (cancelled || index >= clicks.size) {
             return null
         }
@@ -91,7 +91,7 @@ class InventoryTask private constructor(
     override fun hashCode() = id
 
     class Builder {
-        private val infos = ArrayList<TaskStep>()
+        private val clicks = ArrayList<Click>()
         private var priority = 0
         private var delay = 50L
         private var postDelay = 100L
@@ -130,12 +130,12 @@ class InventoryTask private constructor(
             runInGui = true
         }
 
-        operator fun TaskStep.unaryPlus() {
-            infos.add(this)
+        operator fun Click.unaryPlus() {
+            clicks.add(this)
         }
 
         fun build(): InventoryTask {
-            return InventoryTask(currentID++, priority, delay, postDelay, timeout, runInGui, infos.toTypedArray())
+            return InventoryTask(currentID++, priority, delay, postDelay, timeout, runInGui, clicks.toTypedArray())
         }
     }
 

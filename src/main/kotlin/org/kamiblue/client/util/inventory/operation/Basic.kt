@@ -5,17 +5,7 @@ import net.minecraft.inventory.ClickType
 import net.minecraft.inventory.Slot
 import org.kamiblue.client.util.inventory.Click
 import org.kamiblue.client.util.inventory.InventoryTask
-import org.kamiblue.client.util.inventory.SwapSlot
 import org.kamiblue.client.util.inventory.slot.HotbarSlot
-
-inline fun InventoryTask.Builder.swapSlot(slot: HotbarSlot) {
-    + SwapSlot(slot.hotbarSlot)
-}
-
-inline fun InventoryTask.Builder.swapSlot(slot: Int) {
-    if (slot !in 0..8) return
-    + SwapSlot(slot)
-}
 
 inline fun InventoryTask.Builder.pickUp(slot: Slot) {
     pickUp(0, slot)
