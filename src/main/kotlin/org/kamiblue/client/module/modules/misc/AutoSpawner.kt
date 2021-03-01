@@ -18,7 +18,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
-import org.kamiblue.client.util.items.swapToSlot
+import org.kamiblue.client.util.inventory.operation.swapToSlot
 import org.kamiblue.client.util.math.VectorUtils
 import org.kamiblue.client.util.text.MessageSendHelper.sendChatMessage
 import org.kamiblue.client.util.threads.safeListener

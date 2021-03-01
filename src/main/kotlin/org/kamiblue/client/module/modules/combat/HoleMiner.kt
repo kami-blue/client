@@ -20,7 +20,7 @@ import org.kamiblue.client.util.combat.CrystalUtils.canPlace
 import org.kamiblue.client.util.combat.CrystalUtils.canPlaceOn
 import org.kamiblue.client.util.combat.SurroundUtils
 import org.kamiblue.client.util.combat.SurroundUtils.checkHole
-import org.kamiblue.client.util.items.swapToItem
+import org.kamiblue.client.util.inventory.operation.swapToItem
 import org.kamiblue.client.util.math.RotationUtils.getRotationTo
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
 import org.kamiblue.client.util.math.VectorUtils.toBlockPos

@@ -15,7 +15,6 @@ import net.minecraft.init.Blocks
 import net.minecraft.init.Enchantments
 import net.minecraft.init.Items
 import net.minecraft.init.SoundEvents
-import net.minecraft.inventory.ClickType
 import net.minecraft.item.ItemShulkerBox
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayerDigging
@@ -45,7 +44,7 @@ import org.kamiblue.client.util.WorldUtils.placeBlock
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.ESPRenderer
 import org.kamiblue.client.util.inventory.*
-import org.kamiblue.client.util.inventory.operation.quickMove
+import org.kamiblue.client.util.inventory.operation.*
 import org.kamiblue.client.util.inventory.slot.*
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.math.RotationUtils.getRotationTo

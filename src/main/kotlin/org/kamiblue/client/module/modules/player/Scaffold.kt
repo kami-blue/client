@@ -23,10 +23,10 @@ import org.kamiblue.client.util.*
 import org.kamiblue.client.util.EntityUtils.prevPosVector
 import org.kamiblue.client.util.WorldUtils.getNeighbour
 import org.kamiblue.client.util.WorldUtils.placeBlock
+import org.kamiblue.client.util.inventory.operation.swapToSlot
 import org.kamiblue.client.util.inventory.slot.HotbarSlot
 import org.kamiblue.client.util.inventory.slot.firstItem
 import org.kamiblue.client.util.inventory.slot.hotbarSlots
-import org.kamiblue.client.util.items.swapToSlot
 import org.kamiblue.client.util.math.RotationUtils.getRotationTo
 import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.math.VectorUtils.toBlockPos

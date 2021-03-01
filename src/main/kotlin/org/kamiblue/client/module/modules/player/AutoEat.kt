@@ -16,6 +16,13 @@ import org.kamiblue.client.process.PauseProcess.pauseBaritone
 import org.kamiblue.client.process.PauseProcess.unpauseBaritone
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
+import org.kamiblue.client.util.inventory.InventoryTask
+import org.kamiblue.client.util.inventory.confirmedOrTrue
+import org.kamiblue.client.util.inventory.inventoryTask
+import org.kamiblue.client.util.inventory.operation.swapToItem
+import org.kamiblue.client.util.inventory.operation.swapToSlot
+import org.kamiblue.client.util.inventory.operation.swapWith
+import org.kamiblue.client.util.inventory.slot.findAnyHotbarSlot
 import org.kamiblue.client.util.inventory.slot.firstItem
 import org.kamiblue.client.util.inventory.slot.storageSlots
 import org.kamiblue.client.util.items.*
@@ -25,7 +32,8 @@ import org.kamiblue.client.util.threads.safeListener
 internal object AutoEat : Module(
     name = "AutoEat",
     description = "Automatically eat when hungry",
-    category = Category.PLAYER
+    category = Category.PLAYER,
+    modulePriority = 100
 ) {
     private val belowHunger by setting("Below Hunger", 15, 1..20, 1)
     private val belowHealth by setting("Below Health", 10, 1..20, 1)
@@ -34,6 +42,7 @@ internal object AutoEat : Module(
 
     private var lastSlot = -1
     private var eating = false
+    private var lastTask: InventoryTask? = null
 
     override fun isActive(): Boolean {
         return isEnabled && eating
@@ -46,7 +55,7 @@ internal object AutoEat : Module(
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase != TickEvent.Phase.START) return@safeListener
+            if (it.phase != TickEvent.Phase.START || !lastTask.confirmedOrTrue) return@safeListener
 
             if (!player.isEntityAlive) {
                 if (eating) stopEating()
@@ -149,9 +158,13 @@ internal object AutoEat : Module(
             isValid(it)
         } ?: return false
 
-        moveToHotbar(slotFrom) {
+        val slotTo = findAnyHotbarSlot {
             val item = it.item
             item !is ItemTool && item !is ItemBlock
+        }
+
+        lastTask = inventoryTask {
+            swapWith(slotFrom, slotTo)
         }
 
         return true

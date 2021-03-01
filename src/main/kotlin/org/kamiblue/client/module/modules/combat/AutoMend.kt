@@ -17,7 +17,7 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.isFakeOrSelf
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
-import org.kamiblue.client.util.items.swapToSlot
+import org.kamiblue.client.util.inventory.operation.swapToSlot
 import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.runSafe
