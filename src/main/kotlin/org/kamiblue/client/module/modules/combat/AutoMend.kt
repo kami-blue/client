@@ -18,6 +18,7 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.isFakeOrSelf
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.items.clickSlot
 import org.kamiblue.client.util.items.swapToSlot
 import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.text.MessageSendHelper
@@ -46,7 +47,6 @@ internal object AutoMend : Module(
     private var initHotbarSlot = -1
     private var isGuiOpened = false
     private var paused = false
-    private var isAutoArmorPaused = false
 
     private val throwDelayTimer = TickTimer(TimeUnit.TICKS)
 
@@ -67,9 +67,8 @@ internal object AutoMend : Module(
 
         onDisable {
             switchback()
-            if (isAutoArmorPaused)
-                AutoArmor.enable()
-            isAutoArmorPaused = false
+            if (AutoArmor.isPaused)
+                AutoArmor.isPaused = false
         }
 
         listener<GuiEvent.Displayed> {
@@ -101,8 +100,7 @@ internal object AutoMend : Module(
             }
 
             if (shouldMend() && pauseAutoArmor && AutoArmor.isEnabled) {
-                AutoArmor.disable()
-                isAutoArmorPaused = true
+                AutoArmor.isPaused = true
             }
 
             if (takeOff) {
@@ -112,8 +110,8 @@ internal object AutoMend : Module(
                     val emptySlot = findEmptySlot(minSlot)
                     minSlot = emptySlot + 1
                     if (emptySlot == -1) break
-                    playerController.windowClick(player.inventoryContainer.windowId, 8 - i, 0, ClickType.PICKUP, player)
-                    playerController.windowClick(player.inventoryContainer.windowId, emptySlot + 9, 0, ClickType.PICKUP, player)
+                    clickSlot(player.inventoryContainer.windowId, 8 - i, 0, ClickType.PICKUP)
+                    clickSlot(player.inventoryContainer.windowId, emptySlot + 9, 0, ClickType.PICKUP)
                 }
             }
 

@@ -22,12 +22,17 @@ internal object AutoArmor : Module(
     modulePriority = 500
 ) {
     private val delay = setting("Delay", 5, 1..10, 1)
-
     private val timer = TickTimer(TimeUnit.TICKS)
     private var lastTask = TaskState(true)
 
+    var isPaused = false
+
     init {
+        onDisable {
+            isPaused = false
+        }
         safeListener<TickEvent.ClientTickEvent> {
+            if(isPaused) return@safeListener
             if (!timer.tick(delay.value.toLong()) || !lastTask.done) return@safeListener
 
             if (!player.inventory.itemStack.isEmpty) {
