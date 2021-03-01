@@ -1,12 +1,12 @@
 package org.kamiblue.client.module.modules.movement
 
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.MathHelper
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.EntityUtils.flooredPosition
 import org.kamiblue.client.util.combat.SurroundUtils
 import org.kamiblue.client.util.combat.SurroundUtils.checkHole
 import org.kamiblue.client.util.math.VectorUtils.toBlockPos
@@ -36,29 +36,21 @@ internal object Anchor : Module(
      */
     private fun SafeClientEvent.isHole(pos: BlockPos): Boolean {
         val type = checkHole(pos)
-        return ((mode == AnchorMode.BOTH && type != SurroundUtils.HoleType.NONE) ||
-            (mode == AnchorMode.BEDROCK && type == SurroundUtils.HoleType.BEDROCK))
-    }
-
-    private fun isReachable(holePos: BlockPos): Boolean {
-        for (y in holePos.y..mc.player.positionVector.y.toInt()) {
-            val checkPos = BlockPos(holePos.x, y, holePos.z)
-            if (!mc.world.isAirBlock(checkPos))
-                return false
-        }
-        return true
+        return (mode == AnchorMode.BOTH && type != SurroundUtils.HoleType.NONE) ||
+            (mode == AnchorMode.BEDROCK && type == SurroundUtils.HoleType.BEDROCK)
     }
 
     /**
      * Checks whether the player should stop movement or not
      */
     private fun SafeClientEvent.shouldStop(): Boolean {
-        if (pitchTrigger && mc.player.rotationPitch < MathHelper.wrapDegrees(pitch)) return false
+        if (pitchTrigger && mc.player.rotationPitch < pitch) return false
         for (dy in 1..vRange) {
-            val pos = mc.player.positionVector.toBlockPos().add(0.0, -dy.toDouble(), 0.0)
-            if (isHole(pos) && isReachable(pos)) {
+            val pos = player.flooredPosition.down(dy)
+            if (!world.isAirBlock(pos))
+                return false
+            if (isHole(pos))
                 return true
-            }
         }
         return false
     }
@@ -69,7 +61,7 @@ internal object Anchor : Module(
         }
 
         safeListener<PlayerTravelEvent> {
-            if (isHole(player.positionVector.toBlockPos()) &&
+            if (isHole(player.flooredPosition) &&
                 !world.isAirBlock(player.positionVector.add(0.0, -0.1, 0.0).toBlockPos())) {
                 prevInHole = true
                 if (turnOffAfter)
