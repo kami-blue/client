@@ -7,6 +7,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.gui.rgui.WindowComponent
+import org.kamiblue.client.gui.rgui.windows.BlockPicker
 import org.kamiblue.client.gui.rgui.windows.ColorPicker
 import org.kamiblue.client.gui.rgui.windows.SettingWindow
 import org.kamiblue.client.mixin.extension.listShaders
@@ -86,6 +87,8 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
     init {
         mc = Wrapper.minecraft
         windowList.add(ColorPicker)
+        windowList.add(BlockPicker)
+        BlockPicker.visible = false
 
         safeListener<TickEvent.ClientTickEvent> { event ->
             if (event.phase != TickEvent.Phase.START) return@safeListener
@@ -220,7 +223,7 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
 
     private fun updateSettingWindow() {
         settingWindow?.let {
-            if (lastClickedWindow != it && lastClickedWindow != ColorPicker) {
+            if (lastClickedWindow != it && lastClickedWindow != ColorPicker && lastClickedWindow != BlockPicker) {
                 it.onClosed()
                 windowList.remove(it)
                 settingWindow = null

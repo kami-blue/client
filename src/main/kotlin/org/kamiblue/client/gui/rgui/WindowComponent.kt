@@ -25,7 +25,7 @@ open class WindowComponent(
 
     // Interactive info
     open val draggableHeight get() = height
-    var lastActiveTime: Long = System.currentTimeMillis(); protected set
+    open var lastActiveTime: Long = System.currentTimeMillis(); protected set
     var preDragMousePos = Vec2f.ZERO; private set
     var preDragPos = Vec2f.ZERO; private set
     var preDragSize = Vec2f.ZERO; private set

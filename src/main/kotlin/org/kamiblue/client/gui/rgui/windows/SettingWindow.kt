@@ -4,6 +4,7 @@ import org.kamiblue.client.gui.rgui.component.*
 import org.kamiblue.client.setting.settings.AbstractSetting
 import org.kamiblue.client.setting.settings.impl.number.NumberSetting
 import org.kamiblue.client.setting.settings.impl.other.BindSetting
+import org.kamiblue.client.setting.settings.impl.other.BlockSetting
 import org.kamiblue.client.setting.settings.impl.other.ColorSetting
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
@@ -40,6 +41,7 @@ abstract class SettingWindow<T : Any>(
                     is ColorSetting -> Button(setting.name, { displayColorPicker(setting) }, setting.description, setting.visibility)
                     is StringSetting -> StringButton(setting)
                     is BindSetting -> BindButton(setting)
+                    is BlockSetting -> BlockSettingButton(setting)
                     else -> null
                 }?.also {
                     children.add(it)
@@ -80,6 +82,7 @@ abstract class SettingWindow<T : Any>(
         super.onClosed()
         listeningChild = null
         ColorPicker.visible = false
+        BlockPicker.visible = false
     }
 
     override fun onKeyInput(keyCode: Int, keyState: Boolean) {

@@ -20,8 +20,10 @@ open class Slider(
     name: String,
     valueIn: Double,
     private val description: String = "",
-    private val visibility: (() -> Boolean)?
-) : InteractiveComponent(name, 0.0f, 0.0f, 40.0f, 10.0f, SettingGroup.NONE) {
+    private val visibility: (() -> Boolean)?,
+    width: Float = 40.0f,
+    height: Float = 10.0f
+) : InteractiveComponent(name, 0.0f, 0.0f, width, height, SettingGroup.NONE) {
     protected var value = valueIn
         set(value) {
             if (value != field) {

@@ -1,6 +1,7 @@
 package org.kamiblue.client.module.modules.player
 
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.init.Blocks
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -34,7 +35,7 @@ internal object InventoryManager : Module(
 
     private val autoRefill by setting("Auto Refill", true)
     private val buildingMode by setting("Building Mode", false, { autoRefill })
-    var buildingBlockID by setting("Building Block ID", 0, 0..1000, 1, { false })
+    private val buildingBlock by setting("Building Block", Blocks.AIR)
     private val refillThreshold by setting("Refill Threshold", 16, 1..63, 1, { autoRefill })
     private val itemSaver by setting("Item Saver", false)
     private val duraThreshold by setting("Durability Threshold", 5, 1..50, 1, { itemSaver })
@@ -111,10 +112,10 @@ internal object InventoryManager : Module(
     }
 
     private fun SafeClientEvent.refillBuildingCheck(): Boolean {
-        if (!autoRefill || !buildingMode || buildingBlockID == 0) return false
+        if (!autoRefill || !buildingMode || buildingBlock == Blocks.AIR) return false
 
-        val totalCount = player.inventorySlots.countID(buildingBlockID)
-        val hotbarCount = player.hotbarSlots.countID(buildingBlockID)
+        val totalCount = player.inventorySlots.countID(buildingBlock.item.id)
+        val hotbarCount = player.hotbarSlots.countID(buildingBlock.item.id)
 
         return totalCount >= refillThreshold
             && (hotbarCount < refillThreshold
@@ -154,7 +155,7 @@ internal object InventoryManager : Module(
     }
 
     private fun SafeClientEvent.refillBuilding() {
-        player.storageSlots.firstID(buildingBlockID)?.let {
+        player.storageSlots.firstID(buildingBlock.item.id)?.let {
             quickMoveSlot(it)
         }
     }
@@ -188,9 +189,9 @@ internal object InventoryManager : Module(
             && itemStack.itemDamage > itemStack.maxDamage * (1.0f - duraThreshold / 100.0f)
 
     private fun SafeClientEvent.getRefillableSlotBuilding(): Slot? {
-        if (player.storageSlots.firstID(buildingBlockID) == null) return null
+        if (player.storageSlots.firstID(buildingBlock.item.id) == null) return null
 
-        return player.hotbarSlots.firstID(buildingBlockID) {
+        return player.hotbarSlots.firstID(buildingBlock.item.id) {
             it.isStackable && it.count < it.maxStackSize
         }
     }
@@ -198,7 +199,7 @@ internal object InventoryManager : Module(
     private fun SafeClientEvent.getRefillableSlot(): Slot? {
         return player.hotbarSlots.firstByStack {
             !it.isEmpty
-                && (!buildingMode || it.item.id != buildingBlockID)
+                && (!buildingMode || it.item.id != buildingBlock.item.id)
                 && (!autoEject || !ejectList.contains(it.item.registryName.toString()))
                 && it.isStackable
                 && it.count < (it.maxStackSize / 64.0f * refillThreshold).ceilToInt()
@@ -215,7 +216,7 @@ internal object InventoryManager : Module(
     private fun SafeClientEvent.getEjectSlot(): Slot? {
         return player.inventorySlots.firstByStack {
             !it.isEmpty
-                && (!buildingMode || it.item.id != buildingBlockID)
+                && (!buildingMode || it.item.id != buildingBlock.item.id)
                 && ejectList.contains(it.item.registryName.toString())
         }
     }

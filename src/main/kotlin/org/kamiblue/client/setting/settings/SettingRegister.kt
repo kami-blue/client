@@ -1,9 +1,11 @@
 package org.kamiblue.client.setting.settings
 
+import net.minecraft.block.Block
 import org.kamiblue.client.setting.settings.impl.number.DoubleSetting
 import org.kamiblue.client.setting.settings.impl.number.FloatSetting
 import org.kamiblue.client.setting.settings.impl.number.IntegerSetting
 import org.kamiblue.client.setting.settings.impl.other.BindSetting
+import org.kamiblue.client.setting.settings.impl.other.BlockSetting
 import org.kamiblue.client.setting.settings.impl.other.ColorSetting
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
@@ -97,6 +99,15 @@ interface SettingRegister<T : Any> {
         consumer: (prev: String, input: String) -> String = { _, input -> input },
         description: String = ""
     ) = setting(StringSetting(name, value, visibility, consumer, description))
+
+    /** Block Setting */
+    fun T.setting(
+        name: String,
+        value: Block,
+        visibility: () -> Boolean = { true },
+        consumer: (prev: Block, input: Block) -> Block = { _, input -> input },
+        description: String = ""
+    ) = setting(BlockSetting(name, value, visibility, consumer, description))
     /* End of setting registering */
 
     /**
