@@ -52,6 +52,7 @@ import org.kamiblue.client.util.math.VectorUtils.toVec3dCenter
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.*
 import org.kamiblue.commons.interfaces.DisplayEnum
+import org.kamiblue.event.listener.asyncListener
 import org.kamiblue.event.listener.listener
 import kotlin.math.ceil
 
@@ -65,6 +66,8 @@ internal object AutoObsidian : Module(
     private val searchShulker by setting("Search Shulker", false)
     private val leaveEmptyShulkers by setting("Leave Empty Shulkers", true, { searchShulker })
     private val autoRefill by setting("Auto Refill", false, { fillMode != FillMode.INFINITE })
+    private val instantMining by setting("Instant Mining", true)
+    private val instantMiningDelay by setting("Instant Mining Delay", 10, 1..20, 1, { instantMining })
     private val threshold by setting("Refill Threshold", 32, 1..64, 1, { autoRefill && fillMode != FillMode.INFINITE })
     private val targetStacks by setting("Target Stacks", 1, 1..20, 1, { fillMode == FillMode.TARGET_STACKS })
     private val delayTicks by setting("Delay Ticks", 4, 1..10, 1)
@@ -139,6 +142,14 @@ internal object AutoObsidian : Module(
         safeListener<BlockBreakEvent> {
             if (it.breakerID != player.entityId) {
                 miningMap[it.position] = it.breakerID to System.currentTimeMillis()
+            }
+        }
+
+        asyncListener<PacketEvent.PostSend> {
+            if (!instantMining || it.packet !is CPacketPlayerDigging) return@asyncListener
+
+            if (it.packet.position != placingPos || it.packet.facing != lastMiningSide) {
+                canInstantMine = false
             }
         }
 
@@ -572,10 +583,20 @@ internal object AutoObsidian : Module(
         val center = pos.toVec3dCenter()
         val diff = player.getPositionEyes(1.0f).subtract(center)
         val normalizedVec = diff.normalize()
-        val side = EnumFacing.getFacingFromVector(normalizedVec.x.toFloat(), normalizedVec.y.toFloat(), normalizedVec.z.toFloat())
+        var side = EnumFacing.getFacingFromVector(normalizedVec.x.toFloat(), normalizedVec.y.toFloat(), normalizedVec.z.toFloat())
 
         lastHitVec = center
         rotateTimer.reset()
+
+        if (instantMining && canInstantMine) {
+            if (!miningTimer.tick(instantMiningDelay.toLong(), false)) return
+
+            if (!miningTimeoutTimer.tick(2L, false)) {
+                side = side.opposite
+            } else {
+                canInstantMine = false
+            }
+        }
 
         defaultScope.launch {
             delay(20L)
