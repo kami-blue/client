@@ -22,7 +22,7 @@ import org.kamiblue.client.util.inventory.inventoryTask
 import org.kamiblue.client.util.inventory.operation.swapToItem
 import org.kamiblue.client.util.inventory.operation.swapToSlot
 import org.kamiblue.client.util.inventory.operation.swapWith
-import org.kamiblue.client.util.inventory.slot.findAnyHotbarSlot
+import org.kamiblue.client.util.inventory.slot.anyHotbarSlot
 import org.kamiblue.client.util.inventory.slot.firstItem
 import org.kamiblue.client.util.inventory.slot.storageSlots
 import org.kamiblue.client.util.items.*
@@ -158,7 +158,7 @@ internal object AutoEat : Module(
             isValid(it)
         } ?: return false
 
-        val slotTo = findAnyHotbarSlot {
+        val slotTo = player.anyHotbarSlot {
             val item = it.item
             item !is ItemTool && item !is ItemBlock
         }

@@ -23,7 +23,7 @@ fun SafeClientEvent.swapToBlockOrMove(
         true
     } else {
         player.storageSlots.firstBlock(block, predicateItem)?.let {
-            val slotTo = findAnyHotbarSlot(predicateSlot)
+            val slotTo = player.anyHotbarSlot(predicateSlot)
             inventoryTaskNow {
                 swapWith(it, slotTo)
             }
@@ -46,7 +46,7 @@ inline fun <reified I : Item> SafeClientEvent.swapToItemOrMove(
         true
     } else {
         player.storageSlots.firstItem<I, Slot>(predicateItem)?.let {
-            val slotTo = findAnyHotbarSlot(predicateSlot)
+            val slotTo = player.anyHotbarSlot(predicateSlot)
             inventoryTaskNow {
                 swapWith(it, slotTo)
             }
@@ -70,7 +70,7 @@ fun SafeClientEvent.swapToItemOrMove(
         true
     } else {
         player.storageSlots.firstItem(item, predicateItem)?.let {
-            val slotTo = findAnyHotbarSlot(predicateSlot)
+            val slotTo = player.anyHotbarSlot(predicateSlot)
             inventoryTaskNow {
                 swapWith(it, slotTo)
             }
