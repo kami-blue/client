@@ -57,6 +57,7 @@ abstract class AbstractModule(
 
     fun toggle() {
         enabled.value = !enabled.value
+        if (enabled.value) clicks.value ++
     }
 
     fun enable() {
