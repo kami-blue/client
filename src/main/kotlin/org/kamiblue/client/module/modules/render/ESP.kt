@@ -21,12 +21,14 @@ import org.kamiblue.client.util.EntityUtils
 import org.kamiblue.client.util.EntityUtils.getTargetList
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.ESPRenderer
+import org.kamiblue.client.util.graphics.GlStateUtils
 import org.kamiblue.client.util.graphics.KamiTessellator
 import org.kamiblue.client.util.graphics.ShaderHelper
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL11.GL_MODELVIEW
+import org.lwjgl.opengl.GL11.GL_PROJECTION
 
 internal object ESP : Module(
     name = "ESP",
@@ -124,8 +126,9 @@ internal object ESP : Module(
         frameBuffer?.bindFramebuffer(false)
 
         val prevRenderOutlines = mc.renderManager.renderOutlines
-        GlStateManager.enableCull()
-        GlStateManager.disableDepth()
+
+        GlStateUtils.texture2d(true)
+        GlStateUtils.cull(true)
 
         // Draw the entities into the framebuffer
         for (entity in entityList) {
@@ -140,37 +143,39 @@ internal object ESP : Module(
             renderer.doRender(entity, pos.x, pos.y, pos.z, yaw, partialTicks)
             renderer.setRenderOutlines(prevRenderOutlines)
         }
+
+        GlStateUtils.texture2d(false)
+        GlStateUtils.cull(false)
     }
 
     private fun drawShader() {
         // Push matrix
         GlStateManager.matrixMode(GL_PROJECTION)
-        glPushMatrix()
+        GlStateManager.pushMatrix()
         GlStateManager.matrixMode(GL_MODELVIEW)
-        glPushMatrix()
+        GlStateManager.pushMatrix()
 
         shaderHelper.shader?.render(KamiTessellator.pTicks())
 
         // Re-enable blend because shader rendering will disable it at the end
-        GlStateManager.enableBlend()
-        GlStateManager.disableDepth()
+        GlStateUtils.blend(true)
+        GlStateUtils.depth(false)
 
         // Draw it on the main frame buffer
         mc.framebuffer.bindFramebuffer(false)
         frameBuffer?.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false)
 
         // Revert states
-        GlStateManager.disableCull()
-        GlStateManager.enableBlend()
-        GlStateManager.enableDepth()
-        GlStateManager.disableTexture2D()
+        GlStateUtils.blend(true)
+        GlStateUtils.depth(true)
+        GlStateUtils.texture2d(false)
         GlStateManager.depthMask(false)
 
         // Revert matrix
         GlStateManager.matrixMode(GL_PROJECTION)
-        glPopMatrix()
+        GlStateManager.popMatrix()
         GlStateManager.matrixMode(GL_MODELVIEW)
-        glPopMatrix()
+        GlStateManager.popMatrix()
     }
 
     init {
@@ -178,7 +183,7 @@ internal object ESP : Module(
             entityList.clear()
             entityList.addAll(getEntityList())
 
-            when(mode.value) {
+            when (mode.value) {
                 ESPMode.GLOW -> {
                     if (entityList.isNotEmpty()) {
                         for (shader in mc.renderGlobal.entityOutlineShader.listShaders) {
