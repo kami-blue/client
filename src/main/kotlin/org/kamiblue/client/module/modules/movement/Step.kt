@@ -30,7 +30,7 @@ internal object Step : Module(
     modulePriority = 200
 ) {
     private val mode by setting("Mode", Mode.PACKET)
-    private val upStep = setting("Up Step", true)
+    private val upStep = setting("Up Step", true, consumer = { _, value -> setBaritoneAssumeStep(); value })
     private val downStep = setting("Down Step", false)
     private val entityStep by setting("Entities", true)
     private val height by setting("Height", 1.0f, 0.25f..2.0f, 0.25f)
@@ -61,7 +61,7 @@ internal object Step : Module(
         }
 
         onToggle {
-            BaritoneUtils.settings?.assumeStep?.value = it && upStep.value
+            setBaritoneAssumeStep()
         }
 
         listener<InputEvent.KeyInputEvent> {
@@ -80,6 +80,10 @@ internal object Step : Module(
     }
 
     private fun BooleanSetting.toggleMsg() = "$chatName Turned ${this.name} ${if (this.value) "&aon" else "&coff"}&f!"
+
+    private fun setBaritoneAssumeStep() {
+        BaritoneUtils.settings?.assumeStep?.value = isEnabled && upStep.value
+    }
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
