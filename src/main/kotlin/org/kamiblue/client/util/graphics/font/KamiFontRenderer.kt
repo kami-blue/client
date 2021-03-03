@@ -137,33 +137,44 @@ object KamiFontRenderer {
         glTranslatef(posXIn, posYIn, 0.0f)
         glScalef(CustomFont.size * scale, CustomFont.size * scale, 1.0f)
         glTranslatef(0.0f, CustomFont.baselineOffset, 0.0f)
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
 
         resetStyle()
+        var lastChunk: GlyphChunk? = null
+        buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
 
         for ((index, char) in text.withIndex()) {
             if (checkFormatCode(text, index)) continue
-
-            val chunk = currentVariant.getChunk(char)
-            val charInfo = currentVariant.getCharInfo(char)
-            val color = if (currentColor == DyeColors.WHITE.color) colorIn else currentColor
-
-            chunk.texture.bindTexture()
-            chunk.updateLodBias(CustomFont.lodBias)
 
             if (char == '\n') {
                 posY += currentVariant.fontHeight * CustomFont.lineSpace
                 posX = 0.0
             } else {
-                if (drawShadow) {
-                    getShadowColor(color).setGLColor()
-                    drawQuad(posX + 4.5, posY + 4.5, charInfo)
+                val chunk = currentVariant.getChunk(char)
+                val charInfo = currentVariant.getCharInfo(char)
+                val color = if (currentColor == DyeColors.WHITE.color) colorIn else currentColor
+
+                if (chunk != lastChunk) {
+                    if (lastChunk != null) {
+                        tessellator.draw()
+                        buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
+                    }
+                    chunk.texture.bindTexture()
+                    chunk.updateLodBias(CustomFont.lodBias)
                 }
-                color.setGLColor()
-                drawQuad(posX, posY, charInfo)
+
+                if (drawShadow) {
+                    drawQuad(posX + 4.5, posY + 4.5, charInfo, getShadowColor(color))
+                }
+
+                drawQuad(posX, posY, charInfo, color)
                 posX += charInfo.width + CustomFont.gap
+
+                lastChunk = chunk
             }
         }
 
+        tessellator.draw()
         resetStyle()
 
         glPopMatrix()
@@ -173,21 +184,17 @@ object KamiFontRenderer {
 
     private fun getShadowColor(color: ColorHolder) = ColorHolder((color.r * 0.2f).toInt(), (color.g * 0.2f).toInt(), (color.b * 0.2f).toInt(), (color.a * 0.9f).toInt())
 
-    private fun drawQuad(posX: Double, posY: Double, charInfo: CharInfo) {
-        buffer.begin(GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_TEX)
-        buffer.pos(posX, posY, 0.0).tex(charInfo.u1, charInfo.v1).endVertex()
-        buffer.pos(posX, posY + charInfo.height, 0.0).tex(charInfo.u1, charInfo.v2).endVertex()
-        buffer.pos(posX + charInfo.width, posY, 0.0).tex(charInfo.u2, charInfo.v1).endVertex()
-        buffer.pos(posX + charInfo.width, charInfo.height, 0.0).tex(charInfo.u2, charInfo.v2).endVertex()
-        tessellator.draw()
+    private fun drawQuad(posX: Double, posY: Double, charInfo: CharInfo, color: ColorHolder) {
+        buffer.pos(posX, posY, 0.0).tex(charInfo.u1, charInfo.v1).color(color.r, color.g, color.b, color.a).endVertex()
+        buffer.pos(posX, posY + charInfo.height, 0.0).tex(charInfo.u1, charInfo.v2).color(color.r, color.g, color.b, color.a).endVertex()
+        buffer.pos(posX + charInfo.width, charInfo.height, 0.0).tex(charInfo.u2, charInfo.v2).color(color.r, color.g, color.b, color.a).endVertex()
+        buffer.pos(posX + charInfo.width, posY, 0.0).tex(charInfo.u2, charInfo.v1).color(color.r, color.g, color.b, color.a).endVertex()
     }
 
-    @JvmOverloads
     fun getFontHeight(scale: Float = 1f): Float {
         return (glyphArray[0].fontHeight * CustomFont.lineSpace * scale)
     }
 
-    @JvmOverloads
     fun getStringWidth(text: String, scale: Float = 1f): Float {
         var width = 0.0
         resetStyle()

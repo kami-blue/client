@@ -18,6 +18,8 @@ import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.module.modules.player.AutoEat
+import org.kamiblue.client.process.PauseProcess
 import org.kamiblue.client.process.PauseProcess.pauseBaritone
 import org.kamiblue.client.process.PauseProcess.unpauseBaritone
 import org.kamiblue.client.util.*
@@ -105,9 +107,19 @@ internal object CombatSetting : Module(
     val pause
         get() = runSafeR {
             player.ticksExisted < 10
-                || pauseForDigging.value && player.heldItemMainhand.item is ItemPickaxe && playerController.isHittingBlock
-                || pauseForEating.value && player.isHandActive && player.activeItemStack.item is ItemFood && (player.activeHand != EnumHand.OFF_HAND || !ignoreOffhandEating.value)
+                || checkDigging()
+                || checkEating()
         } ?: false
+
+    private fun SafeClientEvent.checkDigging() =
+        pauseForDigging.value
+            && player.heldItemMainhand.item is ItemPickaxe
+            && playerController.isHittingBlock
+
+    private fun SafeClientEvent.checkEating() =
+        pauseForEating.value
+            && (PauseProcess.isPausing(AutoEat) || player.isHandActive && player.activeItemStack.item is ItemFood)
+            && (!ignoreOffhandEating.value || player.activeHand != EnumHand.OFF_HAND)
 
     override fun isActive() = KillAura.isActive() || BedAura.isActive() || CrystalAura.isActive() || Surround.isActive()
 
@@ -148,8 +160,8 @@ internal object CombatSetting : Module(
     }
 
     private fun SafeClientEvent.updateTarget() {
-        with(CombatManager.getTopModule()) {
-            overrideRange = if (this is KillAura) this.range.value else range.value
+        CombatManager.getTopModule()?.let {
+            overrideRange = if (it is KillAura) it.range else range.value
         }
 
         getTargetList().let {
@@ -161,7 +173,7 @@ internal object CombatSetting : Module(
         if (CrystalAura.isDisabled && CrystalBasePlace.isDisabled && CrystalESP.isDisabled && player.ticksExisted % 4 != 0) return
 
         val eyePos = player.getPositionEyes(1f) ?: Vec3d.ZERO
-        val cacheList = ArrayList<Pair<BlockPos, Triple<Float, Float, Double>>>()
+        val cacheList = ArrayList<Pair<BlockPos, CombatManager.CrystalDamage>>()
         val target = CombatManager.target
         val prediction = target?.let { getPrediction(it) }
 
@@ -169,11 +181,11 @@ internal object CombatSetting : Module(
             val dist = eyePos.distanceTo(pos.toVec3dCenter(0.0, 0.5, 0.0))
             val damage = target?.let { calcCrystalDamage(pos, it, prediction?.first, prediction?.second) } ?: 0.0f
             val selfDamage = calcCrystalDamage(pos, player)
-            cacheList.add(Pair(pos, Triple(damage, selfDamage, dist)))
+            cacheList.add(Pair(pos, CombatManager.CrystalDamage(damage, selfDamage, dist)))
         }
 
-        CombatManager.placeMap = LinkedHashMap<BlockPos, Triple<Float, Float, Double>>(cacheList.size).apply {
-            putAll(cacheList.sortedByDescending { triple -> triple.second.first })
+        CombatManager.placeMap = LinkedHashMap<BlockPos, CombatManager.CrystalDamage>(cacheList.size).apply {
+            putAll(cacheList.sortedByDescending { it.second.targetDamage })
         }
     }
 
@@ -181,7 +193,7 @@ internal object CombatSetting : Module(
     private fun SafeClientEvent.updateCrystalList() {
         if (CrystalAura.isDisabled && CrystalESP.isDisabled && (player.ticksExisted - 2) % 4 != 0) return
 
-        val cacheList = ArrayList<Pair<EntityEnderCrystal, Triple<Float, Float, Double>>>()
+        val cacheList = ArrayList<Pair<EntityEnderCrystal, CombatManager.CrystalDamage>>()
         val eyePos = player.getPositionEyes(1f)
         val target = CombatManager.target
         val prediction = target?.let { getPrediction(it) }
@@ -193,11 +205,11 @@ internal object CombatSetting : Module(
             if (dist > 16.0f) continue
             val damage = if (target != null && prediction != null) calcCrystalDamage(entity, target, prediction.first, prediction.second) else 0.0f
             val selfDamage = calcCrystalDamage(entity, player)
-            cacheList.add(entity to Triple(damage, selfDamage, dist))
+            cacheList.add(entity to CombatManager.CrystalDamage(damage, selfDamage, dist))
         }
 
-        CombatManager.crystalMap = LinkedHashMap<EntityEnderCrystal, Triple<Float, Float, Double>>(cacheList.size).apply {
-            putAll(cacheList.sortedByDescending { pair -> pair.second.first })
+        CombatManager.crystalMap = LinkedHashMap<EntityEnderCrystal, CombatManager.CrystalDamage>(cacheList.size).apply {
+            putAll(cacheList.sortedByDescending { it.second.targetDamage })
         }
     }
 

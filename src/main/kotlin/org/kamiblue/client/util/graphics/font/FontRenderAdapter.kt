@@ -13,7 +13,6 @@ object FontRenderAdapter {
     private val dumbMcFontRenderer = Wrapper.minecraft.fontRenderer
     val useCustomFont get() = CustomFont.isEnabled
 
-    @JvmOverloads
     fun drawString(text: String, posXIn: Float = 0f, posYIn: Float = 0f, drawShadow: Boolean = true, color: ColorHolder = ColorHolder(255, 255, 255), scale: Float = 1f, customFont: Boolean = useCustomFont) {
         if (customFont) {
             KamiFontRenderer.drawString(text, posXIn, posYIn, drawShadow, color, scale)
@@ -26,14 +25,12 @@ object FontRenderAdapter {
         }
     }
 
-    @JvmOverloads
     fun getFontHeight(scale: Float = 1f, customFont: Boolean = useCustomFont) = if (customFont) {
         KamiFontRenderer.getFontHeight(scale)
     } else {
         dumbMcFontRenderer.FONT_HEIGHT * scale
     }
 
-    @JvmOverloads
     fun getStringWidth(text: String, scale: Float = 1f, customFont: Boolean = useCustomFont) = if (customFont) {
         KamiFontRenderer.getStringWidth(text, scale)
     } else {

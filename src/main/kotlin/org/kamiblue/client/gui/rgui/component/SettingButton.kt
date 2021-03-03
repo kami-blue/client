@@ -18,10 +18,8 @@ class SettingButton(val setting: BooleanSetting) : BooleanSlider(setting.name, 0
         value = if (setting.value) 1.0 else 0.0
     }
 
-    override fun onRelease(mousePos: Vec2f, buttonId: Int) {
-        super.onRelease(mousePos, buttonId)
-        if (prevState != MouseState.DRAG) {
-            setting.value = !setting.value
-        }
+    override fun onClick(mousePos: Vec2f, buttonId: Int) {
+        super.onClick(mousePos, buttonId)
+        setting.value = !setting.value
     }
 }

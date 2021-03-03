@@ -14,6 +14,7 @@ import org.kamiblue.client.event.events.BaritoneCommandEvent
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.event.events.ResolutionUpdateEvent
+import org.kamiblue.client.gui.GuiManager
 import org.kamiblue.client.gui.mc.KamiGuiChat
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.util.Wrapper
@@ -69,7 +70,8 @@ object ForgeEventProcessor {
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     fun onKeyInput(event: InputEvent.KeyInputEvent) {
         if (!Keyboard.getEventKeyState()) return
-        if (!mc.player.isSneaking) {
+
+        if (!mc.gameSettings.keyBindSneak.isKeyDown) {
             val prefix = CommandManager.prefix
             val typedChar = Keyboard.getEventCharacter().toString()
             if (prefix.length == 1 && typedChar.equals(CommandManager.prefix, true)) {
@@ -78,6 +80,7 @@ object ForgeEventProcessor {
         }
 
         KamiEventBus.post(event)
+        GuiManager.onBind(Keyboard.getEventKey())
         ModuleManager.onBind(Keyboard.getEventKey())
     }
 
@@ -91,11 +94,6 @@ object ForgeEventProcessor {
             CommandManager.runCommand(event.message.removePrefix(CommandManager.prefix))
             event.isCanceled = true
         }
-    }
-
-    @SubscribeEvent
-    fun onChunkLoaded(event: ChunkEvent.Load) {
-        KamiEventBus.post(event)
     }
 
     @SubscribeEvent
@@ -114,8 +112,8 @@ object ForgeEventProcessor {
     }
 
     @SubscribeEvent
-    fun onLivingEntityUseItemEventTick(entityUseItemEvent: LivingEntityUseItemEvent.Tick) {
-        KamiEventBus.post(entityUseItemEvent)
+    fun onLivingEntityUseItemEventTick(event: LivingEntityUseItemEvent.Tick) {
+        KamiEventBus.post(event)
     }
 
     @SubscribeEvent
@@ -149,5 +147,10 @@ object ForgeEventProcessor {
     @Suppress("UNUSED_PARAMETER")
     fun onClientConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
         KamiEventBus.post(ConnectionEvent.Connect())
+    }
+
+    @SubscribeEvent
+    fun onRenderFogColors(event: EntityViewRenderEvent.FogColors) {
+        KamiEventBus.post(event)
     }
 }

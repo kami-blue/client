@@ -5,18 +5,11 @@ import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import org.kamiblue.client.event.ClientEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.util.EntityUtils.flooredPosition
 import org.kamiblue.client.util.Wrapper
-import org.kamiblue.client.util.threads.toSafe
 import kotlin.math.round
 
-/**
- * @author Xiaro
- *
- * Created by Xiaro on 08/09/20
- */
 object SurroundUtils {
     private val mc = Wrapper.minecraft
 
@@ -35,25 +28,26 @@ object SurroundUtils {
         BlockPos(-1, 0, 0)  // west
     )
 
-    fun checkHole(entity: Entity): HoleType {
-        return checkHole(entity.flooredPosition)
-    }
-
-    fun checkHole(pos: BlockPos) = ClientEvent().toSafe()?.checkHole(pos) ?: HoleType.NONE
+    fun SafeClientEvent.checkHole(entity: Entity) =
+        checkHole(entity.flooredPosition)
 
     fun SafeClientEvent.checkHole(pos: BlockPos): HoleType {
         // Must be a 1 * 3 * 1 empty space
         if (!world.isAirBlock(pos) || !world.isAirBlock(pos.up()) || !world.isAirBlock(pos.up().up())) return HoleType.NONE
 
         var type = HoleType.BEDROCK
+
         for (offset in surroundOffset) {
             val block = world.getBlockState(pos.add(offset)).block
+
             if (!checkBlock(block)) {
                 type = HoleType.NONE
                 break
             }
+
             if (block != Blocks.BEDROCK) type = HoleType.OBBY
         }
+
         return type
     }
 

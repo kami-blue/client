@@ -7,10 +7,10 @@ import org.kamiblue.capeapi.PlayerProfile
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.manager.Manager
 import org.kamiblue.client.util.ConfigUtils
+import org.kamiblue.commons.extension.synchronized
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
-import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashSet
 
@@ -19,7 +19,7 @@ object FriendManager : Manager {
     private val file = File(KamiMod.DIRECTORY + "friends.json")
 
     private var friendFile = FriendFile()
-    val friends: MutableMap<String, PlayerProfile> = Collections.synchronizedMap(HashMap<String, PlayerProfile>())
+    val friends= HashMap<String, PlayerProfile>().synchronized()
 
     val empty get() = friends.isEmpty()
     var enabled = friendFile.enabled
@@ -76,7 +76,7 @@ object FriendManager : Manager {
         var enabled: Boolean = true,
 
         @SerializedName("Friends")
-        val friends: MutableSet<PlayerProfile> = Collections.synchronizedSet(LinkedHashSet<PlayerProfile>())
+        val friends: MutableSet<PlayerProfile> = LinkedHashSet<PlayerProfile>().synchronized()
     ) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true

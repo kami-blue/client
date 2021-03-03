@@ -66,7 +66,7 @@ internal object CrystalESP : Module(
         DAMAGE_ESP, CRYSTAL_ESP, CRYSTAL_ESP_COLOR
     }
 
-    private var placeMap = emptyMap<BlockPos, Triple<Float, Float, Double>>()
+    private var placeMap = emptyMap<BlockPos, CombatManager.CrystalDamage>()
     private val renderCrystalMap = LinkedHashMap<BlockPos, Quad<Float, Float, Float, Float>>() // <Crystal, <Target Damage, Self Damage, Prev Progress, Progress>>
     private val pendingPlacing = LinkedHashMap<BlockPos, Long>()
 
@@ -95,7 +95,7 @@ internal object CrystalESP : Module(
 
     private fun updateDamageESP() {
         placeMap = if (damageESP.value) {
-            CombatManager.placeMap.filter { it.value.third <= damageRange.value }
+            CombatManager.placeMap.filter { it.value.distance <= damageRange.value }
         } else {
             emptyMap()
         }
@@ -111,15 +111,15 @@ internal object CrystalESP : Module(
             pendingPlacing.entries.removeIf { System.currentTimeMillis() - it.value > 1000L }
 
             if (!onlyOwn.value) {
-                for ((crystal, triple) in crystalMap) {
-                    if (triple.third > crystalRange.value) continue
-                    cacheMap[crystal.position.down()] = Quad(triple.first, triple.second, 0.0f, 0.0f)
+                for ((crystal, calculation) in crystalMap) {
+                    if (calculation.distance > crystalRange.value) continue
+                    cacheMap[crystal.position.down()] = Quad(calculation.targetDamage, calculation.selfDamage, 0.0f, 0.0f)
                 }
             }
 
             for (pos in pendingPlacing.keys) {
                 val damage = placeMap[pos] ?: continue
-                cacheMap[pos] = Quad(damage.first, damage.second, 0.0f, 0.0f)
+                cacheMap[pos] = Quad(damage.targetDamage, damage.selfDamage, 0.0f, 0.0f)
             }
 
             val scale = 1.0f / animationScale.value
@@ -143,9 +143,9 @@ internal object CrystalESP : Module(
             if (damageESP.value && placeMap.isNotEmpty()) {
                 renderer.aFilled = 255
 
-                for ((pos, triple) in placeMap) {
-                    val rgb = MathUtils.convertRange(triple.first.toInt(), 0, 20, 127, 255)
-                    val a = MathUtils.convertRange(triple.first.toInt(), 0, 20, minAlpha.value, maxAlpha.value)
+                for ((pos, calculation) in placeMap) {
+                    val rgb = MathUtils.convertRange(calculation.targetDamage.toInt(), 0, 20, 127, 255)
+                    val a = MathUtils.convertRange(calculation.targetDamage.toInt(), 0, 20, minAlpha.value, maxAlpha.value)
                     val rgba = ColorHolder(rgb, rgb, rgb, a)
                     renderer.add(pos, rgba)
                 }

@@ -138,7 +138,7 @@ internal object CrystalBasePlace : Module(
         val posList = VectorUtils.getBlockPosInSphere(eyePos, range.value)
         val maxCurrentDamage = CombatManager.placeMap.entries
             .filter { eyePos.distanceTo(it.key) < range.value }
-            .map { it.value.first }
+            .map { it.value.targetDamage }
             .maxOrNull() ?: 0.0f
 
         for (pos in posList) {

@@ -1,3 +1,7 @@
 package org.kamiblue.client.manager
 
-interface Manager
+import org.kamiblue.client.util.Wrapper
+
+interface Manager {
+    val mc get() = Wrapper.minecraft
+}

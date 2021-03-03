@@ -19,6 +19,7 @@ import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.combat.CrystalUtils.canPlace
 import org.kamiblue.client.util.combat.CrystalUtils.canPlaceOn
 import org.kamiblue.client.util.combat.SurroundUtils
+import org.kamiblue.client.util.combat.SurroundUtils.checkHole
 import org.kamiblue.client.util.items.swapToItem
 import org.kamiblue.client.util.math.RotationUtils.getRotationTo
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
@@ -48,7 +49,7 @@ internal object HoleMiner : Module(
             runSafeR {
                 val target = CombatManager.target
                 if (target != null) {
-                    if (SurroundUtils.checkHole(target) != SurroundUtils.HoleType.OBBY) {
+                    if (checkHole(target) != SurroundUtils.HoleType.OBBY) {
                         MessageSendHelper.sendChatMessage("$chatName Target is not in a valid hole, disabling")
                         disable()
                     } else {

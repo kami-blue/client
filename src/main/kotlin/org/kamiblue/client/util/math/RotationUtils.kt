@@ -32,12 +32,19 @@ object RotationUtils {
 
     fun SafeClientEvent.getRotationToEntityClosest(entity: Entity): Vec2f {
         val box = entity.entityBoundingBox
+
         val eyePos = player.getPositionEyes(1f)
+
+        if (player.entityBoundingBox.intersects(box)) {
+            return getRotationTo(eyePos, box.center)
+        }
+
         val x = eyePos.x.coerceIn(box.minX, box.maxX)
         val y = eyePos.y.coerceIn(box.minY, box.maxY)
         val z = eyePos.z.coerceIn(box.minZ, box.maxZ)
+
         val hitVec = Vec3d(x, y, z)
-        return getRotationTo(hitVec)
+        return getRotationTo(eyePos, hitVec)
     }
 
     fun SafeClientEvent.getRotationToEntity(entity: Entity): Vec2f {

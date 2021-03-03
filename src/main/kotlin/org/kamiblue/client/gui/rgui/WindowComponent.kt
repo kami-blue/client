@@ -115,53 +115,73 @@ open class WindowComponent(
 
         if (horizontalSide != null && verticalSide != null) {
             if (resizable && !minimized && (horizontalSide != HAlign.CENTER || verticalSide != VAlign.CENTER)) {
-
-                when (horizontalSide) {
-                    HAlign.LEFT -> {
-                        var newWidth = max(preDragSize.x - draggedDist.x, minWidth)
-                        if (maxWidth != -1.0f) newWidth = min(newWidth, maxWidth)
-
-                        posX += width - newWidth
-                        width = newWidth
-                    }
-                    HAlign.RIGHT -> {
-                        var newWidth = max(preDragSize.x + draggedDist.x, minWidth)
-                        if (maxWidth != -1.0f) newWidth = min(newWidth, maxWidth)
-
-                        width = newWidth
-                    }
-                    else -> {
-                        // Nothing lol
-                    }
-                }
-
-                when (verticalSide) {
-                    VAlign.TOP -> {
-                        var newHeight = max(preDragSize.y - draggedDist.y, minHeight)
-                        if (maxHeight != -1.0f) newHeight = min(newHeight, maxHeight)
-
-                        posY += height - newHeight
-                        height = newHeight
-                    }
-                    VAlign.BOTTOM -> {
-                        var newHeight = max(preDragSize.y + draggedDist.y, minHeight)
-                        if (maxHeight != -1.0f) newHeight = min(newHeight, maxHeight)
-
-                        height = newHeight
-                    }
-                    else -> {
-                        // Nothing lol
-                    }
-                }
+                handleResizeX(horizontalSide, draggedDist)
+                handleResizeY(verticalSide, draggedDist)
 
                 onResize()
             } else if (draggableHeight == height || relativeClickPos.y <= draggableHeight) {
-                posX = (preDragPos.x + draggedDist.x).coerceIn(0.0f, mc.displayWidth - width)
-                posY = (preDragPos.y + draggedDist.y).coerceIn(0.0f, mc.displayHeight - height)
+                posX = (preDragPos.x + draggedDist.x).coerceIn(1.0f, mc.displayWidth - width - 1.0f)
+                posY = (preDragPos.y + draggedDist.y).coerceIn(1.0f, mc.displayHeight - height - 1.0f)
 
                 onReposition()
             } else {
                 // TODO
+            }
+        }
+    }
+
+    private fun handleResizeX(horizontalSide: HAlign, draggedDist: Vec2f) {
+        when (horizontalSide) {
+            HAlign.LEFT -> {
+                val draggedX = max(draggedDist.x,1.0f - preDragPos.x)
+                var newWidth = max(preDragSize.x - draggedX, minWidth)
+
+                if (maxWidth != -1.0f) newWidth = min(newWidth, maxWidth)
+                newWidth = min(newWidth, scaledDisplayWidth - 2.0f)
+
+                val prevWidth = width
+                width = newWidth
+                posX += prevWidth - newWidth
+            }
+            HAlign.RIGHT -> {
+                val draggedX = min(draggedDist.x, preDragPos.x + preDragSize.x - 1.0f)
+                var newWidth = max(preDragSize.x + draggedX, minWidth)
+
+                if (maxWidth != -1.0f) newWidth = min(newWidth, maxWidth)
+                newWidth = min(newWidth, scaledDisplayWidth - posX - 2.0f)
+
+                width = newWidth
+            }
+            else -> {
+                // Nothing lol
+            }
+        }
+    }
+
+    private fun handleResizeY(verticalSide: VAlign, draggedDist: Vec2f) {
+        when (verticalSide) {
+            VAlign.TOP -> {
+                val draggedY = max(draggedDist.y,1.0f - preDragPos.y)
+                var newHeight = max(preDragSize.y - draggedY, minHeight)
+
+                if (maxHeight != -1.0f) newHeight = min(newHeight, maxHeight)
+                newHeight = min(newHeight, scaledDisplayHeight - 2.0f)
+
+                val prevHeight = height
+                height = newHeight
+                posY += prevHeight - newHeight
+            }
+            VAlign.BOTTOM -> {
+                val draggedY = min(draggedDist.y, preDragPos.y + preDragSize.y - 1.0f)
+                var newHeight = max(preDragSize.y + draggedY, minHeight)
+
+                if (maxHeight != -1.0f) newHeight = min(newHeight, maxHeight)
+                newHeight = min(newHeight, scaledDisplayHeight - posY - 2.0f)
+
+                height = newHeight
+            }
+            else -> {
+                // Nothing lol
             }
         }
     }

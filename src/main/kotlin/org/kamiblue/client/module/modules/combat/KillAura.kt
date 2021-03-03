@@ -9,13 +9,17 @@ import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.TpsCalculator
 import org.kamiblue.client.util.combat.CombatUtils
 import org.kamiblue.client.util.combat.CombatUtils.equipBestWeapon
+import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
 import org.kamiblue.client.util.items.isWeapon
 import org.kamiblue.client.util.math.RotationUtils.faceEntityClosest
 import org.kamiblue.client.util.math.RotationUtils.getRotationToEntityClosest
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.commons.interfaces.DisplayEnum
 
 @CombatManager.CombatModule
 internal object KillAura : Module(
@@ -25,26 +29,39 @@ internal object KillAura : Module(
     description = "Hits entities around you",
     modulePriority = 50
 ) {
-    private val delayMode = setting("Mode", WaitMode.DELAY)
-    private val lockView = setting("Lock View", false)
-    private val spoofRotation = setting("Spoof Rotation", true, { !lockView.value })
-    private val waitTick = setting("Spam Delay", 2.0f, 1.0f..40.0f, 0.5f, { delayMode.value == WaitMode.SPAM })
-    val range = setting("Range", 5f, 0f..8f, 0.25f)
-    private val tpsSync = setting("TPS Sync", false)
-    private val autoWeapon = setting("Auto Weapon", true)
-    private val weaponOnly = setting("Weapon Only", true)
-    private val prefer = setting("Prefer", CombatUtils.PreferWeapon.SWORD, { autoWeapon.value })
-    private val disableOnDeath = setting("Disable On Death", false)
+    private val mode by setting("Mode", Mode.COOLDOWN)
+    private val rotationMode by setting("Rotation Mode", RotationMode.SPOOF)
+    private val attackDelay by setting("Attack Delay", 5, 1..40, 1, { mode == Mode.TICKS })
+    private val disableOnDeath by setting("Disable On Death", false)
+    private val tpsSync by setting("TPS Sync", false)
+    private val weaponOnly by setting("Weapon Only", false)
+    private val autoWeapon by setting("Auto Weapon", true)
+    private val prefer by setting("Prefer", CombatUtils.PreferWeapon.SWORD, { autoWeapon })
+    private val minSwapHealth by setting("Min Swap Health", 5.0f, 1.0f..20.0f, 0.5f)
+    private val swapDelay by setting("Swap Delay", 10, 0..50, 1)
+    val range by setting("Range", 4.0f, 0.0f..6.0f, 0.1f)
 
+    private val timer = TickTimer(TimeUnit.TICKS)
     private var inactiveTicks = 0
-    private var tickCount = 0
 
-    private enum class WaitMode {
-        DELAY, SPAM
+    private enum class Mode(override val displayName: String) : DisplayEnum {
+        COOLDOWN("Cooldown"),
+        TICKS("Ticks")
+    }
+
+    @Suppress("UNUSED")
+    private enum class RotationMode(override val displayName: String) : DisplayEnum {
+        OFF("Off"),
+        SPOOF("Spoof"),
+        VIEW_LOCK("View Lock")
     }
 
     override fun isActive(): Boolean {
-        return inactiveTicks <= 20 && isEnabled
+        return isEnabled && inactiveTicks <= 5
+    }
+
+    override fun getHudInfo(): String {
+        return mode.displayName
     }
 
     init {
@@ -53,22 +70,17 @@ internal object KillAura : Module(
 
             inactiveTicks++
 
-            if (player.isDead || player.health <= 0.0f) {
-                if (disableOnDeath.value) disable()
+            if (!player.isEntityAlive) {
+                if (disableOnDeath) disable()
                 return@safeListener
             }
+            val target = CombatManager.target ?: return@safeListener
 
             if (!CombatManager.isOnTopPriority(KillAura) || CombatSetting.pause) return@safeListener
-            val target = CombatManager.target ?: return@safeListener
-            if (player.getDistance(target) > range.value) return@safeListener
-
-            if (autoWeapon.value) {
-                equipBestWeapon(prefer.value)
-            }
-
-            if (weaponOnly.value && !player.heldItemMainhand.item.isWeapon) {
-                return@safeListener
-            }
+            if (player.getDistance(target) >= range) return@safeListener
+            if (player.scaledHealth > minSwapHealth && autoWeapon) equipBestWeapon(prefer)
+            if (weaponOnly && !player.heldItemMainhand.item.isWeapon) return@safeListener
+            if (swapDelay > 0 && System.currentTimeMillis() - PlayerPacketManager.lastSwapTime < swapDelay * 50L) return@safeListener
 
             inactiveTicks = 0
             rotate(target)
@@ -77,31 +89,34 @@ internal object KillAura : Module(
     }
 
     private fun SafeClientEvent.rotate(target: EntityLivingBase) {
-        if (lockView.value) {
-            faceEntityClosest(target)
-        } else if (spoofRotation.value) {
-            val rotation = getRotationToEntityClosest(target)
-            PlayerPacketManager.addPacket(this@KillAura, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
-        }
-    }
-
-    private fun SafeClientEvent.canAttack(): Boolean {
-        return if (delayMode.value == WaitMode.DELAY) {
-            val adjustTicks = if (!tpsSync.value) 0f else TpsCalculator.adjustTicks
-            player.getCooledAttackStrength(adjustTicks) >= 1f
-        } else {
-            if (tickCount < waitTick.value) {
-                tickCount++
-                false
-            } else {
-                tickCount = 0
-                true
+        when (rotationMode) {
+            RotationMode.SPOOF -> {
+                val rotation = getRotationToEntityClosest(target)
+                PlayerPacketManager.addPacket(this@KillAura, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
+            }
+            RotationMode.VIEW_LOCK -> {
+                faceEntityClosest(target)
+            }
+            else -> {
+                // Rotation off
             }
         }
     }
 
-    private fun SafeClientEvent.attack(e: Entity) {
-        playerController.attackEntity(player, e)
+    private fun SafeClientEvent.canAttack() =
+        when (mode) {
+            Mode.COOLDOWN -> {
+                val adjustTicks = if (!tpsSync) 0.0f
+                else TpsCalculator.adjustTicks
+                player.getCooledAttackStrength(adjustTicks) > 0.9f
+            }
+            Mode.TICKS -> {
+                timer.tick(attackDelay)
+            }
+        }
+
+    private fun SafeClientEvent.attack(entity: Entity) {
+        playerController.attackEntity(player, entity)
         player.swingArm(EnumHand.MAIN_HAND)
     }
 }

@@ -12,11 +12,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.module.modules.combat.CombatSetting
 import org.kamiblue.client.process.PauseProcess.pauseBaritone
 import org.kamiblue.client.process.PauseProcess.unpauseBaritone
 import org.kamiblue.client.util.*
-import org.kamiblue.client.util.combat.CombatUtils
+import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
@@ -31,9 +30,12 @@ internal object AutoEat : Module(
     private val eatBadFood by setting("Eat Bad Food", false)
     private val pauseBaritone by setting("Pause Baritone", true)
 
-    private val timer = TickTimer(TimeUnit.TICKS)
     private var lastSlot = -1
     private var eating = false
+
+    override fun isActive(): Boolean {
+        return isEnabled && eating
+    }
 
     init {
         onDisable {
@@ -42,15 +44,37 @@ internal object AutoEat : Module(
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase != TickEvent.Phase.START || CombatSetting.isActive()) return@safeListener
+            if (it.phase != TickEvent.Phase.START) return@safeListener
 
-            if (shouldEat()) {
-                if (isValid(player.heldItemOffhand)) {
-                    eat(EnumHand.OFF_HAND)
-                } else if (swapToFood()) {
-                    eat(EnumHand.MAIN_HAND)
+            if (!player.isEntityAlive) {
+                if (eating) stopEating()
+                return@safeListener
+            }
+
+            val hand = when {
+                !shouldEat() -> {
+                    null // Null = stop eating
                 }
-            } else if (timer.tick(2)) {
+                isValid(player.heldItemOffhand) -> {
+                    EnumHand.OFF_HAND
+                }
+                isValid(player.heldItemMainhand) -> {
+                    EnumHand.MAIN_HAND
+                }
+                swapToFood() -> { // If we found valid food and moved
+                    // Set eating and pause then return and wait until next tick
+                    startEating()
+                    return@safeListener
+                }
+                else -> {
+                    null // If we can't find any valid food then stop eating
+                }
+            }
+
+            if (hand != null) {
+                eat(hand)
+            } else {
+                // Stop eating first and swap back in the next tick
                 if (eating) {
                     stopEating()
                 } else {
@@ -62,15 +86,21 @@ internal object AutoEat : Module(
 
     private fun SafeClientEvent.shouldEat() =
         player.foodStats.foodLevel < belowHunger
-            || CombatUtils.getHealthSmart(player) < belowHealth
+            || player.scaledHealth < belowHealth
 
     private fun SafeClientEvent.eat(hand: EnumHand) {
+        if (!eating || !player.isHandActive || player.activeHand != hand) {
+            KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
+
+            // Vanilla Minecraft prioritize offhand so we need to force it using the specific hand
+            playerController.processRightClick(player, world, hand)
+        }
+
+        startEating()
+    }
+
+    private fun startEating() {
         if (pauseBaritone) pauseBaritone()
-
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
-        playerController.processRightClick(player, world, hand)
-
-        timer.reset()
         eating = true
     }
 
@@ -79,7 +109,6 @@ internal object AutoEat : Module(
 
         runSafe {
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
-            playerController.onStoppedUsingItem(player)
         }
 
         eating = false
@@ -95,37 +124,44 @@ internal object AutoEat : Module(
         }
     }
 
+    /**
+     * @return `true` if food found and moved
+     */
     private fun SafeClientEvent.swapToFood(): Boolean {
-        if (isValid(player.heldItemMainhand)) return true
-
         lastSlot = player.inventory.currentItem
-        val hasFoodInSlot = swapToItem<ItemFood> { isValid(it) }
+        val hasFoodInSlots = swapToItem<ItemFood> { isValid(it) }
 
-        if (!hasFoodInSlot) {
+        return if (hasFoodInSlots) {
+            true
+        } else {
             lastSlot = -1
             moveFoodToHotbar()
         }
-
-        return false
     }
 
-    private fun SafeClientEvent.moveFoodToHotbar() {
+    /**
+     * @return `true` if food found and moved
+     */
+    private fun SafeClientEvent.moveFoodToHotbar(): Boolean {
         val slotFrom = player.storageSlots.firstItem<ItemFood, Slot> {
             isValid(it)
-        } ?: return
+        } ?: return false
 
         moveToHotbar(slotFrom) {
             val item = it.item
             item !is ItemTool && item !is ItemBlock
         }
+
+        return true
     }
 
-    private fun isValid(itemStack: ItemStack): Boolean {
+    private fun SafeClientEvent.isValid(itemStack: ItemStack): Boolean {
         val item = itemStack.item
 
         return item is ItemFood
             && item != Items.CHORUS_FRUIT
             && (eatBadFood || !isBadFood(itemStack, item))
+            && player.canEat(item == Items.GOLDEN_APPLE)
     }
 
     private fun isBadFood(itemStack: ItemStack, item: ItemFood) =

@@ -1,6 +1,7 @@
 package org.kamiblue.client.mixin.client.render;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.ViewFrustum;
 import net.minecraft.client.renderer.chunk.RenderChunk;
@@ -14,6 +15,7 @@ import org.kamiblue.client.event.events.BlockBreakEvent;
 import org.kamiblue.client.mixin.client.accessor.render.AccessorViewFrustum;
 import org.kamiblue.client.module.modules.player.Freecam;
 import org.kamiblue.client.module.modules.render.SelectionHighlight;
+import org.kamiblue.client.util.Wrapper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,7 +48,7 @@ public abstract class MixinRenderGlobal {
     @Redirect(method = "setupTerrain", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderGlobal;getRenderChunkOffset(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/chunk/RenderChunk;Lnet/minecraft/util/EnumFacing;)Lnet/minecraft/client/renderer/chunk/RenderChunk;"))
     public RenderChunk renderChunkOffset(RenderGlobal renderGlobal, BlockPos playerPos, RenderChunk renderChunkBase, EnumFacing facing) {
         if (Freecam.INSTANCE.isEnabled()) {
-            playerPos = Freecam.getRenderChunkOffset();
+            playerPos = Freecam.getRenderChunkOffset(playerPos);
         }
 
         // Can't use a @Shadow of getRenderChunkOffset because it crashes outside of a dev env with Optifine
@@ -67,10 +69,13 @@ public abstract class MixinRenderGlobal {
      */
     @Redirect(method = "setupTerrain", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ViewFrustum;updateChunkPositions(DD)V"))
     public void updateSetupTerrain(ViewFrustum viewFrustum, double viewEntityX, double viewEntityZ) {
-        if (Freecam.INSTANCE.isEnabled()) {
-            viewEntityX = mc.player.posX;
-            viewEntityZ = mc.player.posZ;
+        EntityPlayerSP player = Wrapper.getPlayer();
+
+        if (Freecam.INSTANCE.isEnabled() && player != null) {
+            viewEntityX = player.posX;
+            viewEntityZ = player.posZ;
         }
+
         viewFrustum.updateChunkPositions(viewEntityX, viewEntityZ);
     }
 }
