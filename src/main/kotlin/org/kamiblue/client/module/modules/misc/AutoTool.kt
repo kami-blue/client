@@ -15,8 +15,8 @@ import org.kamiblue.client.util.combat.CombatUtils
 import org.kamiblue.client.util.combat.CombatUtils.equipBestWeapon
 import org.kamiblue.client.util.items.swapToSlot
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.util.items.hotbarSlots
 import org.lwjgl.input.Mouse
-import kotlin.math.pow
 
 internal object AutoTool : Module(
     name = "AutoTool",
@@ -58,30 +58,26 @@ internal object AutoTool : Module(
         }
     }
 
-    fun SafeClientEvent.equipBestTool(blockState: IBlockState) {
-        var bestSlot = -1
-        var max = 0.0
+    private fun SafeClientEvent.equipBestTool(blockState: IBlockState) {
+        player.hotbarSlots.maxByOrNull {
+            val stack = it.stack
+            if (stack.isEmpty) {
+                0.0f
+            } else {
+                var speed = stack.getDestroySpeed(blockState)
 
-        for (i in 0..8) {
-            val stack = player.inventory.getStackInSlot(i)
-            if (stack.isEmpty) continue
-            var speed = stack.getDestroySpeed(blockState)
-            var eff: Int
-
-            if (speed > 1) {
-                speed += (
-                    if (EnchantmentHelper.getEnchantmentLevel(Enchantments.EFFICIENCY, stack).also { eff = it } > 0.0) eff.toDouble().pow(2.0) + 1
-                    else 0.0
-                    ).toFloat()
-                if (speed > max) {
-                    max = speed.toDouble()
-                    bestSlot = i
+                if (speed > 1.0f) {
+                    val efficiency = EnchantmentHelper.getEnchantmentLevel(Enchantments.EFFICIENCY, stack)
+                    if (efficiency > 0) {
+                        speed += efficiency * efficiency + 1.0f
+                    }
                 }
+
+                speed
             }
-
+        }?.let {
+            swapToSlot(it)
         }
-
-        if (bestSlot != -1) swapToSlot(bestSlot)
     }
 
     init {

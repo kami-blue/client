@@ -7,6 +7,7 @@ import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
+import org.kamiblue.client.util.Wrapper
 
 val EntityPlayer.allSlots: List<Slot>
     get() = inventoryContainer.getSlots(1..45)
@@ -126,6 +127,9 @@ fun <T : Slot> Iterable<T>.filterByID(itemID: Int, predicate: (ItemStack) -> Boo
 fun <T : Slot> Iterable<T>.filterByStack(predicate: (ItemStack) -> Boolean = { true }) =
     filter { predicate(it.stack) }
 
+fun Slot.toHotbarSlotOrNull() =
+    if (this.slotNumber in 36..44 && this.inventory == Wrapper.player?.inventory) HotbarSlot(this)
+    else null
 
 class HotbarSlot(slot: Slot) : Slot(slot.inventory, slot.slotIndex, slot.xPos, slot.yPos) {
     init {

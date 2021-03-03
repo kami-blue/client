@@ -15,10 +15,13 @@ import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.util.items.isFullBox
 import org.kamiblue.client.util.math.RotationUtils.getRotationTo
-import org.kamiblue.client.util.math.corners
+import org.kamiblue.client.util.math.VectorUtils.toVec3dCenter
 import org.kamiblue.client.util.threads.runSafeSuspend
-import org.kamiblue.commons.extension.add
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 import kotlin.math.floor
 
 object WorldUtils {
@@ -84,7 +87,9 @@ object WorldUtils {
         for (x in xArray) {
             for (z in zArray) {
                 val result = rayTraceToGround(Vec3d(x, boundingBox.minY, z), stopOnLiquid)
-                results.add(result)
+                if (result != null) {
+                    results.add(result)
+                }
             }
         }
 
@@ -129,20 +134,49 @@ object WorldUtils {
         return Vec3d(vec.x * 0.5 + 0.5, vec.y * 0.5 + 0.5, vec.z * 0.5 + 0.5)
     }
 
-    fun SafeClientEvent.rayTraceHitVec(pos: BlockPos): RayTraceResult? {
-        val eyePos = player.getPositionEyes(1f)
-        val bb = world.getBlockState(pos).getSelectedBoundingBox(world, pos)
+    fun SafeClientEvent.getMiningSide(pos: BlockPos) : EnumFacing? {
+        val eyePos = player.getPositionEyes(1.0f)
 
-        return world.rayTraceBlocks(eyePos, bb.center, false, false, true)?.takeIf {
-            it.isEqualTo(pos)
-        } ?: bb.corners(0.95).mapNotNull { corner ->
-            world.rayTraceBlocks(eyePos, corner, false, false, true)?.takeIf { it.isEqualTo(pos) }
-        }.minByOrNull {
-            it.hitVec?.distanceTo(eyePos) ?: 69420.0
-        }
+        return getVisibleSides(pos)
+            .filter { !world.getBlockState(pos.offset(it)).isFullBox }
+            .minByOrNull { eyePos.distanceTo(getHitVec(pos, it)) }
     }
 
-    private fun RayTraceResult.isEqualTo(pos: BlockPos) = typeOfHit == RayTraceResult.Type.BLOCK && blockPos == pos
+    /**
+     * Get the "visible" sides related to player's eye position
+     *
+     * Reverse engineered from HauseMaster's anti cheat plugin
+     */
+    fun SafeClientEvent.getVisibleSides(pos: BlockPos): Set<EnumFacing> {
+        val visibleSides = EnumSet.noneOf(EnumFacing::class.java)
+
+        val isFullBox = world.getBlockState(pos).isFullBox
+        val eyePos = player.getPositionEyes(1.0f)
+        val blockCenter = pos.toVec3dCenter()
+
+        return visibleSides
+            .checkAxis(eyePos.x - blockCenter.x, EnumFacing.WEST, EnumFacing.EAST, !isFullBox)
+            .checkAxis(eyePos.y - blockCenter.y, EnumFacing.DOWN, EnumFacing.UP, true)
+            .checkAxis(eyePos.z - blockCenter.z, EnumFacing.NORTH, EnumFacing.SOUTH, !isFullBox)
+    }
+
+    private fun EnumSet<EnumFacing>.checkAxis(diff: Double, negativeSide: EnumFacing, positiveSide: EnumFacing, bothIfInRange: Boolean) =
+        this.apply {
+            when {
+                diff < -0.5 -> {
+                    add(negativeSide)
+                }
+                diff > 0.5 -> {
+                    add(positiveSide)
+                }
+                else -> {
+                    if (bothIfInRange) {
+                        add(negativeSide)
+                        add(positiveSide)
+                    }
+                }
+            }
+        }
 
     suspend fun SafeClientEvent.buildStructure(
         placeSpeed: Float,
@@ -195,25 +229,69 @@ object WorldUtils {
         blockPos: BlockPos,
         attempts: Int = 3,
         range: Float = 4.25f,
+        visibleSideCheck: Boolean = false,
         sides: Array<EnumFacing> = EnumFacing.values(),
         toIgnore: HashSet<BlockPos> = HashSet()
     ): Pair<EnumFacing, BlockPos>? {
+        val eyePos = player.getPositionEyes(1.0f)
+
         for (side in sides) {
-            val pos = blockPos.offset(side)
-            if (!toIgnore.add(pos)) continue
-            if (world.getBlockState(pos).material.isReplaceable) continue
-            if (player.getPositionEyes(1f).distanceTo(Vec3d(pos).add(getHitVecOffset(side))) > range) continue
-            return Pair(side.opposite, pos)
+            val offsetPos = blockPos.offset(side)
+
+            if (!toIgnore.add(offsetPos)) continue
+            if (world.getBlockState(offsetPos).material.isReplaceable) continue
+            if (eyePos.distanceTo(getHitVec(blockPos, side)) > range) continue
+            if (visibleSideCheck && !getVisibleSides(offsetPos).contains(side.opposite)) continue
+
+            return Pair(side.opposite, offsetPos)
         }
+
         if (attempts > 1) {
             toIgnore.add(blockPos)
             for (side in sides) {
                 val pos = blockPos.offset(side)
                 if (!isPlaceable(pos)) continue
-                return getNeighbour(pos, attempts - 1, range, sides, toIgnore) ?: continue
+                return getNeighbour(pos, attempts - 1, range, visibleSideCheck, sides, toIgnore) ?: continue
             }
         }
+
         return null
+    }
+
+    fun SafeClientEvent.getBetterNeighbour(
+        blockPos: BlockPos,
+        attempts: Int = 3,
+        range: Float = 4.25f,
+        visibleSideCheck: Boolean = false,
+        sides: Array<EnumFacing> = EnumFacing.values(),
+        toIgnore: HashSet<BlockPos> = HashSet()
+    ): ArrayList<Pair<EnumFacing, BlockPos>> {
+        val eyePos = player.getPositionEyes(1.0f)
+        val candidates = arrayListOf<Pair<EnumFacing, BlockPos>>()
+
+        for (side in sides) {
+            val offsetPos = blockPos.offset(side)
+
+            if (!toIgnore.add(offsetPos)) continue
+            if (world.getBlockState(offsetPos).material.isReplaceable) continue
+            if (eyePos.distanceTo(getHitVec(blockPos, side)) > range) continue
+            if (visibleSideCheck && !getVisibleSides(offsetPos).contains(side.opposite)) continue
+
+            candidates.add(Pair(side.opposite, offsetPos))
+            return candidates
+        }
+
+        if (attempts > 1) {
+            toIgnore.add(blockPos)
+            for (side in sides) {
+                val pos = blockPos.offset(side)
+                if (!isPlaceable(pos)) continue
+                candidates.addAll(getBetterNeighbour(pos, attempts - 1, range, visibleSideCheck, sides, toIgnore))
+                return candidates
+            }
+        }
+
+        return candidates
     }
 
     /**
