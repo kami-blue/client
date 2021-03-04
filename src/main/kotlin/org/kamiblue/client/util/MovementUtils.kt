@@ -6,12 +6,11 @@ import net.minecraft.entity.Entity
 import net.minecraft.init.MobEffects
 import net.minecraft.util.MovementInput
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
 import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.util.math.VectorUtils.toBlockPos
+import org.kamiblue.client.util.EntityUtils.flooredPosition
+import org.kamiblue.client.util.math.VectorUtils.toVec3d
 import kotlin.math.cos
 import kotlin.math.hypot
-import kotlin.math.round
 import kotlin.math.sin
 
 object MovementUtils {
@@ -58,8 +57,8 @@ object MovementUtils {
         } ?: speed
 
     fun EntityPlayerSP.centerPlayer(): Boolean {
-        val center = Vec3d(round(this.posX + 0.5) - 0.5, this.posY, round(this.posZ + 0.5) - 0.5)
-        val centered = isCentered(center.toBlockPos())
+        val center = this.flooredPosition.toVec3d(0.5, 0.0, 0.5)
+        val centered = isCentered(this.flooredPosition)
 
         if (!centered) {
             this.motionX = (center.x - this.posX) / 2.0

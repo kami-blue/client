@@ -2,83 +2,93 @@ package org.kamiblue.client.module.modules.movement
 
 import net.minecraft.util.math.BlockPos
 import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.event.events.PlayerTravelEvent
-import org.kamiblue.client.manager.managers.CombatManager
+import org.kamiblue.client.event.events.PlayerMoveEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.flooredPosition
+import org.kamiblue.client.util.MovementUtils.centerPlayer
+import org.kamiblue.client.util.MovementUtils.isCentered
 import org.kamiblue.client.util.combat.SurroundUtils
 import org.kamiblue.client.util.combat.SurroundUtils.checkHole
-import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import org.kamiblue.client.util.threads.safeListener
 
-@CombatManager.CombatModule
 internal object Anchor : Module(
     name = "Anchor",
-    description = "Automatically stops when you are above hole",
-    category = Category.MOVEMENT,
-    modulePriority = 10
+    description = "Stops your motion when you are above hole",
+    category = Category.MOVEMENT
 ) {
-    private val vRange by setting("Range", 5, 1..10, 1)
-    private val mode by setting("Mode", AnchorMode.BOTH)
-    private val turnOffAfter by setting("Turn Off After", false)
-    private val pitchTrigger by setting("Pitch Trigger", false)
-    private val pitch by setting("Pitch", 80, -90..90, 1, { pitchTrigger })
-    private val strict by setting("Strict", true)
-    private var prevInHole = false
+    private val mode by setting("Mode", Mode.BOTH)
+    private val autoCenter by setting("Auto Center", true)
+    private val stopYMotion by setting("Stop Y Motion", false)
+    private val disableInHole by setting("Disable In Hole", false)
+    private val pitchTrigger by setting("Pitch Trigger", true)
+    private val pitch by setting("Pitch", 75, 0..80, 1, { pitchTrigger })
+    private val verticalRange by setting("Vertical Range", 3, 1..5, 1)
 
-    private enum class AnchorMode {
+    private enum class Mode {
         BOTH, BEDROCK
     }
 
-    /**
-     * Checks whether the specified block position is a hole or not
-     */
-    private fun SafeClientEvent.isHole(pos: BlockPos): Boolean {
-        val type = checkHole(pos)
-        return mode == AnchorMode.BOTH && type != SurroundUtils.HoleType.NONE ||
-            mode == AnchorMode.BEDROCK && type == SurroundUtils.HoleType.BEDROCK
-    }
-
-    /**
-     * Checks whether the player should stop movement or not
-     */
-    private fun SafeClientEvent.shouldStop(): Boolean {
-        if (pitchTrigger && mc.player.rotationPitch < pitch) return false
-        for (dy in 1..vRange) {
-            val pos = player.flooredPosition.down(dy)
-            if (!world.isAirBlock(pos))
-                return false
-            if (isHole(pos))
-                return true
-        }
-        return false
-    }
+    private var wasInHole = false
 
     init {
         onDisable {
-            prevInHole = false
+            wasInHole = false
         }
 
-        safeListener<PlayerTravelEvent> {
-            if (isHole(player.flooredPosition) &&
-                !world.isAirBlock(player.positionVector.add(0.0, -0.1, 0.0).toBlockPos())) {
-                prevInHole = true
-                if (turnOffAfter)
-                    disable()
-                return@safeListener
-            }
-            if (!shouldStop()) {
-                prevInHole = false
-                return@safeListener
-            }
-            if (prevInHole) return@safeListener
+        safeListener<PlayerMoveEvent> {
+            val isInHole = player.onGround && isHole(player.flooredPosition)
+            val validPitch = !pitchTrigger || player.rotationPitch > pitch
 
-            SurroundUtils.centerPlayer(!strict)
-            if (!strict) {
-                player.motionX = 0.0
-                player.motionZ = 0.0
+            // Disable after in hole for 2 ticks
+            if (wasInHole && isInHole && disableInHole) {
+                disable()
+                return@safeListener
             }
+
+            if (validPitch) {
+                // Stops XZ motion
+                if (isInHole || isAboveHole()) {
+                    if (player.isCentered(player.flooredPosition)) {
+                        player.motionX = 0.0
+                        player.motionZ = 0.0
+                    } else if (autoCenter) {
+                        player.centerPlayer()
+                    }
+                }
+
+                // Stops Y motion
+                if (stopYMotion && isInHole) {
+                    player.motionY = -0.08 // Minecraft needs this for on ground check
+                }
+            }
+
+            wasInHole = isInHole
         }
     }
+
+    /**
+     * Checks whether the player is above hole
+     */
+    private fun SafeClientEvent.isAboveHole(): Boolean {
+        val flooredPos = player.flooredPosition
+
+        for (yOffset in 1..verticalRange) {
+            val pos = flooredPos.down(yOffset)
+            if (!world.isAirBlock(pos)) return false
+            if (isHole(pos)) return true
+        }
+
+        return false
+    }
+
+    /**
+     * Checks whether the specified block position is a valid type of hole
+     */
+    private fun SafeClientEvent.isHole(pos: BlockPos): Boolean {
+        val type = checkHole(pos)
+        return mode == Mode.BOTH && type != SurroundUtils.HoleType.NONE
+            || mode == Mode.BEDROCK && type == SurroundUtils.HoleType.BEDROCK
+    }
+
 }
