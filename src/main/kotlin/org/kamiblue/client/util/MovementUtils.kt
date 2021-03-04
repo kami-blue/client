@@ -1,11 +1,17 @@
 package org.kamiblue.client.util
 
 import net.minecraft.client.Minecraft
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.Entity
 import net.minecraft.init.MobEffects
+import net.minecraft.util.MovementInput
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
 import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import kotlin.math.cos
 import kotlin.math.hypot
+import kotlin.math.round
 import kotlin.math.sin
 
 object MovementUtils {
@@ -50,4 +56,42 @@ object MovementUtils {
         player.getActivePotionEffect(MobEffects.SPEED)?.let {
             speed * (1.0 + (it.amplifier + 1) * 0.2)
         } ?: speed
+
+    fun EntityPlayerSP.centerPlayer(): Boolean {
+        val center = Vec3d(round(this.posX + 0.5) - 0.5, this.posY, round(this.posZ + 0.5) - 0.5)
+        val centered = isCentered(center.toBlockPos())
+
+        if (!centered) {
+            this.motionX = (center.x - this.posX) / 2.0
+            this.motionZ = (center.z - this.posZ) / 2.0
+
+            val speed = this.speed
+
+            if (speed > 0.2805) {
+                val multiplier = 0.2805 / speed
+                this.motionX *= multiplier
+                this.motionZ *= multiplier
+            }
+        }
+
+        return centered
+    }
+
+    fun Entity.isCentered(pos: BlockPos) =
+        this.posX in pos.x + 0.31..pos.x + 0.69
+            && this.posZ in pos.z + 0.31..pos.z + 0.69
+
+    fun MovementInput.resetMove() {
+        moveForward = 0.0f
+        moveStrafe = 0.0f
+        forwardKeyDown = false
+        backKeyDown = false
+        leftKeyDown = false
+        rightKeyDown = false
+    }
+
+    fun MovementInput.resetJumpSneak() {
+        jump = false
+        sneak = false
+    }
 }

@@ -12,6 +12,7 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.movement.Strafe
 import org.kamiblue.client.util.*
+import org.kamiblue.client.util.MovementUtils.centerPlayer
 import org.kamiblue.client.util.MovementUtils.speed
 import org.kamiblue.client.util.WorldUtils.buildStructure
 import org.kamiblue.client.util.WorldUtils.getPlaceInfo
@@ -33,19 +34,15 @@ internal object Surround : Module(
     description = "Surrounds you with obsidian to take less damage",
     modulePriority = 200
 ) {
-    private val autoCenter = setting("Auto Center", AutoCenterMode.MOTION)
-    private val placeSpeed = setting("Places Per Tick", 4f, 0.25f..5f, 0.25f)
-    private val autoDisable = setting("Auto Disable", AutoDisableMode.OUT_OF_HOLE)
-    private val outOfHoleTimeout = setting("Out Of Hole Timeout", 10, 1..50, 5, { autoDisable.value == AutoDisableMode.OUT_OF_HOLE }, description = "Delay before disabling Surround when you are out of hole, in ticks")
+    private val placeSpeed by setting("Places Per Tick", 4f, 0.25f..5f, 0.25f)
+    private val disableStrafe by setting("Disable Strafe", true)
+    private val autoDisable by setting("Auto Disable", AutoDisableMode.OUT_OF_HOLE)
+    private val outOfHoleTimeout by setting("Out Of Hole Timeout", 10, 1..50, 5, { autoDisable == AutoDisableMode.OUT_OF_HOLE }, description = "Delay before disabling Surround when you are out of hole, in ticks")
     private val enableInHole = setting("Enable In Hole", false)
-    private val inHoleTimeout = setting("In Hole Timeout", 50, 1..100, 5, { enableInHole.value }, description = "Delay before enabling Surround when you are in hole, in ticks")
-    private val disableStrafe = setting("Disable Strafe", true)
+    private val inHoleTimeout by setting("In Hole Timeout", 50, 1..100, 5, { enableInHole.value }, description = "Delay before enabling Surround when you are in hole, in ticks")
+    private val toggleMessage by setting("Toggle Message", true)
 
-    enum class AutoCenterMode {
-        OFF, TP, MOTION
-    }
-
-    enum class AutoDisableMode {
+    private enum class AutoDisableMode {
         ONE_TIME, OUT_OF_HOLE
     }
 
@@ -91,10 +88,17 @@ internal object Surround : Module(
                 toggleTimer.reset()
             }
 
-            // Placeable & Centered check
-            if (!canRun() || !centerPlayer()) {
-                if (autoDisable.value == AutoDisableMode.ONE_TIME) disable()
+            // Centered check
+            if (!player.centerPlayer()) return@safeListener
+
+            // Placeable
+            if (!canRun()) {
+                if (autoDisable == AutoDisableMode.ONE_TIME) disable()
                 return@safeListener
+            }
+
+            if (disableStrafe) {
+                Strafe.disable()
             }
 
             // The actual job
@@ -111,8 +115,8 @@ internal object Surround : Module(
 
     private fun SafeClientEvent.enableInHoleCheck() {
         if (enableInHole.value && inHoleCheck()) {
-            if (toggleTimer.stop() > inHoleTimeout.value) {
-                MessageSendHelper.sendChatMessage("$chatName You are in hole for longer than ${inHoleTimeout.value} ticks, enabling")
+            if (toggleTimer.stop() > inHoleTimeout) {
+                if (toggleMessage) MessageSendHelper.sendChatMessage("$chatName You are in hole for longer than $inHoleTimeout ticks, enabling")
                 enable()
             }
         } else {
@@ -123,9 +127,9 @@ internal object Surround : Module(
     private fun SafeClientEvent.inHoleCheck() = player.onGround && player.speed < 0.15 && checkHole(player) == SurroundUtils.HoleType.OBBY
 
     private fun outOfHoleCheck() {
-        if (autoDisable.value == AutoDisableMode.OUT_OF_HOLE) {
-            if (toggleTimer.stop() > outOfHoleTimeout.value) {
-                MessageSendHelper.sendChatMessage("$chatName You are out of hole for longer than ${outOfHoleTimeout.value} ticks, disabling")
+        if (autoDisable == AutoDisableMode.OUT_OF_HOLE) {
+            if (toggleTimer.stop() > outOfHoleTimeout) {
+                if (toggleMessage) MessageSendHelper.sendChatMessage("$chatName You are out of hole for longer than $outOfHoleTimeout ticks, disabling")
                 disable()
             }
         }
@@ -140,7 +144,7 @@ internal object Surround : Module(
 
         if (slots == null) { // Obsidian check
             if (isEnabled) {
-                MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
+                if (toggleMessage) MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
                 disable()
             }
             return null
@@ -158,19 +162,10 @@ internal object Surround : Module(
         return false
     }
 
-    private fun centerPlayer(): Boolean {
-        return if (autoCenter.value == AutoCenterMode.OFF) {
-            true
-        } else {
-            if (disableStrafe.value) Strafe.disable()
-            SurroundUtils.centerPlayer(autoCenter.value == AutoCenterMode.TP)
-        }
-    }
-
     private fun SafeClientEvent.runSurround() = defaultScope.launch {
         spoofHotbar()
 
-        buildStructure(placeSpeed.value) {
+        buildStructure(placeSpeed) {
             if (isEnabled && CombatManager.isOnTopPriority(this@Surround)) {
                 getPlaceInfo(player.positionVector.toBlockPos(), SurroundUtils.surroundOffset, it, 2)
             } else {

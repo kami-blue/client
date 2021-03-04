@@ -22,7 +22,7 @@ internal object AutoEZ : Module(
     description = "Sends an insult in chat after killing someone"
 ) {
     private val detectMode = setting("Detect Mode", DetectMode.HEALTH)
-    private val messageMode = setting("Messag Mode", MessageMode.ONTOP)
+    private val messageMode = setting("Message Mode", MessageMode.ONTOP)
     private val customText = setting("Custom Text", "unchanged")
 
     private enum class DetectMode {

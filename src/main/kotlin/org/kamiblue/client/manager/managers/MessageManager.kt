@@ -9,14 +9,12 @@ import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.modules.client.ChatSetting
 import org.kamiblue.client.util.TaskState
 import org.kamiblue.client.util.TickTimer
-import org.kamiblue.client.util.Wrapper
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.HashSet
 
 object MessageManager : Manager {
-    private val mc = Wrapper.minecraft
     private val lockObject = Any()
 
     private val messageQueue = TreeSet<QueuedMessage>(Comparator.reverseOrder())
