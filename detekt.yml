@@ -1,9 +1,0 @@
-complexity:
-  active: true
-  ComplexMethod:
-    active: false
-
-style:
-  active: true
-  UnnecessaryParentheses:
-    active: false
