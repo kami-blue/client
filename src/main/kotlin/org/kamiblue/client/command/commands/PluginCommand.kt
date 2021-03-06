@@ -21,18 +21,18 @@ object PluginCommand : ClientCommand(
                     val name = "${nameArg.value.removeSuffix(".jar")}.jar"
                     val file = File("${PluginManager.pluginPath}$name")
 
-                    if (!file.exists() || !file.extension.equals("jar", true)) {
-                        MessageSendHelper.sendErrorMessage("$name is not a valid jar file name!")
+                    if (!file.exists()) {
+                        MessageSendHelper.sendErrorMessage("${formatValue(name)} is not a valid jar file name!")
                     }
 
                     val time = System.currentTimeMillis()
-                    MessageSendHelper.sendChatMessage("Loading plugin $name...")
+                    MessageSendHelper.sendChatMessage("Loading plugin ${formatValue(name)}...")
 
                     ConfigUtils.saveAll()
                     val loader = PluginLoader(file)
 
                     if (PluginManager.loadedPlugins.containsName(loader.info.name)) {
-                        MessageSendHelper.sendWarningMessage("Plugin $name is already loaded!")
+                        MessageSendHelper.sendWarningMessage("Plugin ${formatValue(name)} is already loaded!")
                         return@execute
                     }
 
@@ -40,7 +40,7 @@ object PluginCommand : ClientCommand(
                     ConfigUtils.loadAll()
 
                     val stopTime = System.currentTimeMillis() - time
-                    MessageSendHelper.sendChatMessage("Loaded plugin $name, took $stopTime ms!")
+                    MessageSendHelper.sendChatMessage("Loaded plugin ${formatValue(name)}, took $stopTime ms!")
 
                     PluginError.displayErrors()
                 }
@@ -54,12 +54,12 @@ object PluginCommand : ClientCommand(
                     val plugin = PluginManager.loadedPlugins[name]
 
                     if (plugin == null) {
-                        MessageSendHelper.sendErrorMessage("No plugins called $name were found")
+                        MessageSendHelper.sendErrorMessage("Plugin ${formatValue(name)} is not loaded")
                         return@execute
                     }
 
                     val time = System.currentTimeMillis()
-                    MessageSendHelper.sendChatMessage("Reloading plugins for $name...")
+                    MessageSendHelper.sendChatMessage("Reloading plugin ${formatValue(name)}...")
 
                     ConfigUtils.saveAll()
 
@@ -69,7 +69,7 @@ object PluginCommand : ClientCommand(
                     ConfigUtils.loadAll()
 
                     val stopTime = System.currentTimeMillis() - time
-                    MessageSendHelper.sendChatMessage("Reloaded plugin $name, took $stopTime ms!")
+                    MessageSendHelper.sendChatMessage("Reloaded plugin ${formatValue(name)}, took $stopTime ms!")
 
                     PluginError.displayErrors()
                 }
@@ -77,7 +77,7 @@ object PluginCommand : ClientCommand(
 
             execute {
                 val time = System.currentTimeMillis()
-                MessageSendHelper.sendChatMessage("Reloading plugins...")
+                MessageSendHelper.sendChatMessage("Reloading all plugins...")
 
                 ConfigUtils.saveAll()
                 PluginManager.unloadAll()
@@ -85,7 +85,7 @@ object PluginCommand : ClientCommand(
                 ConfigUtils.loadAll()
 
                 val stopTime = System.currentTimeMillis() - time
-                MessageSendHelper.sendChatMessage("Reloaded plugins, took $stopTime ms!")
+                MessageSendHelper.sendChatMessage("Reloaded all plugins, took $stopTime ms!")
 
                 PluginError.displayErrors()
             }
@@ -98,38 +98,39 @@ object PluginCommand : ClientCommand(
                     val plugin = PluginManager.loadedPlugins[name]
 
                     if (plugin == null) {
-                        MessageSendHelper.sendErrorMessage("No plugin found for name $name")
+                        MessageSendHelper.sendErrorMessage("Plugin ${formatValue(name)} is not loaded")
                         return@execute
                     }
 
                     val time = System.currentTimeMillis()
-                    MessageSendHelper.sendChatMessage("Unloading plugin $name...")
+                    MessageSendHelper.sendChatMessage("Unloading plugin ${formatValue(name)}...")
 
                     ConfigUtils.saveAll()
                     PluginManager.unload(plugin)
                     ConfigUtils.loadAll()
 
                     val stopTime = System.currentTimeMillis() - time
-                    MessageSendHelper.sendChatMessage("Unloaded plugin $name, took $stopTime ms!")
+                    MessageSendHelper.sendChatMessage("Unloaded plugin ${formatValue(name)}, took $stopTime ms!")
                 }
             }
 
             execute {
                 val time = System.currentTimeMillis()
-                MessageSendHelper.sendChatMessage("Unloading plugins...")
+                MessageSendHelper.sendChatMessage("Unloading all plugins...")
 
                 ConfigUtils.saveAll()
                 PluginManager.unloadAll()
                 ConfigUtils.loadAll()
 
                 val stopTime = System.currentTimeMillis() - time
-                MessageSendHelper.sendChatMessage("Unloaded plugins, took $stopTime ms!")
+                MessageSendHelper.sendChatMessage("Unloaded all plugins, took $stopTime ms!")
             }
         }
 
         literal("list") {
             execute {
                 MessageSendHelper.sendChatMessage("Loaded plugins: ${formatValue(PluginManager.loadedPlugins.size)}")
+
                 if (PluginManager.loadedPlugins.isEmpty()) {
                     MessageSendHelper.sendRawChatMessage("No plugin loaded")
                 } else {
@@ -175,5 +176,4 @@ object PluginCommand : ClientCommand(
         MessageSendHelper.sendChatMessage("Info for plugin: $loader")
         MessageSendHelper.sendRawChatMessage(plugin.toString())
     }
-
 }
