@@ -68,11 +68,11 @@
     "render.MixinRenderPlayer",
     "render.MixinTileEntityRendererDispatcher",
     "render.MixinTileEntitySignRenderer",
+    "render.MixinViewFrustum",
     "render.MixinVisGraph",
     "world.MixinBlockLiquid",
     "world.MixinBlockSoulSand",
     "world.MixinBlockWeb",
-    "render.MixinViewFrustum",
     "world.MixinWorld"
   ]
 }
