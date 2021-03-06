@@ -87,7 +87,7 @@ object WorldUtils {
         for (x in xArray) {
             for (z in zArray) {
                 val result = rayTraceToGround(Vec3d(x, boundingBox.minY, z), stopOnLiquid)
-                if (result != null) {
+                result?.let {
                     results.add(result)
                 }
             }
@@ -142,11 +142,6 @@ object WorldUtils {
             .minByOrNull { eyePos.distanceTo(getHitVec(pos, it)) }
     }
 
-    /**
-     * Get the "visible" sides related to player's eye position
-     *
-     * Reverse engineered from HauseMaster's anti cheat plugin
-     */
     fun SafeClientEvent.getVisibleSides(pos: BlockPos): Set<EnumFacing> {
         val visibleSides = EnumSet.noneOf(EnumFacing::class.java)
 

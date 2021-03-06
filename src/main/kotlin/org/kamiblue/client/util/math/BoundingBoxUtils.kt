@@ -40,11 +40,6 @@ fun AxisAlignedBB.side(side: EnumFacing, scale: Double = 0.5): Vec3d {
     return lengths * sideDirectionVec * scale + center
 }
 
-/**
- * Check if a block is in sight
- *
- * Reverse engineered from HauseMaster's anti cheat plugin
- */
 fun AxisAlignedBB.isInSight(
     posFrom: Vec3d = Wrapper.player?.getPositionEyes(1.0f) ?: Vec3d.ZERO,
     rotation: Vec2f = Wrapper.player?.let { Vec2f(it) } ?: Vec2f.ZERO,
@@ -52,11 +47,6 @@ fun AxisAlignedBB.isInSight(
     tolerance: Double = 1.05
 ) = isInSight(posFrom, rotation.toViewVec(), range, tolerance)
 
-/**
- * Check if a block is in sight
- *
- * Reverse engineered from HauseMaster's anti cheat plugin
- */
 fun AxisAlignedBB.isInSight(
     posFrom: Vec3d,
     viewVec: Vec3d,
