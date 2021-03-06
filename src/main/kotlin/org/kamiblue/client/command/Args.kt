@@ -7,7 +7,6 @@ import net.minecraft.util.math.BlockPos
 import org.kamiblue.capeapi.PlayerProfile
 import org.kamiblue.client.gui.GuiManager
 import org.kamiblue.client.gui.hudgui.AbstractHudElement
-import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.manager.managers.UUIDManager
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.ModuleManager
