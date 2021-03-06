@@ -16,6 +16,10 @@ object BlockPicker : ListWindow("Block Picker", 0.0f, 0.0f, 200.0f, 200.0f, Sett
 
     val blocks = Block.REGISTRY.keys.asSequence().map { Block.REGISTRY.getObject(ResourceLocation(it.path)) }.distinctBy { it.localizedName }.filter { !it.localizedName.startsWith("tile") }.sortedBy { it.localizedName.toLowerCase() }.toList()
 
+    init {
+        visible = false
+    }
+
     override fun onDisplayed() {
         super.onDisplayed()
 

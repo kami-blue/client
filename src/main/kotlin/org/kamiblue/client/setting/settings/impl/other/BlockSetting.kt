@@ -18,11 +18,10 @@ class BlockSetting(
 
     override fun read(jsonElement: JsonElement?) {
         jsonElement?.asJsonPrimitive?.asString.let {
-            for (block in BlockPicker.blocks) {
-                if (block.translationKey == it) {
-                    value = block
-                    break
-                }
+            BlockPicker.blocks.find { block ->
+                block.translationKey == it
+            }?.let { block ->
+                value = block
             }
         }
     }
