@@ -45,8 +45,6 @@ class BindSetting(
         }
 
         value.setBind(modifierKeys, lastKey)
-
-        println("${value.modifierKeys}, ${value.key}")
     }
 
     override fun write() = JsonPrimitive(value.toString())
