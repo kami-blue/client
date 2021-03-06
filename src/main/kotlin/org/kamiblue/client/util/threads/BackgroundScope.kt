@@ -20,12 +20,13 @@ internal object BackgroundScope : CoroutineScope by CoroutineScope(newFixedThrea
         return launchLooping(BackgroundJob(name, delay, block))
     }
 
-    fun launchLooping(job: BackgroundJob) : BackgroundJob {
+    fun launchLooping(job: BackgroundJob): BackgroundJob {
         if (!started) {
             jobs[job] = null
         } else {
             jobs[job] = startJob(job)
         }
+
         return job
     }
 
