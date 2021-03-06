@@ -25,9 +25,10 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.MovementUtils.calcMoveYaw
+import org.kamiblue.client.util.MovementUtils.resetJumpSneak
+import org.kamiblue.client.util.MovementUtils.resetMove
 import org.kamiblue.client.util.math.RotationUtils
 import org.kamiblue.client.util.math.RotationUtils.getRotationTo
-import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import org.kamiblue.client.util.threads.onMainThreadSafe
 import org.kamiblue.client.util.threads.runSafeR
 import org.kamiblue.client.util.threads.safeListener
@@ -45,13 +46,14 @@ internal object Freecam : Module(
     category = Category.PLAYER,
     description = "Leave your body and transcend into the realm of the gods"
 ) {
-    private val directionMode = setting("Flight Mode", FlightMode.CREATIVE)
-    private val horizontalSpeed = setting("Horizontal Speed", 20f, 1f..50f, 1f)
-    private val verticalSpeed = setting("Vertical Speed", 20f, 1f..50f, 1f)
-    private val autoRotate = setting("Auto Rotate", true)
-    private val arrowKeyMove = setting("Arrow Key Move", true)
-    private val disableOnDisconnect = setting("Disconnect Disable", true)
-    private val leftClickCome = setting("Left Click Come", true)
+    private val directionMode by setting("Flight Mode", FlightMode.CREATIVE)
+    private val horizontalSpeed by setting("Horizontal Speed", 20.0f, 1.0f..50.0f, 1f)
+    private val verticalSpeed by setting("Vertical Speed", 20.0f, 1.0f..50.0f, 1f, { directionMode == FlightMode.CREATIVE })
+    private val autoRotate by setting("Auto Rotate", true)
+    private val arrowKeyMove by setting("Arrow Key Move", true)
+    private val disableOnDisconnect by setting("Disconnect Disable", true)
+    private val leftClickCome by setting("Left Click Come", false)
+    private val relative by setting("Relative", false)
 
     private enum class FlightMode(override val displayName: String) : DisplayEnum {
         CREATIVE("Creative"),
@@ -112,7 +114,7 @@ internal object Freecam : Module(
 
         listener<ConnectionEvent.Disconnect> {
             prevThirdPersonViewSetting = -1
-            if (disableOnDisconnect.value) disable()
+            if (disableOnDisconnect) disable()
             else cameraGuy = null
         }
 
@@ -149,35 +151,26 @@ internal object Freecam : Module(
 
             if (BaritoneUtils.isActive) return@safeListener
 
-            if (autoRotate.value) updatePlayerRotation()
-            if (arrowKeyMove.value) updatePlayerMovement()
+            if (autoRotate) updatePlayerRotation()
+            if (arrowKeyMove) updatePlayerMovement()
         }
 
         listener<InputEvent.MouseInputEvent> {
-            if (leftClickCome.value && Mouse.getEventButton() == 0 && clickTimer.tick(1L)) {
+            if (leftClickCome && Mouse.getEventButton() == 0 && clickTimer.tick(1L)) {
                 val result = mc.objectMouseOver ?: return@listener
 
-                if (result.typeOfHit != RayTraceResult.Type.BLOCK) {
-                    return@listener
+                if (result.typeOfHit == RayTraceResult.Type.BLOCK) {
+                    BaritoneUtils.cancelEverything()
+                    BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalTwoBlocks(result.blockPos))
                 }
-
-                BaritoneUtils.cancelEverything()
-                BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalTwoBlocks(result.hitVec.toBlockPos()))
             }
         }
     }
 
     private fun resetMovementInput(movementInput: MovementInput?) {
-        if (movementInput !is MovementInputFromOptions) return
-        movementInput.apply {
-            moveForward = 0f
-            moveStrafe = 0f
-            forwardKeyDown = false
-            backKeyDown = false
-            leftKeyDown = false
-            rightKeyDown = false
-            jump = false
-            sneak = false
+        if (movementInput is MovementInputFromOptions) {
+            movementInput.resetMove()
+            movementInput.resetJumpSneak()
         }
     }
 
@@ -219,16 +212,16 @@ internal object Freecam : Module(
 
             val yawDiff = player.rotationYaw - it.rotationYaw
             val yawRad = calcMoveYaw(yawDiff, movementInput.first, movementInput.second).toFloat()
-            val inputTotal = min(abs(movementInput.first) + abs(movementInput.second), 1f)
+            val inputTotal = min(abs(movementInput.first) + abs(movementInput.second), 1.0f)
 
             player.movementInput?.apply {
                 moveForward = cos(yawRad) * inputTotal
                 moveStrafe = sin(yawRad) * inputTotal
 
-                forwardKeyDown = moveForward > 0f
-                backKeyDown = moveForward < 0f
-                leftKeyDown = moveStrafe < 0f
-                rightKeyDown = moveStrafe > 0f
+                forwardKeyDown = moveForward > 0.0f
+                backKeyDown = moveForward < 0.0f
+                leftKeyDown = moveStrafe < 0.0f
+                rightKeyDown = moveStrafe > 0.0f
 
                 jump = Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)
             }
@@ -273,17 +266,18 @@ internal object Freecam : Module(
             // Update sprinting
             isSprinting = mc.gameSettings.keyBindSprint.isKeyDown
 
-            val yawRad = (rotationYaw - RotationUtils.getRotationFromVec(Vec3d(moveStrafing.toDouble(), 0.0, moveForward.toDouble())).x).toDouble().toRadian()
-            val speed = (horizontalSpeed.value / 20f) * min(abs(moveForward) + abs(moveStrafing), 1f)
+            val absYaw = RotationUtils.getRotationFromVec(Vec3d(moveStrafing.toDouble(), 0.0, moveForward.toDouble())).x
+            val yawRad = (rotationYaw - absYaw).toDouble().toRadian()
+            val speed = (horizontalSpeed / 20.0f) * min(abs(moveForward) + abs(moveStrafing), 1.0f)
 
-            if (directionMode.value == FlightMode.THREE_DEE) {
-                val pitchRad = Math.toRadians(rotationPitch.toDouble()) * moveForward
+            if (directionMode == FlightMode.THREE_DEE) {
+                val pitchRad = rotationPitch.toDouble().toRadian() * moveForward
                 motionX = -sin(yawRad) * cos(pitchRad) * speed
                 motionY = -sin(pitchRad) * speed
                 motionZ = cos(yawRad) * cos(pitchRad) * speed
             } else {
                 motionX = -sin(yawRad) * speed
-                motionY = moveVertical.toDouble() * (verticalSpeed.value / 20f)
+                motionY = moveVertical.toDouble() * (verticalSpeed / 20.0f)
                 motionZ = cos(yawRad) * speed
             }
 
@@ -293,12 +287,18 @@ internal object Freecam : Module(
                 motionZ *= 1.5
             }
 
-            noClip = true
+            if (relative) {
+                motionX += player.posX - player.prevPosX
+                motionY += player.posY - player.prevPosY
+                motionZ += player.posZ - player.prevPosZ
+            }
 
             move(MoverType.SELF, motionX, motionY, motionZ)
         }
 
         override fun getEyeHeight() = 1.65f
+
+        override fun isSpectator() = true
 
         override fun isInvisible() = true
 
@@ -315,23 +315,23 @@ internal object Freecam : Module(
     private fun calcMovementInput(forward: Pair<Boolean, Boolean>, strafe: Pair<Boolean, Boolean>, vertical: Pair<Boolean, Boolean>): Triple<Float, Float, Float> {
         // Forward movement input
         val moveForward = if (forward.first xor forward.second) {
-            if (forward.first) 1f else -1f
+            if (forward.first) 1.0f else -1.0f
         } else {
-            0f
+            0.0f
         }
 
         // Strafe movement input
         val moveStrafing = if (strafe.first xor strafe.second) {
-            if (strafe.second) 1f else -1f
+            if (strafe.second) 1.0f else -1.0f
         } else {
-            0f
+            0.0f
         }
 
         // Vertical movement input
         val moveVertical = if (vertical.first xor vertical.second) {
-            if (vertical.first) 1f else -1f
+            if (vertical.first) 1.0f else -1.0f
         } else {
-            0f
+            0.0f
         }
 
         return Triple(moveForward, moveStrafing, moveVertical)

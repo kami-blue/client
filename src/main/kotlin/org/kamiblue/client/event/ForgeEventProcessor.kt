@@ -149,7 +149,7 @@ internal object ForgeEventProcessor {
     }
 
     @SubscribeEvent
-    fun onClientConnect(event: EntityViewRenderEvent.FogColors) {
+    fun onRenderFogColors(event: EntityViewRenderEvent.FogColors) {
         KamiEventBus.post(event)
     }
 }

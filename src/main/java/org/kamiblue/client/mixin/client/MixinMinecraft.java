@@ -1,6 +1,5 @@
 package org.kamiblue.client.mixin.client;
 
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
@@ -21,7 +20,7 @@ import org.kamiblue.client.manager.managers.PlayerPacketManager;
 import org.kamiblue.client.mixin.client.accessor.player.AccessorEntityPlayerSP;
 import org.kamiblue.client.mixin.client.accessor.player.AccessorPlayerControllerMP;
 import org.kamiblue.client.module.modules.combat.CrystalAura;
-import org.kamiblue.client.module.modules.player.MultiTask;
+import org.kamiblue.client.module.modules.player.BlockInteraction;
 import org.kamiblue.client.plugin.PluginError;
 import org.kamiblue.client.util.Wrapper;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
-public class MixinMinecraft {
+public abstract class MixinMinecraft {
 
     @Shadow public WorldClient world;
     @Shadow public EntityPlayerSP player;
@@ -42,6 +41,9 @@ public class MixinMinecraft {
 
     @Shadow public RayTraceResult objectMouseOver;
     @Shadow public EntityRenderer entityRenderer;
+
+    @Shadow protected abstract void clickMouse();
+
     private boolean handActive = false;
     private boolean isHittingBlock = false;
 
@@ -102,10 +104,20 @@ public class MixinMinecraft {
         }
     }
 
+    // Allows left click attack while eating lol
+    @Inject(method = "processKeyBinds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isKeyDown()Z", shift = At.Shift.BEFORE, ordinal = 2))
+    public void processKeyBindsInvokeIsKeyDown(CallbackInfo ci) {
+        if (BlockInteraction.isMultiTaskEnabled()) {
+            while (this.gameSettings.keyBindAttack.isPressed()) {
+                this.clickMouse();
+            }
+        }
+    }
+
     // Hacky but safer than using @Redirect
     @Inject(method = "rightClickMouse", at = @At("HEAD"))
     public void rightClickMousePre(CallbackInfo ci) {
-        if (MultiTask.INSTANCE.isEnabled()) {
+        if (BlockInteraction.isMultiTaskEnabled()) {
             isHittingBlock = playerController.getIsHittingBlock();
             ((AccessorPlayerControllerMP) playerController).kbSetIsHittingBlock(false);
         }
@@ -113,14 +125,14 @@ public class MixinMinecraft {
 
     @Inject(method = "rightClickMouse", at = @At("RETURN"))
     public void rightClickMousePost(CallbackInfo ci) {
-        if (MultiTask.INSTANCE.isEnabled() && !playerController.getIsHittingBlock()) {
+        if (BlockInteraction.isMultiTaskEnabled() && !playerController.getIsHittingBlock()) {
             ((AccessorPlayerControllerMP) playerController).kbSetIsHittingBlock(isHittingBlock);
         }
     }
 
     @Inject(method = "sendClickBlockToController", at = @At("HEAD"))
     public void sendClickBlockToControllerPre(boolean leftClick, CallbackInfo ci) {
-        if (MultiTask.INSTANCE.isEnabled()) {
+        if (BlockInteraction.isMultiTaskEnabled()) {
             handActive = player.isHandActive();
             ((AccessorEntityPlayerSP) player).kbSetHandActive(false);
         }
@@ -128,7 +140,7 @@ public class MixinMinecraft {
 
     @Inject(method = "sendClickBlockToController", at = @At("RETURN"))
     public void sendClickBlockToControllerPost(boolean leftClick, CallbackInfo ci) {
-        if (MultiTask.INSTANCE.isEnabled() && !player.isHandActive()) {
+        if (BlockInteraction.isMultiTaskEnabled() && !player.isHandActive()) {
             ((AccessorEntityPlayerSP) player).kbSetHandActive(handActive);
         }
     }
