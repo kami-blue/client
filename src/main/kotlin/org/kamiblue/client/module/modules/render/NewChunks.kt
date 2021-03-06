@@ -37,10 +37,10 @@ internal object NewChunks : Module(
     category = Category.RENDER
 ) {
     private val relative by setting("Relative", false, description = "Renders the chunks at relative Y level to player")
-    private val renderMode = setting("RenderMode", RenderMode.BOTH)
-    private val chunkGridColor by setting("Radar Chunk grid color", ColorHolder(255, 0, 0, 100), true, { renderMode.value != RenderMode.WORLD })
-    private val distantChunkColor by setting("Radar Distant chunk color", ColorHolder(100, 100, 100, 100), true, { renderMode.value != RenderMode.WORLD }, "Chunks that are not in render distance and not in baritone cache")
-    private val newChunkColor by setting("Radar New chunk color", ColorHolder(255, 0, 0, 100), true, { renderMode.value != RenderMode.WORLD })
+    private val renderMode = setting("Render Mode", RenderMode.BOTH)
+    private val chunkGridColor by setting("Grid Color", ColorHolder(255, 0, 0, 100), true, { renderMode.value != RenderMode.WORLD })
+    private val distantChunkColor by setting("Distant Chunk Color", ColorHolder(100, 100, 100, 100), true, { renderMode.value != RenderMode.WORLD }, "Chunks that are not in render distance and not in baritone cache")
+    private val newChunkColor by setting("New Chunk Color", ColorHolder(255, 0, 0, 100), true, { renderMode.value != RenderMode.WORLD })
     private val yOffset by setting("Y Offset", 0, -256..256, 4, fineStep = 1, description = "Render offset in Y axis")
     private val color by setting("Color", ColorHolder(255, 64, 64, 200), description = "Highlighting color")
     private val thickness by setting("Thickness", 1.5f, 0.1f..4.0f, 0.1f, description = "Thickness of the highlighting square")
@@ -164,19 +164,9 @@ internal object NewChunks : Module(
 
     // p2.x > p1.x and p2.y > p1.y is assumed
     private fun isSquareInRadius(p1: Vec2d, p2: Vec2d, radius: Float): Boolean {
-        return if ((p1.x + p2.x) / 2 > 0) {
-            if ((p1.y + p2.y) / 2 > 0) {
-                p2.length()
-            } else {
-                Vec2d(p2.x, p1.y).length()
-            }
-        } else {
-            if ((p1.y + p2.y) / 2 > 0) {
-                Vec2d(p1.x, p2.y).length()
-            } else {
-                p1.length()
-            }
-        } < radius
+        val x = if (p1.x + p2.x > 0) p2.x else p1.x
+        val y = if (p1.y + p2.y > 0) p2.y else p1.y
+        return Vec2d(x, y).length() < radius
     }
 
     private fun getChunkPos(x: Int, z: Int, playerOffset: Vec2d, scale: Float): Vec2d {

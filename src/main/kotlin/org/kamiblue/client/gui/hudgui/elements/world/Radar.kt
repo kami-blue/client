@@ -47,7 +47,7 @@ object Radar : HudElement(
         super.renderHud(vertexHelper)
         runSafe {
             drawBorder(vertexHelper)
-            post(RenderRadarEvent(vertexHelper, radius, radarScale)) //Let other modules display radar elements
+            post(RenderRadarEvent(vertexHelper, radius, radarScale)) // Let other modules display radar elements
             drawEntities(vertexHelper)
             drawLabels()
         }
@@ -61,10 +61,10 @@ object Radar : HudElement(
     }
 
     private fun SafeClientEvent.drawEntities(vertexHelper: VertexHelper) {
-        drawCircleFilled(vertexHelper, radius = 1.0, color = primaryColor) //player marker
+        drawCircleFilled(vertexHelper, radius = 1.0, color = primaryColor) // player marker
 
-        val playerTargets = arrayOf(players.value, true, true) //enable friends and sleeping
-        val mobTargets = arrayOf(true, passive.value, neutral.value, hostile.value) //enable mobs
+        val playerTargets = arrayOf(players.value, true, true) // Enable friends and sleeping
+        val mobTargets = arrayOf(true, passive.value, neutral.value, hostile.value) // Enable mobs
         for (entity in EntityUtils.getTargetList(playerTargets, mobTargets, invisible.value, radius * radarScale, ignoreSelf = true)) {
             val entityPosDelta = entity.position.subtract(player.position)
             if (abs(entityPosDelta.y) > 30) continue
