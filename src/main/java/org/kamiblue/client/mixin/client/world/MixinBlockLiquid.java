@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.kamiblue.client.module.modules.movement.Velocity;
-import org.kamiblue.client.module.modules.player.LiquidInteract;
+import org.kamiblue.client.module.modules.player.BlockInteraction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,7 +24,7 @@ public class MixinBlockLiquid {
 
     @Inject(method = "canCollideCheck", at = @At("HEAD"), cancellable = true)
     public void canCollideCheck(IBlockState blockState, boolean hitIfLiquid, CallbackInfoReturnable<Boolean> cir) {
-        if (LiquidInteract.INSTANCE.isEnabled()) {
+        if (BlockInteraction.isLiquidInteractEnabled()) {
             cir.setReturnValue(true);
         }
     }
