@@ -18,7 +18,7 @@ object PluginCommand : ClientCommand(
         literal("load") {
             string("jar name") { nameArg ->
                 execute {
-                    val name = nameArg.value
+                    val name = "${nameArg.value.removeSuffix(".jar")}.jar"
                     val file = File("${PluginManager.pluginPath}$name")
 
                     if (!file.exists() || !file.extension.equals("jar", true)) {
