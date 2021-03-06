@@ -145,7 +145,6 @@ internal object ESP : Module(
         }
 
         GlStateUtils.texture2d(false)
-        GlStateUtils.cull(false)
     }
 
     private fun drawShader() {
@@ -170,6 +169,7 @@ internal object ESP : Module(
         GlStateUtils.depth(true)
         GlStateUtils.texture2d(false)
         GlStateManager.depthMask(false)
+        GlStateUtils.cull(false)
 
         // Revert matrix
         GlStateManager.matrixMode(GL_PROJECTION)
