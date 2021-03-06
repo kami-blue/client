@@ -13,107 +13,112 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.color.EnumTextColor
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
+import org.kamiblue.client.util.text.format
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.commons.extension.synchronized
 import org.kamiblue.event.listener.listener
 import java.util.*
-import kotlin.collections.ArrayList
+import kotlin.collections.LinkedHashMap
 
 internal object TotemPopCounter : Module(
     name = "TotemPopCounter",
     description = "Counts how many times players pop",
     category = Category.COMBAT
 ) {
-    private val countFriends = setting("Count Friends", true)
-    private val countSelf = setting("Count Self", false)
-    private val resetOnDeath = setting("Reset On Death", true)
-    private val announceSetting = setting("Announce", Announce.CLIENT)
-    private val thanksTo = setting("Thanks To", false)
-    private val colorName = setting("Color Name", EnumTextColor.DARK_PURPLE)
-    private val colorNumber = setting("Color Number", EnumTextColor.LIGHT_PURPLE)
+    private val countFriends by setting("Count Friends", true)
+    private val countSelf by setting("Count Self", true)
+    private val announceSetting by setting("Announce", Announce.CLIENT)
+    private val thanksTo by setting("Thanks To", false)
+    private val colorName by setting("Color Name", EnumTextColor.DARK_PURPLE)
+    private val colorNumber by setting("Color Number", EnumTextColor.LIGHT_PURPLE)
 
     private enum class Announce {
         CLIENT, EVERYONE
     }
 
-    private val playerList = HashMap<EntityPlayer, Int>().synchronized()
-    private var wasDead = false
+    private val popCountMap = WeakHashMap<EntityPlayer, Int>().synchronized()
+    private var wasSent = false
 
     init {
         onDisable {
-            playerList.clear()
+            popCountMap.clear()
+            wasSent = true
         }
 
         safeListener<PacketEvent.Receive> {
-            if (it.packet !is SPacketEntityStatus || it.packet.opCode.toInt() != 35 || player.isDead) return@safeListener
+            if (it.packet !is SPacketEntityStatus || it.packet.opCode.toInt() != 35 || !player.isEntityAlive) return@safeListener
             val player = (it.packet.getEntity(world) as? EntityPlayer) ?: return@safeListener
 
-            if (friendCheck(player) || selfCheck(player)) {
-                val count = playerList.getOrDefault(player, 0) + 1
-                playerList[player] = count
-                sendMessage("${formatName(player)} popped ${formatNumber(count)} ${plural(count)}${ending()}")
+            if (friendCheck(player) && selfCheck(player)) {
+                val count = popCountMap.getOrDefault(player, 0) + 1
+                popCountMap[player] = count
+
+                val isSelf = player == this.player
+                val message = "${formatName(player)} popped ${formatNumber(count)} ${plural(count)}${ending(isSelf)}"
+                sendMessage(message, !isSelf && isPublic)
             }
         }
 
         listener<ConnectionEvent.Disconnect> {
-            playerList.clear()
+            popCountMap.clear()
         }
 
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.END) return@safeListener
 
-            if (wasDead && !player.isDead && resetOnDeath.value) {
-                sendMessage("${formatName(player)} died and ${grammar(player)} pop list was reset!")
-                playerList.clear()
-                wasDead = false
+            if (!player.isEntityAlive) {
+                if (!wasSent) {
+                    popCountMap.clear()
+                    wasSent = true
+                }
                 return@safeListener
             }
 
-            val toRemove = ArrayList<EntityPlayer>()
-            for ((poppedPlayer, count) in playerList) {
-                if (!poppedPlayer.isDead) continue
-                if (poppedPlayer == player) continue
-                sendMessage("${formatName(poppedPlayer)} died after popping ${formatNumber(count)} ${plural(count)}${ending()}")
-                toRemove.add(poppedPlayer)
+            wasSent = false
+
+            popCountMap.entries.removeIf { (player, count) ->
+                if (player == this.player || player.isEntityAlive) {
+                    false
+                } else {
+                    val message = "${formatName(player)} died after popping ${formatNumber(count)} ${plural(count)}${ending(false)}"
+                    sendMessage(message, isPublic)
+                    true
+                }
             }
-            playerList.keys.removeAll(toRemove)
-
-            wasDead = player.isDead
         }
     }
 
-    private fun friendCheck(player: EntityPlayer) = FriendManager.isFriend(player.name) && countFriends.value
+    private fun friendCheck(player: EntityPlayer) = countFriends || !FriendManager.isFriend(player.name)
 
-    private fun selfCheck(player: EntityPlayer) = player == mc.player && countSelf.value
+    private fun selfCheck(player: EntityPlayer) = countSelf || player != mc.player
 
-    private fun formatName(player: EntityPlayer): String {
-        val name = when {
-            player == mc.player -> "I"
-            FriendManager.isFriend(player.name) -> if (isPublic) "My friend, " else "Your friend, "
-            else -> player.name
+    private fun formatName(player: EntityPlayer) =
+        colorName.textFormatting format when {
+            player == mc.player -> {
+                "I"
+            }
+            FriendManager.isFriend(player.name) -> {
+                if (isPublic) "My friend ${player.name}, " else "Your friend ${player.name}, "
+            }
+            else -> {
+                player.name
+            }
         }
-        return colorName.value.textFormatting.toString() + name + TextFormatting.RESET
-    }
 
     private val isPublic: Boolean
-        get() = announceSetting.value == Announce.EVERYONE
+        get() = announceSetting == Announce.EVERYONE
+
+    private fun formatNumber(message: Int) = colorNumber.textFormatting format message
 
     private fun plural(count: Int) = if (count == 1) "totem" else "totems"
 
-    private fun grammar(player: EntityPlayer) = if (player == mc.player) "my" else "their"
+    private fun ending(self: Boolean): String = if (!self && thanksTo) " thanks to ${KamiMod.NAME} !" else "!"
 
-    private fun ending(): String = if (thanksTo.value) " thanks to ${KamiMod.NAME} !" else "!"
-
-    private fun formatNumber(message: Int) = colorNumber.value.textFormatting.toString() + message + TextFormatting.RESET
-
-    private fun sendMessage(message: String) {
-        when (announceSetting.value) {
-            Announce.CLIENT -> {
-                MessageSendHelper.sendChatMessage("$chatName $message")
-            }
-            Announce.EVERYONE -> {
-                sendServerMessage(TextFormatting.getTextWithoutFormattingCodes(message))
-            }
+    private fun sendMessage(message: String, public: Boolean) {
+        if (public) {
+            sendServerMessage(TextFormatting.getTextWithoutFormattingCodes(message))
+        } else {
+            MessageSendHelper.sendChatMessage("$chatName $message")
         }
     }
 }

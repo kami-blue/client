@@ -61,7 +61,7 @@ internal object Criticals : Module(
         safeListener<PlayerAttackEvent>(0) {
             if (it.cancelled || attacking || it.entity !is EntityLivingBase || !canDoCriticals(true)) return@safeListener
 
-            val cooldownReady = player.getCooledAttackStrength(0.5f) > 0.9f
+            val cooldownReady = player.onGround && player.getCooledAttackStrength(0.5f) > 0.9f
 
             when (mode) {
                 Mode.PACKET -> {
@@ -71,10 +71,10 @@ internal object Criticals : Module(
                     }
                 }
                 Mode.JUMP -> {
-                    jumpAndCancel(it, player.onGround && cooldownReady, null)
+                    jumpAndCancel(it, cooldownReady, null)
                 }
                 Mode.MINI_JUMP -> {
-                    jumpAndCancel(it, player.onGround && cooldownReady, jumpMotion)
+                    jumpAndCancel(it, cooldownReady, jumpMotion)
                 }
             }
         }

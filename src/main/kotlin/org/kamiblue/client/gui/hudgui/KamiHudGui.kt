@@ -24,7 +24,7 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
     override val alwaysTicking = true
 
     init {
-        val allButtons = GuiManager.hudElementsMap.values.map { HudButton(it) }
+        val allButtons = GuiManager.hudElements.map { HudButton(it) }
 
         var posX = 0.0f
         var posY = 0.0f
@@ -44,7 +44,7 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
             }
         }
 
-        windowList.addAll(GuiManager.hudElementsMap.values)
+        windowList.addAll(GuiManager.hudElements)
     }
 
     override fun onGuiClosed() {
