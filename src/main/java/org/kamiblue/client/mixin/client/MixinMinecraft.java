@@ -11,12 +11,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.common.ForgeHooks;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.GuiEvent;
 import org.kamiblue.client.event.events.RunGameLoopEvent;
 import org.kamiblue.client.gui.mc.KamiGuiUpdateNotification;
 import org.kamiblue.client.manager.managers.HotbarManager;
-import org.kamiblue.client.manager.managers.PlayerPacketManager;
 import org.kamiblue.client.mixin.client.accessor.player.AccessorEntityPlayerSP;
 import org.kamiblue.client.mixin.client.accessor.player.AccessorPlayerControllerMP;
 import org.kamiblue.client.module.modules.combat.CrystalAura;
@@ -29,9 +29,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Created by 086 on 17/11/2017.
- */
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
 
@@ -102,7 +99,7 @@ public abstract class MixinMinecraft {
         for (EnumHand enumhand : EnumHand.values()) {
             ItemStack itemstack = player.getHeldItem(enumhand);
             if (itemstack.isEmpty() && (objectMouseOver == null || objectMouseOver.typeOfHit == RayTraceResult.Type.MISS)) {
-                net.minecraftforge.common.ForgeHooks.onEmptyClick(player, enumhand);
+                ForgeHooks.onEmptyClick(player, enumhand);
             }
             if (!itemstack.isEmpty() && playerController.processRightClick(player, world, enumhand) == EnumActionResult.SUCCESS) {
                 Wrapper.getMinecraft().entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
