@@ -177,7 +177,8 @@ internal object AutoObsidian : Module(
             if (it.phase != TickEvent.Phase.START || PauseProcess.isActive ||
                 (world.difficulty == EnumDifficulty.PEACEFUL &&
                     player.dimension == 1 &&
-                    player.serverBrand.contains("2b2t"))) return@safeListener
+                    @Suppress("UNNECESSARY_SAFE_CALL")
+                    player.serverBrand?.contains("2b2t") == true)) return@safeListener
 
             updateMiningMap()
             runAutoObby()
