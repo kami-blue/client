@@ -21,8 +21,6 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.EntityUtils.prevPosVector
-import org.kamiblue.client.util.WorldUtils.getNeighbour
-import org.kamiblue.client.util.WorldUtils.placeBlock
 import org.kamiblue.client.util.items.HotbarSlot
 import org.kamiblue.client.util.items.firstItem
 import org.kamiblue.client.util.items.hotbarSlots
@@ -33,6 +31,9 @@ import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.onMainThreadSafe
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.util.world.PlaceInfo
+import org.kamiblue.client.util.world.getNeighbour
+import org.kamiblue.client.util.world.placeBlock
 import org.kamiblue.event.listener.listener
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -51,11 +52,12 @@ internal object Scaffold : Module(
     private val spoofHotbar by setting("Spoof Hotbar", true)
     val safeWalk by setting("Safe Walk", true)
     private val sneak by setting("Sneak", true)
+    private val strictDirection by setting("Strict Direction", false)
     private val delay by setting("Delay", 2, 1..10, 1)
     private val maxRange by setting("Max Range", 1, 0..3, 1)
 
     private var lastRotation = Vec2f.ZERO
-    private var placeInfo: Pair<EnumFacing, BlockPos>? = null
+    private var placeInfo: PlaceInfo? = null
     private var inactiveTicks = 69
 
     private val placeTimer = TickTimer(TimeUnit.TICKS)
@@ -99,14 +101,13 @@ internal object Scaffold : Module(
 
             inactiveTicks++
             placeInfo = calcNextPos()?.let {
-                getNeighbour(it, 1, sides = arrayOf(EnumFacing.DOWN))
-                    ?: getNeighbour(it, 3, sides = EnumFacing.HORIZONTALS)
+                getNeighbour(it, 1, visibleSideCheck = strictDirection, sides = arrayOf(EnumFacing.DOWN))
+                    ?: getNeighbour(it, 3, visibleSideCheck = strictDirection, sides = EnumFacing.HORIZONTALS)
             }
 
             placeInfo?.let {
-                val hitVec = WorldUtils.getHitVec(it.second, it.first)
-                lastRotation = getRotationTo(hitVec)
-                swapAndPlace(it.second, it.first)
+                lastRotation = getRotationTo(it.hitVec)
+                swapAndPlace(it)
             }
 
             if (inactiveTicks > 5) {
@@ -144,7 +145,7 @@ internal object Scaffold : Module(
     private fun roundToRange(value: Double) =
         (value * 2.5 * maxRange).roundToInt().coerceAtMost(maxRange)
 
-    private fun SafeClientEvent.swapAndPlace(pos: BlockPos, side: EnumFacing) {
+    private fun SafeClientEvent.swapAndPlace(placeInfo: PlaceInfo) {
         getBlockSlot()?.let { slot ->
             if (spoofHotbar) PlayerPacketManager.spoofHotbar(slot.hotbarSlot)
             else swapToSlot(slot)
@@ -161,7 +162,7 @@ internal object Scaffold : Module(
                     }
                     delay(5)
                     onMainThreadSafe {
-                        placeBlock(pos, side)
+                        placeBlock(placeInfo)
                         if (shouldSneak) {
                             connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.STOP_SNEAKING))
                         }

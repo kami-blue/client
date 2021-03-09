@@ -14,6 +14,7 @@ import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraft.network.play.server.SPacketSoundEffect
 import net.minecraft.network.play.server.SPacketSpawnObject
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.SoundCategory
 import net.minecraft.util.math.AxisAlignedBB
@@ -32,7 +33,6 @@ import org.kamiblue.client.mixin.extension.packetAction
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
-import org.kamiblue.client.util.WorldUtils.getHitSide
 import org.kamiblue.client.util.combat.CombatUtils.equipBestWeapon
 import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
 import org.kamiblue.client.util.combat.CrystalUtils.calcCrystalDamage
@@ -51,6 +51,7 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.runSafeR
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.util.world.getClosestVisibleSide
 import org.kamiblue.commons.extension.synchronized
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
@@ -369,8 +370,10 @@ internal object CrystalAura : Module(
         sendOrQueuePacket(CPacketAnimation(getHand() ?: EnumHand.OFF_HAND))
     }
 
-    private fun SafeClientEvent.getPlacePacket(pos: BlockPos, hand: EnumHand) =
-        CPacketPlayerTryUseItemOnBlock(pos, getHitSide(pos), hand, 0.5f, placeOffset, 0.5f)
+    private fun SafeClientEvent.getPlacePacket(pos: BlockPos, hand: EnumHand): CPacketPlayerTryUseItemOnBlock {
+        val side = getClosestVisibleSide(pos) ?: EnumFacing.UP
+        return CPacketPlayerTryUseItemOnBlock(pos, side, hand, 0.5f, placeOffset, 0.5f)
+    }
 
     private fun SafeClientEvent.sendOrQueuePacket(packet: Packet<*>) {
         val yawDiff = abs(RotationUtils.normalizeAngle(PlayerPacketManager.serverSideRotation.x - getLastRotation().x))

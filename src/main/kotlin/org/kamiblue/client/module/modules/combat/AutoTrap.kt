@@ -11,11 +11,10 @@ import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
+import org.kamiblue.client.module.modules.combat.Surround.setting
 import org.kamiblue.client.util.*
-import org.kamiblue.client.util.WorldUtils.buildStructure
-import org.kamiblue.client.util.WorldUtils.getPlaceInfo
-import org.kamiblue.client.util.WorldUtils.isPlaceable
+import org.kamiblue.client.util.EntityUtils.flooredPosition
+import org.kamiblue.client.util.combat.SurroundUtils
 import org.kamiblue.client.util.items.HotbarSlot
 import org.kamiblue.client.util.items.firstBlock
 import org.kamiblue.client.util.items.hotbarSlots
@@ -24,6 +23,8 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.isActiveOrFalse
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.util.world.buildStructure
+import org.kamiblue.client.util.world.isPlaceable
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 
@@ -38,6 +39,7 @@ internal object AutoTrap : Module(
     private val selfTrap = setting("Self Trap", false)
     private val bindSelfTrap = setting("Bind Self Trap", Bind())
     private val autoDisable = setting("Auto Disable", true)
+    private val strictDirection by setting("Strict Direction", false)
     private val placeSpeed = setting("Places Per Tick", 4f, 0.25f..5f, 0.25f)
 
     private var job: Job? = null
@@ -67,17 +69,14 @@ internal object AutoTrap : Module(
         listener<InputEvent.KeyInputEvent> {
             if (bindSelfTrap.value.isDown(Keyboard.getEventKey())) {
                 selfTrap.value = !selfTrap.value
-                MessageSendHelper.sendChatMessage(selfTrap.toggleMsg())
             }
         }
     }
 
-    private fun BooleanSetting.toggleMsg() = "$chatName Turned ${this.name} ${if (this.value) "&aon" else "&coff"}&f!"
-
     private fun SafeClientEvent.canRun(): Boolean {
         (if (selfTrap.value) player else CombatManager.target)?.positionVector?.toBlockPos()?.let {
             for (offset in trapMode.value.offset) {
-                if (!isPlaceable(it.add(offset))) continue
+                if (!world.isPlaceable(it.add(offset))) continue
                 return true
             }
         }
@@ -97,14 +96,19 @@ internal object AutoTrap : Module(
     }
 
     private fun SafeClientEvent.runAutoTrap() = defaultScope.launch {
-        buildStructure(placeSpeed.value) {
-            if (isEnabled && CombatManager.isOnTopPriority(this@AutoTrap)) {
-                val center = (if (selfTrap.value) player else CombatManager.target)?.positionVector?.toBlockPos()
-                getPlaceInfo(center, trapMode.value.offset, it, 3)
-            } else {
-                null
-            }
+        val entity = if (selfTrap.value) player else CombatManager.target ?: return@launch
+
+        buildStructure(
+            entity.flooredPosition,
+            SurroundUtils.surroundOffset,
+            placeSpeed.value,
+            3,
+            4.25f,
+            strictDirection
+        ) {
+            isEnabled && CombatManager.isOnTopPriority(AutoTrap)
         }
+
         if (autoDisable.value) disable()
     }
 

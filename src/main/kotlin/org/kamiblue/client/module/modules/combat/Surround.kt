@@ -12,11 +12,9 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.movement.Strafe
 import org.kamiblue.client.util.*
+import org.kamiblue.client.util.EntityUtils.flooredPosition
 import org.kamiblue.client.util.MovementUtils.centerPlayer
 import org.kamiblue.client.util.MovementUtils.speed
-import org.kamiblue.client.util.WorldUtils.buildStructure
-import org.kamiblue.client.util.WorldUtils.getPlaceInfo
-import org.kamiblue.client.util.WorldUtils.isPlaceable
 import org.kamiblue.client.util.combat.SurroundUtils
 import org.kamiblue.client.util.combat.SurroundUtils.checkHole
 import org.kamiblue.client.util.items.firstBlock
@@ -26,6 +24,8 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.isActiveOrFalse
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.util.world.buildStructure
+import org.kamiblue.client.util.world.isPlaceable
 
 @CombatManager.CombatModule
 internal object Surround : Module(
@@ -36,6 +36,7 @@ internal object Surround : Module(
 ) {
     private val placeSpeed by setting("Places Per Tick", 4f, 0.25f..5f, 0.25f)
     private val disableStrafe by setting("Disable Strafe", true)
+    private val strictDirection by setting("Strict Direction", false)
     private val autoDisable by setting("Auto Disable", AutoDisableMode.OUT_OF_HOLE)
     private val outOfHoleTimeout by setting("Out Of Hole Timeout", 10, 1..50, 5, { autoDisable == AutoDisableMode.OUT_OF_HOLE }, description = "Delay before disabling Surround when you are out of hole, in ticks")
     private val enableInHole = setting("Enable In Hole", false)
@@ -155,19 +156,22 @@ internal object Surround : Module(
     private fun SafeClientEvent.canRun(): Boolean {
         val playerPos = player.positionVector.toBlockPos()
         return SurroundUtils.surroundOffset.any {
-            isPlaceable(playerPos.add(it), true)
+            world.isPlaceable(playerPos.add(it), true)
         }
     }
 
     private fun SafeClientEvent.runSurround() = defaultScope.launch {
         spoofHotbar()
 
-        buildStructure(placeSpeed) {
-            if (isEnabled && CombatManager.isOnTopPriority(this@Surround)) {
-                getPlaceInfo(player.positionVector.toBlockPos(), SurroundUtils.surroundOffset, it, 2)
-            } else {
-                null
-            }
+        buildStructure(
+            player.flooredPosition,
+            SurroundUtils.surroundOffset,
+            placeSpeed,
+            2,
+            4.25f,
+            strictDirection
+        ) {
+            isEnabled && CombatManager.isOnTopPriority(Surround)
         }
     }
 
