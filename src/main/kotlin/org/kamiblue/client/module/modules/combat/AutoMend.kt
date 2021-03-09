@@ -101,7 +101,7 @@ internal object AutoMend : Module(
                 disable()
             }
 
-            if (takeOff) {
+            if (takeOff && isMending) {
                 var minSlot = 9
                 for (i in 0..3) {
                     if (shouldMend(i) || !hasMending(i)) continue
