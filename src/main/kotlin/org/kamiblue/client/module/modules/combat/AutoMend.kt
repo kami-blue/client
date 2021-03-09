@@ -101,18 +101,6 @@ internal object AutoMend : Module(
                 disable()
             }
 
-            if (takeOff && isMending) {
-                var minSlot = 9
-                for (i in 0..3) {
-                    if (shouldMend(i) || !hasMending(i)) continue
-                    val emptySlot = findEmptySlot(minSlot)
-                    minSlot = emptySlot + 1
-                    if (emptySlot == -1) break
-                    clickSlot(player.inventoryContainer.windowId, 8 - i, 0, ClickType.PICKUP)
-                    clickSlot(player.inventoryContainer.windowId, emptySlot, 0, ClickType.PICKUP)
-                }
-            }
-
             if ((autoSwitch || autoThrow) // avoid checking if no actions are going to be done
                 && hasBlockUnder() && shouldMend()) {
                 if (autoSwitch && player.heldItemMainhand.item !== Items.EXPERIENCE_BOTTLE) {
@@ -141,6 +129,18 @@ internal object AutoMend : Module(
         safeListener<TickEvent.ClientTickEvent> {
             if(!pauseAutoArmor) return@safeListener
             AutoArmor.isPaused = isMending
+
+            if (takeOff && isMending) {
+                var minSlot = 9
+                for (i in 0..3) {
+                    if (shouldMend(i) || !hasMending(i)) continue
+                    val emptySlot = findEmptySlot(minSlot)
+                    minSlot = emptySlot + 1
+                    if (emptySlot == -1) break
+                    clickSlot(player.inventoryContainer.windowId, 8 - i, 0, ClickType.PICKUP)
+                    clickSlot(player.inventoryContainer.windowId, emptySlot, 0, ClickType.PICKUP)
+                }
+            }
         }
     }
 
