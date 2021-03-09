@@ -1,7 +1,10 @@
 package org.kamiblue.client.module.modules.chat
 
+import net.minecraft.init.Items
 import net.minecraft.network.play.server.SPacketUpdateHealth
+import net.minecraft.util.EnumHand
 import org.kamiblue.client.KamiMod
+import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -66,7 +69,7 @@ internal object AutoExcuse : Module(
     init {
         safeListener<PacketEvent.Receive> {
             if (loadedExcuses.isEmpty() || it.packet !is SPacketUpdateHealth) return@safeListener
-            if (it.packet.health <= 0f && timer.tick(3L)) {
+            if (it.packet.health <= 0.0f && !isHoldingTotem && timer.tick(3L)) {
                 sendServerMessage(getExcuse())
             }
         }
@@ -93,6 +96,9 @@ internal object AutoExcuse : Module(
             }
         }
     }
+
+    private val SafeClientEvent.isHoldingTotem: Boolean
+        get() = EnumHand.values().any { player.getHeldItem(it).item == Items.TOTEM_OF_UNDYING }
 
     private fun getExcuse() = loadedExcuses.random().replace(CLIENT_NAME, clients.random())
 }

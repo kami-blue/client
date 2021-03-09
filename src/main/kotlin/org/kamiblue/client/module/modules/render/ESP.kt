@@ -14,21 +14,21 @@ import org.kamiblue.client.event.Phase
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderEntityEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
-import org.kamiblue.client.mixin.extension.entityOutlineShader
-import org.kamiblue.client.mixin.extension.listFrameBuffers
-import org.kamiblue.client.mixin.extension.listShaders
-import org.kamiblue.client.mixin.extension.renderOutlines
+import org.kamiblue.client.mixin.extension.*
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.EntityUtils
 import org.kamiblue.client.util.EntityUtils.getTargetList
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.ESPRenderer
+import org.kamiblue.client.util.graphics.GlStateUtils
 import org.kamiblue.client.util.graphics.KamiTessellator
 import org.kamiblue.client.util.graphics.ShaderHelper
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL11.GL_MODELVIEW
+import org.lwjgl.opengl.GL11.GL_PROJECTION
 
 internal object ESP : Module(
     name = "ESP",
@@ -74,87 +74,29 @@ internal object ESP : Module(
         BOX, GLOW, SHADER
     }
 
-    private val entityList = HashSet<Entity>()
+    private val entityList = LinkedHashSet<Entity>()
 
-    var drawingOutline = false; private set
-    var drawNametag = false; private set
     private val shaderHelper = ShaderHelper(ResourceLocation("shaders/post/esp_outline.json"), "final")
-    val frameBuffer = shaderHelper.getFrameBuffer("final")
+    private val frameBuffer = shaderHelper.getFrameBuffer("final")
 
     init {
-        listener<RenderEntityEvent> {
-            if (mode.value != ESPMode.SHADER || mc.renderManager.renderOutlines || !entityList.contains(it.entity)) return@listener
-
-            if (it.phase == Phase.PRE && hideOriginal) {
-                // Steal it from Minecraft rendering kek
-                prepareFrameBuffer()
-                drawNametag = true
-            }
-
-            if (it.phase == Phase.PERI) {
-                if (!hideOriginal) {
-                    prepareFrameBuffer()
-                    mc.renderManager.getEntityRenderObject<Entity>(it.entity)?.doRender(it.entity, it.x, it.y, it.z, it.yaw, it.partialTicks)
-                }
-
-                mc.framebuffer.bindFramebuffer(false)
-                GlStateManager.disableOutlineMode()
-                drawingOutline = false
-                drawNametag = false
+        listener<RenderEntityEvent.All> {
+            if (it.phase == Phase.PRE
+                && mode.value == ESPMode.SHADER
+                && !mc.renderManager.renderOutlines
+                && hideOriginal
+                && entityList.contains(it.entity)) {
+                it.cancel()
             }
         }
 
-        listener<RenderWorldEvent>(69420) {
-            if (mode.value != ESPMode.SHADER) return@listener
-
-            GlStateManager.matrixMode(GL_PROJECTION)
-            glPushMatrix()
-            GlStateManager.matrixMode(GL_MODELVIEW)
-            glPushMatrix()
-
-            shaderHelper.shader?.render(KamiTessellator.pTicks())
-
-            // Re-enable blend because shader rendering will disable it at the end
-            GlStateManager.enableBlend()
-            GlStateManager.disableDepth()
-
-            // Draw it on the main frame buffer
-            mc.framebuffer.bindFramebuffer(false)
-            frameBuffer?.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false)
-
-            // Clean up the frame buffer
-            frameBuffer?.framebufferClear()
-            mc.framebuffer.bindFramebuffer(false)
-
-            GlStateManager.disableCull()
-            GlStateManager.enableBlend()
-            GlStateManager.enableDepth()
-            GlStateManager.disableTexture2D()
-            GlStateManager.depthMask(false)
-
-            GlStateManager.matrixMode(GL_PROJECTION)
-            glPopMatrix()
-            GlStateManager.matrixMode(GL_MODELVIEW)
-            glPopMatrix()
-        }
-    }
-
-    private fun prepareFrameBuffer() {
-        drawingOutline = true
-        GlStateManager.enableOutlineMode(0xFFFFFF)
-        frameBuffer?.bindFramebuffer(false)
-    }
-
-    init {
         safeListener<EntityViewRenderEvent.FogColors> { event ->
             shaderHelper.shader?.listFrameBuffers?.forEach {
                 it.setFramebufferColor(event.red, event.green, event.blue, 0.0f)
             }
         }
 
-        safeListener<RenderWorldEvent> {
-            if (mc.renderManager.options == null) return@safeListener
-
+        safeListener<RenderWorldEvent>(69420) {
             when (mode.value) {
                 ESPMode.BOX -> {
                     val color = ColorHolder(r, g, b)
@@ -167,34 +109,103 @@ internal object ESP : Module(
                     }
                     renderer.render(true)
                 }
-
+                ESPMode.SHADER -> {
+                    drawEntities()
+                    drawShader()
+                }
                 else -> {
-                    // Glow and Shader mode
+                    // Glow Mode
                 }
             }
         }
+    }
 
+    private fun drawEntities() {
+        // Clean up the frame buffer and bind it
+        frameBuffer?.framebufferClear()
+        frameBuffer?.bindFramebuffer(false)
+
+        val prevRenderOutlines = mc.renderManager.renderOutlines
+
+        GlStateUtils.texture2d(true)
+        GlStateUtils.cull(true)
+
+        // Draw the entities into the framebuffer
+        for (entity in entityList) {
+            val renderer = mc.renderManager.getEntityRenderObject<Entity>(entity) ?: continue
+
+            val partialTicks = KamiTessellator.pTicks()
+            val yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks
+            val pos = EntityUtils.getInterpolatedPos(entity, partialTicks)
+                .subtract(mc.renderManager.renderPosX, mc.renderManager.renderPosY, mc.renderManager.renderPosZ)
+
+            renderer.setRenderOutlines(true)
+            renderer.doRender(entity, pos.x, pos.y, pos.z, yaw, partialTicks)
+            renderer.setRenderOutlines(prevRenderOutlines)
+        }
+
+        GlStateUtils.texture2d(false)
+    }
+
+    private fun drawShader() {
+        // Push matrix
+        GlStateManager.matrixMode(GL_PROJECTION)
+        GlStateManager.pushMatrix()
+        GlStateManager.matrixMode(GL_MODELVIEW)
+        GlStateManager.pushMatrix()
+
+        shaderHelper.shader?.render(KamiTessellator.pTicks())
+
+        // Re-enable blend because shader rendering will disable it at the end
+        GlStateUtils.blend(true)
+        GlStateUtils.depth(false)
+
+        // Draw it on the main frame buffer
+        mc.framebuffer.bindFramebuffer(false)
+        frameBuffer?.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false)
+
+        // Revert states
+        GlStateUtils.blend(true)
+        GlStateUtils.depth(true)
+        GlStateUtils.texture2d(false)
+        GlStateManager.depthMask(false)
+        GlStateUtils.cull(false)
+
+        // Revert matrix
+        GlStateManager.matrixMode(GL_PROJECTION)
+        GlStateManager.popMatrix()
+        GlStateManager.matrixMode(GL_MODELVIEW)
+        GlStateManager.popMatrix()
+    }
+
+    init {
         safeListener<TickEvent.ClientTickEvent> {
             entityList.clear()
             entityList.addAll(getEntityList())
 
-            if (mode.value == ESPMode.GLOW) {
-                if (entityList.isNotEmpty()) {
-                    for (shader in mc.renderGlobal.entityOutlineShader.listShaders) {
-                        shader.shaderManager.getShaderUniform("Radius")?.set(width)
-                    }
+            when (mode.value) {
+                ESPMode.GLOW -> {
+                    if (entityList.isNotEmpty()) {
+                        for (shader in mc.renderGlobal.entityOutlineShader.listShaders) {
+                            shader.shaderManager.getShaderUniform("Radius")?.set(width)
+                        }
 
-                    for (entity in world.loadedEntityList) { // Set glow for entities in the list. Remove glow for entities not in the list
-                        entity.isGlowing = entityList.contains(entity)
+                        for (entity in world.loadedEntityList) { // Set glow for entities in the list. Remove glow for entities not in the list
+                            entity.isGlowing = entityList.contains(entity)
+                        }
+                    } else {
+                        resetGlow()
                     }
-                } else {
-                    resetGlow()
                 }
-            } else if (mode.value == ESPMode.SHADER) {
-                shaderHelper.shader?.let {
-                    for (shader in it.listShaders) {
-                        setShaderSettings(shader)
+                ESPMode.SHADER -> {
+                    shaderHelper.shader?.let {
+                        for (shader in it.listShaders) {
+                            setShaderSettings(shader)
+                        }
                     }
+                }
+                else -> {
+                    // Box Mode
                 }
             }
         }
@@ -240,8 +251,6 @@ internal object ESP : Module(
         }
 
         mode.listeners.add {
-            drawingOutline = false
-            drawNametag = false
             resetGlow()
         }
     }

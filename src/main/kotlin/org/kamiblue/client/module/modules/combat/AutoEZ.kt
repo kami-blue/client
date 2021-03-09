@@ -3,6 +3,7 @@ package org.kamiblue.client.module.modules.combat
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -10,6 +11,7 @@ import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
+import org.kamiblue.client.util.text.formatValue
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.commons.extension.synchronized
 import org.kamiblue.event.listener.listener
@@ -21,24 +23,29 @@ internal object AutoEZ : Module(
     category = Category.COMBAT,
     description = "Sends an insult in chat after killing someone"
 ) {
-    private val detectMode = setting("Detect Mode", DetectMode.HEALTH)
-    private val messageMode = setting("Message Mode", MessageMode.ONTOP)
-    private val customText = setting("Custom Text", "unchanged")
+    private const val UNCHANGED = "Unchanged"
+    private const val NAME = "\$NAME"
+    private const val HYPIXEL_MESSAGE = "\$HYPIXEL_MESSAGE"
+
+    private val detectMode by setting("Detect Mode", DetectMode.HEALTH)
+    private val messageMode by setting("Message Mode", MessageMode.ONTOP)
+    private val customText by setting("Custom Text", UNCHANGED, { messageMode == MessageMode.CUSTOM })
 
     private enum class DetectMode {
         BROADCAST, HEALTH
     }
 
     @Suppress("UNUSED")
-    enum class MessageMode(val text: String) {
-        GG("gg, \$NAME"),
-        ONTOP("KAMI BLUE on top! ez \$NAME"),
-        EZD("You just got ez'd \$NAME"),
-        EZ_HYPIXEL("\$HYPIXEL_MESSAGE \$NAME"),
-        NAENAE("You just got naenae'd by kami blue plus, \$NAME"),
+    private enum class MessageMode(val text: String) {
+        GG("gg, $NAME"),
+        ONTOP("KAMI BLUE on top! ez $NAME"),
+        EZD("You just got ez'd $NAME"),
+        EZ_HYPIXEL("$HYPIXEL_MESSAGE $NAME"),
+        NAENAE("You just got naenae'd by kami blue plus, $NAME"),
         CUSTOM("");
     }
 
+    // Got these from the forums, kinda based -humboldt123
     private val hypixelCensorMessages = arrayOf(
         "Hey Helper, how play game?",
         "Hello everyone! I am an innocent player who loves everything Hypixel.",
@@ -85,73 +92,97 @@ internal object AutoEZ : Module(
         "I need help, teach me how to play!",
         "What happens if I add chocolate milk to macaroni and cheese?",
         "Can you paint with all the colors of the wind"
-    ) // Got these from the forums, kinda based -humboldt123 
+    )
 
     private val timer = TickTimer(TimeUnit.SECONDS)
     private val attackedPlayers = LinkedHashMap<EntityPlayer, Int>().synchronized() // <Player, Last Attack Time>
+    private val confirmedKills = Collections.newSetFromMap(WeakHashMap<EntityPlayer, Boolean>()).synchronized()
 
     init {
-        safeListener<ClientChatReceivedEvent> {
-            if (detectMode.value != DetectMode.BROADCAST || player.isDead || player.health <= 0.0f) return@safeListener
+        onDisable {
+            reset()
+        }
 
-            val message = it.message.unformattedText
-            if (!message.contains(player.name, true)) return@safeListener
+        // Clear the map on disconnect
+        listener<ConnectionEvent.Disconnect> {
+            reset()
+        }
 
-            for (player in attackedPlayers.keys) {
-                if (!message.contains(player.name, true)) continue
-                sendEzMessage(player)
-                break // Break right after removing so we don't get exception
+        safeListener<ClientChatReceivedEvent> { event ->
+            if (detectMode != DetectMode.BROADCAST || !player.isEntityAlive) return@safeListener
+
+            val message = event.message.unformattedText
+            if (!message.contains(player.name)) return@safeListener
+
+            attackedPlayers.keys.find {
+                message.contains(it.name)
+            }?.let {
+                confirmedKills.add(it)
             }
         }
 
         safeListener<TickEvent.ClientTickEvent> { event ->
             if (event.phase != TickEvent.Phase.END) return@safeListener
 
-            if (player.isDead || player.health <= 0.0f) {
-                attackedPlayers.clear()
+            if (!player.isEntityAlive) {
+                reset()
                 return@safeListener
             }
 
-            // Update attacked Entity
-            val attacked = player.lastAttackedEntity
-            if (attacked is EntityPlayer && !attacked.isDead && attacked.health > 0.0f) {
-                attackedPlayers[attacked] = player.lastAttackedEntityTime
-            }
-
-            // Remove players if they are out of world or we haven't attack them again in 100 ticks (5 seconds)
-            attackedPlayers.entries.removeIf { !it.key.isAddedToWorld || player.ticksExisted - it.value > 100 }
-
-            // Check death
-            if (detectMode.value == DetectMode.HEALTH) {
-                for (player in attackedPlayers.keys) {
-                    if (!player.isDead && player.health > 0.0f) continue
-                    sendEzMessage(player)
-                    break // Break right after removing so we don't get exception
-                }
-            }
-
-            // Send custom message type help message
+            updateAttackedPlayer()
+            removeInvalidPlayers()
+            sendEzMessage()
             sendHelpMessage()
         }
+    }
 
-        // Clear the map on disconnect
-        listener<ConnectionEvent.Disconnect> {
-            attackedPlayers.clear()
+    private fun SafeClientEvent.updateAttackedPlayer() {
+        val attacked = player.lastAttackedEntity
+        if (attacked is EntityPlayer && attacked.isEntityAlive) {
+            attackedPlayers[attacked] = player.lastAttackedEntityTime
+        }
+    }
+
+    private fun SafeClientEvent.removeInvalidPlayers() {
+        val removeTime = player.ticksExisted - 100L
+
+        // Remove players if they are offline or we haven't attack them again in 100 ticks (5 seconds)
+        attackedPlayers.entries.removeIf {
+            @Suppress("SENSELESS_COMPARISON")
+            it.value < removeTime || connection.getPlayerInfo(it.key.uniqueID) == null
+        }
+    }
+
+    private fun sendEzMessage() {
+        // Check death and confirmation
+        attackedPlayers.keys.find {
+            !it.isEntityAlive && (detectMode == DetectMode.HEALTH || confirmedKills.contains(it))
+        }?.let {
+            attackedPlayers.remove(it)
+            confirmedKills.remove(it)
+
+            val originalText = if (messageMode == MessageMode.CUSTOM) customText else messageMode.text
+            var replaced = originalText.replace(NAME, it.name)
+            if (messageMode == MessageMode.EZ_HYPIXEL) {
+                replaced = replaced.replace(HYPIXEL_MESSAGE, hypixelCensorMessages.random())
+            }
+
+            sendServerMessage(replaced)
         }
     }
 
     private fun sendHelpMessage() {
-        if (messageMode.value == MessageMode.CUSTOM && customText.value == "unchanged" && timer.tick(5L)) { // 5 seconds delay
-            MessageSendHelper.sendChatMessage("$chatName In order to use the custom $name, " +
-                "please change the CustomText setting in ClickGUI, " +
-                "with '&7\$NAME&f' being the username of the killed player")
+        if (messageMode == MessageMode.CUSTOM && customText == UNCHANGED && timer.tick(5L)) { // 5 seconds delay
+            MessageSendHelper.sendChatMessage(
+                "$chatName In order to use the custom $name, " +
+                    "please change the CustomText setting in ClickGUI, " +
+                    "with ${formatValue(NAME)} being the username of the killed player"
+            )
         }
     }
 
-    private fun sendEzMessage(player: EntityPlayer) {
-        val text = (if (messageMode.value == MessageMode.CUSTOM) customText.value else messageMode.value.text)
-            .replace("\$NAME", player.name).replace("\$HYPIXEL_MESSAGE", hypixelCensorMessages.random())
-        sendServerMessage(text)
-        attackedPlayers.remove(player)
+    private fun reset() {
+        attackedPlayers.clear()
+        confirmedKills.clear()
     }
 }

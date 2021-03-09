@@ -85,7 +85,7 @@ object PlayerPacketManager : Manager {
             prevServerSideRotation = serverSideRotation
         }
 
-        listener<RenderEntityEvent> {
+        listener<RenderEntityEvent.All> {
             if (it.entity != Wrapper.player || it.entity.isRiding) return@listener
 
             if (it.phase == Phase.PRE) {
