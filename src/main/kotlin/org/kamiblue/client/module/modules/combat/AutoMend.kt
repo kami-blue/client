@@ -47,6 +47,7 @@ internal object AutoMend : Module(
     private var initHotbarSlot = -1
     private var isGuiOpened = false
     private var paused = false
+    private var isMending = false
 
     private val throwDelayTimer = TickTimer(TimeUnit.TICKS)
 
@@ -67,7 +68,7 @@ internal object AutoMend : Module(
 
         onDisable {
             switchback()
-            if (AutoArmor.isPaused)
+            if (AutoArmor.isPaused && pauseAutoArmor)
                 AutoArmor.isPaused = false
         }
 
@@ -80,6 +81,7 @@ internal object AutoMend : Module(
         }
 
         safeListener<TickEvent.ClientTickEvent> {
+            isMending = false
             if (isGuiOpened && !gui) return@safeListener
 
             if (cancelNearby != NearbyMode.OFF && isNearbyPlayer()) {
@@ -97,10 +99,6 @@ internal object AutoMend : Module(
             if (!shouldMend() && autoDisableComplete) {
                 MessageSendHelper.sendChatMessage("$chatName Mending completed! disabling")
                 disable()
-            }
-
-            if (shouldMend() && pauseAutoArmor && AutoArmor.isEnabled) {
-                AutoArmor.isPaused = true
             }
 
             if (takeOff) {
@@ -132,11 +130,17 @@ internal object AutoMend : Module(
                 if (autoThrow && player.heldItemMainhand.item === Items.EXPERIENCE_BOTTLE) {
                     val packet = PlayerPacket(rotating = true, rotation = Vec2f(player.rotationYaw, 90.0f))
                     PlayerPacketManager.addPacket(AutoMend, packet)
+                    isMending = true
                     if (validServerSideRotation() && throwDelayTimer.tick(throwDelay.value.toLong())) {
                         playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
                     }
                 }
             }
+        }
+
+        safeListener<TickEvent.ClientTickEvent> {
+            if(!pauseAutoArmor) return@safeListener
+            AutoArmor.isPaused = isMending
         }
     }
 
