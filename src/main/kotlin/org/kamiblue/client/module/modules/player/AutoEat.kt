@@ -140,6 +140,7 @@ internal object AutoEat : Module(
 
         startEating()
     }
+
     private fun startEating() {
         if (pauseBaritone) pauseBaritone()
         eating = true
