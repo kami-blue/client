@@ -17,6 +17,8 @@ import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.commons.extension.next
+import java.util.function.BiPredicate
 
 internal object AutoEat : Module(
     name = "AutoEat",
@@ -32,26 +34,22 @@ internal object AutoEat : Module(
     private var lastSlot = -1
     private var eating = false
 
-    private var preferredLevel = PreferredFood.NORMAL
-
-    enum class PreferredFood {
-        NORMAL {
-            override fun isValid(item: ItemFood, itemStack: ItemStack): Boolean {
-                return item != Items.CHORUS_FRUIT && item != Items.GOLDEN_APPLE
-            }
-        },
+    enum class PreferredFood : BiPredicate<ItemStack, ItemFood> {
         GAP {
-            override fun isValid(item: ItemFood, itemStack: ItemStack): Boolean {
-                return item == Items.GOLDEN_APPLE && item.getMetadata(itemStack) == 0
+            override fun test(itemStack: ItemStack, item: ItemFood): Boolean {
+                return item == Items.GOLDEN_APPLE && itemStack.metadata == 0
             }
         },
         EGAP {
-            override fun isValid(item: ItemFood, itemStack: ItemStack): Boolean {
-                return item == Items.GOLDEN_APPLE && item.getMetadata(itemStack) > 0
+            override fun test(itemStack: ItemStack, item: ItemFood): Boolean {
+                return item == Items.GOLDEN_APPLE && itemStack.metadata == 1
             }
-        };
-
-        abstract fun isValid(item: ItemFood, itemStack: ItemStack): Boolean
+        },
+        NORMAL {
+            override fun test(itemStack: ItemStack, item: ItemFood): Boolean {
+                return item != Items.GOLDEN_APPLE
+            }
+        }
     }
 
     override fun isActive(): Boolean {
@@ -72,48 +70,65 @@ internal object AutoEat : Module(
                 return@safeListener
             }
 
-            preferredLevel = when {
-                shouldFireProtect() -> PreferredFood.EGAP
+            val preferredFood = when {
+                needFireProtect() -> PreferredFood.EGAP
                 player.scaledHealth < belowHealth -> PreferredFood.GAP
                 else -> PreferredFood.NORMAL
             }
 
             val hand = when {
-                !shouldEat() -> {
+                !shouldEat(preferredFood) -> {
                     null // Null = stop eating
                 }
-                isValid(player.heldItemOffhand, preferredLevel) -> {
+                isValidAndPreferred(player.heldItemOffhand, preferredFood) -> {
                     EnumHand.OFF_HAND
                 }
-                isValid(player.heldItemMainhand, preferredLevel) -> {
+                isValidAndPreferred(player.heldItemMainhand, preferredFood) -> {
                     EnumHand.MAIN_HAND
                 }
-                swapToFood(preferredLevel) -> { // If we found valid food and moved
-                    // Set eating and pause then return and wait until next tick
+                swapToFood(preferredFood) -> { // If we found valid food and moved
+                    // Set eating and pause then wait until next tick
                     startEating()
                     return@safeListener
+                }
+                // If there isn't valid food in inventory or directly valid food in hand, do recursive check on items in hand
+                isValidAndPreferredRecursive(player.heldItemOffhand, preferredFood) -> {
+                    EnumHand.OFF_HAND
+                }
+                isValidAndPreferredRecursive(player.heldItemMainhand, preferredFood) -> {
+                    EnumHand.MAIN_HAND
                 }
                 else -> {
                     null // If we can't find any valid food then stop eating
                 }
             }
 
-            if (hand != null) {
-                eat(hand)
-            } else {
-                // Stop eating first and swap back in the next tick
-                if (eating) {
-                    stopEating()
-                } else {
-                    swapBack()
-                }
-            }
+            eatOrStop(hand)
         }
     }
 
-    private fun SafeClientEvent.shouldEat() =
+    private fun SafeClientEvent.needFireProtect() =
+        eGapOnFire
+            && player.isBurning
+            && !player.isPotionActive(MobEffects.FIRE_RESISTANCE)
+            && player.allSlots.firstItem(Items.GOLDEN_APPLE) { it.metadata == 1 } != null
+
+    private fun SafeClientEvent.shouldEat(preferredFood: PreferredFood) =
         player.foodStats.foodLevel < belowHunger
-            || player.scaledHealth < belowHealth || shouldFireProtect()
+            || preferredFood != PreferredFood.NORMAL
+
+    private fun SafeClientEvent.eatOrStop(hand: EnumHand?) {
+        if (hand != null) {
+            eat(hand)
+        } else {
+            // Stop eating first and swap back in the next tick
+            if (eating) {
+                stopEating()
+            } else {
+                swapBack()
+            }
+        }
+    }
 
     private fun SafeClientEvent.eat(hand: EnumHand) {
         if (!eating || !player.isHandActive || player.activeHand != hand) {
@@ -125,7 +140,6 @@ internal object AutoEat : Module(
 
         startEating()
     }
-
     private fun startEating() {
         if (pauseBaritone) pauseBaritone()
         eating = true
@@ -154,9 +168,9 @@ internal object AutoEat : Module(
     /**
      * @return `true` if food found and moved
      */
-    private fun SafeClientEvent.swapToFood(preferredLevel: PreferredFood): Boolean {
+    private fun SafeClientEvent.swapToFood(preferredFood: PreferredFood): Boolean {
         lastSlot = player.inventory.currentItem
-        val slotToSwitchTo = getSlotOfItemFood(preferredLevel, player.hotbarSlots)?.let {
+        val slotToSwitchTo = getFoodSlot(preferredFood, player.hotbarSlots)?.let {
             swapToSlot(it as HotbarSlot)
             true
         } ?: false
@@ -165,43 +179,60 @@ internal object AutoEat : Module(
             true
         } else {
             lastSlot = -1
-            moveFoodToHotbar()
+            moveFoodToHotbar(preferredFood)
         }
     }
 
     /**
      * @return `true` if food found and moved
      */
-    private fun SafeClientEvent.moveFoodToHotbar(): Boolean {
-        val slotFrom = getSlotOfItemFood(preferredLevel, player.storageSlots) ?: return false
+    private fun SafeClientEvent.moveFoodToHotbar(preferredFood: PreferredFood): Boolean {
+        val slotFrom = getFoodSlot(preferredFood, player.storageSlots) ?: return false
 
         moveToHotbar(slotFrom) {
             val item = it.item
             item !is ItemTool && item !is ItemBlock
         }
+
         return true
     }
 
-    fun SafeClientEvent.getSlotOfItemFood(preferredLevel: PreferredFood, inventory: List<Slot>): Slot? {
+    private fun SafeClientEvent.getFoodSlot(preferredFood: PreferredFood, inventory: List<Slot>, attempts: Int = 3): Slot? {
         return inventory.firstItem<ItemFood, Slot> {
-            isValid(it, AutoEat.preferredLevel)
-        } ?: when (preferredLevel) {
-            PreferredFood.NORMAL -> null
-            PreferredFood.GAP -> getSlotOfItemFood(PreferredFood.NORMAL, inventory)
-            else -> getSlotOfItemFood(PreferredFood.GAP, inventory)
+            isValidAndPreferred(it, preferredFood)
+        } ?: if (attempts > 1) {
+            getFoodSlot(preferredFood.next(), inventory, attempts - 1)
+        } else {
+            null
         }
     }
 
-    private fun SafeClientEvent.isValid(itemStack: ItemStack, preferredLevel: PreferredFood): Boolean {
+    private fun SafeClientEvent.isValidAndPreferredRecursive(itemStack: ItemStack, preferredFood: PreferredFood): Boolean {
         val item = itemStack.item
-        if ((item !is ItemFood) || (item == Items.CHORUS_FRUIT) || (isBadFood(itemStack, item) and !eatBadFood)) {
-            return false
-        }
 
-        return preferredLevel.isValid(item, itemStack)
+        return item is ItemFood
+            && isValid(itemStack, item)
+            && isPreferredRecursive(itemStack, item, preferredFood)
     }
 
-    private fun SafeClientEvent.shouldFireProtect() = player.isBurning && eGapOnFire && !player.isPotionActive(MobEffects.FIRE_RESISTANCE)
+    private fun SafeClientEvent.isPreferredRecursive(itemStack: ItemStack, item: ItemFood, preferredFood: PreferredFood, attempts: Int = 3): Boolean {
+        return preferredFood.test(itemStack, item)
+            || isPreferredRecursive(itemStack, item, preferredFood.next(), attempts - 1)
+    }
+
+    private fun SafeClientEvent.isValidAndPreferred(itemStack: ItemStack, preferredFood: PreferredFood): Boolean {
+        val item = itemStack.item
+
+        return item is ItemFood
+            && isValid(itemStack, item)
+            && preferredFood.test(itemStack, item)
+    }
+
+    private fun SafeClientEvent.isValid(itemStack: ItemStack, item: ItemFood): Boolean {
+        return item != Items.CHORUS_FRUIT
+            && (eatBadFood || !isBadFood(itemStack, item))
+            && player.canEat(item == Items.GOLDEN_APPLE)
+    }
 
     private fun isBadFood(itemStack: ItemStack, item: ItemFood) =
         item == Items.ROTTEN_FLESH
