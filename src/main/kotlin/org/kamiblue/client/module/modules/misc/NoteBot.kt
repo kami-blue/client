@@ -42,26 +42,27 @@ internal object NoteBot : Module(
     category = Category.MISC,
     description = "Plays music with note blocks; put .mid or .nbs songs in .minecraft/kamiblue/songs"
 ) {
+    private val isNotNbsFormat = { !isNbsFormat }
 
     private val togglePlay = setting("Toggle Play", false)
     private val reloadSong = setting("Reload Song", false)
     private val songName = setting("Song Name", "Unchanged")
-    private val channel1 = setting("Channel 1", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel2 = setting("Channel 2", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel3 = setting("Channel 3", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel4 = setting("Channel 4", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel5 = setting("Channel 5", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel6 = setting("Channel 6", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel7 = setting("Channel 7", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel8 = setting("Channel 8", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel9 = setting("Channel 9", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel10 = setting("Channel 10", NoteBlockEvent.Instrument.PIANO, { false })
-    private val channel11 = setting("Channel 11", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel12 = setting("Channel 12", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel13 = setting("Channel 13", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel14 = setting("Channel 14", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel15 = setting("Channel 15", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
-    private val channel16 = setting("Channel 16", NoteBlockEvent.Instrument.PIANO, { !isNbsFormat })
+    private val channel1 = setting("Channel 1", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel2 = setting("Channel 2", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel3 = setting("Channel 3", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel4 = setting("Channel 4", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel5 = setting("Channel 5", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel6 = setting("Channel 6", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel7 = setting("Channel 7", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel8 = setting("Channel 8", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel9 = setting("Channel 9", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel10 = setting("Channel 10", NoteBlockEvent.Instrument.PIANO, BOOLEAN_SUPPLIER_FALSE)
+    private val channel11 = setting("Channel 11", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel12 = setting("Channel 12", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel13 = setting("Channel 13", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel14 = setting("Channel 14", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel15 = setting("Channel 15", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
+    private val channel16 = setting("Channel 16", NoteBlockEvent.Instrument.PIANO, isNotNbsFormat)
 
     private val isNbsFormat get() = songName.value.endsWith(".nbs")
 

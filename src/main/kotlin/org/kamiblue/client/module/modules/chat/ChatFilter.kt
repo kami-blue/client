@@ -4,6 +4,7 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.BOOLEAN_SUPPLIER_FALSE
 import org.kamiblue.client.util.text.MessageDetection
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.formatValue
@@ -18,7 +19,7 @@ internal object ChatFilter : Module(
 ) {
     private val filterOwn by setting("Filter Own", false)
     private val filterDMs by setting("Filter DMs", false)
-    private var hasRunInfo by setting("Info", false, { false })
+    private var hasRunInfo by setting("Info", false, BOOLEAN_SUPPLIER_FALSE)
 
     private val chatFilter = ArrayList<Regex>()
     private val file = File(KamiMod.DIRECTORY + "chat_filter.txt")

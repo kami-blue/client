@@ -17,8 +17,10 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.isFakeOrSelf
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.items.swapToSlot
 import org.kamiblue.client.util.math.Vec2f
+import org.kamiblue.client.util.notAtValue
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
@@ -32,10 +34,12 @@ internal object AutoMend : Module(
 ) {
     private val autoThrow by setting("Auto Throw", true)
     private val throwDelay = setting("Throw Delay", 2, 0..5, 1, description = "Number of ticks between throws to allow absorption")
-    private val autoSwitch by setting("Auto Switch", true)
-    private val autoDisable by setting("Auto Disable", false, { autoSwitch })
-    private val cancelNearby by setting("Cancel Nearby", NearbyMode.OFF, description = "Don't mend when an enemy is nearby")
-    private val pauseNearbyRadius by setting("Nearby Radius", 8, 1..8, 1, { cancelNearby != NearbyMode.OFF })
+    private val autoSwitch0 = setting("Auto Switch", true)
+    private val autoSwitch by autoSwitch0
+    private val autoDisable by setting("Auto Disable", false, autoSwitch0.atTrue())
+    private val cancelNearby0 = setting("Cancel Nearby", NearbyMode.OFF, description = "Don't mend when an enemy is nearby")
+    private val cancelNearby by cancelNearby0
+    private val pauseNearbyRadius by setting("Nearby Radius", 8, 1..8, 1, cancelNearby0.notAtValue(NearbyMode.OFF))
     private val threshold by setting("Repair At", 75, 1..100, 1, description = "Percentage to start repairing any armor piece")
     private val gui by setting("Allow GUI", false, description = "Allow mending when inside a GUI")
 

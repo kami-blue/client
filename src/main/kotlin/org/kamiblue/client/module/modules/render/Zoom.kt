@@ -2,6 +2,7 @@ package org.kamiblue.client.module.modules.render
 
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.atTrue
 
 internal object Zoom : Module(
     name = "Zoom",
@@ -14,7 +15,7 @@ internal object Zoom : Module(
 
     private val fovChange = setting("FOV", 40.0f, 1.0f..180.0f, 0.5f)
     private val modifySensitivity = setting("Modify Sensitivity", true)
-    private val sensitivityMultiplier = setting("Sensitivity Multiplier", 1.0f, 0.25f..2.0f, 0.25f, { modifySensitivity.value })
+    private val sensitivityMultiplier = setting("Sensitivity Multiplier", 1.0f, 0.25f..2.0f, 0.25f, modifySensitivity.atTrue())
     private val smoothCamera = setting("Cinematic Camera", false)
 
     init {

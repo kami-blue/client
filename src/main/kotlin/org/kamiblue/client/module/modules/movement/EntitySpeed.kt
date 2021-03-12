@@ -18,6 +18,7 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.MovementUtils
 import org.kamiblue.client.util.MovementUtils.calcMoveYaw
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.threads.safeListener
 import kotlin.math.cos
 import kotlin.math.sin
@@ -30,11 +31,11 @@ internal object EntitySpeed : Module(
     private val speed = setting("Speed", 1.0f, 0.1f..25.0f, 0.1f)
     private val antiStuck = setting("Anti Stuck", true)
     private val flight = setting("Flight", false)
-    private val glideSpeed = setting("Glide Speed", 0.1f, 0.0f..1.0f, 0.01f, { flight.value })
-    private val upSpeed = setting("Up Speed", 1.0f, 0.0f..5.0f, 0.1f, { flight.value })
+    private val glideSpeed = setting("Glide Speed", 0.1f, 0.0f..1.0f, 0.01f, flight.atTrue())
+    private val upSpeed = setting("Up Speed", 1.0f, 0.0f..5.0f, 0.1f, flight.atTrue())
     private val opacity = setting("Boat Opacity", 1.0f, 0.0f..1.0f, 0.01f)
     private val forceInteract = setting("Force Interact", false)
-    private val interactTickDelay = setting("Interact Delay", 2, 1..20, 1, { forceInteract.value }, description = "Force interact packet delay, in ticks.")
+    private val interactTickDelay = setting("Interact Delay", 2, 1..20, 1, forceInteract.atTrue(), description = "Force interact packet delay, in ticks.")
 
     init {
         safeListener<PacketEvent.Send> {

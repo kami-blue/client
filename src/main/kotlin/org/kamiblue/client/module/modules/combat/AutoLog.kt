@@ -18,6 +18,7 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.combat.AutoLog.Reasons.*
 import org.kamiblue.client.util.EntityUtils.isFakeOrSelf
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
 import org.kamiblue.client.util.items.allSlots
 import org.kamiblue.client.util.items.countItem
@@ -34,13 +35,16 @@ internal object AutoLog : Module(
     private val disableMode by setting("Disable Mode", DisableMode.ALWAYS)
     private val health by setting("Health", 10, 6..36, 1)
     private val crystals by setting("Crystals", false)
-    private val creeper by setting("Creepers", true)
-    private val creeperDistance by setting("Creeper Distance", 5, 1..10, 1, { creeper })
-    private val totem by setting("Totem", false)
-    private val minTotems by setting("Min Totems", 2, 1..10, 1, { totem })
-    private val players by setting("Players", false)
-    private val playerDistance by setting("Player Distance", 64, 32..128, 4, { players })
-    private val friends by setting("Friends", false, { players })
+    private val creeper0 = setting("Creepers", true)
+    private val creeper by creeper0
+    private val creeperDistance by setting("Creeper Distance", 5, 1..10, 1, creeper0.atTrue())
+    private val totem0 = setting("Totem", false)
+    private val totem by totem0
+    private val minTotems by setting("Min Totems", 2, 1..10, 1, totem0.atTrue())
+    private val players0 = setting("Players", false)
+    private val players by players0
+    private val playerDistance by setting("Player Distance", 64, 32..128, 4, players0.atTrue())
+    private val friends by setting("Friends", false, players0.atTrue())
 
     @Suppress("UNUSED")
     private enum class DisableMode {

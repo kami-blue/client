@@ -10,6 +10,7 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.WorldUtils.isWater
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.threads.safeListener
 import java.lang.Math.random
 import kotlin.math.abs
@@ -21,7 +22,7 @@ internal object AutoFish : Module(
 ) {
     private val mode = setting("Mode", Mode.BOUNCE)
     private val autoCast = setting("Auto Cast", true)
-    private val castDelay = setting("Auto Cast Delay", 5, 1..20, 1, { autoCast.value }, description = "Delay before starting fishing when holding a fishing rod, in seconds")
+    private val castDelay = setting("Auto Cast Delay", 5, 1..20, 1, autoCast.atTrue(), description = "Delay before starting fishing when holding a fishing rod, in seconds")
     private val catchDelay = setting("Catch Delay", 300, 50..2000, 50, description = "Delay before catching the fish, in milliseconds")
     private val recastDelay = setting("Recast Delay", 450, 50..2000, 50, description = "Delay before recasting the fishing rod, in milliseconds")
     private val variation = setting("Variation", 100, 0..1000, 50, description = "Randomize the delays in specific range, in milliseconds")

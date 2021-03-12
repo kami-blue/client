@@ -46,9 +46,10 @@ internal object Freecam : Module(
     category = Category.PLAYER,
     description = "Leave your body and transcend into the realm of the gods"
 ) {
-    private val directionMode by setting("Flight Mode", FlightMode.CREATIVE)
+    private val directionMode0 = setting("Flight Mode", FlightMode.CREATIVE)
+    private val directionMode by directionMode0
     private val horizontalSpeed by setting("Horizontal Speed", 20.0f, 1.0f..50.0f, 1f)
-    private val verticalSpeed by setting("Vertical Speed", 20.0f, 1.0f..50.0f, 1f, { directionMode == FlightMode.CREATIVE })
+    private val verticalSpeed by setting("Vertical Speed", 20.0f, 1.0f..50.0f, 1f, directionMode0.atValue(FlightMode.CREATIVE))
     private val autoRotate by setting("Auto Rotate", true)
     private val arrowKeyMove by setting("Arrow Key Move", true)
     private val disableOnDisconnect by setting("Disconnect Disable", true)

@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
 
@@ -23,8 +24,8 @@ internal object ElytraReplace : Module(
     private val autoChest = setting("Auto Chest", false)
     private val elytraFlightCheck = setting("ElytraFlight Check", true)
     private val logToChat = setting("Missing Warning", false)
-    private val playSound = setting("Play Sound", false, { logToChat.value })
-    private val logThreshold = setting("Warning Threshold", 2, 1..10, 1, { logToChat.value })
+    private val playSound = setting("Play Sound", false, logToChat.atTrue())
+    private val logThreshold = setting("Warning Threshold", 2, 1..10, 1, logToChat.atTrue())
     private val threshold = setting("Damage Threshold", 7, 1..50, 1)
 
     private var elytraCount = 0

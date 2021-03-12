@@ -7,6 +7,7 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.text.MessageDetection
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
@@ -19,7 +20,7 @@ internal object AutoReply : Module(
     category = Category.CHAT
 ) {
     private val customMessage = setting("Custom Message", false)
-    private val customText = setting("Custom Text", "unchanged", { customMessage.value })
+    private val customText = setting("Custom Text", "unchanged", customMessage.atTrue())
 
     private val timer = TickTimer(TimeUnit.SECONDS)
 

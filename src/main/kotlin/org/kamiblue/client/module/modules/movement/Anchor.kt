@@ -8,6 +8,7 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.flooredPosition
 import org.kamiblue.client.util.MovementUtils.centerPlayer
 import org.kamiblue.client.util.MovementUtils.isCentered
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.combat.SurroundUtils
 import org.kamiblue.client.util.combat.SurroundUtils.checkHole
 import org.kamiblue.client.util.threads.safeListener
@@ -21,8 +22,9 @@ internal object Anchor : Module(
     private val autoCenter by setting("Auto Center", true)
     private val stopYMotion by setting("Stop Y Motion", false)
     private val disableInHole by setting("Disable In Hole", false)
-    private val pitchTrigger by setting("Pitch Trigger", true)
-    private val pitch by setting("Pitch", 75, 0..80, 1, { pitchTrigger })
+    private val pitchTrigger0 = setting("Pitch Trigger", true)
+    private val pitchTrigger by pitchTrigger0
+    private val pitch by setting("Pitch", 75, 0..80, 1, pitchTrigger0.atTrue())
     private val verticalRange by setting("Vertical Range", 3, 1..5, 1)
 
     private enum class Mode {

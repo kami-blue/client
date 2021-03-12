@@ -8,8 +8,7 @@ import org.kamiblue.client.manager.managers.WaypointManager
 import org.kamiblue.client.manager.managers.WaypointManager.Waypoint
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.TickTimer
-import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.*
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.*
 import org.kamiblue.client.util.graphics.font.HAlign
@@ -30,31 +29,30 @@ internal object WaypointRender : Module(
     description = "Render saved waypoints",
     category = Category.RENDER
 ) {
-
     private val page = setting("Page", Page.INFO_BOX)
 
     /* Page one */
-    private val dimension = setting("Dimension", Dimension.CURRENT, { page.value == Page.INFO_BOX })
-    private val showName = setting("Show Name", true, { page.value == Page.INFO_BOX })
-    private val showDate = setting("Show Date", false, { page.value == Page.INFO_BOX })
-    private val showCoords = setting("Show Coords", true, { page.value == Page.INFO_BOX })
-    private val showDist = setting("Show Distance", true, { page.value == Page.INFO_BOX })
-    private val textScale = setting("Text Scale", 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.INFO_BOX })
-    private val infoBoxRange = setting("Info Box Range", 512, 128..2048, 64, { page.value == Page.INFO_BOX })
+    private val dimension = setting("Dimension", Dimension.CURRENT, page.atValue(Page.INFO_BOX))
+    private val showName = setting("Show Name", true, page.atValue(Page.INFO_BOX))
+    private val showDate = setting("Show Date", false, page.atValue(Page.INFO_BOX))
+    private val showCoords = setting("Show Coords", true, page.atValue(Page.INFO_BOX))
+    private val showDist = setting("Show Distance", true, page.atValue(Page.INFO_BOX))
+    private val textScale = setting("Text Scale", 1.0f, 0.0f..2.0f, 0.1f, page.atValue(Page.INFO_BOX))
+    private val infoBoxRange = setting("Info Box Range", 512, 128..2048, 64, page.atValue(Page.INFO_BOX))
 
     /* Page two */
-    private val espRangeLimit = setting("Render Range", true, { page.value == Page.ESP })
-    private val espRange = setting("Range", 4096, 1024..16384, 1024, { page.value == Page.ESP && espRangeLimit.value })
-    private val filled = setting("Filled", true, { page.value == Page.ESP })
-    private val outline = setting("Outline", true, { page.value == Page.ESP })
-    private val tracer = setting("Tracer", true, { page.value == Page.ESP })
-    private val r = setting("Red", 31, 0..255, 1, { page.value == Page.ESP })
-    private val g = setting("Green", 200, 0..255, 1, { page.value == Page.ESP })
-    private val b = setting("Blue", 63, 0..255, 1, { page.value == Page.ESP })
-    private val aFilled = setting("Filled Alpha", 63, 0..255, 1, { page.value == Page.ESP && filled.value })
-    private val aOutline = setting("Outline Alpha", 160, 0..255, 1, { page.value == Page.ESP && outline.value })
-    private val aTracer = setting("Tracer Alpha", 200, 0..255, 1, { page.value == Page.ESP && tracer.value })
-    private val thickness = setting("Line Thickness", 2.0f, 0.25f..8.0f, 0.25f)
+    private val renderRange = setting("Render Range", true, page.atValue(Page.ESP))
+    private val espRange = setting("Range", 4096, 1024..16384, 1024, page.atValue(Page.ESP) and renderRange.atTrue())
+    private val filled = setting("Filled", true, page.atValue(Page.ESP))
+    private val outline = setting("Outline", true, page.atValue(Page.ESP))
+    private val tracer = setting("Tracer", true, page.atValue(Page.ESP))
+    private val r = setting("Red", 31, 0..255, 1, page.atValue(Page.ESP))
+    private val g = setting("Green", 200, 0..255, 1, page.atValue(Page.ESP))
+    private val b = setting("Blue", 63, 0..255, 1, page.atValue(Page.ESP))
+    private val aFilled = setting("Filled Alpha", 63, 0..255, 1, page.atValue(Page.ESP) and filled.atTrue())
+    private val aOutline = setting("Outline Alpha", 160, 0..255, 1, page.atValue(Page.ESP) and outline.atTrue())
+    private val aTracer = setting("Tracer Alpha", 200, 0..255, 1, page.atValue(Page.ESP) and tracer.atTrue())
+    private val thickness = setting("Line Thickness", 2.0f, 0.25f..8.0f, 0.25f, page.atValue(Page.ESP) and (outline.atTrue() or tracer.atTrue()))
 
     private enum class Dimension {
         CURRENT, ANY
@@ -85,7 +83,7 @@ internal object WaypointRender : Module(
             GlStateUtils.depth(false)
             for (waypoint in waypointMap.keys) {
                 val distance = mc.player.distanceTo(waypoint.pos)
-                if (espRangeLimit.value && distance > espRange.value) continue
+                if (renderRange.value && distance > espRange.value) continue
                 renderer.add(AxisAlignedBB(waypoint.pos), color) /* Adds pos to ESPRenderer list */
                 drawVerticalLines(waypoint.pos, color, aOutline.value) /* Draw lines from y 0 to y 256 */
             }

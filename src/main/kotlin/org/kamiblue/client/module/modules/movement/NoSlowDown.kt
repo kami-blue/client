@@ -15,6 +15,7 @@ import org.kamiblue.client.mixin.client.world.MixinBlockWeb
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.flooredPosition
+import org.kamiblue.client.util.atFalse
 import org.kamiblue.client.util.threads.safeListener
 
 /**
@@ -31,11 +32,12 @@ internal object NoSlowDown : Module(
     val soulSand by setting("Soul Sand", true)
     val cobweb by setting("Cobweb", true)
     private val slime by setting("Slime", true)
-    private val allItems by setting("All Items", false)
-    private val food by setting("Food", true, { !allItems })
-    private val bow by setting("Bows", true, { !allItems })
-    private val potion by setting("Potions", true, { !allItems })
-    private val shield by setting("Shield", true, { !allItems })
+    private val allItems0 = setting("All Items", false)
+    private val allItems by allItems0
+    private val food by setting("Food", true, allItems0.atFalse())
+    private val bow by setting("Bows", true, allItems0.atFalse())
+    private val potion by setting("Potions", true, allItems0.atFalse())
+    private val shield by setting("Shield", true, allItems0.atFalse())
 
     /*
      * InputUpdateEvent is called just before the player is slowed down @see EntityPlayerSP.onLivingUpdate)

@@ -5,6 +5,9 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.and
+import org.kamiblue.client.util.atTrue
+import org.kamiblue.client.util.atValue
 import org.kamiblue.client.util.text.*
 import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
@@ -16,29 +19,31 @@ internal object AntiSpam : Module(
     description = "Removes spam and advertising from the chat",
     showOnArray = false
 ) {
-    private val mode = setting("Mode", Mode.REPLACE)
-    private val replaceMode = setting("Replace Mode", ReplaceMode.ASTERISKS, { mode.value == Mode.REPLACE })
+    private val mode0 = setting("Mode", Mode.REPLACE)
+    private val mode by mode0
+    private val replaceMode by setting("Replace Mode", ReplaceMode.ASTERISKS, mode0.atValue(Mode.REPLACE))
     private val page = setting("Page", Page.TYPE)
 
     /* Page One */
-    private val discordLinks = setting("Discord", true, { page.value == Page.TYPE })
-    private val slurs = setting("Slurs", true, { page.value == Page.TYPE })
-    private val swears = setting("Swears", false, { page.value == Page.TYPE })
-    private val automated = setting("Automated", true, { page.value == Page.TYPE })
-    private val ips = setting("Server Ips", true, { page.value == Page.TYPE })
-    private val specialCharEnding = setting("Special Ending", true, { page.value == Page.TYPE })
-    private val specialCharBegin = setting("Special Begin", true, { page.value == Page.TYPE })
-    private val greenText = setting("Green Text", false, { page.value == Page.TYPE })
-    private val fancyChat = setting("Fancy Chat", false, { page.value == Page.TYPE })
+    private val discordLinks = setting("Discord", true, page.atValue(Page.TYPE))
+    private val slurs = setting("Slurs", true, page.atValue(Page.TYPE))
+    private val swears = setting("Swears", false, page.atValue(Page.TYPE))
+    private val automated = setting("Automated", true, page.atValue(Page.TYPE))
+    private val ips = setting("Server Ips", true, page.atValue(Page.TYPE))
+    private val specialCharEnding = setting("Special Ending", true, page.atValue(Page.TYPE))
+    private val specialCharBegin = setting("Special Begin", true, page.atValue(Page.TYPE))
+    private val greenText = setting("Green Text", false, page.atValue(Page.TYPE))
+    private val fancyChat by setting("Fancy Chat", false, page.atValue(Page.TYPE))
 
     /* Page Two */
-    private val aggressiveFiltering = setting("Aggressive Filtering", true, { page.value == Page.SETTINGS })
-    private val duplicates = setting("Duplicates", true, { page.value == Page.SETTINGS })
-    private val duplicatesTimeout = setting("Duplicates Timeout", 30, 1..600, 5, { duplicates.value && page.value == Page.SETTINGS })
-    private val filterOwn = setting("Filter Own", false, { page.value == Page.SETTINGS })
-    private val filterDMs = setting("Filter DMs", false, { page.value == Page.SETTINGS })
-    private val filterServer = setting("Filter Server", false, { page.value == Page.SETTINGS })
-    private val showBlocked = setting("Show Blocked", ShowBlocked.LOG_FILE, { page.value == Page.SETTINGS })
+    private val aggressiveFiltering by setting("Aggressive Filtering", true, page.atValue(Page.SETTINGS))
+    private val duplicates0 = setting("Duplicates", true, page.atValue(Page.SETTINGS))
+    private val duplicates by duplicates0
+    private val duplicatesTimeout by setting("Duplicates Timeout", 30, 1..600, 5, page.atValue(Page.SETTINGS) and duplicates0.atTrue())
+    private val filterOwn by setting("Filter Own", false, page.atValue(Page.SETTINGS))
+    private val filterDMs by setting("Filter DMs", false, page.atValue(Page.SETTINGS))
+    private val filterServer by setting("Filter Server", false, page.atValue(Page.SETTINGS))
+    private val showBlocked by setting("Show Blocked", ShowBlocked.LOG_FILE, page.atValue(Page.SETTINGS))
 
     private enum class Mode {
         REPLACE, HIDE
@@ -59,20 +64,20 @@ internal object AntiSpam : Module(
     }
 
     private val messageHistory = ConcurrentHashMap<String, Long>()
-    private val settingMap = hashMapOf(
-        greenText to SpamFilters.greenText,
-        specialCharBegin to SpamFilters.specialBeginning,
-        specialCharEnding to SpamFilters.specialEnding,
-        automated to SpamFilters.ownsMeAndAll,
-        automated to SpamFilters.thanksTo,
+    private val settingArray = arrayOf(
         discordLinks to SpamFilters.discordInvite,
-        ips to SpamFilters.ipAddress,
+        slurs to SpamFilters.slurs,
+        swears to SpamFilters.swears,
         automated to SpamFilters.announcer,
         automated to SpamFilters.spammer,
         automated to SpamFilters.insulter,
         automated to SpamFilters.greeter,
-        slurs to SpamFilters.slurs,
-        swears to SpamFilters.swears
+        automated to SpamFilters.ownsMeAndAll,
+        automated to SpamFilters.thanksTo,
+        ips to SpamFilters.ipAddress,
+        specialCharBegin to SpamFilters.specialBeginning,
+        specialCharEnding to SpamFilters.specialEnding,
+        greenText to SpamFilters.greenText,
     )
 
     init {
@@ -85,21 +90,21 @@ internal object AntiSpam : Module(
 
             messageHistory.values.removeIf { System.currentTimeMillis() - it > 600000 }
 
-            if (duplicates.value && checkDupes(event.message.unformattedText)) {
+            if (duplicates && checkDupes(event.message.unformattedText)) {
                 event.isCanceled = true
             }
 
             val pattern = isSpam(event.message.unformattedText)
 
             if (pattern != null) { // null means no pattern found
-                if (mode.value == Mode.HIDE) {
+                if (mode == Mode.HIDE) {
                     event.isCanceled = true
-                } else if (mode.value == Mode.REPLACE) {
-                    event.message = TextComponentString(sanitize(event.message.formattedText, pattern, replaceMode.value.redaction))
+                } else if (mode == Mode.REPLACE) {
+                    event.message = TextComponentString(sanitize(event.message.formattedText, pattern, replaceMode.redaction))
                 }
             }
 
-            if (fancyChat.value) {
+            if (fancyChat) {
                 val message = sanitizeFancyChat(event.message.unformattedText)
                 if (message.trim { it <= ' ' }.isEmpty()) { // this should be removed if we are going for an intelligent de-fancy
                     event.message = TextComponentString(getUsername(event.message.unformattedText) + " [Fancychat]")
@@ -109,7 +114,7 @@ internal object AntiSpam : Module(
     }
 
     private fun sanitize(toClean: String, matcher: String, replacement: String): String {
-        return if (!aggressiveFiltering.value) {
+        return if (!aggressiveFiltering) {
             toClean.replace("\\b$matcher|$matcher\\b".toRegex(), replacement) // only check for start or end of a word
         } else { // We might encounter the scunthorpe problem, so aggressive mode is off by default.
             toClean.replace(matcher.toRegex(), replacement)
@@ -117,9 +122,9 @@ internal object AntiSpam : Module(
     }
 
     private fun isSpam(message: String): String? {
-        return if (!filterOwn.value && isOwn(message)
-            || !filterDMs.value && MessageDetection.Direct.ANY detect message
-            || !filterServer.value && MessageDetection.Server.ANY detect message) {
+        return if (!filterOwn && isOwn(message)
+            || !filterDMs && MessageDetection.Direct.ANY detect message
+            || !filterServer && MessageDetection.Server.ANY detect message) {
             null
         } else {
             detectSpam(removeUsername(message))
@@ -127,10 +132,11 @@ internal object AntiSpam : Module(
     }
 
     private fun detectSpam(message: String): String? {
-        for ((key, value) in settingMap) {
-            val pattern = findPatterns(value, message)
-            if (key.value && pattern != null) {
-                sendResult(key.name, message)
+        for ((setting, strings) in settingArray) {
+            val pattern = findPatterns(strings, message)
+
+            if (setting.value && pattern != null) {
+                sendResult(setting.name, message)
                 return pattern
             }
         }
@@ -153,7 +159,7 @@ internal object AntiSpam : Module(
     private fun checkDupes(message: String): Boolean {
         var isDuplicate = false
 
-        if (messageHistory.containsKey(message) && (System.currentTimeMillis() - messageHistory[message]!!) / 1000 < duplicatesTimeout.value) isDuplicate = true
+        if (messageHistory.containsKey(message) && (System.currentTimeMillis() - messageHistory[message]!!) / 1000 < duplicatesTimeout) isDuplicate = true
         messageHistory[message] = System.currentTimeMillis()
 
         if (isDuplicate) {
@@ -186,7 +192,7 @@ internal object AntiSpam : Module(
     }
 
     private fun sendResult(name: String, message: String) {
-        if (showBlocked.value == ShowBlocked.CHAT || showBlocked.value == ShowBlocked.BOTH) MessageSendHelper.sendChatMessage("$chatName $name: $message")
-        if (showBlocked.value == ShowBlocked.LOG_FILE || showBlocked.value == ShowBlocked.BOTH) KamiMod.LOG.info("$chatName $name: $message")
+        if (showBlocked == ShowBlocked.CHAT || showBlocked == ShowBlocked.BOTH) MessageSendHelper.sendChatMessage("$chatName $name: $message")
+        if (showBlocked == ShowBlocked.LOG_FILE || showBlocked == ShowBlocked.BOTH) KamiMod.LOG.info("$chatName $name: $message")
     }
 }

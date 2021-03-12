@@ -3,6 +3,7 @@ package org.kamiblue.client.module.modules.chat
 import org.kamiblue.client.manager.managers.MessageManager.newMessageModifier
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.atFalse
 import org.kamiblue.client.util.text.MessageDetection
 import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.min
@@ -19,7 +20,7 @@ internal object FancyChat : Module(
     private val mock = setting("mOcK", false)
     private val green = setting(">", false)
     private val blue = setting("`", false)
-    private val randomSetting = setting("Random Case", true, { mock.value })
+    private val randomSetting = setting("Random Case", true, mock.atFalse())
     private val commands = setting("Commands", false)
     private val spammer = setting("Spammer", false)
 

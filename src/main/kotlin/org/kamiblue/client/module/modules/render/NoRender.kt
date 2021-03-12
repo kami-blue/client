@@ -21,6 +21,7 @@ import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.RenderEntityEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.atValue
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
@@ -31,38 +32,37 @@ internal object NoRender : Module(
     category = Category.RENDER,
     description = "Ignore entity spawn packets"
 ) {
-
     private val packets = setting("Cancel Packets", true)
     private val page = setting("Page", Page.OTHER)
 
     // Entities
-    private val mobs = setting("Mobs", false, { page.value == Page.ENTITIES })
-    private val animals = setting("Animals", false, { page.value == Page.ENTITIES })
-    private val player = setting("Players", false, { page.value == Page.ENTITIES })
-    private val paint = setting("Paintings", false, { page.value == Page.ENTITIES })
-    private val sign = setting("Signs", false, { page.value == Page.ENTITIES })
-    private val skull = setting("Heads", false, { page.value == Page.ENTITIES })
-    private val armorStand = setting("Armor Stands", false, { page.value == Page.ENTITIES })
-    private val endPortal = setting("End Portals", false, { page.value == Page.ENTITIES })
-    private val banner = setting("Banners", false, { page.value == Page.ENTITIES })
-    private val itemFrame = setting("Item Frames", false, { page.value == Page.ENTITIES })
-    private val xp = setting("XP", false, { page.value == Page.ENTITIES })
-    private val items = setting("Items", false, { page.value == Page.ENTITIES })
-    private val crystal = setting("Crystals", false, { page.value == Page.ENTITIES })
-    private val firework = setting("Firework", false, { page.value == Page.ENTITIES })
+    private val mobs = setting("Mobs", false, page.atValue(Page.ENTITIES))
+    private val animals = setting("Animals", false, page.atValue(Page.ENTITIES))
+    private val player = setting("Players", false, page.atValue(Page.ENTITIES))
+    private val paint = setting("Paintings", false, page.atValue(Page.ENTITIES))
+    private val sign = setting("Signs", false, page.atValue(Page.ENTITIES))
+    private val skull = setting("Heads", false, page.atValue(Page.ENTITIES))
+    private val armorStand = setting("Armor Stands", false, page.atValue(Page.ENTITIES))
+    private val endPortal = setting("End Portals", false, page.atValue(Page.ENTITIES))
+    private val banner = setting("Banners", false, page.atValue(Page.ENTITIES))
+    private val itemFrame = setting("Item Frames", false, page.atValue(Page.ENTITIES))
+    private val xp = setting("XP", false, page.atValue(Page.ENTITIES))
+    private val items = setting("Items", false, page.atValue(Page.ENTITIES))
+    private val crystal = setting("Crystals", false, page.atValue(Page.ENTITIES))
+    private val firework = setting("Firework", false, page.atValue(Page.ENTITIES))
 
     // Others
-    val map = setting("Maps", false, { page.value == Page.OTHER })
-    private val explosion = setting("Explosions", true, { page.value == Page.OTHER })
-    val signText = setting("Sign Text", false, { page.value == Page.OTHER })
-    private val particles = setting("Particles", true, { page.value == Page.OTHER })
-    private val falling = setting("Falling Blocks", true, { page.value == Page.OTHER })
-    val beacon = setting("Beacon Beams", true, { page.value == Page.OTHER })
-    val skylight = setting("SkyLight Updates", true, { page.value == Page.OTHER })
-    private val enchantingTable = setting("Enchanting Books", true, { page.value == Page.OTHER })
-    private val enchantingTableSnow = setting("Enchanting Table Snow", false, { page.value == Page.OTHER }, description = "Replace enchanting table models with snow layers")
-    private val projectiles = setting("Projectiles", false, { page.value == Page.OTHER })
-    private val lightning = setting("Lightning", true, { page.value == Page.OTHER })
+    val map = setting("Maps", false, page.atValue(Page.OTHER))
+    private val explosion = setting("Explosions", true, page.atValue(Page.OTHER))
+    val signText = setting("Sign Text", false, page.atValue(Page.OTHER))
+    private val particles = setting("Particles", true, page.atValue(Page.OTHER))
+    private val falling = setting("Falling Blocks", true, page.atValue(Page.OTHER))
+    val beacon = setting("Beacon Beams", true, page.atValue(Page.OTHER))
+    val skylight = setting("SkyLight Updates", true, page.atValue(Page.OTHER))
+    private val enchantingTable = setting("Enchanting Books", true, page.atValue(Page.OTHER))
+    private val enchantingTableSnow = setting("Enchanting Table Snow", false, page.atValue(Page.OTHER), description = "Replace enchanting table models with snow layers")
+    private val projectiles = setting("Projectiles", false, page.atValue(Page.OTHER))
+    private val lightning = setting("Lightning", true, page.atValue(Page.OTHER))
 
     private enum class Page {
         ENTITIES, OTHER

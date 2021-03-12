@@ -18,6 +18,7 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils
 import org.kamiblue.client.util.WorldUtils.getGroundPos
+import org.kamiblue.client.util.atValue
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
 
@@ -28,9 +29,9 @@ internal object NoFall : Module(
 ) {
     private val distance = setting("Distance", 3, 1..10, 1)
     private val mode = setting("Mode", Mode.CATCH)
-    private val fallModeSetting = setting("Fall", FallMode.PACKET, { mode.value == Mode.FALL })
-    private val catchModeSetting = setting("Catch", CatchMode.MOTION, { mode.value == Mode.CATCH })
-    private val voidOnly = setting("Void Only", false, { mode.value == Mode.CATCH })
+    private val fallModeSetting = setting("Fall", FallMode.PACKET, mode.atValue(Mode.FALL))
+    private val catchModeSetting = setting("Catch", CatchMode.MOTION, mode.atValue(Mode.CATCH))
+    private val voidOnly = setting("Void Only", false, mode.atValue(Mode.CATCH))
 
     private enum class Mode {
         FALL, CATCH

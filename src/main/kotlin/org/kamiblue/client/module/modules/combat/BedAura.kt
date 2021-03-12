@@ -44,7 +44,7 @@ internal object BedAura : Module(
     private val hitDelay = setting("Hit Delay", 5, 1..10, 1)
     private val refillDelay = setting("Refill Delay", 2, 1..5, 1)
     private val minDamage = setting("Min Damage", 10f, 1f..20f, 0.25f)
-    private val maxSelfDamage = setting("Max Self Damage", 4f, 1f..10f, 0.25f, { !suicideMode.value })
+    private val maxSelfDamage = setting("Max Self Damage", 4f, 1f..10f, 0.25f, suicideMode.atFalse())
     private val range = setting("Range", 5f, 1f..5f, 0.25f)
     private val wallRange = setting("Wall Range", 2.5f, 1f..5f, 0.25f)
 

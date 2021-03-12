@@ -18,6 +18,7 @@ import org.kamiblue.client.setting.settings.impl.primitive.StringSetting
 import org.kamiblue.client.util.ConfigUtils
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.formatValue
 import org.kamiblue.client.util.threads.BackgroundScope
@@ -39,9 +40,10 @@ internal object Configurations : AbstractModule(
 ) {
     private const val defaultPreset = "default"
 
-    private val autoSaving by setting("Auto Saving", true)
-    private val savingFeedBack by setting("Saving FeedBack", false, { autoSaving })
-    private val savingInterval by setting("Interval", 10, 1..30, 1, { autoSaving }, description = "Frequency of auto saving in minutes")
+    private val autoSaving0 = setting("Auto Saving", true)
+    private val autoSaving by autoSaving0
+    private val savingFeedBack by setting("Saving FeedBack", false, autoSaving0.atTrue())
+    private val savingInterval by setting("Interval", 10, 1..30, 1, autoSaving0.atTrue(), description = "Frequency of auto saving in minutes")
     val serverPreset by setting("Server Preset", false)
     private val guiPresetSetting = setting("Gui Preset", defaultPreset)
     private val modulePresetSetting = setting("Module Preset", defaultPreset)

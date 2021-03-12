@@ -13,7 +13,7 @@ import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.Quad
+import org.kamiblue.client.util.*
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.combat.CrystalUtils.canPlaceCollide
 import org.kamiblue.client.util.graphics.ESPRenderer
@@ -38,29 +38,29 @@ internal object CrystalESP : Module(
 ) {
     private val page = setting("Page", Page.DAMAGE_ESP)
 
-    private val damageESP = setting("Damage ESP", false, { page.value == Page.DAMAGE_ESP })
-    private val minAlpha = setting("Min Alpha", 0, 0..255, 1, { page.value == Page.DAMAGE_ESP })
-    private val maxAlpha = setting("Max Alpha", 63, 0..255, 1, { page.value == Page.DAMAGE_ESP })
-    private val damageRange = setting("Damage ESP Range", 4.0f, 0.0f..8.0f, 0.5f, { page.value == Page.DAMAGE_ESP })
+    private val damageESP = setting("Damage ESP", false, page.atValue(Page.DAMAGE_ESP))
+    private val minAlpha = setting("Min Alpha", 0, 0..255, 1, page.atValue(Page.DAMAGE_ESP))
+    private val maxAlpha = setting("Max Alpha", 63, 0..255, 1, page.atValue(Page.DAMAGE_ESP))
+    private val damageRange = setting("Damage ESP Range", 4.0f, 0.0f..8.0f, 0.5f, page.atValue(Page.DAMAGE_ESP))
 
-    private val crystalESP = setting("Crystal ESP", true, { page.value == Page.CRYSTAL_ESP })
-    private val onlyOwn = setting("Only Own", false, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val filled = setting("Filled", true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val outline = setting("Outline", true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val tracer = setting("Tracer", true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val showDamage = setting("Damage", true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val showSelfDamage = setting("Self Damage", true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val textScale = setting("Text Scale", 1.0f, 0.0f..4.0f, 0.25f, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val animationScale = setting("Animation Scale", 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val crystalRange = setting("Crystal ESP Range", 16.0f, 0.0f..16.0f, 0.5f, { page.value == Page.CRYSTAL_ESP })
+    private val crystalESP = setting("Crystal ESP", true, page.atValue(Page.CRYSTAL_ESP))
+    private val onlyOwn = setting("Only Own", false, page.atValue(Page.CRYSTAL_ESP) and (crystalESP.atTrue()))
+    private val filled = setting("Filled", true, page.atValue(Page.CRYSTAL_ESP) and (crystalESP.atTrue()))
+    private val outline = setting("Outline", true, page.atValue(Page.CRYSTAL_ESP) and (crystalESP.atTrue()))
+    private val tracer = setting("Tracer", true, page.atValue(Page.CRYSTAL_ESP) and (crystalESP.atTrue()))
+    private val showDamage = setting("Damage", true, page.atValue(Page.CRYSTAL_ESP) and (crystalESP.atTrue()))
+    private val showSelfDamage = setting("Self Damage", true, page.atValue(Page.CRYSTAL_ESP) and (crystalESP.atTrue()))
+    private val textScale = setting("Text Scale", 1.0f, 0.0f..4.0f, 0.25f, page.atValue(Page.CRYSTAL_ESP) and (crystalESP.atTrue()))
+    private val animationScale = setting("Animation Scale", 1.0f, 0.0f..2.0f, 0.1f, page.atValue(Page.CRYSTAL_ESP) and (crystalESP.atTrue()))
+    private val crystalRange = setting("Crystal ESP Range", 16.0f, 0.0f..16.0f, 0.5f, page.atValue(Page.DAMAGE_ESP))
 
-    private val r = setting("Red", 155, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
-    private val g = setting("Green", 144, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
-    private val b = setting("Blue", 255, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
-    private val aFilled = setting("Filled Alpha", 47, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && filled.value })
-    private val aOutline = setting("Outline Alpha", 127, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && outline.value })
-    private val aTracer = setting("Tracer Alpha", 200, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && tracer.value })
-    private val thickness = setting("Thickness", 2.0f, 0.25f..4.0f, 0.25f, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && (outline.value || tracer.value) })
+    private val r = setting("Red", 155, 0..255, 1, page.atValue(Page.CRYSTAL_ESP_COLOR) and (crystalESP.atTrue()))
+    private val g = setting("Green", 144, 0..255, 1, page.atValue(Page.CRYSTAL_ESP_COLOR) and (crystalESP.atTrue()))
+    private val b = setting("Blue", 255, 0..255, 1, page.atValue(Page.CRYSTAL_ESP_COLOR) and (crystalESP.atTrue()))
+    private val aFilled = setting("Filled Alpha", 47, 0..255, 1, page.atValue(Page.CRYSTAL_ESP_COLOR) and crystalESP.atTrue() and filled.atTrue())
+    private val aOutline = setting("Outline Alpha", 127, 0..255, 1, page.atValue(Page.CRYSTAL_ESP_COLOR) and crystalESP.atTrue() and outline.atTrue())
+    private val aTracer = setting("Tracer Alpha", 200, 0..255, 1, page.atValue(Page.CRYSTAL_ESP_COLOR) and crystalESP.atTrue() and tracer.atTrue())
+    private val thickness = setting("Thickness", 2.0f, 0.25f..4.0f, 0.25f, page.atValue(Page.CRYSTAL_ESP_COLOR) and crystalESP.atTrue() and (outline.atTrue() or tracer.atTrue()))
 
     private enum class Page {
         DAMAGE_ESP, CRYSTAL_ESP, CRYSTAL_ESP_COLOR

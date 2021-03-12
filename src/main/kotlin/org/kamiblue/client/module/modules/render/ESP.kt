@@ -17,7 +17,7 @@ import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.mixin.extension.*
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.EntityUtils
+import org.kamiblue.client.util.*
 import org.kamiblue.client.util.EntityUtils.getTargetList
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.ESPRenderer
@@ -35,42 +35,45 @@ internal object ESP : Module(
     category = Category.RENDER,
     description = "Highlights entities"
 ) {
-    private val page by setting("Page", Page.ENTITY_TYPE)
+    private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val all by setting("All Entities", false, { page == Page.ENTITY_TYPE })
-    private val experience by setting("Experience", false, { page == Page.ENTITY_TYPE && !all })
-    private val arrows by setting("Arrows", false, { page == Page.ENTITY_TYPE && !all })
-    private val throwable by setting("Throwable", false, { page == Page.ENTITY_TYPE && !all })
-    private val items by setting("Items", true, { page == Page.ENTITY_TYPE && !all })
-    private val players by setting("Players", true, { page == Page.ENTITY_TYPE && !all })
-    private val friends by setting("Friends", false, { page == Page.ENTITY_TYPE && !all && players })
-    private val sleeping by setting("Sleeping", false, { page == Page.ENTITY_TYPE && !all && players })
-    private val mobs by setting("Mobs", true, { page == Page.ENTITY_TYPE && !all })
-    private val passive by setting("Passive Mobs", false, { page == Page.ENTITY_TYPE && !all && mobs })
-    private val neutral by setting("Neutral Mobs", true, { page == Page.ENTITY_TYPE && !all && mobs })
-    private val hostile by setting("Hostile Mobs", true, { page == Page.ENTITY_TYPE && !all && mobs })
-    private val invisible by setting("Invisible", true, { page == Page.ENTITY_TYPE && !all })
-    private val range by setting("Range", 32.0f, 8.0f..64.0f, 0.5f, { page == Page.ENTITY_TYPE })
+    private val all0 = setting("All Entities", false, page.atValue(Page.ENTITY_TYPE))
+    private val all by all0
+    private val experience by setting("Experience", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val arrows by setting("Arrows", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val throwable by setting("Throwable", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val items by setting("Items", true, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val players0 = setting("Players", true, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val players by players0
+    private val friends by setting("Friends", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse() and players0.atTrue())
+    private val sleeping by setting("Sleeping", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse() and players0.atTrue())
+    private val mobs0 = setting("Mobs", true, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val mobs by mobs0
+    private val passive by setting("Passive Mobs", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse() and mobs0.atTrue())
+    private val neutral by setting("Neutral Mobs", true, page.atValue(Page.ENTITY_TYPE) and all0.atFalse() and mobs0.atTrue())
+    private val hostile by setting("Hostile Mobs", true, page.atValue(Page.ENTITY_TYPE) and all0.atFalse() and mobs0.atTrue())
+    private val invisible by setting("Invisible", true, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val range by setting("Range", 32.0f, 8.0f..64.0f, 0.5f, page.atValue(Page.ENTITY_TYPE))
 
     /* Rendering settings */
-    private val mode = setting("Mode", ESPMode.SHADER, { page == Page.RENDERING })
-    private val hideOriginal by setting("Hide Original", false, { page == Page.RENDERING && mode.value == ESPMode.SHADER })
-    private val filled by setting("Filled", false, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val outline by setting("Outline", true, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val r by setting("Red", 155, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val g by setting("Green", 144, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val b by setting("Blue", 255, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val aFilled by setting("Filled Alpha", 63, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val aOutline by setting("Outline Alpha", 255, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val blurRadius by setting("Blur Radius", 0f, 0f..16f, 0.5f, { page == Page.RENDERING && mode.value == ESPMode.SHADER })
-    private val width by setting("Width", 2f, 1f..8f, 0.25f, { page == Page.RENDERING })
+    private val mode = setting("Mode", Mode.SHADER, page.atValue(Page.RENDERING))
+    private val hideOriginal by setting("Hide Original", false, page.atValue(Page.RENDERING) and mode.atValue(Mode.SHADER))
+    private val filled by setting("Filled", false, page.atValue(Page.RENDERING) and mode.atValue(Mode.BOX, Mode.SHADER))
+    private val outline by setting("Outline", true, page.atValue(Page.RENDERING) and mode.atValue(Mode.BOX, Mode.SHADER))
+    private val r by setting("Red", 155, 0..255, 1, page.atValue(Page.RENDERING) and mode.atValue(Mode.BOX, Mode.SHADER))
+    private val g by setting("Green", 144, 0..255, 1, page.atValue(Page.RENDERING) and mode.atValue(Mode.BOX, Mode.SHADER))
+    private val b by setting("Blue", 255, 0..255, 1, page.atValue(Page.RENDERING) and mode.atValue(Mode.BOX, Mode.SHADER))
+    private val aFilled by setting("Filled Alpha", 63, 0..255, 1, page.atValue(Page.RENDERING) and mode.atValue(Mode.BOX, Mode.SHADER))
+    private val aOutline by setting("Outline Alpha", 255, 0..255, 1, page.atValue(Page.RENDERING) and mode.atValue(Mode.BOX, Mode.SHADER))
+    private val blurRadius by setting("Blur Radius", 0f, 0f..16f, 0.5f, page.atValue(Page.RENDERING) and mode.atValue(Mode.SHADER))
+    private val width by setting("Width", 2f, 1f..8f, 0.25f, page.atValue(Page.RENDERING))
 
     private enum class Page {
         ENTITY_TYPE, RENDERING
     }
 
-    private enum class ESPMode {
+    private enum class Mode {
         BOX, GLOW, SHADER
     }
 
@@ -82,7 +85,7 @@ internal object ESP : Module(
     init {
         listener<RenderEntityEvent.All> {
             if (it.phase == Phase.PRE
-                && mode.value == ESPMode.SHADER
+                && mode.value == Mode.SHADER
                 && !mc.renderManager.renderOutlines
                 && hideOriginal
                 && entityList.contains(it.entity)) {
@@ -98,7 +101,7 @@ internal object ESP : Module(
 
         safeListener<RenderWorldEvent>(69420) {
             when (mode.value) {
-                ESPMode.BOX -> {
+                Mode.BOX -> {
                     val color = ColorHolder(r, g, b)
                     val renderer = ESPRenderer()
                     renderer.aFilled = if (filled) aFilled else 0
@@ -109,7 +112,7 @@ internal object ESP : Module(
                     }
                     renderer.render(true)
                 }
-                ESPMode.SHADER -> {
+                Mode.SHADER -> {
                     drawEntities()
                     drawShader()
                 }
@@ -184,7 +187,7 @@ internal object ESP : Module(
             entityList.addAll(getEntityList())
 
             when (mode.value) {
-                ESPMode.GLOW -> {
+                Mode.GLOW -> {
                     if (entityList.isNotEmpty()) {
                         for (shader in mc.renderGlobal.entityOutlineShader.listShaders) {
                             shader.shaderManager.getShaderUniform("Radius")?.set(width)
@@ -197,7 +200,7 @@ internal object ESP : Module(
                         resetGlow()
                     }
                 }
-                ESPMode.SHADER -> {
+                Mode.SHADER -> {
                     shaderHelper.shader?.let {
                         for (shader in it.listShaders) {
                             setShaderSettings(shader)

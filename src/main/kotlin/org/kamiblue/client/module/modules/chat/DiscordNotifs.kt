@@ -14,6 +14,8 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.atFalse
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.text.*
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.safeListener
@@ -25,15 +27,17 @@ internal object DiscordNotifs : Module(
     category = Category.CHAT,
     description = "Sends your chat to a set Discord channel"
 ) {
-    private val timeout by setting("Timeout", true)
-    private val timeoutTime by setting("Seconds", 10, 0..120, 5, { timeout })
+    private val timeout0 = setting("Timeout", true)
+    private val timeout by timeout0
+    private val timeoutTime by setting("Seconds", 10, 0..120, 5, timeout0.atTrue())
     private val time by setting("Timestamp", true)
     private val importantPings by setting("Important Pings", false)
     private val connectionChange by setting("Connection Change", true, description = "When you get disconnected or reconnected to the server")
-    private val all by setting("All Messages", false)
-    private val direct by setting("DMs", true, { !all })
-    private val queue by setting("Queue Position", true, { !all })
-    private val restart by setting("Restart", true, { !all }, description = "Server restart notifications")
+    private val all0 = setting("All Messages", false)
+    private val all by all0
+    private val direct by setting("DMs", true, all0.atFalse())
+    private val queue by setting("Queue Position", true, all0.atFalse())
+    private val restart by setting("Restart", true, all0.atFalse(), description = "Server restart notifications")
 
     val url = setting("URL", "unchanged")
     val pingID = setting("Ping ID", "unchanged")

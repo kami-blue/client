@@ -13,6 +13,7 @@ import org.kamiblue.client.util.EntityUtils.flooredPosition
 import org.kamiblue.client.util.EntityUtils.isFakeOrSelf
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
 import org.kamiblue.client.util.text.format
@@ -28,12 +29,13 @@ internal object VisualRange : Module(
     private const val NAME_FORMAT = "\$NAME"
 
     private val playSound by setting("Play Sound", false)
-    private val leaving by setting("Count Leaving", false)
+    private val leaving0 = setting("Count Leaving", false)
+    private val leaving by leaving0
     private val friends by setting("Friends", true)
     private val uwuAura by setting("UwU Aura", false)
     private val logToFile by setting("Log To File", false)
     private val enterMessage by setting("Enter Message", "$NAME_FORMAT spotted!")
-    private val leaveMessage by setting("Leave Message", "$NAME_FORMAT left!", { leaving })
+    private val leaveMessage by setting("Leave Message", "$NAME_FORMAT left!", leaving0.atTrue())
 
     private val playerSet = LinkedHashSet<EntityPlayer>()
     private val timer = TickTimer(TimeUnit.SECONDS)

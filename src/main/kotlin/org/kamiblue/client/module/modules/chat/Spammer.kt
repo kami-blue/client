@@ -8,6 +8,7 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.text.MessageDetection
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
@@ -28,7 +29,7 @@ internal object Spammer : Module(
     private val modeSetting = setting("Order", Mode.RANDOM_ORDER)
     private val delay = setting("Delay", 10, 1..180, 1, description = "Delay between messages, in seconds")
     private val loadRemote = setting("Load From URL", false)
-    private val remoteURL = setting("Remote URL", "Unchanged", { loadRemote.value })
+    private val remoteURL = setting("Remote URL", "Unchanged", loadRemote.atTrue())
 
     private val file = File(KamiMod.DIRECTORY + "spammer.txt")
     private val spammer = ArrayList<String>().synchronized()

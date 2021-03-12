@@ -4,6 +4,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.BOOLEAN_SUPPLIER_FALSE
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.Display
@@ -15,10 +16,10 @@ internal object CommandConfig : Module(
     showOnArray = false,
     alwaysEnabled = true
 ) {
-    val prefix = setting("Prefix", ";", { false })
+    val prefix = setting("Prefix", ";", BOOLEAN_SUPPLIER_FALSE)
     val toggleMessages = setting("Toggle Messages", false)
     private val customTitle = setting("Window Title", true)
-    val modifierEnabled = setting("Modifier Enabled", false, { false })
+    val modifierEnabled = setting("Modifier Enabled", false)
 
     private val timer = TickTimer()
     private val prevTitle = Display.getTitle()

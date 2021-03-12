@@ -12,6 +12,7 @@ import org.kamiblue.client.mixin.extension.packetMotionY
 import org.kamiblue.client.mixin.extension.packetMotionZ
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.threads.safeListener
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import kotlin.math.absoluteValue
@@ -28,11 +29,12 @@ internal object Velocity : Module(
     category = Category.MOVEMENT,
     description = "Modify player velocity",
 ) {
-    private val horizontal by setting("Horizontal", 0f, -5f..5f, 0.05f)
-    private val vertical by setting("Vertical", 0f, -5f..5f, 0.05f)
-    private val noPush by setting("No Push", true)
-    private val entity by setting("Entity", true, { noPush })
-    private val liquid by setting("Liquid", true, { noPush })
+    private val horizontal by setting("Horizontal", 0.0f, -5.0f..5.0f, 0.05f)
+    private val vertical by setting("Vertical", 0.0f, -5.0f..5.0f, 0.05f)
+    private val noPush0 = setting("No Push", true)
+    private val noPush by noPush0
+    private val entity by setting("Entity", true, noPush0.atTrue())
+    private val liquid by setting("Liquid", true, noPush0.atTrue())
 
     init {
         safeListener<PacketEvent.Receive> {

@@ -36,10 +36,11 @@ internal object Surround : Module(
 ) {
     private val placeSpeed by setting("Places Per Tick", 4f, 0.25f..5f, 0.25f)
     private val disableStrafe by setting("Disable Strafe", true)
-    private val autoDisable by setting("Auto Disable", AutoDisableMode.OUT_OF_HOLE)
-    private val outOfHoleTimeout by setting("Out Of Hole Timeout", 10, 1..50, 5, { autoDisable == AutoDisableMode.OUT_OF_HOLE }, description = "Delay before disabling Surround when you are out of hole, in ticks")
+    private val autoDisable0 = setting("Auto Disable", AutoDisableMode.OUT_OF_HOLE)
+private val autoDisable by autoDisable0
+    private val outOfHoleTimeout by setting("Out Of Hole Timeout", 10, 1..50, 5, autoDisable0.atValue(AutoDisableMode.OUT_OF_HOLE), description = "Delay before disabling Surround when you are out of hole, in ticks")
     private val enableInHole = setting("Enable In Hole", false)
-    private val inHoleTimeout by setting("In Hole Timeout", 50, 1..100, 5, { enableInHole.value }, description = "Delay before enabling Surround when you are in hole, in ticks")
+    private val inHoleTimeout by setting("In Hole Timeout", 50, 1..100, 5, enableInHole.atTrue(), description = "Delay before enabling Surround when you are in hole, in ticks")
     private val toggleMessage by setting("Toggle Message", true)
 
     private enum class AutoDisableMode {

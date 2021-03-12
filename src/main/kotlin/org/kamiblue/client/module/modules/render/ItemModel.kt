@@ -7,6 +7,8 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.EnumHandSide
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.and
+import org.kamiblue.client.util.atValue
 
 internal object ItemModel : Module(
     name = "ItemModel",
@@ -14,25 +16,26 @@ internal object ItemModel : Module(
     description = "Modify hand item rendering in first person",
     category = Category.RENDER
 ) {
-    private val mode by setting("Mode", Mode.BOTH)
-    private val page by setting("Page", Page.POSITION)
+    private val mode0 = setting("Mode", Mode.BOTH)
+    private val mode by mode0
+    private val page = setting("Page", Page.POSITION)
 
-    private val posX by setting("Pos X", 0.0f, -5.0f..5.0f, 0.025f, { page == Page.POSITION })
-    private val posY by setting("Pos Y", 0.0f, -5.0f..5.0f, 0.025f, { page == Page.POSITION })
-    private val posZ by setting("Pos Z", 0.0f, -5.0f..5.0f, 0.025f, { page == Page.POSITION })
-    private val posXR by setting("Pos X Right", 0.0f, -5.0f..5.0f, 0.025f, { page == Page.POSITION && mode == Mode.SEPARATE })
-    private val posYR by setting("Pos Y Right", 0.0f, -5.0f..5.0f, 0.025f, { page == Page.POSITION && mode == Mode.SEPARATE })
-    private val posZR by setting("Pos Z Right", 0.0f, -5.0f..5.0f, 0.025f, { page == Page.POSITION && mode == Mode.SEPARATE })
+    private val posX by setting("Pos X", 0.0f, -5.0f..5.0f, 0.025f, page.atValue(Page.POSITION))
+    private val posY by setting("Pos Y", 0.0f, -5.0f..5.0f, 0.025f, page.atValue(Page.POSITION))
+    private val posZ by setting("Pos Z", 0.0f, -5.0f..5.0f, 0.025f, page.atValue(Page.POSITION))
+    private val posXR by setting("Pos X Right", 0.0f, -5.0f..5.0f, 0.025f, page.atValue(Page.POSITION) and mode0.atValue(Mode.SEPARATE))
+    private val posYR by setting("Pos Y Right", 0.0f, -5.0f..5.0f, 0.025f, page.atValue(Page.POSITION) and mode0.atValue(Mode.SEPARATE))
+    private val posZR by setting("Pos Z Right", 0.0f, -5.0f..5.0f, 0.025f, page.atValue(Page.POSITION) and mode0.atValue(Mode.SEPARATE))
 
-    private val rotateX by setting("Rotate X", 0.0f, -180.0f..180.0f, 1.0f, { page == Page.ROTATION })
-    private val rotateY by setting("Rotate Y", 0.0f, -180.0f..180.0f, 1.0f, { page == Page.ROTATION })
-    private val rotateZ by setting("Rotate Z", 0.0f, -180.0f..180.0f, 1.0f, { page == Page.ROTATION })
-    private val rotateXR by setting("Rotate X Right", 0.0f, -180.0f..180.0f, 1.0f, { page == Page.ROTATION && mode == Mode.SEPARATE })
-    private val rotateYR by setting("Rotate Y Right", 0.0f, -180.0f..180.0f, 1.0f, { page == Page.ROTATION && mode == Mode.SEPARATE })
-    private val rotateZR by setting("Rotate Z Right", 0.0f, -180.0f..180.0f, 1.0f, { page == Page.ROTATION && mode == Mode.SEPARATE })
+    private val rotateX by setting("Rotate X", 0.0f, -180.0f..180.0f, 1.0f, page.atValue(Page.ROTATION))
+    private val rotateY by setting("Rotate Y", 0.0f, -180.0f..180.0f, 1.0f, page.atValue(Page.ROTATION))
+    private val rotateZ by setting("Rotate Z", 0.0f, -180.0f..180.0f, 1.0f, page.atValue(Page.ROTATION))
+    private val rotateXR by setting("Rotate X Right", 0.0f, -180.0f..180.0f, 1.0f, page.atValue(Page.ROTATION) and mode0.atValue(Mode.SEPARATE))
+    private val rotateYR by setting("Rotate Y Right", 0.0f, -180.0f..180.0f, 1.0f, page.atValue(Page.ROTATION) and mode0.atValue(Mode.SEPARATE))
+    private val rotateZR by setting("Rotate Z Right", 0.0f, -180.0f..180.0f, 1.0f, page.atValue(Page.ROTATION) and mode0.atValue(Mode.SEPARATE))
 
-    private val scale by setting("Scale", 1.0f, 0.1f..3.0f, 0.025f, { page == Page.SCALE })
-    private val scaleR by setting("Scale Right", 1.0f, 0.1f..3.0f, 0.025f, { page == Page.SCALE && mode == Mode.SEPARATE })
+    private val scale by setting("Scale", 1.0f, 0.1f..3.0f, 0.025f, page.atValue(Page.SCALE))
+    private val scaleR by setting("Scale Right", 1.0f, 0.1f..3.0f, 0.025f, page.atValue(Page.SCALE) and mode0.atValue(Mode.SEPARATE))
 
     private val modifyHand by setting("Modify Hand", false)
 

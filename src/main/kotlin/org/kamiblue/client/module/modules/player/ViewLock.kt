@@ -5,6 +5,10 @@ import net.minecraft.entity.Entity
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.and
+import org.kamiblue.client.util.atFalse
+import org.kamiblue.client.util.atTrue
+import org.kamiblue.client.util.atValue
 import org.kamiblue.client.util.threads.safeListener
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import java.util.*
@@ -20,19 +24,21 @@ internal object ViewLock : Module(
     category = Category.PLAYER,
     description = "Locks your camera view"
 ) {
-    private val page by setting("Page", Page.YAW)
+    private val page = setting("Page", Page.YAW)
 
-    private val yaw by setting("Yaw", true, { page == Page.YAW })
-    private val autoYaw = setting("Auto Yaw", true, { page == Page.YAW && yaw })
-    private val disableMouseYaw by setting("Disable Mouse Yaw", false, { page == Page.YAW && yaw && yaw })
-    private val specificYaw by setting("Specific Yaw", 180.0f, -180.0f..180.0f, 1.0f, { page == Page.YAW && !autoYaw.value && yaw })
-    private val yawSlice = setting("Yaw Slice", 8, 2..32, 1, { page == Page.YAW && autoYaw.value && yaw })
+    private val yaw0 = setting("Yaw", true, page.atValue(Page.YAW))
+    private val yaw by yaw0
+    private val autoYaw = setting("Auto Yaw", true, page.atValue(Page.YAW) and yaw0.atTrue())
+    private val disableMouseYaw by setting("Disable Mouse Yaw", false, page.atValue(Page.YAW) and yaw0.atTrue())
+    private val specificYaw by setting("Specific Yaw", 180.0f, -180.0f..180.0f, 1.0f, page.atValue(Page.YAW) and yaw0.atTrue() and autoYaw.atFalse())
+    private val yawSlice = setting("Yaw Slice", 8, 2..32, 1, page.atValue(Page.YAW) and yaw0.atTrue() and autoYaw.atTrue())
 
-    private val pitch by setting("Pitch", true, { page == Page.PITCH })
-    private val autoPitch = setting("Auto Pitch", true, { page == Page.PITCH && pitch })
-    private val disableMousePitch by setting("Disable Mouse Pitch", false, { page == Page.PITCH && pitch && pitch })
-    private val specificPitch by setting("Specific Pitch", 0.0f, -90.0f..90.0f, 1.0f, { page == Page.PITCH && !autoPitch.value && pitch })
-    private val pitchSlice = setting("Pitch Slice", 5, 2..32, 1, { page == Page.PITCH && autoPitch.value && pitch })
+    private val pitch0 = setting("Pitch", true, page.atValue(Page.PITCH))
+    private val pitch by pitch0
+    private val autoPitch = setting("Auto Pitch", true, page.atValue(Page.YAW) and pitch0.atTrue())
+    private val disableMousePitch by setting("Disable Mouse Pitch", false, page.atValue(Page.YAW) and pitch0.atTrue())
+    private val specificPitch by setting("Specific Pitch", 0.0f, -90.0f..90.0f, 1.0f, page.atValue(Page.YAW) and pitch0.atTrue() and autoPitch.atFalse())
+    private val pitchSlice = setting("Pitch Slice", 5, 2..32, 1, page.atValue(Page.YAW) and pitch0.atTrue() and autoPitch.atTrue())
 
     private enum class Page {
         YAW, PITCH

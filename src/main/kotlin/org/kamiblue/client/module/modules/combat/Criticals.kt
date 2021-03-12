@@ -16,6 +16,8 @@ import org.kamiblue.client.mixin.extension.isInWeb
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.isInOrAboveLiquid
+import org.kamiblue.client.util.atValue
+import org.kamiblue.client.util.notAtValue
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
@@ -25,9 +27,10 @@ internal object Criticals : Module(
     category = Category.COMBAT,
     description = "Always do critical attacks"
 ) {
-    private val mode by setting("Mode", Mode.PACKET)
-    private val jumpMotion by setting("Jump Motion", 0.25, 0.1..0.5, 0.01, { mode == Mode.MINI_JUMP }, fineStep = 0.001)
-    private val attackFallDistance by setting("Attack Fall Distance", 0.1, 0.05..1.0, 0.05, { mode != Mode.PACKET })
+    private val mode0 = setting("Mode", Mode.PACKET)
+    private val mode by mode0
+    private val jumpMotion by setting("Jump Motion", 0.25, 0.1..0.5, 0.01, mode0.atValue(Mode.MINI_JUMP), fineStep = 0.001)
+    private val attackFallDistance by setting("Attack Fall Distance", 0.1, 0.05..1.0, 0.05, mode0.notAtValue(Mode.PACKET))
 
     private enum class Mode(override val displayName: String) : DisplayEnum {
         PACKET("Packet"),

@@ -13,6 +13,7 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.getInterpolatedPos
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.atValue
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.GlStateUtils
 import org.kamiblue.client.util.graphics.KamiTessellator
@@ -38,8 +39,9 @@ internal object NewChunks : Module(
     private val thickness by setting("Thickness", 1.5f, 0.1f..4.0f, 0.1f, description = "Thickness of the highlighting square")
     private val range by setting("Render Range", 512, 64..2048, 32, description = "Maximum range for chunks to be highlighted")
     private val autoClear by setting("Auto Clear", false, description = "Clears the new chunks every 10 minutes")
-    private val removeMode by setting("Remove Mode", RemoveMode.MAX_NUMBER, description = "Mode to use for removing chunks")
-    private val maxNumber by setting("Max Number", 5000, 1000..10000, 500, { removeMode == RemoveMode.MAX_NUMBER }, description = "Maximum number of chunks to keep")
+    private val removeMode0 = setting("Remove Mode", RemoveMode.MAX_NUMBER, description = "Mode to use for removing chunks")
+    private val removeMode by removeMode0
+    private val maxNumber by setting("Max Number", 5000, 1000..10000, 500, removeMode0.atValue(RemoveMode.MAX_NUMBER), description = "Maximum number of chunks to keep")
 
     @Suppress("unused")
     private enum class RemoveMode {

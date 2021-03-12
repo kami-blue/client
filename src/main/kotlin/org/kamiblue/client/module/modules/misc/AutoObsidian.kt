@@ -62,14 +62,18 @@ internal object AutoObsidian : Module(
     description = "Breaks down Ender Chests to restock obsidian",
     modulePriority = 15
 ) {
-    private val fillMode by setting("Fill Mode", FillMode.TARGET_STACKS)
-    private val searchShulker by setting("Search Shulker", false)
-    private val leaveEmptyShulkers by setting("Leave Empty Shulkers", true, { searchShulker })
-    private val autoRefill by setting("Auto Refill", false, { fillMode != FillMode.INFINITE })
-    private val instantMining by setting("Instant Mining", true)
-    private val instantMiningDelay by setting("Instant Mining Delay", 10, 1..20, 1, { instantMining })
-    private val threshold by setting("Refill Threshold", 32, 1..64, 1, { autoRefill && fillMode != FillMode.INFINITE })
-    private val targetStacks by setting("Target Stacks", 1, 1..20, 1, { fillMode == FillMode.TARGET_STACKS })
+    private val fillMode0 = setting("Fill Mode", FillMode.TARGET_STACKS)
+    private val fillMode by fillMode0
+    private val searchShulker0 = setting("Search Shulker", false)
+    private val searchShulker by searchShulker0
+    private val leaveEmptyShulkers by setting("Leave Empty Shulkers", true, searchShulker0.atTrue())
+    private val autoRefill0 = setting("Auto Refill", false, fillMode0.notAtValue(FillMode.INFINITE))
+    private val autoRefill by autoRefill0
+    private val instantMining0 = setting("Instant Mining", true)
+    private val instantMining by instantMining0
+    private val instantMiningDelay by setting("Instant Mining Delay", 10, 1..20, 1, instantMining0.atTrue())
+    private val threshold by setting("Refill Threshold", 32, 1..64, 1, autoRefill0.atTrue() and fillMode0.notAtValue(FillMode.INFINITE))
+    private val targetStacks by setting("Target Stacks", 1, 1..20, 1, fillMode0.atValue(FillMode.TARGET_STACKS))
     private val delayTicks by setting("Delay Ticks", 4, 1..10, 1)
     private val rotationMode by setting("Rotation Mode", RotationMode.SPOOF)
     private val maxReach by setting("Max Reach", 4.9f, 2.0f..6.0f, 0.1f)

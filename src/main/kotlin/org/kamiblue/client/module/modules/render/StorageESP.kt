@@ -13,11 +13,15 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.and
+import org.kamiblue.client.util.atTrue
+import org.kamiblue.client.util.atValue
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.color.DyeColors
 import org.kamiblue.client.util.color.HueCycler
 import org.kamiblue.client.util.graphics.ESPRenderer
 import org.kamiblue.client.util.graphics.GeometryMasks
+import org.kamiblue.client.util.or
 import org.kamiblue.client.util.threads.safeAsyncListener
 import org.kamiblue.event.listener.listener
 
@@ -26,37 +30,41 @@ internal object StorageESP : Module(
     description = "Draws an ESP on top of storage units",
     category = Category.RENDER
 ) {
-    private val page by setting("Page", Page.TYPE)
+    private val page = setting("Page", Page.TYPE)
 
     /* Type settings */
-    private val chest by setting("Chest", true, { page == Page.TYPE })
-    private val shulker by setting("Shulker", true, { page == Page.TYPE })
-    private val enderChest by setting("Ender Chest", true, { page == Page.TYPE })
-    private val frame by setting("Item Frame", true, { page == Page.TYPE })
-    private val withShulkerOnly by setting("With Shulker Only", true, { page == Page.TYPE && frame })
-    private val furnace by setting("Furnace", false, { page == Page.TYPE })
-    private val dispenser by setting("Dispenser", false, { page == Page.TYPE })
-    private val hopper by setting("Hopper", false, { page == Page.TYPE })
-    private val cart by setting("Minecart", false, { page == Page.TYPE })
+    private val chest by setting("Chest", true, page.atValue(Page.TYPE))
+    private val shulker by setting("Shulker", true, page.atValue(Page.TYPE))
+    private val enderChest by setting("Ender Chest", true, page.atValue(Page.TYPE))
+    private val frame0 = setting("Item Frame", true, page.atValue(Page.TYPE))
+    private val frame by frame0
+    private val withShulkerOnly by setting("With Shulker Only", true, page.atValue(Page.TYPE) and frame0.atTrue())
+    private val furnace by setting("Furnace", false, page.atValue(Page.TYPE))
+    private val dispenser by setting("Dispenser", false, page.atValue(Page.TYPE))
+    private val hopper by setting("Hopper", false, page.atValue(Page.TYPE))
+    private val cart by setting("Minecart", false, page.atValue(Page.TYPE))
 
     /* Color settings */
-    private val colorChest by setting("Chest Color", DyeColors.ORANGE, { page == Page.COLOR })
-    private val colorDispenser by setting("Dispenser Color", DyeColors.LIGHT_GRAY, { page == Page.COLOR })
-    private val colorShulker by setting("Shulker Color", DyeColors.MAGENTA, { page == Page.COLOR })
-    private val colorEnderChest by setting("Ender Chest Color", DyeColors.PURPLE, { page == Page.COLOR })
-    private val colorFurnace by setting("Furnace Color", DyeColors.LIGHT_GRAY, { page == Page.COLOR })
-    private val colorHopper by setting("Hopper Color", DyeColors.GRAY, { page == Page.COLOR })
-    private val colorCart by setting("Cart Color", DyeColors.GREEN, { page == Page.COLOR })
-    private val colorFrame by setting("Frame Color", DyeColors.ORANGE, { page == Page.COLOR })
+    private val colorChest by setting("Chest Color", DyeColors.ORANGE, page.atValue(Page.TYPE))
+    private val colorDispenser by setting("Dispenser Color", DyeColors.LIGHT_GRAY, page.atValue(Page.TYPE))
+    private val colorShulker by setting("Shulker Color", DyeColors.MAGENTA, page.atValue(Page.TYPE))
+    private val colorEnderChest by setting("Ender Chest Color", DyeColors.PURPLE, page.atValue(Page.TYPE))
+    private val colorFurnace by setting("Furnace Color", DyeColors.LIGHT_GRAY, page.atValue(Page.TYPE))
+    private val colorHopper by setting("Hopper Color", DyeColors.GRAY, page.atValue(Page.TYPE))
+    private val colorCart by setting("Cart Color", DyeColors.GREEN, page.atValue(Page.TYPE))
+    private val colorFrame by setting("Frame Color", DyeColors.ORANGE, page.atValue(Page.TYPE))
 
     /* Render settings */
-    private val filled by setting("Filled", true, { page == Page.RENDER })
-    private val outline by setting("Outline", true, { page == Page.RENDER })
-    private val tracer by setting("Tracer", true, { page == Page.RENDER })
-    private val aFilled by setting("Filled Alpha", 31, 0..255, 1, { page == Page.RENDER && filled })
-    private val aOutline by setting("Outline Alpha", 127, 0..255, 1, { page == Page.RENDER && outline })
-    private val aTracer by setting("Tracer Alpha", 200, 0..255, 1, { page == Page.RENDER && tracer })
-    private val thickness by setting("Line Thickness", 2.0f, 0.25f..5.0f, 0.25f, { page == Page.RENDER })
+    private val filled0 = setting("Filled", true, page.atValue(Page.RENDER))
+    private val filled by filled0
+    private val outline0 = setting("Outline", true, page.atValue(Page.RENDER))
+    private val outline by outline0
+    private val tracer0 = setting("Tracer", true, page.atValue(Page.RENDER))
+    private val tracer by tracer0
+    private val aFilled by setting("Filled Alpha", 31, 0..255, 1, page.atValue(Page.RENDER) and filled0.atTrue())
+    private val aOutline by setting("Outline Alpha", 127, 0..255, 1, page.atValue(Page.RENDER) and outline0.atTrue())
+    private val aTracer by setting("Tracer Alpha", 200, 0..255, 1, page.atValue(Page.RENDER) and tracer0.atTrue())
+    private val thickness by setting("Line Thickness", 2.0f, 0.25f..5.0f, 0.25f, page.atValue(Page.RENDER) and (outline0.atTrue() or tracer0.atTrue()))
 
     private enum class Page {
         TYPE, COLOR, RENDER

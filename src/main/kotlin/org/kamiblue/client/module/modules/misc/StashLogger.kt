@@ -15,6 +15,7 @@ import org.kamiblue.client.module.modules.movement.AutoWalk
 import org.kamiblue.client.util.BaritoneUtils
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.math.CoordinateConverter.asString
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
@@ -35,16 +36,21 @@ internal object StashLogger : Module(
     private val saveToWaypoints by setting("Save To Waypoints", true)
     private val logToChat by setting("Log To Chat", true)
     private val playSound by setting("Play Sound", true)
-    private val logChests by setting("Chests", true)
-    private val chestDensity by setting("Min Chests", 5, 1..20, 1, { logChests })
-    private val logShulkers by setting("Shulkers", true)
-    private val shulkerDensity by setting("Min Shulkers", 1, 1..20, 1, { logShulkers })
-    private val logDroppers by setting("Droppers", true)
-    private val dropperDensity by setting("Min Droppers", 5, 1..20, 1, { logDroppers })
-    private val logDispensers by setting("Dispensers", true)
-    private val dispenserDensity by setting("Min Dispensers", 5, 1..20, 1, { logDispensers })
-    private val logHoppers by setting("Hoppers", true)
-    private val hopperDensity by setting("Min Hoppers", 5, 1..20, 1, { logHoppers })
+    private val logChests0 = setting("Chests", true)
+    private val logChests by logChests0
+    private val chestDensity by setting("Min Chests", 5, 1..20, 1, logChests0.atTrue())
+    private val logShulkers0 = setting("Shulkers", true)
+    private val logShulkers by logShulkers0
+    private val shulkerDensity by setting("Min Shulkers", 1, 1..20, 1, logShulkers0.atTrue())
+    private val logDroppers0 = setting("Droppers", true)
+    private val logDroppers by logDroppers0
+    private val dropperDensity by setting("Min Droppers", 5, 1..20, 1, logDroppers0.atTrue())
+    private val logDispensers0 = setting("Dispensers", true)
+    private val logDispensers by logDispensers0
+    private val dispenserDensity by setting("Min Dispensers", 5, 1..20, 1, logDispensers0.atTrue())
+    private val logHoppers0 = setting("Hoppers", true)
+    private val logHoppers by logHoppers0
+    private val hopperDensity by setting("Min Hoppers", 5, 1..20, 1, logHoppers0.atTrue())
     private val disableAutoWalk by setting("Disable Auto Walk", false, description = "Disables AutoWalk when a stash is found")
     private val cancelBaritone by setting("Cancel Baritone", false, description = "Cancels Baritone when a stash is found")
 

@@ -33,41 +33,45 @@ internal object AutoOffhand : Module(
     description = "Manages item in your offhand",
     category = Category.COMBAT
 ) {
-    private val type by setting("Type", Type.TOTEM)
+    private val type = setting("Type", Type.TOTEM)
 
     // Totem
-    private val hpThreshold by setting("Hp Threshold", 5f, 1f..20f, 0.5f, { type == Type.TOTEM })
-    private val bindTotem by setting("Bind Totem", Bind(), { type == Type.TOTEM })
-    private val checkDamage by setting("Check Damage", true, { type == Type.TOTEM })
-    private val mob by setting("Mob", true, { type == Type.TOTEM && checkDamage })
-    private val player by setting("Player", true, { type == Type.TOTEM && checkDamage })
-    private val crystal by setting("Crystal", true, { type == Type.TOTEM && checkDamage })
-    private val falling by setting("Falling", true, { type == Type.TOTEM && checkDamage })
+    private val hpThreshold by setting("Hp Threshold", 5f, 1f..20f, 0.5f, type.atValue(Type.TOTEM))
+    private val bindTotem by setting("Bind Totem", Bind(), type.atValue(Type.TOTEM))
+    private val checkDamage0 = setting("Check Damage", true, type.atValue(Type.TOTEM))
+    private val checkDamage by checkDamage0
+    private val mob by setting("Mob", true, type.atValue(Type.TOTEM) and checkDamage0.atTrue())
+    private val player by setting("Player", true, type.atValue(Type.TOTEM) and checkDamage0.atTrue())
+    private val crystal by setting("Crystal", true, type.atValue(Type.TOTEM) and checkDamage0.atTrue())
+    private val falling by setting("Falling", true, type.atValue(Type.TOTEM) and checkDamage0.atTrue())
 
     // Gapple
-    private val offhandGapple by setting("Offhand Gapple", false, { type == Type.GAPPLE })
-    private val bindGapple by setting("Bind Gapple", Bind(), { type == Type.GAPPLE && offhandGapple })
-    private val checkAuraG by setting("Check Aura G", true, { type == Type.GAPPLE && offhandGapple })
-    private val checkWeaponG by setting("Check Weapon G", false, { type == Type.GAPPLE && offhandGapple })
-    private val checkCAGapple by setting("Check CrystalAura G", true, { type == Type.GAPPLE && offhandGapple && !offhandCrystal })
+    private val offhandGapple0 = setting("Offhand Gapple", false, type.atValue(Type.GAPPLE))
+    private val offhandGapple by offhandGapple0
+    private val bindGapple by setting("Bind Gapple", Bind(), type.atValue(Type.GAPPLE) and offhandGapple0.atTrue())
+    private val checkAuraG by setting("Check Aura G", true, type.atValue(Type.GAPPLE) and offhandGapple0.atTrue())
+    private val checkWeaponG by setting("Check Weapon G", false, type.atValue(Type.GAPPLE) and offhandGapple0.atTrue())
+    private val checkCAGapple by setting("Check CrystalAura G", true, type.atValue(Type.GAPPLE) and offhandGapple0.atTrue() and { !offhandCrystal })
 
     // Strength
-    private val offhandStrength by setting("Offhand Strength", false, { type == Type.STRENGTH })
-    private val bindStrength by setting("Bind Strength", Bind(), { type == Type.STRENGTH && offhandStrength })
-    private val checkAuraS by setting("Check Aura S", true, { type == Type.STRENGTH && offhandStrength })
-    private val checkWeaponS by setting("Check Weapon S", false, { type == Type.STRENGTH && offhandStrength })
+    private val offhandStrength0 = setting("Offhand Strength", false, type.atValue(Type.STRENGTH))
+    private val offhandStrength by offhandStrength0
+    private val bindStrength by setting("Bind Strength", Bind(), type.atValue(Type.STRENGTH) and offhandStrength0.atTrue())
+    private val checkAuraS by setting("Check Aura S", true, type.atValue(Type.STRENGTH) and offhandStrength0.atTrue())
+    private val checkWeaponS by setting("Check Weapon S", false, type.atValue(Type.STRENGTH) and offhandStrength0.atTrue())
 
     // Crystal
-    private val offhandCrystal by setting("Offhand Crystal", false, { type == Type.CRYSTAL })
-    private val bindCrystal by setting("Bind Crystal", Bind(), { type == Type.CRYSTAL && offhandCrystal })
-    private val checkCACrystal by setting("Check Crystal Aura C", false, { type == Type.CRYSTAL && offhandCrystal })
+    private val offhandCrystal0 = setting("Offhand Crystal", false, type.atValue(Type.STRENGTH))
+    private val offhandCrystal by offhandCrystal0
+    private val bindCrystal by setting("Bind Crystal", Bind(), type.atValue(Type.STRENGTH) and offhandCrystal0.atTrue())
+    private val checkCACrystal by setting("Check Crystal Aura C", false, type.atValue(Type.STRENGTH) and offhandCrystal0.atTrue())
 
     // General
     private val priority by setting("Priority", Priority.HOTBAR)
     private val switchMessage by setting("Switch Message", true)
-    private val delay by setting("Delay", 2, 1..20, 1,
+    private val delay by setting("Delay", 1, 1..20, 1,
         description = "Ticks to wait between each move")
-    private val confirmTimeout by setting("Confirm Timeout", 5, 1..20, 1,
+    private val confirmTimeout by setting("Confirm Timeout", 4, 1..20, 1,
         description = "Maximum ticks to wait for confirm packets from server")
 
     private enum class Type(val filter: (ItemStack) -> Boolean) {

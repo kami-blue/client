@@ -30,10 +30,11 @@ internal object LagNotifier : Module(
     category = Category.PLAYER
 ) {
     private val detectRubberBand by setting("Detect Rubber Band", true)
-    private val pauseBaritone by setting("Pause Baritone", true)
+    private val pauseBaritone0 = setting("Pause Baritone", true)
+    private val pauseBaritone by pauseBaritone0
     val pauseTakeoff by setting("Pause Elytra Takeoff", true)
     val pauseAutoWalk by setting("Pause Auto Walk", true)
-    private val feedback by setting("Pause Feedback", true, { pauseBaritone })
+    private val feedback by setting("Pause Feedback", true, pauseBaritone0.atTrue())
     private val timeout by setting("Timeout", 3.5f, 0.0f..10.0f, 0.5f)
 
     private val pingTimer = TickTimer(TimeUnit.SECONDS)

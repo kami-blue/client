@@ -11,6 +11,7 @@ import org.kamiblue.client.event.events.PlayerAttackEvent
 import org.kamiblue.client.mixin.extension.syncCurrentPlayItem
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.combat.CombatUtils
 import org.kamiblue.client.util.combat.CombatUtils.equipBestWeapon
 import org.kamiblue.client.util.items.swapToSlot
@@ -24,7 +25,7 @@ internal object AutoTool : Module(
     category = Category.MISC
 ) {
     private val switchBack = setting("Switch Back", true)
-    private val timeout by setting("Timeout", 20, 1..100, 5, { switchBack.value })
+    private val timeout by setting("Timeout", 20, 1..100, 5, switchBack.atTrue())
     private val swapWeapon by setting("Switch Weapon", false)
     private val preferWeapon by setting("Prefer", CombatUtils.PreferWeapon.SWORD)
 

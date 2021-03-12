@@ -11,6 +11,9 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.getInterpolatedAmount
 import org.kamiblue.client.util.EntityUtils.getTargetList
+import org.kamiblue.client.util.and
+import org.kamiblue.client.util.atTrue
+import org.kamiblue.client.util.atValue
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.ESPRenderer
 import org.kamiblue.client.util.graphics.KamiTessellator
@@ -27,22 +30,22 @@ internal object EyeFinder : Module(
     private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE })
-    private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && players.value })
-    private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && players.value })
-    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE })
-    private val passive = setting("Passive Mobs", false, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val neutral = setting("Neutral Mobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val hostile = setting("Hostile Mobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val invisible = setting("Invisible", true, { page.value == Page.ENTITY_TYPE })
-    private val range = setting("Range", 64, 8..128, 8, { page.value == Page.ENTITY_TYPE })
+    private val players = setting("Players", true, page.atValue(Page.ENTITY_TYPE))
+    private val friends = setting("Friends", false, page.atValue(Page.RENDERING) and players.atTrue())
+    private val sleeping = setting("Sleeping", false, page.atValue(Page.RENDERING) and players.atTrue())
+    private val mobs = setting("Mobs", true, page.atValue(Page.ENTITY_TYPE))
+    private val passive = setting("Passive Mobs", false, page.atValue(Page.RENDERING) and mobs.atTrue())
+    private val neutral = setting("Neutral Mobs", true, page.atValue(Page.RENDERING) and mobs.atTrue())
+    private val hostile = setting("Hostile Mobs", true, page.atValue(Page.RENDERING) and mobs.atTrue())
+    private val invisible = setting("Invisible", true, page.atValue(Page.ENTITY_TYPE))
+    private val range = setting("Range", 64, 8..128, 8, page.atValue(Page.ENTITY_TYPE))
 
     /* Rendering settings */
-    private val r = setting("Red", 155, 0..255, 1, { page.value == Page.RENDERING })
-    private val g = setting("Green", 144, 0..255, 1, { page.value == Page.RENDERING })
-    private val b = setting("Blue", 255, 0..255, 1, { page.value == Page.RENDERING })
-    private val a = setting("Alpha", 200, 0..255, 1, { page.value == Page.RENDERING })
-    private val thickness = setting("Thickness", 2.0f, 0.25f..5.0f, 0.25f, { page.value == Page.RENDERING })
+    private val r = setting("Red", 155, 0..255, 1, page.atValue(Page.RENDERING))
+    private val g = setting("Green", 144, 0..255, 1, page.atValue(Page.RENDERING))
+    private val b = setting("Blue", 255, 0..255, 1, page.atValue(Page.RENDERING))
+    private val a = setting("Alpha", 200, 0..255, 1, page.atValue(Page.RENDERING))
+    private val thickness = setting("Thickness", 2.0f, 0.25f..5.0f, 0.25f, page.atValue(Page.RENDERING))
 
 
     private enum class Page {

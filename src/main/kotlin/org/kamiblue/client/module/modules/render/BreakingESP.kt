@@ -12,6 +12,7 @@ import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.ESPRenderer
 import org.kamiblue.client.util.graphics.font.FontRenderAdapter
@@ -40,9 +41,9 @@ internal object BreakingESP : Module(
     private val r = setting("Red", 255, 0..255, 1)
     private val g = setting("Green", 255, 0..255, 1)
     private val b = setting("Blue", 255, 0..255, 1)
-    private val aFilled = setting("Filled Alpha", 31, 0..255, 1, { filled.value })
-    private val aOutline = setting("Outline Alpha", 200, 0..255, 1, { outline.value })
-    private val aTracer = setting("Tracer Alpha", 255, 0..255, 1, { outline.value })
+    private val aFilled = setting("Filled Alpha", 31, 0..255, 1, filled.atTrue())
+    private val aOutline = setting("Outline Alpha", 200, 0..255, 1, outline.atTrue())
+    private val aTracer = setting("Tracer Alpha", 255, 0..255, 1, tracer.atTrue())
     private val thickness = setting("Line Thickness", 2.0f, 0.25f..5.0f, 0.25f)
 
     private val breakingBlockList = LinkedHashMap<Int, Triple<BlockPos, Int, Pair<Boolean, Boolean>>>() /* <BreakerID, <Position, Progress, <Warned, Render>> */

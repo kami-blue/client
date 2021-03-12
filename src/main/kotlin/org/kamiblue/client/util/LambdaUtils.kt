@@ -15,7 +15,7 @@ fun <T : Any> AbstractSetting<T>.atValue(value: T) =
         this.value == value
     }
 
-fun <T : Any> AbstractSetting<T>.atValues(value1: T, value2: T) =
+fun <T : Any> AbstractSetting<T>.atValue(value1: T, value2: T) =
     BooleanSupplier {
         this.value == value1 || this.value == value2
     }

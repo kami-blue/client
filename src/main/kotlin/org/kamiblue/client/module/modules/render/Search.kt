@@ -16,12 +16,15 @@ import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.setting.settings.impl.collection.CollectionSetting
+import org.kamiblue.client.util.BOOLEAN_SUPPLIER_FALSE
 import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.ESPRenderer
 import org.kamiblue.client.util.graphics.GeometryMasks
 import org.kamiblue.client.util.graphics.ShaderHelper
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
+import org.kamiblue.client.util.or
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.formatValue
 import org.kamiblue.client.util.threads.defaultScope
@@ -40,20 +43,24 @@ internal object Search : Module(
     private val updateDelay by setting("Update Delay", 1000, 500..3000, 50)
     private val range by setting("Search Range", 128, 0..256, 8)
     private val maximumBlocks by setting("Maximum Blocks", 256, 16..4096, 128)
-    private val filled by setting("Filled", true)
-    private val outline by setting("Outline", true)
-    private val tracer by setting("Tracer", true)
-    private val customColors by setting("Custom Colors", false)
-    private val r by setting("Red", 155, 0..255, 1, { customColors })
-    private val g by setting("Green", 144, 0..255, 1, { customColors })
-    private val b by setting("Blue", 255, 0..255, 1, { customColors })
-    private val aFilled by setting("Filled Alpha", 31, 0..255, 1, { filled })
-    private val aOutline by setting("Outline Alpha", 127, 0..255, 1, { outline })
-    private val aTracer by setting("Tracer Alpha", 200, 0..255, 1, { tracer })
-    private val thickness by setting("Line Thickness", 2.0f, 0.25f..5.0f, 0.25f)
+    private val filled0 = setting("Filled", true)
+    private val filled by filled0
+    private val outline0 = setting("Outline", true)
+    private val outline by outline0
+    private val tracer0 = setting("Tracer", true)
+    private val tracer by tracer0
+    private val customColors0 = setting("Custom Colors", false)
+    private val customColors by customColors0
+    private val r by setting("Red", 155, 0..255, 1, customColors0.atTrue())
+    private val g by setting("Green", 144, 0..255, 1, customColors0.atTrue())
+    private val b by setting("Blue", 255, 0..255, 1, customColors0.atTrue())
+    private val aFilled by setting("Filled Alpha", 31, 0..255, 1, filled0.atTrue())
+    private val aOutline by setting("Outline Alpha", 127, 0..255, 1, outline0.atTrue())
+    private val aTracer by setting("Tracer Alpha", 200, 0..255, 1, tracer0.atTrue())
+    private val thickness by setting("Line Thickness", 2.0f, 0.25f..5.0f, 0.25f, outline0.atTrue() or tracer0.atTrue())
 
-    var overrideWarning by setting("Override Warning", false, { false })
-    val searchList = setting(CollectionSetting("Search List", defaultSearchList, { false }))
+    var overrideWarning by setting("Override Warning", false, BOOLEAN_SUPPLIER_FALSE)
+    val searchList = setting(CollectionSetting("Search List", defaultSearchList, BOOLEAN_SUPPLIER_FALSE))
 
     private val renderer = ESPRenderer()
     private val updateTimer = TickTimer()

@@ -6,6 +6,7 @@ import org.kamiblue.client.manager.managers.WaypointManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.isFakeOrSelf
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.commons.utils.MathUtils
@@ -18,7 +19,7 @@ internal object TeleportLogger : Module(
     private val saveToWaypoints = setting("Save To Waypoints", true)
     private val remove = setting("Remove In Range", true)
     private val printAdd = setting("Print Add", true)
-    private val printRemove = setting("Print Remove", true, { remove.value })
+    private val printRemove = setting("Print Remove", true, remove.atTrue())
     private val minimumDistance = setting("Minimum Distance", 512, 128..2048, 128)
 
     private val teleportedPlayers = HashMap<String, BlockPos>()

@@ -11,6 +11,7 @@ import org.kamiblue.client.mixin.extension.y
 import org.kamiblue.client.mixin.extension.z
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
@@ -22,8 +23,9 @@ internal object Blink : Module(
     description = "Cancels server side packets"
 ) {
     private val cancelPacket by setting("Cancel Packets", false)
-    private val autoReset by setting("Auto Reset", true)
-    private val resetThreshold by setting("Reset Threshold", 20, 1..100, 5, { autoReset })
+    private val autoReset0 = setting("Auto Reset", true)
+    private val autoReset by autoReset0
+    private val resetThreshold by setting("Reset Threshold", 20, 1..100, 5, autoReset0.atTrue())
 
     private const val ENTITY_ID = -114514
     private val packets = ArrayDeque<CPacketPlayer>()

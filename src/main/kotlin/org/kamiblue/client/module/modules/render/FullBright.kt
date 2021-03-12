@@ -3,6 +3,7 @@ package org.kamiblue.client.module.modules.render
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.BOOLEAN_SUPPLIER_FALSE
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.threads.safeListener
 import kotlin.math.max
@@ -16,7 +17,7 @@ internal object FullBright : Module(
 ) {
     private val gamma by setting("Gamma", 12.0f, 5.0f..15.0f, 0.5f)
     private val transitionLength by setting("Transition Length", 3.0f, 0.0f..10.0f, 0.5f)
-    private var oldValue by setting("Old Value", 1.0f, 0.0f..1.0f, 0.1f, { false })
+    private var oldValue by setting("Old Value", 1.0f, 0.0f..1.0f, 0.1f, BOOLEAN_SUPPLIER_FALSE)
 
     private var gammaSetting: Float
         get() = mc.gameSettings.gammaSetting

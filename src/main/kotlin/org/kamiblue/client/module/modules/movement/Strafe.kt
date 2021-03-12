@@ -8,15 +8,12 @@ import org.kamiblue.client.manager.managers.TimerManager.resetTimer
 import org.kamiblue.client.mixin.extension.isInWeb
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.BaritoneUtils
+import org.kamiblue.client.util.*
 import org.kamiblue.client.util.EntityUtils.isInOrAboveLiquid
-import org.kamiblue.client.util.MovementUtils
 import org.kamiblue.client.util.MovementUtils.applySpeedPotionEffects
 import org.kamiblue.client.util.MovementUtils.calcMoveYaw
 import org.kamiblue.client.util.MovementUtils.setSpeed
 import org.kamiblue.client.util.MovementUtils.speed
-import org.kamiblue.client.util.TickTimer
-import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.threads.safeListener
 import kotlin.math.cos
 import kotlin.math.sin
@@ -27,23 +24,24 @@ internal object Strafe : Module(
     description = "Improves control in air",
     modulePriority = 100
 ) {
-    private val mode by setting("Mode", SpeedBoost.NCP)
-    private val page by setting("Page", Page.GENERIC_SETTINGS)
+    private val mode0 = setting("Mode", SpeedBoost.NCP)
+    private val mode by mode0
+    private val page = setting("Page", Page.GENERIC_SETTINGS)
 
     /* Generic Settings */
-    private val airSpeedBoost by setting("Air Speed Boost", true, { page == Page.GENERIC_SETTINGS })
-    private val groundSpeedBoost by setting("Ground Speed Boost", true, { page == Page.GENERIC_SETTINGS })
-    private val timerBoost by setting("Timer Boost", true, { page == Page.GENERIC_SETTINGS })
-    private val autoJump by setting("Auto Jump", true, { page == Page.GENERIC_SETTINGS })
-    private val onHoldingSprint by setting("On Holding Sprint", false, { page == Page.GENERIC_SETTINGS })
-    private val cancelInertia by setting("Cancel Inertia", false, { page == Page.GENERIC_SETTINGS })
+    private val airSpeedBoost by setting("Air Speed Boost", true, page.atValue(Page.GENERIC_SETTINGS))
+    private val groundSpeedBoost by setting("Ground Speed Boost", true, page.atValue(Page.GENERIC_SETTINGS))
+    private val timerBoost by setting("Timer Boost", true, page.atValue(Page.GENERIC_SETTINGS))
+    private val autoJump by setting("Auto Jump", true, page.atValue(Page.GENERIC_SETTINGS))
+    private val onHoldingSprint by setting("On Holding Sprint", false, page.atValue(Page.GENERIC_SETTINGS))
+    private val cancelInertia by setting("Cancel Inertia", false, page.atValue(Page.GENERIC_SETTINGS))
 
     /* NCP Mode */
-    private val ncpStrict by setting("NCP Strict", false, { mode == SpeedBoost.NCP && page == Page.MODE_SETTINGS })
+    private val ncpStrict by setting("NCP Strict", false, page.atValue(Page.MODE_SETTINGS) and mode0.atValue(SpeedBoost.NCP))
 
     /* Custom Mode */
-    private val settingSpeed by setting("Speed", 0.28, 0.0..1.0, 0.01, { mode == SpeedBoost.CUSTOM && page == Page.MODE_SETTINGS })
-    private val constantSpeed by setting("Constant Speed", false, { mode == SpeedBoost.CUSTOM && page == Page.MODE_SETTINGS })
+    private val settingSpeed by setting("Speed", 0.28, 0.0..1.0, 0.01, page.atValue(Page.MODE_SETTINGS) and mode0.atValue(SpeedBoost.CUSTOM))
+    private val constantSpeed by setting("Constant Speed", false, page.atValue(Page.MODE_SETTINGS) and mode0.atValue(SpeedBoost.CUSTOM))
 
     private enum class SpeedBoost {
         NCP, CUSTOM

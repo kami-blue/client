@@ -10,6 +10,9 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.getTargetList
 import org.kamiblue.client.util.EntityUtils.isNeutral
 import org.kamiblue.client.util.EntityUtils.isPassive
+import org.kamiblue.client.util.and
+import org.kamiblue.client.util.atTrue
+import org.kamiblue.client.util.atValue
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.color.DyeColors
 import org.kamiblue.client.util.color.HueCycler
@@ -28,32 +31,32 @@ internal object Tracers : Module(
     private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE })
-    private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && players.value })
-    private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && players.value })
-    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE })
-    private val passive = setting("Passive Mobs", false, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val neutral = setting("Neutral Mobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val hostile = setting("Hostile Mobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val invisible = setting("Invisible", true, { page.value == Page.ENTITY_TYPE })
-    private val range = setting("Range", 64, 8..512, 8, { page.value == Page.ENTITY_TYPE })
+    private val players = setting("Players", true, page.atValue(Page.ENTITY_TYPE))
+    private val friends = setting("Friends", false, page.atValue(Page.ENTITY_TYPE) and players.atTrue())
+    private val sleeping = setting("Sleeping", false, page.atValue(Page.ENTITY_TYPE) and players.atTrue())
+    private val mobs = setting("Mobs", true, page.atValue(Page.ENTITY_TYPE))
+    private val passive = setting("Passive Mobs", false, page.atValue(Page.ENTITY_TYPE) and mobs.atTrue())
+    private val neutral = setting("Neutral Mobs", true, page.atValue(Page.ENTITY_TYPE) and mobs.atTrue())
+    private val hostile = setting("Hostile Mobs", true, page.atValue(Page.ENTITY_TYPE) and mobs.atTrue())
+    private val invisible = setting("Invisible", true, page.atValue(Page.ENTITY_TYPE))
+    private val range = setting("Range", 64, 8..512, 8, page.atValue(Page.ENTITY_TYPE))
 
     /* Color settings */
-    private val colorPlayer = setting("Player Color", DyeColors.KAMI, { page.value == Page.COLOR })
-    private val colorFriend = setting("Friend Color", DyeColors.RAINBOW, { page.value == Page.COLOR })
-    private val colorPassive = setting("Passive Mob Color", DyeColors.GREEN, { page.value == Page.COLOR })
-    private val colorNeutral = setting("Neutral Mob Color", DyeColors.YELLOW, { page.value == Page.COLOR })
-    private val colorHostile = setting("Hostile Mob Color", DyeColors.RED, { page.value == Page.COLOR })
+    private val colorPlayer = setting("Player Color", DyeColors.KAMI, page.atValue(Page.COLOR))
+    private val colorFriend = setting("Friend Color", DyeColors.RAINBOW, page.atValue(Page.COLOR))
+    private val colorPassive = setting("Passive Mob Color", DyeColors.GREEN, page.atValue(Page.COLOR))
+    private val colorNeutral = setting("Neutral Mob Color", DyeColors.YELLOW, page.atValue(Page.COLOR))
+    private val colorHostile = setting("Hostile Mob Color", DyeColors.RED, page.atValue(Page.COLOR))
+    private val colorFar = setting("Far Color", DyeColors.WHITE, page.atValue(Page.COLOR))
 
     /* General rendering settings */
-    private val rangedColor = setting("Ranged Color", true, { page.value == Page.RENDERING })
-    private val colorChangeRange = setting("Color Change Range", 16, 8..128, 8, { page.value == Page.RENDERING && rangedColor.value })
-    private val playerOnly = setting("Player Only", true, { page.value == Page.RENDERING && rangedColor.value })
-    private val colorFar = setting("Far Color", DyeColors.WHITE, { page.value == Page.COLOR })
-    private val aFar = setting("Far Alpha", 127, 0..255, 1, { page.value == Page.RENDERING && rangedColor.value })
-    private val a = setting("Tracer Alpha", 255, 0..255, 1, { page.value == Page.RENDERING })
-    private val yOffset = setting("y Offset Percentage", 0, 0..100, 5, { page.value == Page.RENDERING })
-    private val thickness = setting("Line Thickness", 2.0f, 0.25f..5.0f, 0.25f, { page.value == Page.RENDERING })
+    private val rangedColor = setting("Ranged Color", true, page.atValue(Page.RENDERING))
+    private val colorChangeRange = setting("Color Change Range", 16, 8..128, 8, page.atValue(Page.RENDERING) and rangedColor.atTrue())
+    private val playerOnly = setting("Player Only", true, page.atValue(Page.RENDERING) and rangedColor.atTrue())
+    private val aFar = setting("Far Alpha", 127, 0..255, 1, page.atValue(Page.RENDERING) and rangedColor.atTrue())
+    private val a = setting("Tracer Alpha", 255, 0..255, 1, page.atValue(Page.RENDERING))
+    private val yOffset = setting("y Offset Percentage", 0, 0..100, 5, page.atValue(Page.RENDERING))
+    private val thickness = setting("Line Thickness", 2.0f, 0.25f..5.0f, 0.25f, page.atValue(Page.RENDERING))
 
     private enum class Page {
         ENTITY_TYPE, COLOR, RENDERING

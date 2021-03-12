@@ -13,7 +13,7 @@ import org.kamiblue.client.event.Phase
 import org.kamiblue.client.event.events.RenderEntityEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.EntityUtils
+import org.kamiblue.client.util.*
 import org.kamiblue.client.util.EntityUtils.mobTypeSettings
 import org.kamiblue.client.util.color.HueCycler
 import org.kamiblue.client.util.graphics.GlStateUtils
@@ -26,34 +26,37 @@ internal object Chams : Module(
     category = Category.RENDER,
     description = "Modify entity rendering"
 ) {
-    private val page by setting("Page", Page.ENTITY_TYPE)
+    private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val self by setting("Self", false, { page == Page.ENTITY_TYPE })
-    private val all by setting("All Entities", false, { page == Page.ENTITY_TYPE })
-    private val experience by setting("Experience", false, { page == Page.ENTITY_TYPE && !all })
-    private val arrows by setting("Arrows", false, { page == Page.ENTITY_TYPE && !all })
-    private val throwable by setting("Throwable", false, { page == Page.ENTITY_TYPE && !all })
-    private val items by setting("Items", false, { page == Page.ENTITY_TYPE && !all })
-    private val crystals by setting("Crystals", false, { page == Page.ENTITY_TYPE && !all })
-    private val players by setting("Players", true, { page == Page.ENTITY_TYPE && !all })
-    private val friends by setting("Friends", false, { page == Page.ENTITY_TYPE && !all && players })
-    private val sleeping by setting("Sleeping", false, { page == Page.ENTITY_TYPE && !all && players })
-    private val mobs by setting("Mobs", true, { page == Page.ENTITY_TYPE && !all })
-    private val passive by setting("Passive Mobs", false, { page == Page.ENTITY_TYPE && !all && mobs })
-    private val neutral by setting("Neutral Mobs", true, { page == Page.ENTITY_TYPE && !all && mobs })
-    private val hostile by setting("Hostile Mobs", true, { page == Page.ENTITY_TYPE && !all && mobs })
+    private val self by setting("Self", false, page.atValue(Page.ENTITY_TYPE))
+    private val all0 = setting("All Entities", false, page.atValue(Page.ENTITY_TYPE))
+    private val all by all0
+    private val experience by setting("Experience", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val arrows by setting("Arrows", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val throwable by setting("Throwable", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val items by setting("Items", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val crystals by setting("Crystals", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val players by setting("Players", true, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val friends by setting("Friends", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val sleeping by setting("Sleeping", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val mobs by setting("Mobs", true, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val passive by setting("Passive Mobs", false, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val neutral by setting("Neutral Mobs", true, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
+    private val hostile by setting("Hostile Mobs", true, page.atValue(Page.ENTITY_TYPE) and all0.atFalse())
 
     /* Rendering settings */
-    private val throughWall by setting("Through Wall", true, { page == Page.RENDERING })
-    private val texture by setting("Texture", false, { page == Page.RENDERING })
-    private val lightning by setting("Lightning", false, { page == Page.RENDERING })
-    private val customColor by setting("Custom Color", false, { page == Page.RENDERING })
-    private val rainbow by setting("Rainbow", false, { page == Page.RENDERING && customColor })
-    private val r by setting("Red", 255, 0..255, 1, { page == Page.RENDERING && customColor && !rainbow })
-    private val g by setting("Green", 255, 0..255, 1, { page == Page.RENDERING && customColor && !rainbow })
-    private val b by setting("Blue", 255, 0..255, 1, { page == Page.RENDERING && customColor && !rainbow })
-    private val a by setting("Alpha", 160, 0..255, 1, { page == Page.RENDERING && customColor })
+    private val throughWall by setting("Through Wall", true, page.atValue(Page.RENDERING))
+    private val texture by setting("Texture", false, page.atValue(Page.RENDERING))
+    private val lightning by setting("Lightning", false, page.atValue(Page.RENDERING))
+    private val customColor0 = setting("Custom Color", false, page.atValue(Page.RENDERING))
+    private val customColor by customColor0
+    private val rainbow0 = setting("Rainbow", false, page.atValue(Page.RENDERING) and customColor0.atTrue())
+    private val rainbow by rainbow0
+    private val r by setting("Red", 255, 0..255, 1, page.atValue(Page.RENDERING) and customColor0.atTrue() and rainbow0.atFalse())
+    private val g by setting("Green", 255, 0..255, 1, page.atValue(Page.RENDERING) and customColor0.atTrue() and rainbow0.atFalse())
+    private val b by setting("Blue", 255, 0..255, 1, page.atValue(Page.RENDERING) and customColor0.atTrue() and rainbow0.atFalse())
+    private val a by setting("Alpha", 160, 0..255, 1, page.atValue(Page.RENDERING) and customColor0.atTrue())
 
     private enum class Page {
         ENTITY_TYPE, RENDERING

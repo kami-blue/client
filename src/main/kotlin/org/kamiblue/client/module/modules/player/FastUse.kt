@@ -12,6 +12,9 @@ import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.mixin.extension.rightClickDelayTimer
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.atFalse
+import org.kamiblue.client.util.atTrue
+import org.kamiblue.client.util.or
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
 
@@ -26,12 +29,12 @@ internal object FastUse : Module(
     private val delay = setting("Delay", 0, 0..10, 1)
     private val blocks = setting("Blocks", false)
     private val allItems = setting("All Items", false)
-    private val expBottles = setting("Exp Bottles", true, { !allItems.value })
-    private val endCrystals = setting("End Crystals", true, { !allItems.value })
-    private val fireworks = setting("Fireworks", false, { !allItems.value })
-    private val bow = setting("Bow", true, { !allItems.value })
-    private val chargeSetting = setting("Bow Charge", 3, 0..20, 1, { allItems.value || bow.value })
-    private val chargeVariation = setting("Charge Variation", 5, 0..20, 1, { allItems.value || bow.value })
+    private val expBottles = setting("Exp Bottles", true, allItems.atFalse())
+    private val endCrystals = setting("End Crystals", true, allItems.atFalse())
+    private val fireworks = setting("Fireworks", false, allItems.atFalse())
+    private val bow = setting("Bow", true, allItems.atFalse())
+    private val chargeSetting = setting("Bow Charge", 3, 0..20, 1, allItems.atTrue() or bow.atTrue())
+    private val chargeVariation = setting("Charge Variation", 5, 0..20, 1, allItems.atTrue() or bow.atTrue())
 
     private var lastUsedHand = EnumHand.MAIN_HAND
     private var randomVariation = 0

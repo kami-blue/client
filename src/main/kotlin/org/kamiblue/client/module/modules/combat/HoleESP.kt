@@ -7,6 +7,7 @@ import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.combat.SurroundUtils
 import org.kamiblue.client.util.combat.SurroundUtils.checkHole
@@ -25,14 +26,14 @@ internal object HoleESP : Module(
     private val filled = setting("Filled", true)
     private val outline = setting("Outline", true)
     private val hideOwn = setting("Hide Own", true)
-    private val r1 = setting("Obby Red", 208, 0..255, 1, { shouldAddObsidian() })
-    private val g1 = setting("Obby Green", 144, 0..255, 1, { shouldAddObsidian() })
-    private val b1 = setting("Obby Blue", 255, 0..255, 1, { shouldAddObsidian() })
-    private val r2 = setting("Bedrock Red", 144, 0..255, 1, { shouldAddBedrock() })
-    private val g2 = setting("Bedrock Green", 144, 0..255, 1, { shouldAddBedrock() })
-    private val b2 = setting("Bedrock Blue", 255, 0..255, 1, { shouldAddBedrock() })
-    private val aFilled = setting("Filled Alpha", 31, 0..255, 1, { filled.value })
-    private val aOutline = setting("Outline Alpha", 127, 0..255, 1, { outline.value })
+    private val r1 = setting("Obby Red", 208, 0..255, 1, ::shouldAddObsidian)
+    private val g1 = setting("Obby Green", 144, 0..255, 1, ::shouldAddObsidian)
+    private val b1 = setting("Obby Blue", 255, 0..255, 1, ::shouldAddObsidian)
+    private val r2 = setting("Bedrock Red", 144, 0..255, 1, ::shouldAddBedrock)
+    private val g2 = setting("Bedrock Green", 144, 0..255, 1, ::shouldAddBedrock)
+    private val b2 = setting("Bedrock Blue", 255, 0..255, 1, ::shouldAddBedrock)
+    private val aFilled = setting("Filled Alpha", 31, 0..255, 1, filled.atTrue())
+    private val aOutline = setting("Outline Alpha", 127, 0..255, 1, outline.atTrue())
     private val renderMode = setting("Mode", Mode.BLOCK_HOLE)
     private val holeType = setting("Hole Type", HoleType.BOTH)
 
@@ -94,5 +95,4 @@ internal object HoleESP : Module(
     private fun shouldAddObsidian() = holeType.value == HoleType.OBSIDIAN || holeType.value == HoleType.BOTH
 
     private fun shouldAddBedrock() = holeType.value == HoleType.BEDROCK || holeType.value == HoleType.BOTH
-
 }

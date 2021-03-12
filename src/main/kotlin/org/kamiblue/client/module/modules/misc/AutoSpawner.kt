@@ -31,12 +31,14 @@ internal object AutoSpawner : Module(
     category = Category.MISC,
     description = "Automatically spawns Withers, Iron Golems and Snowmen"
 ) {
-    private val useMode by setting("Use Mode", UseMode.SPAM)
-    private val party by setting("Party", false)
-    private val partyWithers by setting("Withers", false, { party })
-    private var entityMode by setting("Entity Mode", EntityMode.SNOW, { !party })
+    private val useMode0 = setting("Use Mode", UseMode.SPAM)
+    private val useMode by useMode0
+    private val party0 = setting("Party", false)
+    private val party by party0
+    private val partyWithers by setting("Withers", false, party0.atTrue())
+    private var entityMode by setting("Entity Mode", EntityMode.SNOW, party0.atFalse())
     private val placeRange by setting("Place Range", 3.5f, 2f..10f, 0.5f)
-    private val delay by setting("Delay", 20, 10..100, 5, { useMode == UseMode.SPAM })
+    private val delay by setting("Delay", 20, 10..100, 5, useMode0.atValue(UseMode.SPAM))
     private val rotate by setting("Rotate", true)
     private val debug by setting("Info", true)
 

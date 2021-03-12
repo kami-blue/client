@@ -9,6 +9,7 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.atValue
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
 import org.kamiblue.client.util.text.formatValue
@@ -28,8 +29,9 @@ internal object AutoEZ : Module(
     private const val HYPIXEL_MESSAGE = "\$HYPIXEL_MESSAGE"
 
     private val detectMode by setting("Detect Mode", DetectMode.HEALTH)
-    private val messageMode by setting("Message Mode", MessageMode.ONTOP)
-    private val customText by setting("Custom Text", UNCHANGED, { messageMode == MessageMode.CUSTOM })
+    private val messageMode0 = setting("Message Mode", MessageMode.ONTOP)
+    private val messageMode by messageMode0
+    private val customText by setting("Custom Text", UNCHANGED, messageMode0.atValue(MessageMode.CUSTOM))
 
     private enum class DetectMode {
         BROADCAST, HEALTH

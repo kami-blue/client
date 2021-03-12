@@ -12,6 +12,7 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.threads.safeListener
 import java.util.*
 
@@ -21,10 +22,11 @@ internal object FastBreak : Module(
     description = "Breaks block faster and nullifies the break delay"
 ) {
     private val breakDelay by setting("Break Delay", 0, 0..5, 1)
-    private val packetMine by setting("Packet Mine", true)
-    private val sneakTrigger by setting("Sneak Trigger", true, { packetMine })
-    private val morePackets by setting("More Packets", false, { packetMine })
-    private val spamDelay by setting("Spam Delay", 4, 1..10, 1, { packetMine })
+    private val packetMine0 = setting("Packet Mine", true)
+    private val packetMine by packetMine0
+    private val sneakTrigger by setting("Sneak Trigger", true, packetMine0.atTrue())
+    private val morePackets by setting("More Packets", false, packetMine0.atTrue())
+    private val spamDelay by setting("Spam Delay", 4, 1..10, 1, packetMine0.atTrue())
 
     private val spamTimer = TickTimer(TimeUnit.TICKS)
     private var miningInfo: Triple<Long, BlockPos, EnumFacing>? = null

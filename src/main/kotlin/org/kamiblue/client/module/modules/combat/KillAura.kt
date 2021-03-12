@@ -9,9 +9,7 @@ import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.TickTimer
-import org.kamiblue.client.util.TimeUnit
-import org.kamiblue.client.util.TpsCalculator
+import org.kamiblue.client.util.*
 import org.kamiblue.client.util.combat.CombatUtils
 import org.kamiblue.client.util.combat.CombatUtils.equipBestWeapon
 import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
@@ -29,14 +27,16 @@ internal object KillAura : Module(
     description = "Hits entities around you",
     modulePriority = 50
 ) {
-    private val mode by setting("Mode", Mode.COOLDOWN)
+    private val mode0 = setting("Mode", Mode.COOLDOWN)
+    private val mode by mode0
     private val rotationMode by setting("Rotation Mode", RotationMode.SPOOF)
-    private val attackDelay by setting("Attack Delay", 5, 1..40, 1, { mode == Mode.TICKS })
+    private val attackDelay by setting("Attack Delay", 5, 1..40, 1, mode0.atValue(Mode.TICKS))
     private val disableOnDeath by setting("Disable On Death", false)
     private val tpsSync by setting("TPS Sync", false)
     private val weaponOnly by setting("Weapon Only", false)
-    private val autoWeapon by setting("Auto Weapon", true)
-    private val prefer by setting("Prefer", CombatUtils.PreferWeapon.SWORD, { autoWeapon })
+    private val autoWeapon0 = setting("Auto Weapon", true)
+    private val autoWeapon by autoWeapon0
+    private val prefer by setting("Prefer", CombatUtils.PreferWeapon.SWORD, autoWeapon0.atTrue())
     private val minSwapHealth by setting("Min Swap Health", 5.0f, 1.0f..20.0f, 0.5f)
     private val swapDelay by setting("Swap Delay", 10, 0..50, 1)
     val range by setting("Range", 4.0f, 0.0f..6.0f, 0.1f)

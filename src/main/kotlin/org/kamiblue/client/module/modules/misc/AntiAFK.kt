@@ -16,6 +16,7 @@ import org.kamiblue.client.util.BaritoneUtils
 import org.kamiblue.client.util.MovementUtils.realSpeed
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.client.util.atTrue
 import org.kamiblue.client.util.text.MessageDetection
 import org.kamiblue.client.util.text.MessageSendHelper.sendServerMessage
 import org.kamiblue.client.util.threads.safeListener
@@ -40,7 +41,7 @@ internal object AntiAFK : Module(
     private val walk = setting("Walk", true)
     private val radius by setting("Radius", 64, 8..128, 8, fineStep = 1)
     private val inputTimeout by setting("Idle Timeout", 0, 0..15, 1, description = "Starts AntiAFK after being idle for longer than specific minutes, 0 to disable")
-    private val allowBreak by setting("Allow Breaking Blocks", false, { walk.value })
+    private val allowBreak by setting("Allow Breaking Blocks", false, walk.atTrue())
 
     private var startPos: BlockPos? = null
     private var squareStep = 0
