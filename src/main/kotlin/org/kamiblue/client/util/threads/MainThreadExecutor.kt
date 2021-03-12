@@ -29,14 +29,14 @@ object MainThreadExecutor {
         runBlocking {
             mutex.withLock {
                 jobs.forEach {
-                    launch { it.run() }
+                    it.run()
                 }
                 jobs.clear()
             }
         }
     }
 
-    suspend fun <T> add(block: suspend () -> T) =
+    suspend fun <T> add(block: () -> T) =
         MainThreadJob(block).apply {
             if (Wrapper.minecraft.isCallingFromMinecraftThread) {
                 run()
@@ -47,10 +47,10 @@ object MainThreadExecutor {
             }
         }.deferred
 
-    private class MainThreadJob<T>(private val block: suspend () -> T) {
+    private class MainThreadJob<T>(private val block: () -> T) {
         val deferred = CompletableDeferred<T>()
 
-        suspend fun run() {
+        fun run() {
             deferred.completeWith(
                 runCatching { block.invoke() }
             )

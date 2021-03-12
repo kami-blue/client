@@ -1,5 +1,6 @@
 package org.kamiblue.client.util.combat
 
+import net.minecraft.block.material.Material
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -33,10 +34,15 @@ object CrystalUtils {
 
     /** Checks colliding with blocks and given entity */
     fun SafeClientEvent.canPlace(pos: BlockPos, entity: EntityLivingBase? = null): Boolean {
-        val placeBB = getCrystalPlacingBB(pos.up())
+        val posUp1 = pos.up()
+        val posUp2 = posUp1.up()
+
         return canPlaceOn(pos)
-            && (entity == null || !placeBB.intersects(entity.entityBoundingBox))
-            && mc.world?.checkBlockCollision(placeBB) == false
+            && (entity == null || !getCrystalPlacingBB(posUp1).intersects(entity.entityBoundingBox))
+            && mc.world?.let {
+            isValidMaterial(it.getBlockState(posUp1).material)
+                    && isValidMaterial(it.getBlockState(posUp2).material)
+        } ?: false
     }
 
     /** Checks if the block is valid for placing crystal */
@@ -45,15 +51,28 @@ object CrystalUtils {
         return block == Blocks.BEDROCK || block == Blocks.OBSIDIAN
     }
 
-    private fun getCrystalPlacingBB(pos: BlockPos) = AxisAlignedBB(-0.5, 0.0, -0.5, 0.5, 2.0, 0.5).offset(Vec3d(pos).add(0.5, 0.0, 0.5))
+    private fun isValidMaterial(material: Material) =
+        !material.isLiquid && material.isReplaceable
 
-    fun getCrystalBB(pos: BlockPos): AxisAlignedBB = AxisAlignedBB(-1.0, 0.0, -1.0, 1.0, 2.0, 1.0).offset(Vec3d(pos).add(0.5, 0.0, 0.5))
+    private fun getCrystalPlacingBB(pos: BlockPos) =
+        AxisAlignedBB(
+            pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(),
+            pos.x + 1.0, pos.y + 2.0, pos.z + 1.0
+        )
+
+    fun getCrystalBB(pos: BlockPos): AxisAlignedBB =
+        AxisAlignedBB(
+            pos.x - 0.5, pos.y - 0.5, pos.z - 0.5,
+            pos.x + 1.5, pos.y + 2.0, pos.z + 1.5
+        )
 
     /** Checks colliding with All Entities */
     fun SafeClientEvent.canPlaceCollide(pos: BlockPos): Boolean {
         val placingBB = getCrystalPlacingBB(pos.up())
         return mc.world?.let { world ->
-            world.getEntitiesWithinAABBExcludingEntity(null, placingBB).firstOrNull { !it.isDead } == null
+            world.getEntitiesWithinAABBExcludingEntity(null, placingBB).all {
+                it.isDead || it is EntityLivingBase && it.health <= 0.0f
+            }
         } ?: false
     }
     /* End of position finding */

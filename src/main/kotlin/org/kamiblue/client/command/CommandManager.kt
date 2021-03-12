@@ -76,7 +76,9 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoade
             ?: throw SubCommandNotFoundException(event.args, command)
 
         onMainThread {
-            finalArg.invoke(event)
+            runBlocking {
+                finalArg.invoke(event)
+            }
         }
     }
 

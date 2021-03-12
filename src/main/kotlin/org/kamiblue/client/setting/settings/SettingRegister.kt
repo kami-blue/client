@@ -10,6 +10,7 @@ import org.kamiblue.client.setting.settings.impl.primitive.EnumSetting
 import org.kamiblue.client.setting.settings.impl.primitive.StringSetting
 import org.kamiblue.client.util.Bind
 import org.kamiblue.client.util.color.ColorHolder
+import java.util.function.BooleanSupplier
 
 /**
  * Setting register overloading
@@ -98,6 +99,14 @@ interface SettingRegister<T : Any> {
         description: String = ""
     ) = setting(StringSetting(name, value, visibility, consumer, description))
     /* End of setting registering */
+
+    fun <T : Any> AbstractSetting<T>.atValue(page: T): () -> Boolean = {
+        this.value == page
+    }
+
+    fun <T : Any> AbstractSetting<T>.atValue(page: T, block: BooleanSupplier): () -> Boolean = {
+        this.value == page && block.asBoolean
+    }
 
     /**
      * Register a setting
