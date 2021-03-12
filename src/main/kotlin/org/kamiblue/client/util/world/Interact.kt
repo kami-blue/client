@@ -109,19 +109,18 @@ private fun SafeClientEvent.checkNeighbour(
 ): PlaceInfo? {
     val offsetPos = pos.offset(side)
     val oppositeSide = side.opposite
+    
+    if (toIgnore?.add(offsetPos to oppositeSide) == false) return null
+    
     val hitVec = getHitVec(offsetPos, oppositeSide)
     val dist = eyePos.distanceTo(hitVec)
 
     if (dist > range) return null
-
     if (visibleSideCheck && !getVisibleSides(offsetPos, true).contains(oppositeSide)) return null
     if (checkReplaceable && world.getBlockState(offsetPos).isReplaceable) return null
     if (!world.isPlaceable(pos)) return null
-
-    if (toIgnore?.add(offsetPos to oppositeSide) == false) return null
-
+    
     val hitVecOffset = getHitVecOffset(oppositeSide)
-
     return PlaceInfo(offsetPos, oppositeSide, dist, hitVecOffset, hitVec, pos)
 }
 
