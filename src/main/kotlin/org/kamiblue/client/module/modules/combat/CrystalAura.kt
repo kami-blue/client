@@ -1,5 +1,6 @@
 package org.kamiblue.client.module.modules.combat
 
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Items
 import net.minecraft.init.MobEffects
@@ -303,12 +304,7 @@ internal object CrystalAura : Module(
 
     private fun SafeClientEvent.place() {
         getPlacingPos()?.let { pos ->
-            if (autoSwap) {
-                player.hotbarSlots.firstItem(Items.END_CRYSTAL)?.let {
-                    if (spoofHotbar) spoofHotbar(it.hotbarSlot, 1000L)
-                    else swapToSlot(it)
-                }
-            }
+            swapToCrystal()
 
             val hand = getHand()
             inactiveTicks = 0
@@ -326,6 +322,28 @@ internal object CrystalAura : Module(
             placedBBMap[crystalPos] = getCrystalBB(crystalPos) to System.currentTimeMillis()
         }
     }
+
+    private fun SafeClientEvent.swapToCrystal() {
+        if (autoSwap && player.heldItemOffhand.item != Items.END_CRYSTAL) {
+            if (spoofHotbar) {
+                val slot = if (player.serverSideItem.item == Items.END_CRYSTAL) HotbarManager.serverSideHotbar
+                else player.getCrystalSlot()?.hotbarSlot
+
+                if (slot != null) {
+                    spoofHotbar(slot, 1000L)
+                }
+            } else {
+                if (player.serverSideItem.item != Items.END_CRYSTAL) {
+                    player.getCrystalSlot()?.let {
+                        swapToSlot(it)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun EntityPlayerSP.getCrystalSlot() =
+        this.hotbarSlots.firstItem(Items.END_CRYSTAL)
 
     private fun SafeClientEvent.getPlacePacket(pos: BlockPos, hand: EnumHand): CPacketPlayerTryUseItemOnBlock {
         val side = getClosestVisibleSide(pos) ?: EnumFacing.UP
