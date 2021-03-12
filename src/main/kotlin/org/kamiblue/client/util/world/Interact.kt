@@ -38,8 +38,9 @@ private fun SafeClientEvent.getNeighbourSequence(
     toIgnore: HashSet<BlockPos>
 ): List<PlaceInfo>? {
     for (side in sides) {
-        checkNeighbour(eyePos, pos, side, range, visibleSideCheck, toIgnore)?.let {
+        checkNeighbour(eyePos, pos, side, range, visibleSideCheck, true, toIgnore)?.let {
             sequence.add(it)
+            sequence.reverse()
             return sequence
         }
     }
@@ -50,7 +51,7 @@ private fun SafeClientEvent.getNeighbourSequence(
         for (side in sides) {
             val newPos = pos.offset(side)
 
-            val placeInfo = checkNeighbour(eyePos, pos, side, range, false, null) ?: continue
+            val placeInfo = checkNeighbour(eyePos, pos, side, range, visibleSideCheck = false, checkReplaceable = false, toIgnore = null) ?: continue
             val newSequence = ArrayList(sequence)
             newSequence.add(placeInfo)
 
@@ -81,7 +82,7 @@ private fun SafeClientEvent.getNeighbour(
     toIgnore: HashSet<BlockPos>
 ): PlaceInfo? {
     for (side in sides) {
-        val result = checkNeighbour(eyePos, pos, side, range, visibleSideCheck, toIgnore)
+        val result = checkNeighbour(eyePos, pos, side, range, visibleSideCheck, true, toIgnore)
         if (result != null) return result
     }
 
@@ -106,12 +107,13 @@ private fun SafeClientEvent.checkNeighbour(
     side: EnumFacing,
     range: Float,
     visibleSideCheck: Boolean,
+    checkReplaceable: Boolean,
     toIgnore: HashSet<BlockPos>?
 ): PlaceInfo? {
     val offsetPos = pos.offset(side)
 
     if (toIgnore?.add(offsetPos) == false) return null
-    if (world.getBlockState(offsetPos).isReplaceable) return null
+    if (checkReplaceable && world.getBlockState(offsetPos).isReplaceable) return null
     if (!world.isPlaceable(pos)) return null
     if (visibleSideCheck && !getVisibleSides(offsetPos).contains(side.opposite)) return null
 
