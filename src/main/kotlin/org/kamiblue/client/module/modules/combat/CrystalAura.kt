@@ -322,6 +322,7 @@ internal object CrystalAura : Module(
         val side = getClosestVisibleSide(pos) ?: EnumFacing.UP
         return CPacketPlayerTryUseItemOnBlock(pos, side, hand, 0.5f, placeOffset, 0.5f)
     }
+
     private fun SafeClientEvent.packetExplode(entityID: Int, pos: BlockPos, vec3d: Vec3d) {
         if (!preExplode()) return
 

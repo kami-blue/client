@@ -141,8 +141,6 @@ fun SafeClientEvent.getClosestVisibleSide(pos: BlockPos): EnumFacing? {
 
 /**
  * Get the "visible" sides related to player's eye position
- *
- * Reverse engineered from HauseMaster's anti cheat plugin
  */
 fun SafeClientEvent.getVisibleSides(pos: BlockPos, assumeAirAsFullBox: Boolean = false): Set<EnumFacing> {
     val visibleSides = EnumSet.noneOf(EnumFacing::class.java)
