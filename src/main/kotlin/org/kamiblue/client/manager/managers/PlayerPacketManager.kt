@@ -97,14 +97,17 @@ object PlayerPacketManager : Manager {
         val moving: Boolean?,
         val rotating: Boolean?,
         val position: Vec3d?,
-        val rotation: Vec2f?
+        val rotation: Vec2f?,
+        val cancelAll: Boolean
     ) {
         class Builder {
-            private var moving: Boolean? = null
-            private var rotating: Boolean? = null
             private var position: Vec3d? = null
-            private var rotation: Vec2f? = null
+            private var moving: Boolean? = null
 
+            private var rotation: Vec2f? = null
+            private var rotating: Boolean? = null
+
+            private var cancelAll = false
             private var empty = true
 
             fun move(position: Vec3d) {
@@ -116,6 +119,11 @@ object PlayerPacketManager : Manager {
             fun rotate(rotation: Vec2f) {
                 this.rotation = rotation
                 this.rotating = true
+                this.empty = false
+            }
+
+            fun cancelAll() {
+                this.cancelAll = true
                 this.empty = false
             }
 
@@ -132,7 +140,7 @@ object PlayerPacketManager : Manager {
             }
 
             fun build() =
-                if (!empty) Packet(moving, rotating, position, rotation) else null
+                if (!empty) Packet(moving, rotating, position, rotation, cancelAll) else null
         }
     }
 }

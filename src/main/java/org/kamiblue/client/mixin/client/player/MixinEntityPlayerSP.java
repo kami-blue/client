@@ -152,18 +152,21 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         if (event.getCancelled()) {
             ci.cancel();
 
-            // Copy flags from event
-            moving = event.isMoving();
-            rotating = event.isRotating();
-            position = event.getPosition();
-            rotation = event.getRotation();
+            if (!event.getCancelAll()) {
+                // Copy flags from event
+                moving = event.isMoving();
+                rotating = event.isRotating();
+                position = event.getPosition();
+                rotation = event.getRotation();
 
-            sendSprintPacket();
-            sendSneakPacket();
-            sendPlayerPacket(moving, rotating, position, rotation);
+                sendSprintPacket();
+                sendSneakPacket();
+                sendPlayerPacket(moving, rotating, position, rotation);
+
+                this.prevOnGround = onGround;
+            }
 
             ++this.positionUpdateTicks;
-            this.prevOnGround = onGround;
             this.autoJumpEnabled = this.mc.gameSettings.autoJump;
         }
 

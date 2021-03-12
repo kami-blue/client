@@ -28,6 +28,8 @@ class OnUpdateWalkingPlayerEvent private constructor(
         @JvmName("isRotating") get
         private set
 
+    var cancelAll = false; private set
+
     constructor(moving: Boolean, rotating: Boolean, position: Vec3d, rotation: Vec2f) : this(moving, rotating, position, rotation, Phase.PRE)
 
     override fun nextPhase(): OnUpdateWalkingPlayerEvent {
@@ -46,6 +48,8 @@ class OnUpdateWalkingPlayerEvent private constructor(
             if (rotating) packet.rotation?.let { this.rotation = it }
             this.rotating = rotating
         }
+
+        this.cancelAll = packet.cancelAll
     }
 
 }

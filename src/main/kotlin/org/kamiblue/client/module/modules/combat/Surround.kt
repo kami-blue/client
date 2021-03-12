@@ -110,8 +110,7 @@ internal object Surround : Module(
             } else if (job.isActiveOrFalse) {
                 spoofObby()
                 sendPlayerPacket {
-                    cancelMove()
-                    cancelRotate()
+                    cancelAll()
                 }
             } else if (isEnabled && CombatManager.isOnTopPriority(Surround)) {
                 resetHotbar()

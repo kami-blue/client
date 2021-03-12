@@ -91,8 +91,7 @@ internal object Flight : Module(
         listener<OnUpdateWalkingPlayerEvent> {
             if (mode != FlightMode.PACKET || it.phase != Phase.PRE) return@listener
             sendPlayerPacket {
-                cancelMove()
-                cancelRotate()
+                cancelAll()
             }
         }
 
