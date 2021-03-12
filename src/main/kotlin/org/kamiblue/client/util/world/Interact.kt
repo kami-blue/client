@@ -1,6 +1,7 @@
 package org.kamiblue.client.util.world
 
 import kotlinx.coroutines.delay
+import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
@@ -35,7 +36,7 @@ private fun SafeClientEvent.getNeighbourSequence(
     visibleSideCheck: Boolean,
     sides: Array<EnumFacing>,
     sequence: ArrayList<PlaceInfo>,
-    toIgnore: HashSet<BlockPos>
+    toIgnore: HashSet<Pair<BlockPos, EnumFacing>>
 ): List<PlaceInfo>? {
     for (side in sides) {
         checkNeighbour(eyePos, pos, side, range, visibleSideCheck, true, toIgnore)?.let {
@@ -46,12 +47,10 @@ private fun SafeClientEvent.getNeighbourSequence(
     }
 
     if (attempts > 1) {
-        toIgnore.add(pos)
-
         for (side in sides) {
             val newPos = pos.offset(side)
 
-            val placeInfo = checkNeighbour(eyePos, pos, side, range, visibleSideCheck = false, checkReplaceable = false, toIgnore = null) ?: continue
+            val placeInfo = checkNeighbour(eyePos, pos, side, range, visibleSideCheck, false, toIgnore) ?: continue
             val newSequence = ArrayList(sequence)
             newSequence.add(placeInfo)
 
@@ -79,7 +78,7 @@ private fun SafeClientEvent.getNeighbour(
     range: Float,
     visibleSideCheck: Boolean,
     sides: Array<EnumFacing>,
-    toIgnore: HashSet<BlockPos>
+    toIgnore: HashSet<Pair<BlockPos, EnumFacing>>
 ): PlaceInfo? {
     for (side in sides) {
         val result = checkNeighbour(eyePos, pos, side, range, visibleSideCheck, true, toIgnore)
@@ -87,8 +86,6 @@ private fun SafeClientEvent.getNeighbour(
     }
 
     if (attempts > 1) {
-        toIgnore.add(pos)
-
         for (side in sides) {
             val newPos = pos.offset(side)
             if (!world.isPlaceable(newPos)) continue
@@ -108,20 +105,20 @@ private fun SafeClientEvent.checkNeighbour(
     range: Float,
     visibleSideCheck: Boolean,
     checkReplaceable: Boolean,
-    toIgnore: HashSet<BlockPos>?
+    toIgnore: HashSet<Pair<BlockPos, EnumFacing>>?
 ): PlaceInfo? {
     val offsetPos = pos.offset(side)
-
-    if (toIgnore?.add(offsetPos) == false) return null
-    if (checkReplaceable && world.getBlockState(offsetPos).isReplaceable) return null
-    if (!world.isPlaceable(pos)) return null
-    if (visibleSideCheck && !getVisibleSides(offsetPos).contains(side.opposite)) return null
-
     val oppositeSide = side.opposite
-
     val hitVec = getHitVec(offsetPos, oppositeSide)
     val dist = eyePos.distanceTo(hitVec)
+
     if (dist > range) return null
+
+    if (visibleSideCheck && !getVisibleSides(offsetPos, true).contains(oppositeSide)) return null
+    if (checkReplaceable && world.getBlockState(offsetPos).isReplaceable) return null
+    if (!world.isPlaceable(pos)) return null
+
+    if (toIgnore?.add(offsetPos to oppositeSide) == false) return null
 
     val hitVecOffset = getHitVecOffset(oppositeSide)
 
@@ -148,12 +145,13 @@ fun SafeClientEvent.getClosestVisibleSide(pos: BlockPos): EnumFacing? {
  *
  * Reverse engineered from HauseMaster's anti cheat plugin
  */
-fun SafeClientEvent.getVisibleSides(pos: BlockPos): Set<EnumFacing> {
+fun SafeClientEvent.getVisibleSides(pos: BlockPos, assumeAirAsFullBox: Boolean = false): Set<EnumFacing> {
     val visibleSides = EnumSet.noneOf(EnumFacing::class.java)
 
-    val isFullBox = world.getBlockState(pos).isFullBox
     val eyePos = player.getPositionEyes(1.0f)
     val blockCenter = pos.toVec3dCenter()
+    val blockState = world.getBlockState(pos)
+    val isFullBox = assumeAirAsFullBox && blockState.block == Blocks.AIR || blockState.isFullBox
 
     return visibleSides
         .checkAxis(eyePos.x - blockCenter.x, EnumFacing.WEST, EnumFacing.EAST, !isFullBox)
