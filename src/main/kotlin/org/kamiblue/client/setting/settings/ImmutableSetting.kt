@@ -1,5 +1,7 @@
 package org.kamiblue.client.setting.settings
 
+import java.util.function.BooleanSupplier
+
 /**
  * Basic ImmutableSetting class
  *
@@ -12,7 +14,7 @@ package org.kamiblue.client.setting.settings
 abstract class ImmutableSetting<T : Any>(
     override val name: String,
     valueIn: T,
-    override val visibility: () -> Boolean,
+    override val visibility: BooleanSupplier?,
     val consumer: (prev: T, input: T) -> T,
     override val description: String
 ) : AbstractSetting<T>() {

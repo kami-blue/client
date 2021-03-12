@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import org.kamiblue.commons.interfaces.Nameable
+import java.util.function.BooleanSupplier
 import kotlin.reflect.KProperty
 
 abstract class AbstractSetting<T : Any> : Nameable {
@@ -12,13 +13,13 @@ abstract class AbstractSetting<T : Any> : Nameable {
     abstract val value: T
     abstract val defaultValue: T
     abstract val valueClass: Class<T>
-    abstract val visibility: () -> Boolean
+    abstract val visibility: BooleanSupplier?
     abstract val description: String
 
     val listeners = ArrayList<() -> Unit>()
     val valueListeners = ArrayList<(prev: T, input: T) -> Unit>()
 
-    val isVisible get() = visibility()
+    val isVisible get() = visibility?.asBoolean ?: true
 
     val isModified get() = this.value != this.defaultValue
 

@@ -5,11 +5,12 @@ import com.google.gson.JsonPrimitive
 import org.kamiblue.client.setting.settings.ImmutableSetting
 import org.kamiblue.client.util.Bind
 import org.lwjgl.input.Keyboard
+import java.util.function.BooleanSupplier
 
 class BindSetting(
     name: String,
     value: Bind,
-    visibility: () -> Boolean = { true },
+    visibility: BooleanSupplier? = null,
     description: String = ""
 ) : ImmutableSetting<Bind>(name, value, visibility, { _, input -> input }, description) {
 

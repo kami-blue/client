@@ -25,7 +25,7 @@ interface SettingRegister<T : Any> {
         value: Int,
         range: IntRange,
         step: Int,
-        visibility: () -> Boolean = { true },
+        visibility: BooleanSupplier? = null,
         consumer: (prev: Int, input: Int) -> Int = { _, input -> input },
         description: String = "",
         fineStep: Int = step,
@@ -37,7 +37,7 @@ interface SettingRegister<T : Any> {
         value: Double,
         range: ClosedFloatingPointRange<Double>,
         step: Double,
-        visibility: () -> Boolean = { true },
+        visibility: BooleanSupplier? = null,
         consumer: (prev: Double, input: Double) -> Double = { _, input -> input },
         description: String = "",
         fineStep: Double = step,
@@ -49,7 +49,7 @@ interface SettingRegister<T : Any> {
         value: Float,
         range: ClosedFloatingPointRange<Float>,
         step: Float,
-        visibility: () -> Boolean = { true },
+        visibility: BooleanSupplier? = null,
         consumer: (prev: Float, input: Float) -> Float = { _, input -> input },
         description: String = "",
         fineStep: Float = step,
@@ -59,7 +59,7 @@ interface SettingRegister<T : Any> {
     fun T.setting(
         name: String,
         value: Bind,
-        visibility: () -> Boolean = { true },
+        visibility: BooleanSupplier? = null,
         description: String = ""
     ) = setting(BindSetting(name, value, visibility, description))
 
@@ -68,7 +68,7 @@ interface SettingRegister<T : Any> {
         name: String,
         value: ColorHolder,
         hasAlpha: Boolean = true,
-        visibility: () -> Boolean = { true },
+        visibility: BooleanSupplier? = null,
         description: String = ""
     ) = setting(ColorSetting(name, value, hasAlpha, visibility, description))
 
@@ -76,7 +76,7 @@ interface SettingRegister<T : Any> {
     fun T.setting(
         name: String,
         value: Boolean,
-        visibility: () -> Boolean = { true },
+        visibility: BooleanSupplier? = null,
         consumer: (prev: Boolean, input: Boolean) -> Boolean = { _, input -> input },
         description: String = ""
     ) = setting(BooleanSetting(name, value, visibility, consumer, description))
@@ -85,7 +85,7 @@ interface SettingRegister<T : Any> {
     fun <E : Enum<E>> T.setting(
         name: String,
         value: E,
-        visibility: () -> Boolean = { true },
+        visibility: BooleanSupplier? = null,
         consumer: (prev: E, input: E) -> E = { _, input -> input },
         description: String = ""
     ) = setting(EnumSetting(name, value, visibility, consumer, description))
@@ -94,19 +94,11 @@ interface SettingRegister<T : Any> {
     fun T.setting(
         name: String,
         value: String,
-        visibility: () -> Boolean = { true },
+        visibility: BooleanSupplier? = null,
         consumer: (prev: String, input: String) -> String = { _, input -> input },
         description: String = ""
     ) = setting(StringSetting(name, value, visibility, consumer, description))
     /* End of setting registering */
-
-    fun <T : Any> AbstractSetting<T>.atValue(page: T): () -> Boolean = {
-        this.value == page
-    }
-
-    fun <T : Any> AbstractSetting<T>.atValue(page: T, block: BooleanSupplier): () -> Boolean = {
-        this.value == page && block.asBoolean
-    }
 
     /**
      * Register a setting

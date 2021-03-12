@@ -5,11 +5,12 @@ import com.google.gson.JsonPrimitive
 import org.kamiblue.client.setting.settings.MutableSetting
 import org.kamiblue.commons.extension.next
 import java.util.*
+import java.util.function.BooleanSupplier
 
 class EnumSetting<T : Enum<T>>(
     name: String,
     value: T,
-    visibility: () -> Boolean = { true },
+    visibility: BooleanSupplier? = null,
     consumer: (prev: T, input: T) -> T = { _, input -> input },
     description: String = ""
 ) : MutableSetting<T>(name, value, visibility, consumer, description) {

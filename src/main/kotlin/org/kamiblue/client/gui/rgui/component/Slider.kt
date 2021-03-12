@@ -15,12 +15,13 @@ import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.text.format
 import org.lwjgl.opengl.GL11.*
+import java.util.function.BooleanSupplier
 
 open class Slider(
     name: String,
     valueIn: Double,
     private val description: String = "",
-    private val visibility: (() -> Boolean)?
+    private val visibility: BooleanSupplier?
 ) : InteractiveComponent(name, 0.0f, 0.0f, 40.0f, 10.0f, SettingGroup.NONE) {
     protected var value = valueIn
         set(value) {
@@ -93,7 +94,7 @@ open class Slider(
     override fun onTick() {
         super.onTick()
         height = maxHeight
-        visibility?.let { visible = it.invoke() }
+        if (visibility != null) visible = visibility.asBoolean
     }
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {

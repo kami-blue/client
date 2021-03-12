@@ -1,6 +1,7 @@
 package org.kamiblue.client.setting.settings
 
 import com.google.gson.JsonElement
+import java.util.function.BooleanSupplier
 import kotlin.reflect.KProperty
 
 /**
@@ -15,7 +16,7 @@ import kotlin.reflect.KProperty
 open class MutableSetting<T : Any>(
     override val name: String,
     valueIn: T,
-    override val visibility: () -> Boolean,
+    override val visibility: BooleanSupplier?,
     consumer: (prev: T, input: T) -> T,
     override val description: String
 ) : AbstractSetting<T>() {

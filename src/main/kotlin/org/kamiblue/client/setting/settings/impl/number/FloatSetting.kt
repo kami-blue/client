@@ -1,13 +1,14 @@
 package org.kamiblue.client.setting.settings.impl.number
 
 import com.google.gson.JsonElement
+import java.util.function.BooleanSupplier
 
 class FloatSetting(
     name: String,
     value: Float,
     range: ClosedFloatingPointRange<Float>,
     step: Float,
-    visibility: () -> Boolean = { true },
+    visibility: BooleanSupplier? = null,
     consumer: (prev: Float, input: Float) -> Float = { _, input -> input },
     description: String = "",
     fineStep: Float = step

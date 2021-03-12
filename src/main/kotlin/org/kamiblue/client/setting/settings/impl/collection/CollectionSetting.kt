@@ -3,11 +3,12 @@ package org.kamiblue.client.setting.settings.impl.collection
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
 import org.kamiblue.client.setting.settings.ImmutableSetting
+import java.util.function.BooleanSupplier
 
 class CollectionSetting<E : Any, T : MutableCollection<E>>(
     name: String,
     override val value: T,
-    visibility: () -> Boolean = { true },
+    visibility: BooleanSupplier? = null,
     description: String = "",
 ) : ImmutableSetting<T>(name, value, visibility, { _, input -> input }, description), MutableCollection<E> by value {
 

@@ -1,13 +1,14 @@
 package org.kamiblue.client.setting.settings.impl.number
 
 import com.google.gson.JsonElement
+import java.util.function.BooleanSupplier
 
 class DoubleSetting(
     name: String,
     value: Double,
     range: ClosedFloatingPointRange<Double>,
     step: Double,
-    visibility: () -> Boolean = { true },
+    visibility: BooleanSupplier? = null,
     consumer: (prev: Double, input: Double) -> Double = { _, input -> input },
     description: String = "",
     fineStep: Double = step

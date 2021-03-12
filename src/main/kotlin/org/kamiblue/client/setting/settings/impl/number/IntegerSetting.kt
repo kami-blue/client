@@ -1,13 +1,14 @@
 package org.kamiblue.client.setting.settings.impl.number
 
 import com.google.gson.JsonElement
+import java.util.function.BooleanSupplier
 
 class IntegerSetting(
     name: String,
     value: Int,
     range: IntRange,
     step: Int,
-    visibility: () -> Boolean = { true },
+    visibility: BooleanSupplier? = null,
     consumer: (prev: Int, input: Int) -> Int = { _, input -> input },
     description: String = "",
     fineStep: Int = step

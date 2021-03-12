@@ -3,11 +3,12 @@ package org.kamiblue.client.setting.settings.impl.primitive
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import org.kamiblue.client.setting.settings.MutableSetting
+import java.util.function.BooleanSupplier
 
 open class BooleanSetting(
     name: String,
     value: Boolean,
-    visibility: () -> Boolean = { true },
+    visibility: BooleanSupplier? = null,
     consumer: (prev: Boolean, input: Boolean) -> Boolean = { _, input -> input },
     description: String = ""
 ) : MutableSetting<Boolean>(name, value, visibility, consumer, description) {

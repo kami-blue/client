@@ -2,13 +2,14 @@ package org.kamiblue.client.setting.settings.impl.number
 
 import com.google.gson.JsonPrimitive
 import org.kamiblue.client.setting.settings.MutableSetting
+import java.util.function.BooleanSupplier
 
 abstract class NumberSetting<T>(
     name: String,
     value: T,
     val range: ClosedRange<T>,
     val step: T,
-    visibility: () -> Boolean,
+    visibility: BooleanSupplier?,
     consumer: (prev: T, input: T) -> T,
     description: String = "",
     val fineStep: T
