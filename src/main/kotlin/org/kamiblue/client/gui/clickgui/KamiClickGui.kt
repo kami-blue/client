@@ -90,7 +90,7 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, AbstractModule>() {
 
         moduleWindows.forEach { window ->
             window.children.clear()
-            allButtons[window.originalName]?.let { window.children.addAll(it.customSort()) }
+            allButtons[window.name]?.let { window.children.addAll(it.customSort()) }
         }
     }
 

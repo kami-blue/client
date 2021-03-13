@@ -4,7 +4,7 @@ import net.minecraft.util.text.TextFormatting
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.gui.GuiManager
-import org.kamiblue.client.gui.hudgui.HudElement
+import org.kamiblue.client.gui.hudgui.AbstractHudElement
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.setting.settings.AbstractSetting
@@ -31,7 +31,7 @@ object SetCommand : ClientCommand(
             }
     }
 
-    private val hudElementSettingMap: Map<HudElement, Map<String, AbstractSetting<*>>> by AsyncCachedValue(5L, TimeUnit.SECONDS) {
+    private val hudElementSettingMap: Map<AbstractHudElement, Map<String, AbstractSetting<*>>> by AsyncCachedValue(5L, TimeUnit.SECONDS) {
         GuiManager.hudElements
             .associateWith { hudElements ->
                 hudElements.settingList.associateBy {
@@ -124,7 +124,7 @@ object SetCommand : ClientCommand(
     private fun getSetting(module: AbstractModule, settingName: String) =
         moduleSettingMap[module]?.get(settingName.formatSetting())
 
-    private fun getSetting(module: HudElement, settingName: String) =
+    private fun getSetting(module: AbstractHudElement, settingName: String) =
         hudElementSettingMap[module]?.get(settingName.formatSetting())
 
     private fun toggleSetting(name: String, settingName: String, setting: AbstractSetting<*>?) {

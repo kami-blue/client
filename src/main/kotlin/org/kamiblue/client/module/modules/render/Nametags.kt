@@ -24,6 +24,8 @@ import org.kamiblue.client.util.graphics.font.*
 import org.kamiblue.client.util.items.originalName
 import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.commons.extension.ceilToInt
+import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
@@ -98,7 +100,6 @@ internal object Nametags : Module(
     private val bText = setting("Text Blue", 255, 0..255, 1, { page.value == Page.RENDERING })
     private val aText = setting("Text Alpha", 255, 0..255, 1, { page.value == Page.RENDERING })
     private val customFont = setting("Custom Font", true, { page.value == Page.RENDERING })
-    private val textShadow = setting("Text Shadow", true, { page.value == Page.RENDERING })
     private val yOffset = setting("Y Offset", 0.5f, -2.5f..2.5f, 0.05f, { page.value == Page.RENDERING })
     private val scale = setting("Scale", 1f, 0.25f..5f, 0.25f, { page.value == Page.RENDERING })
     private val distScaleFactor = setting("Distance Scale Factor", 0.0f, 0.0f..1.0f, 0.05f, { page.value == Page.RENDERING })
@@ -137,36 +138,56 @@ internal object Nametags : Module(
         listener<RenderOverlayEvent> {
             if (entityMap.isEmpty() && itemMap.isEmpty()) return@listener
             GlStateUtils.rescaleActual()
+
             val camPos = KamiTessellator.camPos
             val vertexHelper = VertexHelper(GlStateUtils.useVbo())
+            val xRange = 0..mc.displayWidth
+            val yRange = 0..mc.displayHeight
+
             for ((entity, textComponent) in entityMap) {
                 val pos = EntityUtils.getInterpolatedPos(entity, KamiTessellator.pTicks()).add(0.0, (entity.height + yOffset.value).toDouble(), 0.0)
                 val screenPos = ProjectionUtils.toScreenPos(pos)
                 val dist = camPos.distanceTo(pos).toFloat() * 0.2f
                 val distFactor = if (distScaleFactor.value == 0f) 1f else max(1f / (dist * distScaleFactor.value + 1f), minDistScale.value)
-                drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, nameFrame.value, textComponent)
-                drawItems(screenPos, (scale.value * 2f) * distFactor, vertexHelper, entity, textComponent)
+
+                if (drawNametag(screenPos, (scale.value * 2f) * distFactor, xRange, yRange, vertexHelper, nameFrame.value, textComponent)) {
+                    drawItems(screenPos, (scale.value * 2f) * distFactor, vertexHelper, entity, textComponent)
+                }
             }
+
             for (itemGroup in itemMap) {
                 val pos = itemGroup.getCenter(KamiTessellator.pTicks()).add(0.0, yOffset.value.toDouble(), 0.0)
                 val screenPos = ProjectionUtils.toScreenPos(pos)
                 val dist = camPos.distanceTo(pos).toFloat() * 0.2f
                 val distFactor = if (distScaleFactor.value == 0f) 1f else max(1f / (dist * distScaleFactor.value + 1f), minDistScale.value)
-                drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, dropItemFrame.value, itemGroup.textComponent)
+
+                drawNametag(screenPos, (scale.value * 2f) * distFactor, xRange, yRange, vertexHelper, dropItemFrame.value, itemGroup.textComponent)
             }
+
             GlStateUtils.rescaleMc()
         }
     }
 
-    private fun drawNametag(screenPos: Vec3d, scale: Float, vertexHelper: VertexHelper, drawFrame: Boolean, textComponent: TextComponent) {
+    private fun drawNametag(screenPos: Vec3d, scale: Float, xRange: IntRange, yRange: IntRange, vertexHelper: VertexHelper, drawFrame: Boolean, textComponent: TextComponent): Boolean {
+        val halfWidth = textComponent.getWidth(customFont.value) / 2.0 + margins.value + 2.0
+        val halfHeight = textComponent.getHeight(2, true, customFont.value) / 2.0 + margins.value + 2.0
+
+        val scaledHalfWidth = halfWidth * scale
+        val scaledHalfHeight = halfHeight * scale
+
+        if ((screenPos.x - scaledHalfWidth).floorToInt() !in xRange
+            && (screenPos.x + scaledHalfWidth).ceilToInt() !in xRange
+            || (screenPos.y - scaledHalfHeight).floorToInt() !in yRange
+            && (screenPos.y + scaledHalfHeight).ceilToInt() !in yRange) return false
+
         glPushMatrix()
         glTranslatef(screenPos.x.toFloat(), screenPos.y.toFloat(), 0f)
         glScalef(scale, scale, 1f)
-        val halfWidth = textComponent.getWidth(customFont.value) / 2.0 + margins.value + 2.0
-        val halfHeight = textComponent.getHeight(2, true, customFont.value) / 2.0 + margins.value + 2.0
         if (drawFrame) drawFrame(vertexHelper, Vec2d(-halfWidth, -halfHeight), Vec2d(halfWidth, halfHeight))
-        textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = HAlign.CENTER, verticalAlign = VAlign.CENTER, customFont = customFont.value)
+        textComponent.draw(skipEmptyLine = true, horizontalAlign = HAlign.CENTER, verticalAlign = VAlign.CENTER, customFont = customFont.value)
         glPopMatrix()
+
+        return true
     }
 
     private fun drawItems(screenPos: Vec3d, nameTagScale: Float, vertexHelper: VertexHelper, entity: Entity, textComponent: TextComponent) {
@@ -239,21 +260,21 @@ internal object Nametags : Module(
             val color = healthColorGradient.get(duraPercentage)
             val text = duraPercentage.roundToInt().toString()
             val textWidth = FontRenderAdapter.getStringWidth(text, customFont = customFont.value)
-            FontRenderAdapter.drawString(text, 8f - textWidth / 2f, 17f, textShadow.value, color, customFont = customFont.value)
+            FontRenderAdapter.drawString(text, 8f - textWidth / 2f, 17f, color = color, customFont = customFont.value)
         }
 
         if (count.value && itemStack.count > 1) {
             val itemCount = itemStack.count.toString()
             glTranslatef(0f, 0f, 60f)
             val stringWidth = 17f - FontRenderAdapter.getStringWidth(itemCount, customFont = customFont.value)
-            FontRenderAdapter.drawString(itemCount, stringWidth, 9f, textShadow.value, customFont = customFont.value)
+            FontRenderAdapter.drawString(itemCount, stringWidth, 9f, customFont = customFont.value)
             glTranslatef(0f, 0f, -60f)
         }
 
         glTranslatef(0f, -2f, 0f)
         if (enchantment.value) {
             val scale = if (customFont.value) 0.6f else 0.5f
-            enchantmentText.draw(lineSpace = 2, scale = scale, drawShadow = textShadow.value, verticalAlign = VAlign.BOTTOM, customFont = customFont.value)
+            enchantmentText.draw(lineSpace = 2, scale = scale, verticalAlign = VAlign.BOTTOM, customFont = customFont.value)
         }
 
         glTranslatef(28f, 2f, 0f)

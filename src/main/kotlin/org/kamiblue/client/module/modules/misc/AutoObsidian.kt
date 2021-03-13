@@ -32,7 +32,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.BlockBreakEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
-import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.process.AutoObsidianProcess
@@ -40,9 +40,6 @@ import org.kamiblue.client.process.PauseProcess
 import org.kamiblue.client.util.*
 import org.kamiblue.client.util.EntityUtils.getDroppedItem
 import org.kamiblue.client.util.EntityUtils.getDroppedItems
-import org.kamiblue.client.util.WorldUtils.getNeighbour
-import org.kamiblue.client.util.WorldUtils.isPlaceable
-import org.kamiblue.client.util.WorldUtils.placeBlock
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.ESPRenderer
 import org.kamiblue.client.util.items.*
@@ -51,6 +48,7 @@ import org.kamiblue.client.util.math.VectorUtils
 import org.kamiblue.client.util.math.VectorUtils.toVec3dCenter
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.*
+import org.kamiblue.client.util.world.*
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.asyncListener
 import org.kamiblue.event.listener.listener
@@ -177,7 +175,8 @@ internal object AutoObsidian : Module(
             if (it.phase != TickEvent.Phase.START || PauseProcess.isActive ||
                 (world.difficulty == EnumDifficulty.PEACEFUL &&
                     player.dimension == 1 &&
-                    player.serverBrand.contains("2b2t"))) return@safeListener
+                    @Suppress("UNNECESSARY_SAFE_CALL")
+                    player.serverBrand?.contains("2b2t") == true)) return@safeListener
 
             updateMiningMap()
             runAutoObby()
@@ -197,8 +196,9 @@ internal object AutoObsidian : Module(
 
         when (rotationMode) {
             RotationMode.SPOOF -> {
-                val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation)
-                PlayerPacketManager.addPacket(this@AutoObsidian, packet)
+                sendPlayerPacket {
+                    rotate(rotation)
+                }
             }
             RotationMode.VIEW_LOCK -> {
                 player.rotationYaw = rotation.x
@@ -293,9 +293,9 @@ internal object AutoObsidian : Module(
     }
 
     private fun SafeClientEvent.isPositionValid(pos: BlockPos, blockState: IBlockState, eyePos: Vec3d) =
-        !world.getBlockState(pos.down()).material.isReplaceable
+        !world.getBlockState(pos.down()).isReplaceable
             && (blockState.block.let { it == Blocks.ENDER_CHEST || it is BlockShulkerBox }
-            || isPlaceable(pos))
+            || world.isPlaceable(pos))
             && world.isAirBlock(pos.up())
             && world.rayTraceBlocks(eyePos, pos.toVec3dCenter())?.let { it.typeOfHit == RayTraceResult.Type.MISS } ?: true
 
@@ -529,9 +529,9 @@ internal object AutoObsidian : Module(
             val normalizedVec = diff.normalize()
 
             val side = EnumFacing.getFacingFromVector(normalizedVec.x.toFloat(), normalizedVec.y.toFloat(), normalizedVec.z.toFloat())
-            val hitVecOffset = WorldUtils.getHitVecOffset(side)
+            val hitVecOffset = getHitVecOffset(side)
 
-            lastHitVec = WorldUtils.getHitVec(pos, side)
+            lastHitVec = getHitVec(pos, side)
             rotateTimer.reset()
 
             if (shulkerOpenTimer.tick(50)) {
@@ -547,16 +547,16 @@ internal object AutoObsidian : Module(
     }
 
     private fun SafeClientEvent.placeBlock(pos: BlockPos) {
-        val pair = getNeighbour(pos, 1, 6.5f)
+        val placeInfo = getNeighbour(pos, 1, 6.5f)
             ?: run {
                 MessageSendHelper.sendChatMessage("$chatName Can't find neighbour block")
                 return
             }
 
-        lastHitVec = WorldUtils.getHitVec(pair.second, pair.first)
+        lastHitVec = placeInfo.hitVec
         rotateTimer.reset()
 
-        val isBlackListed = WorldUtils.blackList.contains(world.getBlockState(pair.second).block)
+        val isBlackListed = world.getBlockState(placeInfo.pos).isBlacklisted
 
         if (isBlackListed) {
             connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_SNEAKING))
@@ -565,7 +565,7 @@ internal object AutoObsidian : Module(
         defaultScope.launch {
             delay(20L)
             onMainThreadSafe {
-                placeBlock(pair.second, pair.first)
+                placeBlock(placeInfo)
             }
 
             if (isBlackListed) {

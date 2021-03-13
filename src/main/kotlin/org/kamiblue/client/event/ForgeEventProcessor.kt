@@ -24,7 +24,7 @@ import org.kamiblue.client.util.text.MessageDetection
 import org.lwjgl.input.Keyboard
 import java.util.*
 
-object ForgeEventProcessor {
+internal object ForgeEventProcessor {
     private val mc = Wrapper.minecraft
     private var prevWidth = mc.displayWidth
     private var prevHeight = mc.displayHeight
@@ -80,7 +80,6 @@ object ForgeEventProcessor {
         }
 
         KamiEventBus.post(event)
-        GuiManager.onBind(Keyboard.getEventKey())
         ModuleManager.onBind(Keyboard.getEventKey())
     }
 

@@ -5,22 +5,23 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.common.ForgeHooks;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.GuiEvent;
 import org.kamiblue.client.event.events.RunGameLoopEvent;
 import org.kamiblue.client.gui.mc.KamiGuiUpdateNotification;
-import org.kamiblue.client.manager.managers.PlayerPacketManager;
+import org.kamiblue.client.manager.managers.HotbarManager;
 import org.kamiblue.client.mixin.client.accessor.player.AccessorEntityPlayerSP;
 import org.kamiblue.client.mixin.client.accessor.player.AccessorPlayerControllerMP;
 import org.kamiblue.client.module.modules.combat.CrystalAura;
 import org.kamiblue.client.module.modules.player.BlockInteraction;
+import org.kamiblue.client.plugin.PluginError;
 import org.kamiblue.client.util.Wrapper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,9 +30,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Created by 086 on 17/11/2017.
- */
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
 
@@ -40,9 +38,6 @@ public abstract class MixinMinecraft {
     @Shadow public GuiScreen currentScreen;
     @Shadow public GameSettings gameSettings;
     @Shadow public PlayerControllerMP playerController;
-
-    @Shadow public RayTraceResult objectMouseOver;
-    @Shadow public EntityRenderer entityRenderer;
 
     @Shadow protected abstract void clickMouse();
 
@@ -89,19 +84,26 @@ public abstract class MixinMinecraft {
     // Fix random crystal placing when eating gapple in offhand
     @Inject(method = "rightClickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;getHeldItem(Lnet/minecraft/util/EnumHand;)Lnet/minecraft/item/ItemStack;"), cancellable = true)
     public void rightClickMouseAtInvokeGetHeldItem(CallbackInfo ci) {
+        EntityPlayerSP player = Wrapper.getPlayer();
+        WorldClient world = Wrapper.getWorld();
+        PlayerControllerMP playerController = Wrapper.getMinecraft().playerController;
+        RayTraceResult objectMouseOver = Wrapper.getMinecraft().objectMouseOver;
+
+        if (player == null || world == null || playerController == null) return;
+
         if (CrystalAura.INSTANCE.isDisabled() || CrystalAura.INSTANCE.getInactiveTicks() > 2) return;
         if (player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL) return;
-        if (PlayerPacketManager.INSTANCE.getHoldingItemStack().getItem() != Items.END_CRYSTAL) return;
+        if (HotbarManager.INSTANCE.getServerSideItem(player).getItem() != Items.END_CRYSTAL) return;
 
         ci.cancel();
 
         for (EnumHand enumhand : EnumHand.values()) {
-            ItemStack itemstack = this.player.getHeldItem(enumhand);
-            if (itemstack.isEmpty() && (this.objectMouseOver == null || this.objectMouseOver.typeOfHit == RayTraceResult.Type.MISS)) {
-                net.minecraftforge.common.ForgeHooks.onEmptyClick(this.player, enumhand);
+            ItemStack itemstack = player.getHeldItem(enumhand);
+            if (itemstack.isEmpty() && (objectMouseOver == null || objectMouseOver.typeOfHit == RayTraceResult.Type.MISS)) {
+                ForgeHooks.onEmptyClick(player, enumhand);
             }
-            if (!itemstack.isEmpty() && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS) {
-                this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
+            if (!itemstack.isEmpty() && playerController.processRightClick(player, world, enumhand) == EnumActionResult.SUCCESS) {
+                Wrapper.getMinecraft().entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
             }
         }
     }
@@ -162,6 +164,7 @@ public abstract class MixinMinecraft {
         if (KamiGuiUpdateNotification.Companion.getLatest() != null && !KamiGuiUpdateNotification.Companion.isLatest()) {
             Wrapper.getMinecraft().displayGuiScreen(new KamiGuiUpdateNotification());
         }
+        PluginError.Companion.displayErrors();
     }
 
 }

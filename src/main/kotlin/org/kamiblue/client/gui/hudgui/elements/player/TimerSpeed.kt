@@ -5,7 +5,7 @@ import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.manager.managers.TimerManager
 import org.kamiblue.commons.utils.MathUtils
 
-object TimerSpeed : LabelHud(
+internal object TimerSpeed : LabelHud(
     name = "TimerSpeed",
     category = Category.PLAYER,
     description = "Client side timer speed"

@@ -17,9 +17,9 @@ import org.kamiblue.client.mixin.extension.onGround
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils
-import org.kamiblue.client.util.WorldUtils.getGroundPos
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.util.world.getGroundPos
 
 internal object NoFall : Module(
     name = "NoFall",
@@ -64,7 +64,7 @@ internal object NoFall : Module(
         }
     }
 
-    private fun SafeClientEvent.fallDistCheck() = (!voidOnly.value && player.fallDistance >= distance.value) || getGroundPos().y == -69420.0
+    private fun SafeClientEvent.fallDistCheck() = (!voidOnly.value && player.fallDistance >= distance.value) || world.getGroundPos(player).y == -69420.0
 
     // TODO: This really needs a rewrite to spoof placing and the such instead of manual rotations
     private fun SafeClientEvent.fallMode() {

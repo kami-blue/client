@@ -5,6 +5,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.math.Vec3i
+import org.kamiblue.commons.extension.PI_FLOAT
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
 import kotlin.math.*
@@ -61,6 +62,19 @@ object VectorUtils {
 
     private fun getAxisRange(d1: Double, d2: Float): IntRange {
         return IntRange((d1 - d2).floorToInt(), (d1 + d2).ceilToInt())
+    }
+
+    fun Vec2f.toViewVec(): Vec3d {
+        val rotationRad = toRadians()
+        val yaw = -rotationRad.x - PI_FLOAT
+        val pitch = -rotationRad.y
+
+        val cosYaw = cos(yaw)
+        val sinYaw = sin(yaw)
+        val cosPitch = -cos(pitch)
+        val sinPitch = sin(pitch)
+
+        return Vec3d((sinYaw * cosPitch).toDouble(), sinPitch.toDouble(), (cosYaw * cosPitch).toDouble())
     }
 
     fun Vec3d.toBlockPos(): BlockPos {

@@ -1,11 +1,11 @@
 package org.kamiblue.client.gui.hudgui.component
 
-import org.kamiblue.client.gui.hudgui.HudElement
+import org.kamiblue.client.gui.hudgui.AbstractHudElement
 import org.kamiblue.client.gui.hudgui.KamiHudGui
 import org.kamiblue.client.gui.rgui.component.BooleanSlider
 import org.kamiblue.client.util.math.Vec2f
 
-class HudButton(val hudElement: HudElement) : BooleanSlider(hudElement.name, 0.0, hudElement.description) {
+class HudButton(val hudElement: AbstractHudElement) : BooleanSlider(hudElement.name, 0.0, hudElement.description) {
     init {
         if (hudElement.visible) value = 1.0
     }

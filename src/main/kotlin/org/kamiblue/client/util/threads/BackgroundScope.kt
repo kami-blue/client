@@ -16,16 +16,18 @@ internal object BackgroundScope : CoroutineScope by CoroutineScope(newFixedThrea
         }
     }
 
-    fun launchLooping(name: String, delay: Long, block: suspend CoroutineScope.() -> Unit) {
-        launchLooping(BackgroundJob(name, delay, block))
+    fun launchLooping(name: String, delay: Long, block: suspend CoroutineScope.() -> Unit): BackgroundJob {
+        return launchLooping(BackgroundJob(name, delay, block))
     }
 
-    fun launchLooping(job: BackgroundJob) {
+    fun launchLooping(job: BackgroundJob): BackgroundJob {
         if (!started) {
             jobs[job] = null
         } else {
             jobs[job] = startJob(job)
         }
+
+        return job
     }
 
     fun cancel(job: BackgroundJob) = jobs.remove(job)?.cancel()

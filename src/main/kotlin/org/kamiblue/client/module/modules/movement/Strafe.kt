@@ -56,7 +56,6 @@ internal object Strafe : Module(
     private var jumpTicks = 0
     private val strafeTimer = TickTimer(TimeUnit.TICKS)
 
-    /* If you skid this you omega gay */
     init {
         onDisable {
             reset()

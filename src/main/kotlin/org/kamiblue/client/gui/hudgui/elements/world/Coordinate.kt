@@ -3,11 +3,10 @@ package org.kamiblue.client.gui.hudgui.elements.world
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.graphics.font.TextComponent
 import org.kamiblue.client.util.math.VectorUtils.times
 
-object Coordinate : LabelHud(
+internal object Coordinate : LabelHud(
     name = "Coordinate",
     category = Category.WORLD,
     description = "Display the current coordinate"

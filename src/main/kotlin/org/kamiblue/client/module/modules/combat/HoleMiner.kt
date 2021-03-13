@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.prevPosVector
@@ -99,8 +100,9 @@ internal object HoleMiner : Module(
 
                 val center = pos.toVec3dCenter()
                 val rotation = getRotationTo(center)
-                val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation)
-                PlayerPacketManager.addPacket(this@HoleMiner, packet)
+                sendPlayerPacket {
+                    rotate(rotation)
+                }
 
                 val diff = player.getPositionEyes(1.0f).subtract(center)
                 val normalizedVec = diff.normalize()

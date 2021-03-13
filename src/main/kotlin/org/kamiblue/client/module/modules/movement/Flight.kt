@@ -7,6 +7,7 @@ import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
 import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.MovementUtils
@@ -89,7 +90,9 @@ internal object Flight : Module(
 
         listener<OnUpdateWalkingPlayerEvent> {
             if (mode != FlightMode.PACKET || it.phase != Phase.PRE) return@listener
-            PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(moving = false, rotating = false))
+            sendPlayerPacket {
+                cancelAll()
+            }
         }
 
         listener<PacketEvent.Receive> {

@@ -5,7 +5,6 @@ import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.gui.hudgui.HudElement
-import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.color.ColorGradient
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.RenderUtils2D
@@ -21,7 +20,7 @@ import org.kamiblue.client.util.threads.safeAsyncListener
 import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.max
 
-object Armor : HudElement(
+internal object Armor : HudElement(
     name = "Armor",
     category = Category.COMBAT,
     description = "Show the durability of armor and the count of them"

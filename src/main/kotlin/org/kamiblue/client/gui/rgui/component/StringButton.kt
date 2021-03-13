@@ -18,18 +18,18 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
 
     override fun onStopListening(success: Boolean) {
         if (success) {
-            setting.setValue(name)
+            setting.setValue(componentName)
         }
 
         super.onStopListening(success)
-        name = originalName
+        componentName = name
         value = 1.0
     }
 
     override fun onMouseInput(mousePos: Vec2f) {
         super.onMouseInput(mousePos)
         if (!listening) {
-            name = if (mouseState == MouseState.NONE) originalName
+            componentName = if (mouseState == MouseState.NONE) name
             else setting.value
         }
     }
@@ -37,8 +37,8 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
     override fun onTick() {
         super.onTick()
         if (!listening) {
-            name = if (mouseState != MouseState.NONE) setting.value
-            else originalName
+            componentName = if (mouseState != MouseState.NONE) setting.value
+            else name
         }
     }
 
@@ -47,7 +47,7 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
         if (buttonId == 1) {
             if (!listening) {
                 listening = true
-                name = setting.value
+                componentName = setting.value
                 value = 0.0
             } else {
                 onStopListening(false)
@@ -66,10 +66,10 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
                     onStopListening(true)
                 }
                 Keyboard.KEY_BACK, Keyboard.KEY_DELETE -> {
-                    name = name.substring(0, max(name.length - 1, 0))
+                    componentName = componentName.substring(0, max(componentName.length - 1, 0))
                 }
                 else -> if (typedChar >= ' ') {
-                    name += typedChar
+                    componentName += typedChar
                 }
             }
         }

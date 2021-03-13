@@ -44,6 +44,7 @@ class KamiMod {
         var ready: Boolean = false; private set
     }
 
+    @Suppress("UNUSED_PARAMETER")
     @Mod.EventHandler
     fun preInit(event: FMLPreInitializationEvent) {
         val directory = File(DIRECTORY)
@@ -53,6 +54,7 @@ class KamiMod {
         LoaderWrapper.preLoadAll()
     }
 
+    @Suppress("UNUSED_PARAMETER")
     @Mod.EventHandler
     fun init(event: FMLInitializationEvent) {
         LOG.info("Initializing $NAME $VERSION")
@@ -69,6 +71,7 @@ class KamiMod {
         LOG.info("$NAME initialized!")
     }
 
+    @Suppress("UNUSED_PARAMETER")
     @Mod.EventHandler
     fun postInit(event: FMLPostInitializationEvent) {
         ready = true

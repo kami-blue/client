@@ -2,6 +2,7 @@ package org.kamiblue.client.module
 
 import net.minecraft.client.Minecraft
 import org.kamiblue.client.event.KamiEventBus
+import org.kamiblue.client.event.events.ModuleToggleEvent
 import org.kamiblue.client.gui.clickgui.KamiClickGui
 import org.kamiblue.client.module.modules.client.ClickGUI
 import org.kamiblue.client.module.modules.client.CommandConfig
@@ -13,7 +14,6 @@ import org.kamiblue.client.setting.settings.impl.other.BindSetting
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import org.kamiblue.client.util.Bind
 import org.kamiblue.client.util.text.MessageSendHelper
-import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.commons.interfaces.Alias
 import org.kamiblue.commons.interfaces.Nameable
 
@@ -47,7 +47,7 @@ abstract class AbstractModule(
     val isVisible: Boolean get() = visible.value
 
     private fun addSetting(setting: AbstractSetting<*>) {
-        config.getGroupOrPut(name).addSetting(setting)
+        (config as NameableConfig<Nameable>).addSettingToConfig(this, setting)
     }
 
     internal fun postInit() {
@@ -67,14 +67,6 @@ abstract class AbstractModule(
 
     fun disable() {
         enabled.value = false
-    }
-
-    private fun sendToggleMessage() {
-        runSafe {
-            if (this@AbstractModule !is ClickGUI && CommandConfig.toggleMessages.value) {
-                MessageSendHelper.sendChatMessage(name + if (enabled.value) " &cdisabled" else " &aenabled")
-            }
-        }
     }
 
     open fun isActive(): Boolean {
@@ -112,7 +104,7 @@ abstract class AbstractModule(
             val enabled = alwaysEnabled || input
 
             if (prev != input && !alwaysEnabled) {
-                sendToggleMessage()
+                KamiEventBus.post(ModuleToggleEvent(this))
             }
 
             if (enabled || alwaysListening) {

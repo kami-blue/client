@@ -7,17 +7,19 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.CombatManager
-import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.HotbarManager.resetHotbar
+import org.kamiblue.client.manager.managers.HotbarManager.spoofHotbar
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.module.modules.movement.Strafe
 import org.kamiblue.client.util.*
+import org.kamiblue.client.util.EntityUtils.flooredPosition
+import org.kamiblue.client.util.MovementUtils.centerPlayer
 import org.kamiblue.client.util.MovementUtils.speed
-import org.kamiblue.client.util.WorldUtils.buildStructure
-import org.kamiblue.client.util.WorldUtils.getPlaceInfo
-import org.kamiblue.client.util.WorldUtils.isPlaceable
 import org.kamiblue.client.util.combat.SurroundUtils
 import org.kamiblue.client.util.combat.SurroundUtils.checkHole
+import org.kamiblue.client.util.items.HotbarSlot
 import org.kamiblue.client.util.items.firstBlock
 import org.kamiblue.client.util.items.hotbarSlots
 import org.kamiblue.client.util.math.VectorUtils.toBlockPos
@@ -25,6 +27,8 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.isActiveOrFalse
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.util.world.buildStructure
+import org.kamiblue.client.util.world.isPlaceable
 
 @CombatManager.CombatModule
 internal object Surround : Module(
@@ -33,24 +37,22 @@ internal object Surround : Module(
     description = "Surrounds you with obsidian to take less damage",
     modulePriority = 200
 ) {
-    private val autoCenter = setting("Auto Center", AutoCenterMode.MOTION)
-    private val placeSpeed = setting("Places Per Tick", 4f, 0.25f..5f, 0.25f)
-    private val autoDisable = setting("Auto Disable", AutoDisableMode.OUT_OF_HOLE)
-    private val outOfHoleTimeout = setting("Out Of Hole Timeout", 10, 1..50, 5, { autoDisable.value == AutoDisableMode.OUT_OF_HOLE }, description = "Delay before disabling Surround when you are out of hole, in ticks")
+    private val placeSpeed by setting("Places Per Tick", 4f, 0.25f..5f, 0.25f)
+    private val disableStrafe by setting("Disable Strafe", true)
+    private val strictDirection by setting("Strict Direction", false)
+    private val autoDisable by setting("Auto Disable", AutoDisableMode.OUT_OF_HOLE)
+    private val outOfHoleTimeout by setting("Out Of Hole Timeout", 10, 1..50, 5, { autoDisable == AutoDisableMode.OUT_OF_HOLE }, description = "Delay before disabling Surround when you are out of hole, in ticks")
     private val enableInHole = setting("Enable In Hole", false)
-    private val inHoleTimeout = setting("In Hole Timeout", 50, 1..100, 5, { enableInHole.value }, description = "Delay before enabling Surround when you are in hole, in ticks")
-    private val disableStrafe = setting("Disable Strafe", true)
+    private val inHoleTimeout by setting("In Hole Timeout", 50, 1..100, 5, { enableInHole.value }, description = "Delay before enabling Surround when you are in hole, in ticks")
+    private val toggleMessage by setting("Toggle Message", true)
 
-    enum class AutoCenterMode {
-        OFF, TP, MOTION
-    }
-
-    enum class AutoDisableMode {
+    private enum class AutoDisableMode {
         ONE_TIME, OUT_OF_HOLE
     }
 
+    private val toggleTimer = StopTimer(TimeUnit.TICKS)
+
     private var holePos: BlockPos? = null
-    private var toggleTimer = StopTimer(TimeUnit.TICKS)
     private var job: Job? = null
 
     override fun isActive(): Boolean {
@@ -58,26 +60,24 @@ internal object Surround : Module(
     }
 
     init {
-        onEnable {
-            toggleTimer.reset()
-        }
-
         onDisable {
-            PlayerPacketManager.resetHotbar()
-            toggleTimer.reset()
+            resetHotbar()
             holePos = null
         }
 
+        onToggle {
+            toggleTimer.reset()
+        }
 
         safeListener<TickEvent.ClientTickEvent> {
             if (getObby() == null) return@safeListener
+
             if (isDisabled) {
                 enableInHoleCheck()
                 return@safeListener
             }
 
             // Following codes will not run if disabled
-
             // Update hole pos
             if (holePos == null || inHoleCheck()) {
                 holePos = player.positionVector.toBlockPos()
@@ -91,28 +91,37 @@ internal object Surround : Module(
                 toggleTimer.reset()
             }
 
-            // Placeable & Centered check
-            if (!canRun() || !centerPlayer()) {
-                if (autoDisable.value == AutoDisableMode.ONE_TIME) disable()
+            // Placeable
+            if (!canRun()) {
+                if (autoDisable == AutoDisableMode.ONE_TIME) disable()
                 return@safeListener
+            }
+
+            // Centered check
+            if (!player.centerPlayer()) return@safeListener
+
+            if (disableStrafe) {
+                Strafe.disable()
             }
 
             // The actual job
             if (!job.isActiveOrFalse) {
                 job = runSurround()
             } else if (job.isActiveOrFalse) {
-                spoofHotbar()
-                PlayerPacketManager.addPacket(Surround, PlayerPacketManager.PlayerPacket(rotating = false))
+                spoofObby()
+                sendPlayerPacket {
+                    cancelAll()
+                }
             } else if (isEnabled && CombatManager.isOnTopPriority(Surround)) {
-                PlayerPacketManager.resetHotbar()
+                resetHotbar()
             }
         }
     }
 
     private fun SafeClientEvent.enableInHoleCheck() {
         if (enableInHole.value && inHoleCheck()) {
-            if (toggleTimer.stop() > inHoleTimeout.value) {
-                MessageSendHelper.sendChatMessage("$chatName You are in hole for longer than ${inHoleTimeout.value} ticks, enabling")
+            if (toggleTimer.stop() > inHoleTimeout) {
+                if (toggleMessage) MessageSendHelper.sendChatMessage("$chatName You are in hole for longer than $inHoleTimeout ticks, enabling")
                 enable()
             }
         } else {
@@ -123,59 +132,51 @@ internal object Surround : Module(
     private fun SafeClientEvent.inHoleCheck() = player.onGround && player.speed < 0.15 && checkHole(player) == SurroundUtils.HoleType.OBBY
 
     private fun outOfHoleCheck() {
-        if (autoDisable.value == AutoDisableMode.OUT_OF_HOLE) {
-            if (toggleTimer.stop() > outOfHoleTimeout.value) {
-                MessageSendHelper.sendChatMessage("$chatName You are out of hole for longer than ${outOfHoleTimeout.value} ticks, disabling")
+        if (autoDisable == AutoDisableMode.OUT_OF_HOLE) {
+            if (toggleTimer.stop() > outOfHoleTimeout) {
+                if (toggleMessage) MessageSendHelper.sendChatMessage("$chatName You are out of hole for longer than $outOfHoleTimeout ticks, disabling")
                 disable()
             }
         }
     }
 
-    private fun SafeClientEvent.spoofHotbar() {
-        getObby()?.let { PlayerPacketManager.spoofHotbar(it) }
+    private fun SafeClientEvent.spoofObby() {
+        getObby()?.let { spoofHotbar(it) }
     }
 
-    private fun SafeClientEvent.getObby(): Int? {
+    private fun SafeClientEvent.getObby(): HotbarSlot? {
         val slots = player.hotbarSlots.firstBlock(Blocks.OBSIDIAN)
 
         if (slots == null) { // Obsidian check
             if (isEnabled) {
-                MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
+                if (toggleMessage) MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
                 disable()
             }
             return null
         }
 
-        return slots.hotbarSlot
+        return slots
     }
 
     private fun SafeClientEvent.canRun(): Boolean {
         val playerPos = player.positionVector.toBlockPos()
-        for (offset in SurroundUtils.surroundOffset) {
-            val pos = playerPos.add(offset)
-            if (isPlaceable(pos, true)) return true
-        }
-        return false
-    }
-
-    private fun centerPlayer(): Boolean {
-        return if (autoCenter.value == AutoCenterMode.OFF) {
-            true
-        } else {
-            if (disableStrafe.value) Strafe.disable()
-            SurroundUtils.centerPlayer(autoCenter.value == AutoCenterMode.TP)
+        return SurroundUtils.surroundOffset.any {
+            world.isPlaceable(playerPos.add(it), true)
         }
     }
 
     private fun SafeClientEvent.runSurround() = defaultScope.launch {
-        spoofHotbar()
+        spoofObby()
 
-        buildStructure(placeSpeed.value) {
-            if (isEnabled && CombatManager.isOnTopPriority(this@Surround)) {
-                getPlaceInfo(player.positionVector.toBlockPos(), SurroundUtils.surroundOffset, it, 2)
-            } else {
-                null
-            }
+        buildStructure(
+            player.flooredPosition,
+            SurroundUtils.surroundOffset,
+            placeSpeed,
+            2,
+            4.25f,
+            strictDirection
+        ) {
+            isEnabled && CombatManager.isOnTopPriority(Surround)
         }
     }
 

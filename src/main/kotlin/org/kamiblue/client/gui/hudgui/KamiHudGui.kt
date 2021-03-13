@@ -1,8 +1,8 @@
 package org.kamiblue.client.gui.hudgui
 
+import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.gui.AbstractKamiGui
-import org.kamiblue.client.gui.GuiManager
 import org.kamiblue.client.gui.clickgui.KamiClickGui
 import org.kamiblue.client.gui.hudgui.component.HudButton
 import org.kamiblue.client.gui.hudgui.elements.client.WaterMark
@@ -18,24 +18,24 @@ import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11.*
+import java.util.*
+import kotlin.collections.LinkedHashSet
 
-object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
+object KamiHudGui : AbstractKamiGui<HudSettingWindow, AbstractHudElement>() {
 
     override val alwaysTicking = true
+    private val hudWindows = EnumMap<AbstractHudElement.Category, ListWindow>(AbstractHudElement.Category::class.java)
 
     init {
-        val allButtons = GuiManager.hudElements.map { HudButton(it) }
-
         var posX = 0.0f
         var posY = 0.0f
         val screenWidth = KamiClickGui.mc.displayWidth / ClickGUI.getScaleFactorFloat()
 
-        for (category in HudElement.Category.values()) {
+        for (category in AbstractHudElement.Category.values()) {
             val window = ListWindow(category.displayName, posX, 0.0f, 90.0f, 300.0f, Component.SettingGroup.HUD_GUI)
-            val buttons = allButtons.filter { it.hudElement.category == category }
-            window.children.addAll(buttons)
-
             windowList.add(window)
+            hudWindows[category] = window
+
             posX += 90.0f
 
             if (posX > screenWidth) {
@@ -44,7 +44,28 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
             }
         }
 
-        windowList.addAll(GuiManager.hudElements)
+        listener<InputEvent.KeyInputEvent> {
+            val eventKey = Keyboard.getEventKey()
+
+            if (eventKey == Keyboard.KEY_NONE || Keyboard.isKeyDown(Keyboard.KEY_F3)) return@listener
+
+            for (child in windowList) {
+                if (child !is AbstractHudElement) continue
+                if (!child.bind.isDown(eventKey)) continue
+                child.visible = !child.visible
+            }
+        }
+    }
+
+    internal fun register(hudElement: AbstractHudElement) {
+        val button = HudButton(hudElement)
+        hudWindows[hudElement.category]!!.children.add(button)
+        windowList.add(hudElement)
+    }
+
+    internal fun unregister(hudElement: AbstractHudElement) {
+        hudWindows[hudElement.category]!!.children.removeIf { it is HudButton && it.hudElement == hudElement }
+        windowList.remove(hudElement)
     }
 
     override fun onGuiClosed() {
@@ -52,7 +73,7 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
         setHudButtonVisibility { true }
     }
 
-    override fun newSettingWindow(element: HudElement, mousePos: Vec2f): HudSettingWindow {
+    override fun newSettingWindow(element: AbstractHudElement, mousePos: Vec2f): HudSettingWindow {
         return HudSettingWindow(element, mousePos.x, mousePos.y)
     }
 
@@ -66,7 +87,7 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
 
             if (string.isNotEmpty()) {
                 setHudButtonVisibility { hudButton ->
-                    hudButton.hudElement.name.contains(string, true)
+                    hudButton.hudElement.componentName.contains(string, true)
                         || hudButton.hudElement.alias.any { it.contains(string, true) }
                 }
             } else {
@@ -93,7 +114,7 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
 
             if (Hud.isEnabled) {
                 for (window in windowList) {
-                    if (window !is HudElement || !window.visible) continue
+                    if (window !is AbstractHudElement || !window.visible) continue
                     renderHudElement(vertexHelper, window)
                 }
             } else if (WaterMark.visible) {
@@ -105,7 +126,7 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
         }
     }
 
-    private fun renderHudElement(vertexHelper: VertexHelper, window: HudElement) {
+    private fun renderHudElement(vertexHelper: VertexHelper, window: AbstractHudElement) {
         glPushMatrix()
         glTranslatef(window.renderPosX, window.renderPosY, 0.0f)
 

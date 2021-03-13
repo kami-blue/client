@@ -5,9 +5,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.gui.hudgui.HudElement
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.ModuleManager
-import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.AsyncCachedValue
-import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.TimedFlag
 import org.kamiblue.client.util.color.ColorConverter
@@ -27,7 +25,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.max
 
-object ModuleList : HudElement(
+internal object ModuleList : HudElement(
     name = "ModuleList",
     category = Category.CLIENT,
     description = "List of enabled modules",
@@ -57,25 +55,22 @@ object ModuleList : HudElement(
     override val hudWidth: Float get() = cacheWidth
     override val hudHeight: Float get() = cacheHeight
 
-    private val sortedModuleListCache = AsyncCachedValue(1L, TimeUnit.SECONDS) {
+    private val textLineMap = HashMap<AbstractModule, TextComponent.TextLine>()
+
+    private val sortedModuleList by AsyncCachedValue(1L, TimeUnit.SECONDS) {
         ModuleManager.modules.sortedWith(sortingMode.comparator)
     }
 
-    private val sortedModuleList by sortedModuleListCache
-    private val textLineMap = HashMap<AbstractModule, TextComponent.TextLine>()
-
-    private val timer = TickTimer(TimeUnit.SECONDS)
-    private var toggleMap = ModuleManager.modules
-        .associateWith { TimedFlag(false) }
+    private var prevToggleMap = emptyMap<AbstractModule, TimedFlag<Boolean>>()
+    private val toggleMap by AsyncCachedValue(1L, TimeUnit.SECONDS) {
+        ModuleManager.modules
+            .associateWith { prevToggleMap[it] ?: TimedFlag(false) }
+            .also { prevToggleMap = it }
+    }
 
     init {
         safeAsyncListener<TickEvent.ClientTickEvent> { event ->
             if (event.phase != TickEvent.Phase.END) return@safeAsyncListener
-
-            if (timer.tick(5L)) {
-                toggleMap = ModuleManager.modules
-                    .associateWith { toggleMap[it] ?: TimedFlag(false) }
-            }
 
             for ((module, timedFlag) in toggleMap) {
                 val state = module.isEnabled && (module.isVisible || showInvisible)

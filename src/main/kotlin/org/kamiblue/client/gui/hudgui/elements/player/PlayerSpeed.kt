@@ -2,13 +2,12 @@ package org.kamiblue.client.gui.hudgui.elements.player
 
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.InfoCalculator.speed
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.commons.utils.MathUtils
 import java.util.*
 
-object PlayerSpeed : LabelHud(
+internal object PlayerSpeed : LabelHud(
     name = "PlayerSpeed",
     category = Category.PLAYER,
     description = "Player movement speed"

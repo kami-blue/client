@@ -22,6 +22,6 @@ public class MixinStateImplementation {
 
     @Inject(method = "addCollisionBoxToList", at = @At("HEAD"), cancellable = true)
     public void addCollisionBoxToList(World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean isActualState, CallbackInfo ci) {
-        Jesus.handleAddCollisionBoxToList(pos, block, entityIn, entityBox, collidingBoxes);
+        Jesus.handleAddCollisionBoxToList(pos, block, entityIn, collidingBoxes);
     }
 }
