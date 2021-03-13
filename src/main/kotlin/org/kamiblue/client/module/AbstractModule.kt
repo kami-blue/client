@@ -5,7 +5,6 @@ import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.event.events.ModuleToggleEvent
 import org.kamiblue.client.gui.clickgui.KamiClickGui
 import org.kamiblue.client.module.modules.client.ClickGUI
-import org.kamiblue.client.module.modules.client.CommandConfig
 import org.kamiblue.client.setting.configs.NameableConfig
 import org.kamiblue.client.setting.settings.AbstractSetting
 import org.kamiblue.client.setting.settings.SettingRegister
