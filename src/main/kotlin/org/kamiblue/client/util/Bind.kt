@@ -112,7 +112,7 @@ class Bind(
             Keyboard.KEY_RMETA to "Meta"
         )
 
-        private val priorityMap = HashMap<Int, Int>().apply {
+        private val priorityMap: Map<Int, Int> = HashMap<Int, Int>().apply {
             val priorityKey = arrayOf(
                 Keyboard.KEY_LCONTROL, Keyboard.KEY_RCONTROL,
                 Keyboard.KEY_LMENU, Keyboard.KEY_RMENU,
