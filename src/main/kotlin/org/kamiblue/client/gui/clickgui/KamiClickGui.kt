@@ -63,7 +63,7 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, AbstractModule>() {
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (keyCode == Keyboard.KEY_ESCAPE || keyCode == ClickGUI.bind.value.key && !searching) {
+        if (keyCode == Keyboard.KEY_ESCAPE || keyCode == ClickGUI.bind.value.key && !searching && settingWindow?.listeningChild == null) {
             ClickGUI.disable()
         } else {
             super.keyTyped(typedChar, keyCode)
