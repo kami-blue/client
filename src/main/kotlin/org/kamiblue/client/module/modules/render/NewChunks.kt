@@ -111,6 +111,7 @@ internal object NewChunks : Module(
 
             val playerOffset = Vec2d((player.posX - (player.chunkCoordX shl 4)), (player.posZ - (player.chunkCoordZ shl 4)))
             val chunkDist = (it.radius * it.scale).toInt() shr 4
+
             for (chunkX in -chunkDist..chunkDist) {
                 for (chunkZ in -chunkDist..chunkDist) {
                     val pos0 = getChunkPos(chunkX, chunkZ, playerOffset, it.scale)
@@ -118,10 +119,14 @@ internal object NewChunks : Module(
 
                     if (isSquareInRadius(pos0, pos1, it.radius)) {
                         val chunk = world.getChunk(player.chunkCoordX + chunkX, player.chunkCoordZ + chunkZ)
-                        val isCachedChunk = BaritoneUtils.primary?.worldProvider?.currentWorld?.cachedWorld?.isCached((player.chunkCoordX + chunkX) shl 4, (player.chunkCoordZ + chunkZ) shl 4)
-                            ?: false
-                        if (!chunk.isLoaded && !isCachedChunk)
+                        val isCachedChunk =
+                            BaritoneUtils.primary?.worldProvider?.currentWorld?.cachedWorld?.isCached(
+                                (player.chunkCoordX + chunkX) shl 4, (player.chunkCoordZ + chunkZ) shl 4
+                            ) ?: false
+
+                        if (!chunk.isLoaded && !isCachedChunk) {
                             RenderUtils2D.drawRectFilled(it.vertexHelper, pos0, pos1, distantChunkColor)
+                        }
                         RenderUtils2D.drawRectOutline(it.vertexHelper, pos0, pos1, 0.3f, chunkGridColor)
                     }
                 }
