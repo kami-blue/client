@@ -1,18 +1,23 @@
 package org.kamiblue.client.command.commands
 
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.JsonToNBT
+import net.minecraft.nbt.NBTException
 import net.minecraft.nbt.NBTTagCompound
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.event.SafeExecuteEvent
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.formatValue
+import java.awt.Toolkit
+import java.awt.datatransfer.DataFlavor
+import java.awt.datatransfer.StringSelection
 
 object NBTCommand : ClientCommand(
     name = "nbt",
     description = "Get, copy, paste, clear NBT for item held in main hand"
 ) {
 
-    private var copiedNbtTag: NBTTagCompound? = null
+    private val clipboard = Toolkit.getDefaultToolkit().systemClipboard
 
     init {
         literal("get") {
@@ -30,7 +35,8 @@ object NBTCommand : ClientCommand(
                 val itemStack = getHelpItemStack() ?: return@executeSafe
                 val nbtTag = getNbtTag(itemStack) ?: return@executeSafe
 
-                copiedNbtTag = nbtTag
+                clipboard.setContents(StringSelection(nbtTag.toString()), null)
+
                 MessageSendHelper.sendChatMessage("Copied NBT tags from item ${formatValue(itemStack.displayName)}")
             }
         }
@@ -38,8 +44,13 @@ object NBTCommand : ClientCommand(
         literal("paste") {
             executeSafe {
                 val itemStack = getHelpItemStack() ?: return@executeSafe
-                val nbtTag = copiedNbtTag ?: run {
-                    MessageSendHelper.sendChatMessage("No copied NBT tags!")
+
+                val nbtTag: NBTTagCompound
+
+                try {
+                    nbtTag = JsonToNBT.getTagFromJson(clipboard.getData(DataFlavor.stringFlavor) as String)
+                } catch (e: NBTException) {
+                    MessageSendHelper.sendErrorMessage("Invalid NBT data in clipboard")
                     return@executeSafe
                 }
 
