@@ -20,21 +20,13 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Gradle cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
       - name: Gradle build
         run: ./gradlew --build-cache build
 
-      - name: Archive artifact
-        uses: actions/upload-artifact@v2
+      - uses: marvinpinto/action-automatic-releases@latest
         with:
-          name: artifact
-          path: build/libs
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: build/libs/*
