@@ -17,6 +17,8 @@ import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.text.*
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.via.viafabric.ViaFabric
+import org.kamiblue.client.via.viafabric.util.ProtocolUtils
 import org.kamiblue.commons.utils.ConnectionUtils
 import org.kamiblue.event.listener.listener
 
@@ -90,8 +92,8 @@ internal object DiscordNotifs : Module(
     private fun getMessageType(message: String, server: String): String {
         if (direct && MessageDetection.Direct.RECEIVE detect message) return "You got a direct message!\n"
         if (direct && MessageDetection.Direct.SENT detect message) return "You sent a direct message!\n"
-        if (message == "KamiBlueMessageType1") return "Connected to $server"
-        return if (message == "KamiBlueMessageType2") "Disconnected from $server" else ""
+        if (message == "KamiBlueMessageType1") return "Connected to $server with version ${ProtocolUtils.getProtocolName(ViaFabric.clientSideVersion)}"
+        return if (message == "KamiBlueMessageType2") "Disconnected from $server  with version ${ProtocolUtils.getProtocolName(ViaFabric.clientSideVersion)}" else ""
     }
 
     private fun timeout(message: String) = !timeout

@@ -21,6 +21,8 @@ import org.kamiblue.client.util.threads.BackgroundJob
 import org.kamiblue.client.util.threads.BackgroundScope
 import org.kamiblue.client.util.threads.runSafeR
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.via.viafabric.ViaFabric
+import org.kamiblue.client.via.viafabric.util.ProtocolUtils
 import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
 
@@ -130,7 +132,7 @@ internal object DiscordRPC : Module(
                 else "No Hunger"
             }
             LineInfo.SERVER_IP -> {
-                InfoCalculator.getServerType()
+                InfoCalculator.getServerType() + " ${ProtocolUtils.getProtocolName(ViaFabric.clientSideVersion)}"
             }
             LineInfo.COORDS -> {
                 if (mc.player != null && coordsConfirm) "(${mc.player.positionVector.toBlockPos().asString()})"
