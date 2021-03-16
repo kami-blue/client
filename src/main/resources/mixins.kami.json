@@ -72,6 +72,13 @@
     "world.MixinBlockLiquid",
     "world.MixinBlockSoulSand",
     "world.MixinBlockWeb",
-    "world.MixinWorld"
+    "world.MixinWorld",
+    "via.MixinGuiConnecting",
+    "via.MixinGuiDisconnected",
+    "via.MixinGuiMultiplayer",
+    "via.MixinGuiScreenServerList",
+    "via.MixinMinecraft",
+    "via.MixinNetworkManager",
+    "via.MixinNetworkManagerChInit"
   ]
 }

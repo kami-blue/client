@@ -160,6 +160,12 @@ dependencies {
     // This Baritone WILL be included in the jar
     jarLibs 'cabaletta:baritone-api:1.2'
 
+    // Via stuff
+    jarLibs files('./libs/snakeyaml.jar')
+    jarLibs files('./libs/viaversion.jar')
+    jarLibs files('./libs/viabackwards.jar')
+    jarLibs files('./libs/viarewind.jar')
+
     // Add everything in jarLibs to implementation (compile)
     implementation configurations.jarLibs
 }
