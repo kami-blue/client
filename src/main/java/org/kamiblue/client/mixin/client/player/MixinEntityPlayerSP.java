@@ -18,6 +18,7 @@ import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent;
 import org.kamiblue.client.event.events.PlayerMoveEvent;
 import org.kamiblue.client.gui.mc.KamiGuiBeacon;
 import org.kamiblue.client.manager.managers.MessageManager;
+import org.kamiblue.client.manager.managers.PlayerPacketManager;
 import org.kamiblue.client.module.modules.chat.PortalChat;
 import org.kamiblue.client.module.modules.misc.BeaconSelector;
 import org.kamiblue.client.module.modules.movement.Sprint;
@@ -121,18 +122,28 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         MessageManager.INSTANCE.setLastPlayerMessage(message);
     }
 
-    @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)
-    private void onUpdateWalkingPlayerPre(CallbackInfo ci) {
-        // Setup flags
-        boolean moving = isMoving();
-        boolean rotating = isRotating();
-        boolean sprinting = this.isSprinting();
-        boolean sneaking = this.isSneaking();
-        boolean onGround = this.onGround;
-        Vec3d pos = new Vec3d(this.posX, this.getEntityBoundingBox().minY, this.posZ);
-        Vec2f rotation = new Vec2f(this);
+    @Inject(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;onUpdateWalkingPlayer()V", shift = At.Shift.AFTER))
+    private void onUpdateInvokeOnUpdateWalkingPlayer(CallbackInfo ci) {
+        Vec3d serverSidePos = PlayerPacketManager.INSTANCE.getServerSidePosition();
+        Vec2f serverSideRotation = PlayerPacketManager.INSTANCE.getPrevServerSideRotation();
 
-        OnUpdateWalkingPlayerEvent event = new OnUpdateWalkingPlayerEvent(moving, rotating, sprinting, sneaking, onGround, pos, rotation);
+        this.lastReportedPosX = serverSidePos.x;
+        this.lastReportedPosY = serverSidePos.y;
+        this.lastReportedPosZ = serverSidePos.z;
+
+        this.lastReportedYaw = serverSideRotation.getX();
+        this.lastReportedPitch = serverSideRotation.getY();
+    }
+
+    @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)
+    private void onUpdateWalkingPlayerHead(CallbackInfo ci) {
+        // Setup flags
+        Vec3d position = new Vec3d(this.posX, this.getEntityBoundingBox().minY, this.posZ);
+        Vec2f rotation = new Vec2f(this.rotationYaw, this.rotationPitch);
+        boolean moving = isMoving(position);
+        boolean rotating = isRotating(rotation);
+
+        OnUpdateWalkingPlayerEvent event = new OnUpdateWalkingPlayerEvent(moving, rotating, position, rotation);
         KamiEventBus.INSTANCE.post(event);
 
         event = event.nextPhase();
@@ -141,86 +152,86 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         if (event.getCancelled()) {
             ci.cancel();
 
-            ++this.positionUpdateTicks;
+            if (!event.getCancelAll()) {
+                // Copy flags from event
+                moving = event.isMoving();
+                rotating = event.isRotating();
+                position = event.getPosition();
+                rotation = event.getRotation();
 
-            // Copy flags from event
-            moving = event.getMoving();
-            rotating = event.getRotating();
-            sprinting = event.getSprinting();
-            sneaking = event.getSneaking();
-            onGround = event.getOnGround();
-            pos = event.getPos();
-            rotation = event.getRotation();
-
-            // Sprinting Packet
-            if (sprinting != this.serverSprintState) {
-                if (sprinting) {
-                    this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.START_SPRINTING));
-                } else {
-                    this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.STOP_SPRINTING));
-                }
-                this.serverSprintState = sprinting;
-            }
-
-            // Sneaking Packet
-            if (sneaking != this.serverSneakState) {
-                if (sneaking) {
-                    this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.START_SNEAKING));
-                } else {
-                    this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.STOP_SNEAKING));
-                }
-                this.serverSneakState = sneaking;
-            }
-
-            // Position & Rotation Packet
-            if (this.isCurrentViewEntity()) {
-
-                if (this.isRiding()) {
-                    this.connection.sendPacket(new CPacketPlayer.PositionRotation(this.motionX, -999.0D, this.motionZ, rotation.getX(), rotation.getY(), onGround));
-                    moving = false;
-                } else if (moving && rotating) {
-                    this.connection.sendPacket(new CPacketPlayer.PositionRotation(pos.x, pos.y, pos.z, rotation.getX(), rotation.getY(), onGround));
-                } else if (moving) {
-                    this.connection.sendPacket(new CPacketPlayer.Position(pos.x, pos.y, pos.z, onGround));
-                } else if (rotating) {
-                    this.connection.sendPacket(new CPacketPlayer.Rotation(rotation.getX(), rotation.getY(), onGround));
-                } else if (this.prevOnGround != onGround) {
-                    this.connection.sendPacket(new CPacketPlayer(onGround));
-                }
-
-                if (moving) {
-                    this.lastReportedPosX = pos.x;
-                    this.lastReportedPosY = pos.y;
-                    this.lastReportedPosZ = pos.z;
-                    this.positionUpdateTicks = 0;
-                }
-
-                if (rotating) {
-                    this.lastReportedYaw = rotation.getX();
-                    this.lastReportedPitch = rotation.getY();
-                }
+                sendSprintPacket();
+                sendSneakPacket();
+                sendPlayerPacket(moving, rotating, position, rotation);
 
                 this.prevOnGround = onGround;
-                this.autoJumpEnabled = this.mc.gameSettings.autoJump;
-
             }
+
+            ++this.positionUpdateTicks;
+            this.autoJumpEnabled = this.mc.gameSettings.autoJump;
         }
 
         event = event.nextPhase();
         KamiEventBus.INSTANCE.post(event);
     }
 
-    private boolean isMoving() {
-        double xDiff = this.posX - this.lastReportedPosX;
-        double yDiff = this.getEntityBoundingBox().minY - this.lastReportedPosY;
-        double zDiff = this.posZ - this.lastReportedPosZ;
+    private void sendSprintPacket() {
+        boolean sprinting = this.isSprinting();
 
-        return xDiff * xDiff + yDiff * yDiff + zDiff * zDiff > 9.0E-4D || this.positionUpdateTicks >= 20;
+        if (sprinting != this.serverSprintState) {
+            if (sprinting) {
+                this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.START_SPRINTING));
+            } else {
+                this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.STOP_SPRINTING));
+            }
+            this.serverSprintState = sprinting;
+        }
     }
 
-    private boolean isRotating() {
-        double yawDiff = this.rotationYaw - this.lastReportedYaw;
-        double pitchDiff = this.rotationPitch - this.lastReportedPitch;
+    private void sendSneakPacket() {
+        boolean sneaking = this.isSneaking();
+
+        if (sneaking != this.serverSneakState) {
+            if (sneaking) {
+                this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.START_SNEAKING));
+            } else {
+                this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.STOP_SNEAKING));
+            }
+            this.serverSneakState = sneaking;
+        }
+    }
+
+    private void sendPlayerPacket(boolean moving, boolean rotating, Vec3d position, Vec2f rotation) {
+        if (!this.isCurrentViewEntity()) return;
+
+        if (this.isRiding()) {
+            this.connection.sendPacket(new CPacketPlayer.PositionRotation(this.motionX, -999.0D, this.motionZ, rotation.getX(), rotation.getY(), onGround));
+            moving = false;
+        } else if (moving && rotating) {
+            this.connection.sendPacket(new CPacketPlayer.PositionRotation(position.x, position.y, position.z, rotation.getX(), rotation.getY(), onGround));
+        } else if (moving) {
+            this.connection.sendPacket(new CPacketPlayer.Position(position.x, position.y, position.z, onGround));
+        } else if (rotating) {
+            this.connection.sendPacket(new CPacketPlayer.Rotation(rotation.getX(), rotation.getY(), onGround));
+        } else if (this.prevOnGround != onGround) {
+            this.connection.sendPacket(new CPacketPlayer(onGround));
+        }
+
+        if (moving) {
+            this.positionUpdateTicks = 0;
+        }
+    }
+
+    private boolean isMoving(Vec3d position) {
+        double xDiff = position.x - this.lastReportedPosX;
+        double yDiff = position.y - this.lastReportedPosY;
+        double zDiff = position.z - this.lastReportedPosZ;
+
+        return this.positionUpdateTicks >= 20 || xDiff * xDiff + yDiff * yDiff + zDiff * zDiff > 9.0E-4D;
+    }
+
+    private boolean isRotating(Vec2f rotation) {
+        double yawDiff = rotation.getX() - this.lastReportedYaw;
+        double pitchDiff = rotation.getY() - this.lastReportedPitch;
 
         return yawDiff != 0.0D || pitchDiff != 0.0D;
     }

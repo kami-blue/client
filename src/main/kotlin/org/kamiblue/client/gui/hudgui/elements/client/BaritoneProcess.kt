@@ -6,7 +6,7 @@ import org.kamiblue.client.module.modules.movement.AutoWalk
 import org.kamiblue.client.process.PauseProcess
 import org.kamiblue.client.util.BaritoneUtils
 
-object BaritoneProcess : LabelHud(
+internal object BaritoneProcess : LabelHud(
     name = "BaritoneProcess",
     category = Category.CLIENT,
     description = "Shows what Baritone is doing"

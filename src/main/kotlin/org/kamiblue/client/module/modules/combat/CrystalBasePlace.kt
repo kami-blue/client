@@ -4,7 +4,6 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
@@ -14,13 +13,14 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.HotbarManager.resetHotbar
+import org.kamiblue.client.manager.managers.HotbarManager.serverSideItem
+import org.kamiblue.client.manager.managers.HotbarManager.spoofHotbar
 import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
-import org.kamiblue.client.util.WorldUtils.getNeighbour
-import org.kamiblue.client.util.WorldUtils.hasNeighbour
-import org.kamiblue.client.util.WorldUtils.isPlaceable
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.combat.CrystalUtils.calcCrystalDamage
 import org.kamiblue.client.util.graphics.ESPRenderer
@@ -31,6 +31,10 @@ import org.kamiblue.client.util.math.RotationUtils.getRotationTo
 import org.kamiblue.client.util.math.VectorUtils
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.util.world.PlaceInfo
+import org.kamiblue.client.util.world.getNeighbour
+import org.kamiblue.client.util.world.hasNeighbour
+import org.kamiblue.client.util.world.isPlaceable
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import java.util.*
@@ -61,7 +65,7 @@ internal object CrystalBasePlace : Module(
         onDisable {
             inactiveTicks = 0
             placePacket = null
-            PlayerPacketManager.resetHotbar()
+            resetHotbar()
         }
 
         listener<RenderWorldEvent> {
@@ -87,10 +91,10 @@ internal object CrystalBasePlace : Module(
 
             placePacket?.let { packet ->
                 if (inactiveTicks > 1) {
-                    if (!isHoldingObby) PlayerPacketManager.spoofHotbar(slot.hotbarSlot)
+                    if (!isHoldingObby) spoofHotbar(slot.hotbarSlot)
                     player.swingArm(EnumHand.MAIN_HAND)
                     connection.sendPacket(packet)
-                    PlayerPacketManager.resetHotbar()
+                    resetHotbar()
                     placePacket = null
                 }
             }
@@ -99,8 +103,9 @@ internal object CrystalBasePlace : Module(
 
             if (isActive()) {
                 rotationTo?.let { hitVec ->
-                    val rotation = getRotationTo(hitVec)
-                    PlayerPacketManager.addPacket(CrystalBasePlace, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
+                    sendPlayerPacket {
+                        rotate(getRotationTo(hitVec))
+                    }
                 }
             } else {
                 rotationTo = null
@@ -110,20 +115,21 @@ internal object CrystalBasePlace : Module(
 
     private val SafeClientEvent.isHoldingObby
         get() = isObby(player.heldItemMainhand)
-            || isObby(player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
+            || isObby(player.serverSideItem)
 
     private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
 
     private fun SafeClientEvent.prePlace(entity: EntityLivingBase) {
         if (rotationTo != null || !timer.tick((delay.value * 50.0f).toLong(), false)) return
         val placeInfo = getPlaceInfo(entity)
+
         if (placeInfo != null) {
-            val offset = WorldUtils.getHitVecOffset(placeInfo.first)
-            val hitVec = Vec3d(placeInfo.second).add(offset)
-            rotationTo = hitVec
-            placePacket = CPacketPlayerTryUseItemOnBlock(placeInfo.second, placeInfo.first, EnumHand.MAIN_HAND, offset.x.toFloat(), offset.y.toFloat(), offset.z.toFloat())
+            rotationTo = placeInfo.hitVec
+            placePacket = CPacketPlayerTryUseItemOnBlock(placeInfo.pos, placeInfo.side, EnumHand.MAIN_HAND, placeInfo.hitVecOffset.x.toFloat(), placeInfo.hitVecOffset.y.toFloat(), placeInfo.hitVecOffset.z.toFloat())
+
             renderer.clear()
-            renderer.add(placeInfo.second.offset(placeInfo.first), ColorHolder(255, 255, 255))
+            renderer.add(placeInfo.placedPos, ColorHolder(255, 255, 255))
+
             inactiveTicks = 0
             timer.reset()
         } else {
@@ -131,7 +137,7 @@ internal object CrystalBasePlace : Module(
         }
     }
 
-    private fun SafeClientEvent.getPlaceInfo(entity: EntityLivingBase): Pair<EnumFacing, BlockPos>? {
+    private fun SafeClientEvent.getPlaceInfo(entity: EntityLivingBase): PlaceInfo? {
         val cacheMap = TreeMap<Float, BlockPos>(compareByDescending { it })
         val prediction = CombatSetting.getPrediction(entity)
         val eyePos = player.getPositionEyes(1.0f)
@@ -143,7 +149,7 @@ internal object CrystalBasePlace : Module(
 
         for (pos in posList) {
             // Placeable check
-            if (!isPlaceable(pos, false)) continue
+            if (!world.isPlaceable(pos)) continue
 
             // Neighbour blocks check
             if (!hasNeighbour(pos)) continue

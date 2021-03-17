@@ -18,6 +18,7 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.commons.interfaces.DisplayEnum
+import org.kamiblue.event.listener.listener
 import java.io.*
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -39,10 +40,10 @@ internal object PacketLogger : Module(
     private val ignoreCancelled by setting("Ignore Cancelled", true, description = "Ignore cancelled packets.")
 
     private val fileTimeFormatter = DateTimeFormatter.ofPattern("HH-mm-ss_SSS")
-    private val logTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS")
 
     private var start = 0L
     private var last = 0L
+    private var lastTick = 0L
     private val timer = TickTimer(TimeUnit.SECONDS)
 
     private const val directory = "${KamiMod.DIRECTORY}packetLogs"
@@ -73,8 +74,10 @@ internal object PacketLogger : Module(
             if (it.phase != TickEvent.Phase.START) return@safeListener
 
             if (showClientTicks) {
-                synchronized(this) {
-                    lines.add("Tick Pulse - Realtime: ${logTimeFormatter.format(LocalTime.now())} - Runtime: ${System.currentTimeMillis() - start}ms\n")
+                synchronized(this@PacketLogger) {
+                    val current = System.currentTimeMillis()
+                    lines.add("Tick Pulse,,${current - start},${current - lastTick}\n")
+                    lastTick = current
                 }
             }
 
@@ -88,215 +91,305 @@ internal object PacketLogger : Module(
             disable()
         }
 
-        safeListener<PacketEvent.Receive>(Int.MIN_VALUE) {
-            if (ignoreCancelled && it.cancelled) return@safeListener
+        listener<PacketEvent.PostReceive>(Int.MIN_VALUE) {
+            if (ignoreCancelled && it.cancelled) return@listener
 
             if (packetSide == PacketSide.SERVER || packetSide == PacketSide.BOTH) {
                 when (it.packet) {
-                    is SPacketEntityTeleport -> {
-                        add(PacketSide.SERVER, it.packet,
-                            "x: ${it.packet.x} " +
-                                "y: ${it.packet.y} " +
-                                "z: ${it.packet.z} " +
-                                "pitch: ${it.packet.pitch} " +
-                                "yaw: ${it.packet.yaw} " +
-                                "entityID: ${it.packet.entityId}")
-                    }
-                    is SPacketEntityMetadata -> {
-                        val dataEntry = StringBuilder().run {
-                            append("dataEntries: ")
-                            for (entry in it.packet.dataManagerEntries) {
-                                append("> isDirty: ${entry.isDirty} key: ${entry.key} value: ${entry.value} ")
-                            }
-                            toString()
-                        }
-
-                        add(PacketSide.SERVER, it.packet, dataEntry)
-                    }
-                    is SPacketUnloadChunk -> {
-                        if (!ignoreChunkLoading) {
-                            add(PacketSide.SERVER, it.packet,
-                                "x: ${it.packet.x} " +
-                                    "z: ${it.packet.z}")
-                        }
-                    }
-                    is SPacketDestroyEntities -> {
-                        val entities = StringBuilder().run {
-                            append("entityIDs: ")
-                            for (entry in it.packet.entityIDs) {
-                                append("> $entry ")
-                            }
-                            toString()
-                        }
-
-                        add(PacketSide.SERVER, it.packet, entities)
-                    }
-                    is SPacketPlayerPosLook -> {
-                        val flags = StringBuilder().run {
-                            append("flags: ")
-                            for (entry in it.packet.flags) {
-                                append("> ${entry.name} ")
-                            }
-                            toString()
-                        }
-
-                        add(PacketSide.SERVER, it.packet,
-                            "x: ${it.packet.x} " +
-                                "y: ${it.packet.y} " +
-                                "z: ${it.packet.z} " +
-                                "pitch: ${it.packet.pitch} " +
-                                "yaw: ${it.packet.yaw} " +
-                                "teleportID: ${it.packet.teleportId}" +
-                                flags)
-
-                    }
                     is SPacketBlockChange -> {
-                        add(PacketSide.SERVER, it.packet,
-                            "x: ${it.packet.blockPosition.x} " +
-                                "y: ${it.packet.blockPosition.y} " +
-                                "z: ${it.packet.blockPosition.z}")
-                    }
-                    is SPacketMultiBlockChange -> {
-                        val changedBlock = StringBuilder().run {
-                            append("changedBlocks: ")
-                            for (changedBlock in it.packet.changedBlocks) {
-                                append("> x: ${changedBlock.pos.x} y: ${changedBlock.pos.y} z: ${changedBlock.pos.z} ")
-                            }
-                            toString()
+                        log(it) {
+                            "x" to it.packet.blockPosition.x
+                            "y" to it.packet.blockPosition.y
+                            "z" to it.packet.blockPosition.z
                         }
-
-                        add(PacketSide.SERVER, it.packet, changedBlock)
-                    }
-                    is SPacketTimeUpdate -> {
-                        add(PacketSide.SERVER, it.packet,
-                            "totalWorldTime: ${it.packet.totalWorldTime} " +
-                                "worldTime: ${it.packet.worldTime}")
                     }
                     is SPacketChat -> {
                         if (!ignoreChat) {
-                            add(PacketSide.SERVER, it.packet,
-                                "unformattedText: ${it.packet.chatComponent.unformattedText} " +
-                                    "type: ${it.packet.type} " +
-                                    "isSystem: ${it.packet.isSystem}")
+                            log(it) {
+                                "unformattedText" to it.packet.chatComponent.unformattedText
+                                "type" to it.packet.type
+                                "itSystem" to it.packet.isSystem
+                            }
                         }
                     }
-                    is SPacketTeams -> {
-                        add(PacketSide.SERVER, it.packet,
-                            "action: ${it.packet.action} " +
-                                "displayName: ${it.packet.displayName} " +
-                                "color: ${it.packet.color}")
-                    }
                     is SPacketChunkData -> {
-                        add(PacketSide.SERVER, it.packet,
-                            "chunkX: ${it.packet.chunkX} " +
-                                "chunkZ: ${it.packet.chunkZ} " +
-                                "extractedSize: ${it.packet.extractedSize}")
+                        log(it) {
+                            "chunkX" to it.packet.chunkX
+                            "chunkZ" to it.packet.chunkZ
+                            "extractedSize" to it.packet.extractedSize
+                        }
+                    }
+                    is SPacketConfirmTransaction -> {
+                        log(it) {
+                            "windowId" to it.packet.windowId
+                            "transactionID" to it.packet.actionNumber
+                            "accepted" to it.packet.wasAccepted()
+                        }
+                    }
+                    is SPacketDestroyEntities -> {
+                        log(it) {
+                            "entityIDs" to buildString {
+                                for (entry in it.packet.entityIDs) {
+                                    append("> ")
+                                    append(entry)
+                                    append(' ')
+                                }
+                            }
+                        }
+                    }
+                    is SPacketEntityMetadata -> {
+                        log(it) {
+                            "dataEntries" to buildString {
+                                for (entry in it.packet.dataManagerEntries) {
+                                    append("> isDirty: ")
+                                    append(entry.isDirty)
+
+                                    append(" key: ")
+                                    append(entry.key)
+
+                                    append(" value: ")
+                                    append(entry.value)
+
+                                    append(' ')
+                                }
+                            }
+                        }
                     }
                     is SPacketEntityProperties -> {
-                        add(PacketSide.SERVER, it.packet,
-                            "entityID: ${it.packet.entityId}")
+                        log(it) {
+                            "entityID" to it.packet.entityId
+                        }
                     }
-                    is SPacketUpdateTileEntity -> {
-                        add(PacketSide.SERVER, it.packet,
-                            "posX: ${it.packet.pos.x} " +
-                                "posY: ${it.packet.pos.y} " +
-                                "posZ: ${it.packet.pos.z}")
-                    }
-                    is SPacketSpawnObject -> {
-                        add(PacketSide.SERVER, it.packet,
-                            "entityID: ${it.packet.entityID} " +
-                                "data: ${it.packet.data}")
+                    is SPacketEntityTeleport -> {
+                        log(it) {
+                            "x" to it.packet.x
+                            "y" to it.packet.y
+                            "z" to it.packet.z
+                            "yaw" to it.packet.yaw
+                            "pitch" to it.packet.pitch
+                            "entityID" to it.packet.entityId
+                        }
                     }
                     is SPacketKeepAlive -> {
                         if (!ignoreKeepAlive) {
-                            add(PacketSide.SERVER, it.packet,
-                                "id: ${it.packet.id}")
+                            log(it) {
+                                "id" to it.packet.id
+                            }
+                        }
+                    }
+                    is SPacketMultiBlockChange -> {
+                        log(it) {
+                            "changedBlocks" to buildString {
+                                for (changedBlock in it.packet.changedBlocks) {
+                                    append("> x: ")
+                                    append(changedBlock.pos.x)
+
+                                    append("y: ")
+                                    append(changedBlock.pos.y)
+
+                                    append("z: ")
+                                    append(changedBlock.pos.z)
+
+                                    append(' ')
+                                }
+                            }
+                        }
+                    }
+                    is SPacketPlayerPosLook -> {
+                        log(it) {
+                            "x" to it.packet.x
+                            "y" to it.packet.y
+                            "z" to it.packet.z
+                            "yaw" to it.packet.yaw
+                            "pitch" to it.packet.pitch
+                            "teleportID" to it.packet.teleportId
+                            "flags" to buildString {
+                                for (entry in it.packet.flags) {
+                                    append("> ")
+                                    append(entry.name)
+                                    append(' ')
+                                }
+                            }
+                        }
+                    }
+                    is SPacketSoundEffect -> {
+                        log(it) {
+                            "sound" to it.packet.sound.soundName
+                            "category" to it.packet.category
+                            "posX" to it.packet.x
+                            "posY" to it.packet.y
+                            "posZ" to it.packet.z
+                            "volume" to it.packet.volume
+                            "pitch" to it.packet.pitch
+                        }
+                    }
+                    is SPacketSpawnObject -> {
+                        log(it) {
+                            "entityID" to it.packet.entityID
+                            "data" to it.packet.data
+                        }
+                    }
+                    is SPacketTeams -> {
+                        log(it) {
+                            "action" to it.packet.action
+                            "type" to it.packet.displayName
+                            "itSystem" to it.packet.color
+                        }
+                    }
+                    is SPacketTimeUpdate -> {
+                        log(it) {
+                            "totalWorldTime" to it.packet.totalWorldTime
+                            "worldTime" to it.packet.worldTime
+                        }
+                    }
+                    is SPacketUnloadChunk -> {
+                        if (!ignoreChunkLoading) {
+                            log(it) {
+                                "x" to it.packet.x
+                                "z" to it.packet.z
+                            }
+                        }
+                    }
+                    is SPacketUpdateTileEntity -> {
+                        log(it) {
+                            "x" to it.packet.pos.x
+                            "y" to it.packet.pos.y
+                            "z" to it.packet.pos.z
                         }
                     }
                     else -> {
                         if (!ignoreUnknown) {
-                            add(PacketSide.SERVER, it.packet, "Not Registered in PacketLogger.kt")
+                            log(it) {
+                                + "Not Registered in PacketLogger"
+                            }
                         }
                     }
                 }
             }
         }
 
-        safeListener<PacketEvent.Send>(Int.MIN_VALUE) {
-            if (ignoreCancelled && it.cancelled) return@safeListener
+        listener<PacketEvent.PostSend>(Int.MIN_VALUE) {
+            if (ignoreCancelled && it.cancelled) return@listener
 
             if (packetSide == PacketSide.CLIENT || packetSide == PacketSide.BOTH) {
                 when (it.packet) {
                     is CPacketAnimation -> {
-                        add(PacketSide.CLIENT, it.packet,
-                            "hand: ${it.packet.hand}")
-                    }
-                    is CPacketPlayer.Rotation -> {
-                        add(PacketSide.CLIENT, it.packet,
-                            "pitch: ${it.packet.pitch} " +
-                                "yaw: ${it.packet.yaw} " +
-                                "onGround: ${it.packet.isOnGround}")
-                    }
-                    is CPacketPlayer.Position -> {
-                        add(PacketSide.CLIENT, it.packet,
-                            "x: ${it.packet.x} " +
-                                "y: ${it.packet.y} " +
-                                "z: ${it.packet.z} " +
-                                "onGround: ${it.packet.isOnGround}")
-                    }
-                    is CPacketPlayer.PositionRotation -> {
-                        add(PacketSide.CLIENT, it.packet,
-                            "x: ${it.packet.x} " +
-                                "y: ${it.packet.y} " +
-                                "z: ${it.packet.z} " +
-                                "pitch: ${it.packet.pitch} " +
-                                "yaw: ${it.packet.yaw} " +
-                                "onGround: ${it.packet.isOnGround}")
-                    }
-                    is CPacketPlayerDigging -> {
-                        add(PacketSide.CLIENT, it.packet,
-                            "positionX: ${it.packet.position.x} " +
-                                "positionY: ${it.packet.position.y} " +
-                                "positionZ: ${it.packet.position.z} " +
-                                "facing: ${it.packet.facing} " +
-                                "action: ${it.packet.action} ")
-                    }
-                    is CPacketEntityAction -> {
-                        add(PacketSide.CLIENT, it.packet,
-                            "action: ${it.packet.action} " +
-                                "auxData: ${it.packet.auxData}")
-                    }
-                    is CPacketUseEntity -> {
-                        add(PacketSide.CLIENT, it.packet,
-                            "action: ${it.packet.action} " +
-                                "hand: ${it.packet.hand} " +
-                                "hitVecX: ${it.packet.hitVec.x} " +
-                                "hitVecY: ${it.packet.hitVec.y} " +
-                                "hitVecZ: ${it.packet.hitVec.z}")
-                    }
-                    is CPacketPlayerTryUseItem -> {
-                        add(PacketSide.CLIENT, it.packet,
-                            "hand: ${it.packet.hand}")
-                    }
-                    is CPacketConfirmTeleport -> {
-                        add(PacketSide.CLIENT, it.packet,
-                            "teleportID: ${it.packet.teleportId}")
+                        log(it) {
+                            "hand" to it.packet.hand
+                        }
                     }
                     is CPacketChatMessage -> {
                         if (!ignoreChat) {
-                            add(PacketSide.SERVER, it.packet,
-                                "message: ${it.packet.message}")
+                            log(it) {
+                                "message" to it.packet.message
+                            }
+                        }
+                    }
+                    is CPacketClickWindow -> {
+                        if (!ignoreChat) {
+                            log(it) {
+                                "windowId" to it.packet.windowId
+                                "slotID" to it.packet.slotId
+                                "mouseButton" to it.packet.usedButton
+                                "clickType" to it.packet.clickType
+                                "transactionID" to it.packet.actionNumber
+                                "clickedItem" to it.packet.clickedItem
+                            }
+                        }
+                    }
+                    is CPacketConfirmTeleport -> {
+                        log(it) {
+                            "teleportID" to it.packet.teleportId
+                        }
+                    }
+                    is CPacketEntityAction -> {
+                        log(it) {
+                            "action" to it.packet.action.name
+                            "auxData" to it.packet.auxData
+                        }
+                    }
+                    is CPacketHeldItemChange -> {
+                        log(it) {
+                            "slotID" to it.packet.slotId
                         }
                     }
                     is CPacketKeepAlive -> {
                         if (!ignoreKeepAlive) {
-                            add(PacketSide.CLIENT, it.packet,
-                                "key: ${it.packet.key}")
+                            log(it) {
+                                "ket" to it.packet.key
+                            }
+                        }
+                    }
+                    is CPacketPlayer.Rotation -> {
+                        log(it) {
+                            "yaw" to it.packet.yaw
+                            "pitch" to it.packet.pitch
+                            "onGround" to it.packet.isOnGround
+                        }
+                    }
+                    is CPacketPlayer.Position -> {
+                        log(it) {
+                            "x" to it.packet.x
+                            "y" to it.packet.y
+                            "z" to it.packet.z
+                            "onGround" to it.packet.isOnGround
+                        }
+                    }
+                    is CPacketPlayer.PositionRotation -> {
+                        log(it) {
+                            "x" to it.packet.x
+                            "y" to it.packet.y
+                            "z" to it.packet.z
+                            "yaw" to it.packet.yaw
+                            "pitch" to it.packet.pitch
+                            "onGround" to it.packet.isOnGround
+                        }
+                    }
+                    is CPacketPlayer -> {
+                        log(it) {
+                            "onGround" to it.packet.isOnGround
+                        }
+                    }
+                    is CPacketPlayerDigging -> {
+                        log(it) {
+                            "x" to it.packet.position.x
+                            "y" to it.packet.position.y
+                            "z" to it.packet.position.z
+                            "facing" to it.packet.facing
+                            "action" to it.packet.action
+                        }
+                    }
+                    is CPacketPlayerTryUseItem -> {
+                        log(it) {
+                            "hand" to it.packet.hand
+                        }
+                    }
+                    is CPacketPlayerTryUseItemOnBlock -> {
+                        log(it) {
+                            "x" to it.packet.pos.x
+                            "y" to it.packet.pos.y
+                            "z" to it.packet.pos.z
+                            "side" to it.packet.direction
+                            "hitVecX" to it.packet.facingX
+                            "hitVecY" to it.packet.facingY
+                            "hitVecZ" to it.packet.facingZ
+                        }
+                    }
+                    is CPacketUseEntity -> {
+                        @Suppress("UNNECESSARY_SAFE_CALL")
+                        log(it) {
+                            "action" to it.packet.action
+                            "action" to it.packet.hand
+                            "hitVecX" to it.packet.hitVec?.x
+                            "hitVecX" to it.packet.hitVec?.y
+                            "hitVecX" to it.packet.hitVec?.z
                         }
                     }
                     else -> {
                         if (!ignoreUnknown) {
-                            add(PacketSide.CLIENT, it.packet, "Not Registered in PacketLogger.kt")
+                            log(it) {
+                                + "Not Registered in PacketLogger"
+                            }
                         }
                     }
                 }
@@ -326,24 +419,72 @@ internal object PacketLogger : Module(
         }
     }
 
-    /**
-     * Writes a line to the csv following the format:
-     * from (client or server), packet name, time since start, time since last packet, packet data
-     *
-     * @param side The [PacketSide] where this packet is from
-     * @param packet Packet to add
-     * @param data Data of the [packet] in [String]
-     */
-    private fun add(side: PacketSide, packet: Packet<*>, data: String) {
-        val string = "${side.displayName},${packet.javaClass.simpleName},${System.currentTimeMillis() - start},${System.currentTimeMillis() - last},${data}\n"
+    private inline fun log(event: PacketEvent.PostSend, block: PacketLogBuilder.() -> Unit) {
+        PacketLogBuilder(PacketSide.CLIENT, event.packet).apply(block).build()
+    }
 
-        synchronized(this) {
-            lines.add(string)
-            last = System.currentTimeMillis()
+    private inline fun log(event: PacketEvent.PostReceive, block: PacketLogBuilder.() -> Unit) {
+        PacketLogBuilder(PacketSide.SERVER, event.packet).apply(block).build()
+    }
+
+    private class PacketLogBuilder(val side: PacketSide, val packet: Packet<*>) {
+        private val stringBuilder = StringBuilder()
+
+        init {
+            stringBuilder.apply {
+                append(side.displayName)
+                append(',')
+
+                append(packet.javaClass.simpleName)
+                append(',')
+
+                append(System.currentTimeMillis() - start)
+                append(',')
+
+                append(System.currentTimeMillis() - last)
+                append(',')
+            }
         }
 
-        if (logInChat) {
-            MessageSendHelper.sendChatMessage(string)
+        operator fun String.unaryPlus() {
+            stringBuilder.append(this)
+        }
+
+        infix fun String.to(value: Any?) {
+            if (value != null) {
+                add(this, value.toString())
+            }
+        }
+
+        infix fun String.to(value: String?) {
+            if (value != null) {
+                add(this, value)
+            }
+        }
+
+        fun add(key: String, value: String) {
+            stringBuilder.apply {
+                append(key)
+                append(": ")
+                append(value)
+                append(' ')
+            }
+        }
+
+        fun build() {
+            val string = stringBuilder.run {
+                append('\n')
+                toString()
+            }
+
+            synchronized(PacketLogger) {
+                lines.add(string)
+                last = System.currentTimeMillis()
+            }
+
+            if (logInChat) {
+                MessageSendHelper.sendChatMessage(string)
+            }
         }
     }
 }

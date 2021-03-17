@@ -24,8 +24,8 @@ open class CachedValue<T>(
         }
     }
 
-    open fun update() {
-        block().also { value = it }
+    fun update() {
+        timer.reset(-updateTime * timer.timeUnit.multiplier)
     }
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>) = get()
@@ -58,12 +58,6 @@ class AsyncCachedValue<T>(
             else -> {
                 cached
             }
-        }
-    }
-
-    override fun update() {
-        defaultScope.launch(context) {
-            value = block()
         }
     }
 }

@@ -1,10 +1,13 @@
 package org.kamiblue.client.gui.rgui.windows
 
 import org.kamiblue.client.module.modules.client.GuiColors
+import org.kamiblue.client.setting.GuiConfig
+import org.kamiblue.client.setting.configs.AbstractConfig
 import org.kamiblue.client.util.graphics.RenderUtils2D
 import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.math.Vec2f
+import org.kamiblue.commons.interfaces.Nameable
 
 /**
  * Window with rectangle rendering
@@ -15,8 +18,9 @@ open class BasicWindow(
     posY: Float,
     width: Float,
     height: Float,
-    settingGroup: SettingGroup
-) : CleanWindow(name, posX, posY, width, height, settingGroup) {
+    settingGroup: SettingGroup,
+    config: AbstractConfig<out Nameable> = GuiConfig
+) : CleanWindow(name, posX, posY, width, height, settingGroup, config) {
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)

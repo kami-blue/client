@@ -1,6 +1,9 @@
 package org.kamiblue.client.gui.rgui.windows
 
 import org.kamiblue.client.gui.rgui.WindowComponent
+import org.kamiblue.client.setting.GuiConfig
+import org.kamiblue.client.setting.configs.AbstractConfig
+import org.kamiblue.commons.interfaces.Nameable
 
 /**
  * Window with no rendering
@@ -11,5 +14,6 @@ open class CleanWindow(
     posY: Float,
     width: Float,
     height: Float,
-    settingGroup: SettingGroup
-) : WindowComponent(name, posX, posY, width, height, settingGroup)
+    settingGroup: SettingGroup,
+    config: AbstractConfig<out Nameable> = GuiConfig
+) : WindowComponent(name, posX, posY, width, height, settingGroup, config)

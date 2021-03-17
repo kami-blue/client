@@ -7,7 +7,7 @@ import org.kamiblue.client.module.modules.client.Capes
 import org.kamiblue.client.util.graphics.VertexHelper
 import org.lwjgl.opengl.GL11.glScalef
 
-object WaterMark : LabelHud(
+internal object WaterMark : LabelHud(
     name = "Watermark",
     category = Category.CLIENT,
     description = "KAMI Blue watermark",

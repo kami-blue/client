@@ -7,6 +7,7 @@ import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.gui.GuiManager
 import org.kamiblue.client.manager.ManagerLoader
 import org.kamiblue.client.module.ModuleManager
+import org.kamiblue.client.plugin.PluginManager
 import org.kamiblue.client.util.threads.mainScope
 
 internal object LoaderWrapper {
@@ -17,6 +18,7 @@ internal object LoaderWrapper {
         loaderList.add(CommandManager)
         loaderList.add(ManagerLoader)
         loaderList.add(GuiManager)
+        loaderList.add(PluginManager)
     }
 
     @JvmStatic
@@ -32,7 +34,7 @@ internal object LoaderWrapper {
     }
 }
 
-interface AsyncLoader<T> {
+internal interface AsyncLoader<T> {
     var deferred: Deferred<T>?
 
     fun preLoad() {

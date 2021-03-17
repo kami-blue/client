@@ -16,7 +16,7 @@ object ToggleCommand : ClientCommand(
             execute {
                 val module = moduleArg.value
                 module.toggle()
-                if (module !is ClickGUI && !CommandConfig.toggleMessages.value) {
+                if (module !is ClickGUI && !CommandConfig.toggleMessages) {
                     sendChatMessage(module.name +
                         if (module.isEnabled) " ${TextFormatting.GREEN}enabled"
                         else " ${TextFormatting.RED}disabled"

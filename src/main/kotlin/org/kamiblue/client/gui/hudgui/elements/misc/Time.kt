@@ -2,10 +2,9 @@ package org.kamiblue.client.gui.hudgui.elements.misc
 
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.TimeUtils
 
-object Time : LabelHud(
+internal object Time : LabelHud(
     name = "Time",
     category = Category.MISC,
     description = "System date and time"

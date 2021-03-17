@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.RunGameLoopEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.CircularArray
 import org.kamiblue.client.util.graphics.AnimationUtils
 import org.kamiblue.event.listener.listener
@@ -12,7 +11,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-object FPS : LabelHud(
+internal object FPS : LabelHud(
     name = "FPS",
     category = Category.MISC,
     description = "Frame per second in game"

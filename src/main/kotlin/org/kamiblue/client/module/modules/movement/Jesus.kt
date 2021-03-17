@@ -64,7 +64,7 @@ internal object Jesus : Module(
     }
 
     @JvmStatic
-    fun handleAddCollisionBoxToList(pos: BlockPos, block: Block, entity: Entity?, entityBox: AxisAlignedBB, collidingBoxes: MutableList<AxisAlignedBB>) {
+    fun handleAddCollisionBoxToList(pos: BlockPos, block: Block, entity: Entity?, collidingBoxes: MutableList<AxisAlignedBB>) {
         if (isDisabled || mode == Mode.DOLPHIN) return
         if (mc.gameSettings.keyBindSneak.isKeyDown) return
         if (block !is BlockLiquid) return

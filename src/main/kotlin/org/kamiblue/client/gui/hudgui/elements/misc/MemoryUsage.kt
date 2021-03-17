@@ -2,9 +2,8 @@ package org.kamiblue.client.gui.hudgui.elements.misc
 
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import org.kamiblue.client.setting.GuiConfig.setting
 
-object MemoryUsage : LabelHud(
+internal object MemoryUsage : LabelHud(
     name = "MemoryUsage",
     category = Category.MISC,
     description = "Display the used, allocated and max memory"

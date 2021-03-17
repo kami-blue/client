@@ -93,7 +93,7 @@ internal object ChatEncryption : Module(
             MessageSendHelper.sendChatMessage("$chatName Your encryption key was set to ${formatValue(key)}, and copied to your clipboard.")
 
             defaultScope.launch(Dispatchers.IO) {
-                SystemUtils.copyToClipboard(key)
+                SystemUtils.setClipboard(key)
             }
         }
 

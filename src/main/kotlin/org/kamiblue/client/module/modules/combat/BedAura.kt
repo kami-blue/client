@@ -16,11 +16,10 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
-import org.kamiblue.client.util.WorldUtils.getHitSide
-import org.kamiblue.client.util.WorldUtils.rayTraceTo
 import org.kamiblue.client.util.combat.CrystalUtils.calcCrystalDamage
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.math.RotationUtils
@@ -28,7 +27,9 @@ import org.kamiblue.client.util.math.RotationUtils.getRotationTo
 import org.kamiblue.client.util.math.Vec2f
 import org.kamiblue.client.util.math.VectorUtils
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
+import org.kamiblue.client.util.math.VectorUtils.toVec3d
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.util.world.*
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -79,8 +80,8 @@ internal object BedAura : Module(
             if (!CombatManager.isOnTopPriority(this@BedAura) || it.packet !is CPacketPlayer || state == State.NONE || CombatSetting.pause) return@safeListener
 
             val hand = getBedHand() ?: EnumHand.MAIN_HAND
-            val facing = if (state == State.PLACE) EnumFacing.UP else getHitSide(clickPos)
-            val hitVecOffset = WorldUtils.getHitVecOffset(facing)
+            val facing = if (state == State.PLACE) EnumFacing.UP else getClosestVisibleSide(clickPos) ?: EnumFacing.UP
+            val hitVecOffset = getHitVecOffset(facing)
             val packet = CPacketPlayerTryUseItemOnBlock(clickPos, facing, hand, hitVecOffset.x.toFloat(), hitVecOffset.y.toFloat(), hitVecOffset.z.toFloat())
 
             connection.sendPacket(packet)
@@ -126,18 +127,25 @@ internal object BedAura : Module(
         val cacheMap = CombatManager.target?.let {
             val posList = VectorUtils.getBlockPosInSphere(player.getPositionEyes(1f), range.value)
             val damagePosMap = HashMap<Pair<Float, Float>, BlockPos>()
+            val eyePos = player.getPositionEyes(1.0f)
+
             for (pos in posList) {
                 val dist = player.distanceTo(pos)
-                if (rayTraceTo(pos) == null && dist > wallRange.value) continue
-                val topSideVec = Vec3d(pos).add(0.5, 1.0, 0.5)
+
+                if (!world.isVisible(pos) && dist > wallRange.value) continue
+
+                val topSideVec = pos.toVec3d(0.5, 1.0, 0.5)
                 val rotation = getRotationTo(topSideVec)
                 val facing = EnumFacing.fromAngle(rotation.x.toDouble())
                 if (!canPlaceBed(pos)) continue
+
                 val targetDamage = calcCrystalDamage(pos.offset(facing), it)
                 val selfDamage = calcCrystalDamage(pos.offset(facing), player)
-                if (targetDamage < minDamage.value && (suicideMode.value || selfDamage > maxSelfDamage.value))
+                if (targetDamage < minDamage.value && (suicideMode.value || selfDamage > maxSelfDamage.value)) {
                     damagePosMap[Pair(targetDamage, selfDamage)] = pos
+                }
             }
+
             damagePosMap
         }
         placeMap.clear()
@@ -151,8 +159,8 @@ internal object BedAura : Module(
         return (!ignoreSecondBaseBlock.value || world.getBlockState(bedPos2.down()).isSideSolid(world, bedPos2.down(), EnumFacing.UP))
             && !isFire(bedPos1)
             && !isFire(bedPos2)
-            && world.getBlockState(bedPos1).material.isReplaceable
-            && (!ignoreSecondBaseBlock.value || world.getBlockState(bedPos2).material.isReplaceable)
+            && world.getBlockState(bedPos1).isReplaceable
+            && (!ignoreSecondBaseBlock.value || world.getBlockState(bedPos2).isReplaceable)
     }
 
     private fun SafeClientEvent.isFire(pos: BlockPos): Boolean {
@@ -165,9 +173,11 @@ internal object BedAura : Module(
             for (tileEntity in world.loadedTileEntityList) {
                 if (tileEntity !is TileEntityBed) continue
                 if (!tileEntity.isHeadPiece) continue
+
                 val dist = player.distanceTo(tileEntity.pos).toFloat()
                 if (dist > range.value) continue
-                if (rayTraceTo(tileEntity.pos) == null && dist > wallRange.value) continue
+                if (!world.isVisible(tileEntity.pos) && dist > wallRange.value) continue
+
                 damagePosMap[dist] = tileEntity.pos
             }
             damagePosMap
@@ -216,7 +226,9 @@ internal object BedAura : Module(
     }
 
     private fun sendRotation() {
-        PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = lastRotation))
+        sendPlayerPacket {
+            rotate(lastRotation)
+        }
     }
 
     private fun SafeClientEvent.resetRotation() {

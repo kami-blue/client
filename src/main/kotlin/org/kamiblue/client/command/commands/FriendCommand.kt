@@ -72,12 +72,6 @@ object FriendCommand : ClientCommand(
             }
         }
 
-        player("player") { playerArg ->
-            execute("Check if player is a friend") {
-                isFriend(playerArg.value.name)
-            }
-        }
-
         literal("list") {
             execute("List your friends") {
                 listFriends()

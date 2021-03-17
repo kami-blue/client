@@ -3,10 +3,9 @@ package org.kamiblue.client.gui.hudgui.elements.world
 import org.apache.commons.lang3.time.DurationFormatUtils
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.commons.interfaces.DisplayEnum
 
-object WorldTime : LabelHud(
+internal object WorldTime : LabelHud(
     name = "WorldTime",
     category = Category.WORLD,
     description = "Time in the Minecraft world"

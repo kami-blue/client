@@ -26,34 +26,34 @@ internal object Chams : Module(
     category = Category.RENDER,
     description = "Modify entity rendering"
 ) {
-    private val page = setting("Page", Page.ENTITY_TYPE)
+    private val page by setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val self = setting("Self", false, { page.value == Page.ENTITY_TYPE })
-    private val all = setting("All Entities", false, { page.value == Page.ENTITY_TYPE })
-    private val experience = setting("Experience", false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val arrows = setting("Arrows", false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val throwable = setting("Throwable", false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val items = setting("Items", false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val crystals = setting("Crystals", false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
-    private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
-    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val passive = setting("Passive Mobs", false, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
-    private val neutral = setting("Neutral Mobs", true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
-    private val hostile = setting("Hostile Mobs", true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
+    private val self by setting("Self", false, { page == Page.ENTITY_TYPE })
+    private val all by setting("All Entities", false, { page == Page.ENTITY_TYPE })
+    private val experience by setting("Experience", false, { page == Page.ENTITY_TYPE && !all })
+    private val arrows by setting("Arrows", false, { page == Page.ENTITY_TYPE && !all })
+    private val throwable by setting("Throwable", false, { page == Page.ENTITY_TYPE && !all })
+    private val items by setting("Items", false, { page == Page.ENTITY_TYPE && !all })
+    private val crystals by setting("Crystals", false, { page == Page.ENTITY_TYPE && !all })
+    private val players by setting("Players", true, { page == Page.ENTITY_TYPE && !all })
+    private val friends by setting("Friends", false, { page == Page.ENTITY_TYPE && !all && players })
+    private val sleeping by setting("Sleeping", false, { page == Page.ENTITY_TYPE && !all && players })
+    private val mobs by setting("Mobs", true, { page == Page.ENTITY_TYPE && !all })
+    private val passive by setting("Passive Mobs", false, { page == Page.ENTITY_TYPE && !all && mobs })
+    private val neutral by setting("Neutral Mobs", true, { page == Page.ENTITY_TYPE && !all && mobs })
+    private val hostile by setting("Hostile Mobs", true, { page == Page.ENTITY_TYPE && !all && mobs })
 
     /* Rendering settings */
-    private val throughWall = setting("Through Wall", true, { page.value == Page.RENDERING })
-    private val texture = setting("Texture", false, { page.value == Page.RENDERING })
-    private val lightning = setting("Lightning", false, { page.value == Page.RENDERING })
-    private val customColor = setting("Custom Color", false, { page.value == Page.RENDERING })
-    private val rainbow = setting("Rainbow", false, { page.value == Page.RENDERING && customColor.value })
-    private val r = setting("Red", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
-    private val g = setting("Green", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
-    private val b = setting("Blue", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
-    private val a = setting("Alpha", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value })
+    private val throughWall by setting("Through Wall", true, { page == Page.RENDERING })
+    private val texture by setting("Texture", false, { page == Page.RENDERING })
+    private val lightning by setting("Lightning", false, { page == Page.RENDERING })
+    private val customColor by setting("Custom Color", false, { page == Page.RENDERING })
+    private val rainbow by setting("Rainbow", false, { page == Page.RENDERING && customColor })
+    private val r by setting("Red", 255, 0..255, 1, { page == Page.RENDERING && customColor && !rainbow })
+    private val g by setting("Green", 255, 0..255, 1, { page == Page.RENDERING && customColor && !rainbow })
+    private val b by setting("Blue", 255, 0..255, 1, { page == Page.RENDERING && customColor && !rainbow })
+    private val a by setting("Alpha", 160, 0..255, 1, { page == Page.RENDERING && customColor })
 
     private enum class Page {
         ENTITY_TYPE, RENDERING
@@ -62,34 +62,47 @@ internal object Chams : Module(
     private var cycler = HueCycler(600)
 
     init {
-        listener<RenderEntityEvent>(2000) {
+        listener<RenderEntityEvent.All>(2000) {
             if (!checkEntityType(it.entity)) return@listener
 
-            if (it.phase == Phase.PRE) {
-                if (!texture.value) glDisable(GL_TEXTURE_2D)
-                if (!lightning.value) glDisable(GL_LIGHTING)
-                if (customColor.value) {
-                    if (rainbow.value) cycler.currentRgba(a.value).setGLColor()
-                    else glColor4f(r.value / 255.0f, g.value / 255.0f, b.value / 255.0f, a.value / 255.0f)
-                    GlStateUtils.colorLock(true)
-                    GlStateUtils.blend(true)
-                    GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
+            when (it.phase) {
+                Phase.PRE -> {
+                    if (throughWall) glDepthRange(0.0, 0.01)
                 }
-                if (throughWall.value) {
-                    glDepthRange(0.0, 0.01)
+                Phase.PERI -> {
+                    if (throughWall) glDepthRange(0.0, 1.0)
+                }
+                else -> {
+                    // Doesn't need to do anything on post phase
                 }
             }
+        }
 
-            if (it.phase == Phase.PERI) {
-                if (!texture.value) glEnable(GL_TEXTURE_2D)
-                if (!lightning.value) glEnable(GL_LIGHTING)
-                if (customColor.value) {
-                    GlStateUtils.blend(false)
-                    GlStateUtils.colorLock(false)
-                    glColor4f(1f, 1f, 1f, 1f)
+        listener<RenderEntityEvent.Model> {
+            if (!checkEntityType(it.entity)) return@listener
+
+            when (it.phase) {
+                Phase.PRE -> {
+                    if (!texture) glDisable(GL_TEXTURE_2D)
+                    if (!lightning) glDisable(GL_LIGHTING)
+                    if (customColor) {
+                        if (rainbow) cycler.currentRgba(a).setGLColor()
+                        else glColor4f(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f)
+
+                        GlStateUtils.blend(true)
+                        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
+                    }
                 }
-                if (throughWall.value) {
-                    glDepthRange(0.0, 1.0)
+                Phase.POST -> {
+                    if (!texture) glEnable(GL_TEXTURE_2D)
+                    if (!lightning) glEnable(GL_LIGHTING)
+                    if (customColor) {
+                        GlStateUtils.blend(false)
+                        glColor4f(1f, 1f, 1f, 1f)
+                    }
+                }
+                else -> {
+                    // RenderEntityEvent.Model doesn't have peri phase
                 }
             }
         }
@@ -99,14 +112,15 @@ internal object Chams : Module(
         }
     }
 
-    private fun checkEntityType(entity: Entity): Boolean {
-        return (self.value || entity != mc.player) && (all.value
-            || experience.value && entity is EntityXPOrb
-            || arrows.value && entity is EntityArrow
-            || throwable.value && entity is EntityThrowable
-            || items.value && entity is EntityItem
-            || crystals.value && entity is EntityEnderCrystal
-            || players.value && entity is EntityPlayer && EntityUtils.playerTypeCheck(entity, friends.value, sleeping.value)
-            || mobTypeSettings(entity, mobs.value, passive.value, neutral.value, hostile.value))
-    }
+    private fun checkEntityType(entity: Entity) =
+        (self || entity != mc.player) && (
+            all
+                || experience && entity is EntityXPOrb
+                || arrows && entity is EntityArrow
+                || throwable && entity is EntityThrowable
+                || items && entity is EntityItem
+                || crystals && entity is EntityEnderCrystal
+                || players && entity is EntityPlayer && EntityUtils.playerTypeCheck(entity, friends, sleeping)
+                || mobTypeSettings(entity, mobs, passive, neutral, hostile)
+            )
 }
