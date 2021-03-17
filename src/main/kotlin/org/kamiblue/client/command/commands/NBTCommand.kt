@@ -16,7 +16,7 @@ object NBTCommand : ClientCommand(
 
     init {
         literal("get") {
-            executeSafe {
+            executeSafe("Print NBT data to chat") {
                 val itemStack = getHelpItemStack() ?: return@executeSafe
                 val nbtTag = getNbtTag(itemStack) ?: return@executeSafe
 
@@ -26,7 +26,7 @@ object NBTCommand : ClientCommand(
         }
 
         literal("copy") {
-            executeSafe {
+            executeSafe("Copy NBT data to clipboard") {
                 val itemStack = getHelpItemStack() ?: return@executeSafe
                 val nbtTag = getNbtTag(itemStack) ?: return@executeSafe
 
@@ -37,7 +37,7 @@ object NBTCommand : ClientCommand(
         }
 
         literal("paste") {
-            executeSafe {
+            executeSafe("Paste NBT data from clipboard to held item") {
                 val itemStack = getHelpItemStack() ?: return@executeSafe
 
                 val nbtTag: NBTTagCompound
@@ -56,7 +56,7 @@ object NBTCommand : ClientCommand(
         }
 
         literal("clear", "wipe") {
-            executeSafe {
+            executeSafe("Wipe NBT data from held item") {
                 val itemStack = getHelpItemStack() ?: return@executeSafe
                 getNbtTag(itemStack) ?: return@executeSafe // Make sure it has a NBT tag before
 
