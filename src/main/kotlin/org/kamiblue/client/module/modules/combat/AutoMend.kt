@@ -72,6 +72,7 @@ internal object AutoMend : Module(
             }
         }
 
+        // TODO: Add proper module pausing system
         pauseAutoArmor.listeners.add {
             if (!pauseAutoArmor.value) {
                 AutoArmor.isPaused = false
