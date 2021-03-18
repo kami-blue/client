@@ -7,10 +7,11 @@ open class NameableConfig<T : Nameable>(
     name: String,
     filePath: String
 ) : AbstractConfig<T>(name, filePath) {
-    override fun <S : AbstractSetting<*>> T.setting(setting: S): S {
-        getGroupOrPut(name).addSetting(setting)
-        return setting
+
+    override fun addSettingToConfig(owner: T, setting: AbstractSetting<*>) {
+        getGroupOrPut(owner.name).addSetting(setting)
     }
 
-    fun getSettings(nameable: Nameable) = getGroup(nameable.name)?.getSettings() ?: emptyList()
+    open fun getSettings(nameable: Nameable) = getGroup(nameable.name)?.getSettings() ?: emptyList()
+
 }

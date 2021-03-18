@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.PlayerPacketManager
+import org.kamiblue.client.manager.managers.PlayerPacketManager.sendPlayerPacket
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.prevPosVector
@@ -19,6 +20,7 @@ import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.combat.CrystalUtils.canPlace
 import org.kamiblue.client.util.combat.CrystalUtils.canPlaceOn
 import org.kamiblue.client.util.combat.SurroundUtils
+import org.kamiblue.client.util.combat.SurroundUtils.checkHole
 import org.kamiblue.client.util.items.swapToItem
 import org.kamiblue.client.util.math.RotationUtils.getRotationTo
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
@@ -48,7 +50,7 @@ internal object HoleMiner : Module(
             runSafeR {
                 val target = CombatManager.target
                 if (target != null) {
-                    if (SurroundUtils.checkHole(target) != SurroundUtils.HoleType.OBBY) {
+                    if (checkHole(target) != SurroundUtils.HoleType.OBBY) {
                         MessageSendHelper.sendChatMessage("$chatName Target is not in a valid hole, disabling")
                         disable()
                     } else {
@@ -98,8 +100,9 @@ internal object HoleMiner : Module(
 
                 val center = pos.toVec3dCenter()
                 val rotation = getRotationTo(center)
-                val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation)
-                PlayerPacketManager.addPacket(this@HoleMiner, packet)
+                sendPlayerPacket {
+                    rotate(rotation)
+                }
 
                 val diff = player.getPositionEyes(1.0f).subtract(center)
                 val normalizedVec = diff.normalize()

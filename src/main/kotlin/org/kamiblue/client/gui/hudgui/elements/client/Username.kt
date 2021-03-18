@@ -2,9 +2,8 @@ package org.kamiblue.client.gui.hudgui.elements.client
 
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import org.kamiblue.client.setting.GuiConfig.setting
 
-object Username : LabelHud(
+internal object Username : LabelHud(
     name = "Username",
     category = Category.CLIENT,
     description = "Player username"

@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos
 import org.kamiblue.capeapi.PlayerProfile
 import org.kamiblue.client.event.ClientExecuteEvent
 import org.kamiblue.client.event.SafeExecuteEvent
+import org.kamiblue.client.gui.hudgui.AbstractHudElement
 import org.kamiblue.client.module.AbstractModule
 import org.kamiblue.client.module.modules.client.CommandConfig
 import org.kamiblue.client.util.Wrapper
@@ -27,7 +28,7 @@ abstract class ClientCommand(
     val prefixName get() = "$prefix$name"
 
     @CommandBuilder
-    protected fun AbstractArg<*>.module(
+    protected inline fun AbstractArg<*>.module(
         name: String,
         block: BuilderBlock<AbstractModule>
     ) {
@@ -35,7 +36,15 @@ abstract class ClientCommand(
     }
 
     @CommandBuilder
-    protected fun AbstractArg<*>.block(
+    protected inline fun AbstractArg<*>.hudElement(
+        name: String,
+        block: BuilderBlock<AbstractHudElement>
+    ) {
+        arg(HudElementArg(name), block)
+    }
+
+    @CommandBuilder
+    protected inline fun AbstractArg<*>.block(
         name: String,
         block: BuilderBlock<Block>
     ) {
@@ -43,7 +52,7 @@ abstract class ClientCommand(
     }
 
     @CommandBuilder
-    protected fun AbstractArg<*>.item(
+    protected inline fun AbstractArg<*>.item(
         name: String,
         block: BuilderBlock<Item>
     ) {
@@ -51,7 +60,7 @@ abstract class ClientCommand(
     }
 
     @CommandBuilder
-    protected fun AbstractArg<*>.player(
+    protected inline fun AbstractArg<*>.player(
         name: String,
         block: BuilderBlock<PlayerProfile>
     ) {
@@ -59,7 +68,7 @@ abstract class ClientCommand(
     }
 
     @CommandBuilder
-    protected fun AbstractArg<*>.blockPos(
+    protected inline fun AbstractArg<*>.blockPos(
         name: String,
         block: BuilderBlock<BlockPos>
     ) {
@@ -67,7 +76,7 @@ abstract class ClientCommand(
     }
 
     @CommandBuilder
-    protected fun AbstractArg<*>.baritoneBlock(
+    protected inline fun AbstractArg<*>.baritoneBlock(
         name: String,
         block: BuilderBlock<Block>
     ) {
@@ -75,7 +84,7 @@ abstract class ClientCommand(
     }
 
     @CommandBuilder
-    protected fun AbstractArg<*>.schematic(
+    protected inline fun AbstractArg<*>.schematic(
         name: String,
         file: BuilderBlock<File>
     ) {
@@ -106,7 +115,7 @@ abstract class ClientCommand(
 
     protected companion object {
         val mc = Wrapper.minecraft
-        val prefix: String get() = CommandConfig.prefix.value
+        val prefix: String get() = CommandConfig.prefix
     }
 
 }

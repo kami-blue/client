@@ -6,6 +6,7 @@ import com.google.gson.JsonParser
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.setting.groups.SettingGroup
 import org.kamiblue.client.setting.groups.SettingMultiGroup
+import org.kamiblue.client.setting.settings.AbstractSetting
 import org.kamiblue.client.setting.settings.SettingRegister
 import org.kamiblue.client.util.ConfigUtils
 import java.io.File
@@ -17,6 +18,13 @@ abstract class AbstractConfig<T : Any>(
 
     override val file get() = File("$filePath$name.json")
     override val backup get() = File("$filePath$name.bak")
+
+    final override fun <S : AbstractSetting<*>> T.setting(setting: S): S {
+        addSettingToConfig(this, setting)
+        return setting
+    }
+
+    abstract fun addSettingToConfig(owner: T, setting: AbstractSetting<*>)
 
     override fun save() {
         File(filePath).run {

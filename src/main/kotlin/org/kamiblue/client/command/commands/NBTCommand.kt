@@ -1,22 +1,22 @@
 package org.kamiblue.client.command.commands
 
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.JsonToNBT
 import net.minecraft.nbt.NBTTagCompound
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.event.SafeExecuteEvent
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.formatValue
+import org.kamiblue.commons.utils.SystemUtils
 
 object NBTCommand : ClientCommand(
     name = "nbt",
     description = "Get, copy, paste, clear NBT for item held in main hand"
 ) {
 
-    private var copiedNbtTag: NBTTagCompound? = null
-
     init {
         literal("get") {
-            executeSafe {
+            executeSafe("Print NBT data to chat") {
                 val itemStack = getHelpItemStack() ?: return@executeSafe
                 val nbtTag = getNbtTag(itemStack) ?: return@executeSafe
 
@@ -26,20 +26,27 @@ object NBTCommand : ClientCommand(
         }
 
         literal("copy") {
-            executeSafe {
+            executeSafe("Copy NBT data to clipboard") {
                 val itemStack = getHelpItemStack() ?: return@executeSafe
                 val nbtTag = getNbtTag(itemStack) ?: return@executeSafe
 
-                copiedNbtTag = nbtTag
+                SystemUtils.setClipboard(nbtTag.toString())
+
                 MessageSendHelper.sendChatMessage("Copied NBT tags from item ${formatValue(itemStack.displayName)}")
             }
         }
 
         literal("paste") {
-            executeSafe {
+            executeSafe("Paste NBT data from clipboard to held item") {
                 val itemStack = getHelpItemStack() ?: return@executeSafe
-                val nbtTag = copiedNbtTag ?: run {
-                    MessageSendHelper.sendChatMessage("No copied NBT tags!")
+
+                val nbtTag: NBTTagCompound
+
+                try {
+                    val clipboard = SystemUtils.getClipboard() ?: throw IllegalStateException()
+                    nbtTag = JsonToNBT.getTagFromJson(clipboard)
+                } catch (e: Exception) {
+                    MessageSendHelper.sendErrorMessage("Invalid NBT data in clipboard")
                     return@executeSafe
                 }
 
@@ -49,7 +56,7 @@ object NBTCommand : ClientCommand(
         }
 
         literal("clear", "wipe") {
-            executeSafe {
+            executeSafe("Wipe NBT data from held item") {
                 val itemStack = getHelpItemStack() ?: return@executeSafe
                 getNbtTag(itemStack) ?: return@executeSafe // Make sure it has a NBT tag before
 

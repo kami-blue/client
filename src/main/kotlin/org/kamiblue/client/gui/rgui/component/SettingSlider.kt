@@ -41,11 +41,11 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
 
     override fun onStopListening(success: Boolean) {
         if (success) {
-            name.toDoubleOrNull()?.let { setting.setValue(it.toString()) }
+            componentName.toDoubleOrNull()?.let { setting.setValue(it.toString()) }
         }
 
         super.onStopListening(success)
-        name = originalName
+        componentName = name
     }
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
@@ -61,7 +61,7 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         if (buttonId == 1) {
             if (!listening) {
                 listening = true
-                name = setting.value.toString()
+                componentName = setting.value.toString()
                 value = 0.0
             } else {
                 onStopListening(false)
@@ -96,14 +96,14 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
                     onStopListening(true)
                 }
                 Keyboard.KEY_BACK, Keyboard.KEY_DELETE -> {
-                    name = name.substring(0, max(name.length - 1, 0))
-                    if (name.isBlank()) name = "0"
+                    componentName = componentName.substring(0, max(componentName.length - 1, 0))
+                    if (componentName.isBlank()) componentName = "0"
                 }
                 else -> if (isNumber(typedChar)) {
-                    if (name == "0" && (typedChar.isDigit() || typedChar == '-')) {
-                        name = ""
+                    if (componentName == "0" && (typedChar.isDigit() || typedChar == '-')) {
+                        componentName = ""
                     }
-                    name += typedChar
+                    componentName += typedChar
                 }
             }
         }

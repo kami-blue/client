@@ -9,8 +9,8 @@ import org.kamiblue.client.mixin.extension.rightClickMouse
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
-import org.kamiblue.client.util.WorldUtils.isWater
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.util.world.isWater
 import java.lang.Math.random
 import kotlin.math.abs
 
@@ -88,7 +88,7 @@ internal object AutoFish : Module(
     private fun SafeClientEvent.isOnWater(): Boolean {
         if (player.fishEntity?.isAirBorne != false) return false
         val pos = player.fishEntity!!.position
-        return isWater(pos) || isWater(pos.down())
+        return world.isWater(pos) || world.isWater(pos.down())
     }
 
     private fun SafeClientEvent.isSplash(packet: SPacketSoundEffect): Boolean {

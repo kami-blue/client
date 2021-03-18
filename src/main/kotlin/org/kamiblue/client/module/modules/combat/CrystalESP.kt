@@ -6,10 +6,12 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.HotbarManager.serverSideItem
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -80,10 +82,10 @@ internal object CrystalESP : Module(
         }
     }
 
-    private fun checkHeldItem(packet: CPacketPlayerTryUseItemOnBlock) = packet.hand == EnumHand.MAIN_HAND
-        && mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).item == Items.END_CRYSTAL
+    private fun SafeClientEvent.checkHeldItem(packet: CPacketPlayerTryUseItemOnBlock) = packet.hand == EnumHand.MAIN_HAND
+        && player.serverSideItem.item == Items.END_CRYSTAL
         || packet.hand == EnumHand.OFF_HAND
-        && mc.player.heldItemOffhand.item == Items.END_CRYSTAL
+        && player.heldItemOffhand.item == Items.END_CRYSTAL
 
     init {
         safeListener<TickEvent.ClientTickEvent> { event ->
@@ -173,7 +175,7 @@ internal object CrystalESP : Module(
 
         listener<RenderOverlayEvent> {
             if (!showDamage.value && !showSelfDamage.value) return@listener
-            GlStateUtils.rescale(mc.displayWidth.toDouble(), mc.displayHeight.toDouble())
+            GlStateUtils.rescaleActual()
 
             for ((pos, quad) in renderCrystalMap) {
                 glPushMatrix()

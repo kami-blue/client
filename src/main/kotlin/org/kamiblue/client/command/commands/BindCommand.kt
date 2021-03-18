@@ -35,19 +35,6 @@ object BindCommand : ClientCommand(
             }
         }
 
-        literal("modifiers") {
-            boolean("enabled") { modifiersArg ->
-                execute("Disallow binds while holding a modifier") {
-                    val modifiers = modifiersArg.value
-
-                    CommandConfig.modifierEnabled.value = modifiers
-                    MessageSendHelper.sendChatMessage(
-                        "Modifiers ${if (modifiers) " ${TextFormatting.GREEN format "enabled"}" else " ${TextFormatting.RED format "disabled"}"}"
-                    )
-                }
-            }
-        }
-
         module("module") { moduleArg ->
             string("bind") { bindArg ->
                 execute("Bind a module to a key") {

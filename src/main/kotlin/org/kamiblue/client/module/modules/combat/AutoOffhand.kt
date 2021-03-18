@@ -17,9 +17,9 @@ import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.*
-import org.kamiblue.client.util.combat.CombatUtils
 import org.kamiblue.client.util.combat.CombatUtils.calcDamageFromMob
 import org.kamiblue.client.util.combat.CombatUtils.calcDamageFromPlayer
+import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
@@ -101,7 +101,7 @@ internal object AutoOffhand : Module(
         safeListener<PacketEvent.Receive> {
             if (it.packet !is SPacketConfirmTransaction || it.packet.windowId != 0 || !transactionLog.containsKey(it.packet.actionNumber)) return@safeListener
 
-            transactionLog[it.packet.actionNumber] = it.packet.wasAccepted()
+            transactionLog[it.packet.actionNumber] = true
             if (!transactionLog.containsValue(false)) {
                 confirmTimer.reset(confirmTimeout * -50L) // If all the click packets were accepted then we reset the timer for next moving
             }
@@ -137,8 +137,8 @@ internal object AutoOffhand : Module(
         else -> null
     }
 
-    private fun SafeClientEvent.checkTotem() = CombatUtils.getHealthSmart(player) < hpThreshold
-        || (checkDamage && CombatUtils.getHealthSmart(player) - maxDamage < hpThreshold)
+    private fun SafeClientEvent.checkTotem() = player.scaledHealth < hpThreshold
+        || (checkDamage && player.scaledHealth - maxDamage < hpThreshold)
 
     private fun SafeClientEvent.checkGapple() = offhandGapple
         && (checkAuraG && CombatManager.isActiveAndTopPriority(KillAura)
@@ -158,12 +158,13 @@ internal object AutoOffhand : Module(
         // First check for whether player is holding the right item already or not
         if (typeOriginal == null || checkOffhandItem(typeOriginal)) return
 
-        getItemSlot(typeOriginal)?.let { (slot, typeAlt) ->
-            // Second check is for case of when player ran out of the original type of item
-            if (!alternativeType && typeAlt != typeOriginal || checkOffhandItem(typeAlt)) return
+        val attempts = if (alternativeType) 4 else 1
+
+        getItemSlot(typeOriginal, attempts)?.let { (slot, typeAlt) ->
+            if (slot == player.offhandSlot) return
 
             transactionLog.clear()
-            moveToSlot(slot.slotNumber, 45).forEach {
+            moveToSlot(slot, player.offhandSlot).forEach {
                 transactionLog[it] = false
             }
 
@@ -178,22 +179,32 @@ internal object AutoOffhand : Module(
 
     private fun SafeClientEvent.checkOffhandItem(type: Type) = type.filter(player.heldItemOffhand)
 
-    private fun SafeClientEvent.getItemSlot(type: Type, loopTime: Int = 1): Pair<Slot, Type>? =
+    private fun SafeClientEvent.getItemSlot(type: Type, attempts: Int): Pair<Slot, Type>? =
         getSlot(type)?.to(type)
-            ?: if (loopTime <= 3) {
-                getItemSlot(type.next(), loopTime + 1)
+            ?: if (attempts > 1) {
+                getItemSlot(type.next(), attempts - 1)
             } else {
                 null
             }
 
     private fun SafeClientEvent.getSlot(type: Type): Slot? {
-        val slots = player.inventorySlots
+        return player.offhandSlot.takeIf(filter(type))
+            ?: if (priority == Priority.HOTBAR) {
+                player.hotbarSlots.findItemByType(type)
+                    ?: player.inventorySlots.findItemByType(type)
+                    ?: player.craftingSlots.findItemByType(type)
+            } else {
+                player.inventorySlots.findItemByType(type)
+                    ?: player.hotbarSlots.findItemByType(type)
+                    ?: player.craftingSlots.findItemByType(type)
+            }
+    }
 
-        return if (priority == Priority.HOTBAR) {
-            slots.lastOrNull { type.filter(it.stack) }
-        } else {
-            slots.firstOrNull { type.filter(it.stack) }
-        }
+    private fun List<Slot>.findItemByType(type: Type) =
+        find(filter(type))
+
+    private fun filter(type: Type) = { it: Slot ->
+        type.filter(it.stack)
     }
 
     private fun SafeClientEvent.updateDamage() {

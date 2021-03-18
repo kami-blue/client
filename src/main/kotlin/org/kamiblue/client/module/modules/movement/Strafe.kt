@@ -3,9 +3,9 @@ package org.kamiblue.client.module.modules.movement
 import net.minecraft.client.settings.KeyBinding
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PlayerTravelEvent
+import org.kamiblue.client.manager.managers.TimerManager.modifyTimer
+import org.kamiblue.client.manager.managers.TimerManager.resetTimer
 import org.kamiblue.client.mixin.extension.isInWeb
-import org.kamiblue.client.mixin.extension.tickLength
-import org.kamiblue.client.mixin.extension.timer
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.BaritoneUtils
@@ -24,9 +24,9 @@ import kotlin.math.sin
 internal object Strafe : Module(
     name = "Strafe",
     category = Category.MOVEMENT,
-    description = "Improves control in air"
+    description = "Improves control in air",
+    modulePriority = 100
 ) {
-
     private val mode by setting("Mode", SpeedBoost.NCP)
     private val page by setting("Page", Page.GENERIC_SETTINGS)
 
@@ -54,29 +54,30 @@ internal object Strafe : Module(
     }
 
     private var jumpTicks = 0
-    private var strafeTimer = TickTimer(TimeUnit.TICKS)
+    private val strafeTimer = TickTimer(TimeUnit.TICKS)
 
-    /* If you skid this you omega gay */
     init {
         onDisable {
             reset()
         }
 
         safeListener<PlayerTravelEvent> {
-            if (!shouldStrafe()) {
+            if (!shouldStrafe) {
                 reset()
-                if (cancelInertia && !strafeTimer.tick(2L)) {
+                if (cancelInertia && !strafeTimer.tick(2L, false)) {
                     player.motionX = 0.0
                     player.motionZ = 0.0
                 }
                 return@safeListener
             }
 
-            if (!player.collidedHorizontally) setSpeed(getSpeed())
 
             if (airSpeedBoost) player.jumpMovementFactor = 0.029f
-            if (timerBoost) mc.timer.tickLength = 45.87155914306640625f
-            if (autoJump) jump()
+            if (timerBoost) modifyTimer(45.87155914306640625f)
+            if (!player.collidedHorizontally) {
+                if (autoJump) jump()
+                setSpeed(getSpeed())
+            }
 
             strafeTimer.reset()
         }
@@ -84,16 +85,18 @@ internal object Strafe : Module(
 
     private fun reset() {
         mc.player?.jumpMovementFactor = 0.02f
-        mc.timer.tickLength = 50.0f
+        resetTimer()
         jumpTicks = 0
     }
 
-    private fun SafeClientEvent.shouldStrafe() = !BaritoneUtils.isPathing
-        && !player.capabilities.isFlying
-        && !player.isElytraFlying
-        && (!onHoldingSprint || mc.gameSettings.keyBindSprint.isKeyDown)
-        && MovementUtils.isInputting
-        && !(player.isInOrAboveLiquid || player.isInWeb)
+    private val SafeClientEvent.shouldStrafe: Boolean
+        get() = !player.capabilities.isFlying
+            && !player.isElytraFlying
+            && !mc.gameSettings.keyBindSneak.isKeyDown
+            && (!onHoldingSprint || mc.gameSettings.keyBindSprint.isKeyDown)
+            && !BaritoneUtils.isPathing
+            && MovementUtils.isInputting
+            && !(player.isInOrAboveLiquid || player.isInWeb)
 
     private fun SafeClientEvent.jump() {
         if (player.onGround && jumpTicks <= 0) {

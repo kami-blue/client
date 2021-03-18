@@ -1,13 +1,13 @@
 package org.kamiblue.client.util.threads
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.completeWith
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.KamiEventBus
-import org.kamiblue.client.event.events.RenderEvent
-import org.kamiblue.client.event.events.RenderOverlayEvent
-import org.kamiblue.client.event.events.RenderWorldEvent
+import org.kamiblue.client.event.events.RunGameLoopEvent
 import org.kamiblue.client.util.Wrapper
 import org.kamiblue.event.listener.listener
 
@@ -16,23 +16,7 @@ object MainThreadExecutor {
     private val mutex = Mutex()
 
     init {
-        listener<TickEvent.ClientTickEvent>(Int.MAX_VALUE) {
-            if (it.phase == TickEvent.Phase.START) runJobs()
-        }
-
-        listener<TickEvent.ClientTickEvent>(Int.MIN_VALUE) {
-            if (it.phase == TickEvent.Phase.END) runJobs()
-        }
-
-        listener<RenderWorldEvent> {
-            runJobs()
-        }
-
-        listener<RenderOverlayEvent>(Int.MIN_VALUE) {
-            runJobs()
-        }
-
-        listener<RenderEvent>(Int.MIN_VALUE) {
+        listener<RunGameLoopEvent.Start>(Int.MIN_VALUE) {
             runJobs()
         }
 
@@ -44,17 +28,15 @@ object MainThreadExecutor {
 
         runBlocking {
             mutex.withLock {
-                coroutineScope {
-                    jobs.forEach {
-                        launch { it.run() }
-                    }
+                jobs.forEach {
+                    it.run()
                 }
                 jobs.clear()
             }
         }
     }
 
-    suspend fun <T> add(block: suspend () -> T) =
+    suspend fun <T> add(block: () -> T) =
         MainThreadJob(block).apply {
             if (Wrapper.minecraft.isCallingFromMinecraftThread) {
                 run()
@@ -65,10 +47,10 @@ object MainThreadExecutor {
             }
         }.deferred
 
-    private class MainThreadJob<T>(private val block: suspend () -> T) {
+    private class MainThreadJob<T>(private val block: () -> T) {
         val deferred = CompletableDeferred<T>()
 
-        suspend fun run() {
+        fun run() {
             deferred.completeWith(
                 runCatching { block.invoke() }
             )

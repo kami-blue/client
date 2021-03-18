@@ -34,7 +34,7 @@ internal object KamiMoji : Module(
                 if (index == -1) continue
 
                 val x = mc.fontRenderer.getStringWidth(text.substring(0, index)) + fontHeight / 4
-                drawEmoji(texture, (posX + x).toDouble(), posY.toDouble(), fontHeight.toFloat(), alpha)
+                drawEmoji(texture, (posX + x).toDouble(), posY.toDouble(), fontHeight.toFloat())
             }
 
             text = text.replaceFirst(emojiText, getReplacement(fontHeight))
@@ -70,7 +70,7 @@ internal object KamiMoji : Module(
     }
 
     /* This is created because vanilla one doesn't take double position input */
-    private fun drawEmoji(texture: MipmapTexture, x: Double, y: Double, size: Float, alpha: Float) {
+    private fun drawEmoji(texture: MipmapTexture, x: Double, y: Double, size: Float) {
         val tessellator = Tessellator.getInstance()
         val bufBuilder = tessellator.buffer
 

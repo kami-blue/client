@@ -4,7 +4,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.util.math.Direction
 
-object Direction : LabelHud(
+internal object Direction : LabelHud(
     name = "Direction",
     category = Category.PLAYER,
     description = "Direction of player facing to"

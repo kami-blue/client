@@ -3,10 +3,9 @@ package org.kamiblue.client.gui.hudgui.elements.player
 import net.minecraft.util.EnumHand
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.commons.utils.MathUtils
 
-object Durability : LabelHud(
+internal object Durability : LabelHud(
     name = "Durability",
     category = Category.PLAYER,
     description = "Durability of holding items"

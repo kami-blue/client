@@ -5,7 +5,7 @@ import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.util.math.RotationUtils
 import org.kamiblue.commons.utils.MathUtils
 
-object Rotation : LabelHud(
+internal object Rotation : LabelHud(
     name = "Rotation",
     category = Category.PLAYER,
     description = "Player rotation"

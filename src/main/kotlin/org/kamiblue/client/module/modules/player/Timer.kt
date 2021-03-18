@@ -1,16 +1,17 @@
 package org.kamiblue.client.module.modules.player
 
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.client.mixin.extension.tickLength
-import org.kamiblue.client.mixin.extension.timer
+import org.kamiblue.client.manager.managers.TimerManager.modifyTimer
+import org.kamiblue.client.manager.managers.TimerManager.resetTimer
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
-import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.event.listener.listener
 
 internal object Timer : Module(
     name = "Timer",
     category = Category.PLAYER,
-    description = "Changes your client tick speed"
+    description = "Changes your client tick speed",
+    modulePriority = 500
 ) {
     private val slow by setting("Slow Mode", false)
     private val tickNormal by setting("Tick N", 2.0f, 1f..10f, 0.1f, { !slow })
@@ -18,13 +19,14 @@ internal object Timer : Module(
 
     init {
         onDisable {
-            mc.timer.tickLength = 50.0f
+            resetTimer()
         }
 
-        safeListener<TickEvent.ClientTickEvent> {
-            mc.timer.tickLength = 50.0f /
-                if (!slow) tickNormal
-                else (tickSlow / 10.0f)
+        listener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.END) return@listener
+
+            val multiplier = if (!slow) tickNormal else tickSlow / 10.0f
+            modifyTimer(50.0f / multiplier)
         }
     }
 }

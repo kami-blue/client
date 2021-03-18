@@ -43,8 +43,8 @@ internal object MidClickFriends : Module(
 
     private fun add(name: String) {
         defaultScope.launch {
-            if (FriendManager.addFriend(name)) MessageSendHelper.sendChatMessage("Failed to find UUID of $name")
-            else MessageSendHelper.sendChatMessage("&b$name&r has been friended.")
+            if (FriendManager.addFriend(name)) MessageSendHelper.sendChatMessage("&b$name&r has been friended.")
+            else MessageSendHelper.sendChatMessage("Failed to find UUID of $name")
         }
     }
 }

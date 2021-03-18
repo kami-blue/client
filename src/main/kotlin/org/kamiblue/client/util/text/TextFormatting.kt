@@ -3,10 +3,12 @@ package org.kamiblue.client.util.text
 import net.minecraft.util.text.TextFormatting
 import org.kamiblue.client.util.color.EnumTextColor
 
-fun formatValue(any: Any) = TextFormatting.GRAY format "[$any]"
+fun formatValue(value: String) = TextFormatting.GRAY format "[$value]"
 
-fun formatValue(any: Int) = TextFormatting.GRAY format "($any)"
+fun formatValue(value: Any) = TextFormatting.GRAY format "[$value]"
 
-infix fun TextFormatting.format(any: Any) = "$this$any${TextFormatting.RESET}"
+fun formatValue(value: Int) = TextFormatting.GRAY format "($value)"
 
-infix fun EnumTextColor.format(any: Any) = "$this$any${TextFormatting.RESET}"
+infix fun TextFormatting.format(value: Any) = "$this$value${TextFormatting.RESET}"
+
+infix fun EnumTextColor.format(value: Any) = "$this$value${TextFormatting.RESET}"

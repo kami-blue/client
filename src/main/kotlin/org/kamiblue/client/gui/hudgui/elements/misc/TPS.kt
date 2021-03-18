@@ -5,7 +5,7 @@ import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.util.CircularArray
 import org.kamiblue.client.util.TpsCalculator
 
-object TPS : LabelHud(
+internal object TPS : LabelHud(
     name = "TPS",
     category = Category.MISC,
     description = "Server TPS"

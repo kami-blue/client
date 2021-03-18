@@ -1,8 +1,7 @@
 package org.kamiblue.client.util
 
 import org.kamiblue.client.event.SafeClientEvent
-import org.kamiblue.client.mixin.extension.tickLength
-import org.kamiblue.client.mixin.extension.timer
+import org.kamiblue.client.manager.managers.TimerManager
 import org.kamiblue.client.util.MovementUtils.realSpeed
 
 object InfoCalculator {
@@ -14,7 +13,7 @@ object InfoCalculator {
     fun ping() = mc.player?.let { mc.connection?.getPlayerInfo(it.uniqueID)?.responseTime ?: 1 } ?: -1
 
     fun SafeClientEvent.speed(): Double {
-        val tps = 1000.0 / mc.timer.tickLength
+        val tps = 1000.0 / TimerManager.tickLength
         return player.realSpeed * tps
     }
 

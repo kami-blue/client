@@ -25,9 +25,6 @@ object Wrapper {
         if (!KamiMod.ready) return
 
         ShutdownEvent.post()
-
-        println("Shutting down: saving KAMI configuration")
         saveAll()
-        println("Configuration saved.")
     }
 }

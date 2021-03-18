@@ -7,6 +7,7 @@ import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
+import org.kamiblue.client.util.Wrapper
 
 val EntityPlayer.allSlots: List<Slot>
     get() = inventoryContainer.getSlots(1..45)
@@ -40,7 +41,7 @@ fun Container.getSlots(range: IntRange): List<Slot> =
 fun Iterable<Slot>.countEmpty() =
     count { it.stack.isEmpty }
 
-inline fun <reified B : Block> Iterable<Slot>.countBlock(crossinline predicate: (ItemStack) -> Boolean = { true }) =
+inline fun <reified B : Block> Iterable<Slot>.countBlock(predicate: (ItemStack) -> Boolean = { true }) =
     countByStack { itemStack ->
         itemStack.item.let { it is ItemBlock && it.block is B } && predicate(itemStack)
     }
@@ -50,7 +51,7 @@ fun Iterable<Slot>.countBlock(block: Block, predicate: (ItemStack) -> Boolean = 
         itemStack.item.let { it is ItemBlock && it.block == block } && predicate(itemStack)
     }
 
-inline fun <reified I : Item> Iterable<Slot>.countItem(crossinline predicate: (ItemStack) -> Boolean = { true }) =
+inline fun <reified I : Item> Iterable<Slot>.countItem(predicate: (ItemStack) -> Boolean = { true }) =
     countByStack { it.item is I && predicate(it) }
 
 fun Iterable<Slot>.countItem(item: Item, predicate: (ItemStack) -> Boolean = { true }) =
@@ -59,7 +60,7 @@ fun Iterable<Slot>.countItem(item: Item, predicate: (ItemStack) -> Boolean = { t
 fun Iterable<Slot>.countID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
     countByStack { it.item.id == itemID && predicate(it) }
 
-fun Iterable<Slot>.countByStack(predicate: (ItemStack) -> Boolean = { true }) =
+inline fun Iterable<Slot>.countByStack(predicate: (ItemStack) -> Boolean = { true }) =
     sumBy { slot ->
         slot.stack.let { if (predicate(it)) it.count else 0 }
     }
@@ -68,7 +69,7 @@ fun Iterable<Slot>.countByStack(predicate: (ItemStack) -> Boolean = { true }) =
 fun <T : Slot> Iterable<T>.firstEmpty() =
     firstByStack { it.isEmpty }
 
-inline fun <reified B : Block, T : Slot> Iterable<T>.firstBlock(crossinline predicate: (ItemStack) -> Boolean = { true }) =
+inline fun <reified B : Block, T : Slot> Iterable<T>.firstBlock(predicate: (ItemStack) -> Boolean = { true }) =
     firstByStack { itemStack ->
         itemStack.item.let { it is ItemBlock && it.block is B } && predicate(itemStack)
     }
@@ -78,7 +79,7 @@ fun <T : Slot> Iterable<T>.firstBlock(block: Block, predicate: (ItemStack) -> Bo
         itemStack.item.let { it is ItemBlock && it.block == block } && predicate(itemStack)
     }
 
-inline fun <reified I : Item, T : Slot> Iterable<T>.firstItem(crossinline predicate: (ItemStack) -> Boolean = { true }) =
+inline fun <reified I : Item, T : Slot> Iterable<T>.firstItem(predicate: (ItemStack) -> Boolean = { true }) =
     firstByStack {
         it.item is I && predicate(it)
     }
@@ -93,14 +94,14 @@ fun <T : Slot> Iterable<T>.firstID(itemID: Int, predicate: (ItemStack) -> Boolea
         it.item.id == itemID && predicate(it)
     }
 
-fun <T : Slot> Iterable<T>.firstByStack(predicate: (ItemStack) -> Boolean): T? =
+inline fun <T : Slot> Iterable<T>.firstByStack(predicate: (ItemStack) -> Boolean): T? =
     firstOrNull { predicate(it.stack) }
 
 
 inline fun <reified B : Block, T : Slot> Iterable<T>.forEmpty() =
     filterByStack { it.isEmpty }
 
-inline fun <reified B : Block, T : Slot> Iterable<T>.filterByBlock(crossinline predicate: (ItemStack) -> Boolean = { true }) =
+inline fun <reified B : Block, T : Slot> Iterable<T>.filterByBlock(predicate: (ItemStack) -> Boolean = { true }) =
     filterByStack { itemStack ->
         itemStack.item.let { it is ItemBlock && it.block is B } && predicate(itemStack)
     }
@@ -110,7 +111,7 @@ fun <T : Slot> Iterable<T>.filterByBlock(block: Block, predicate: (ItemStack) ->
         itemStack.item.let { it is ItemBlock && it.block == block } && predicate(itemStack)
     }
 
-inline fun <reified I : Item, T : Slot> Iterable<T>.filterByItem(crossinline predicate: (ItemStack) -> Boolean = { true }) =
+inline fun <reified I : Item, T : Slot> Iterable<T>.filterByItem(predicate: (ItemStack) -> Boolean = { true }) =
     filterByStack {
         it.item is I && predicate(it)
     }
@@ -123,9 +124,12 @@ fun <T : Slot> Iterable<T>.filterByItem(item: Item, predicate: (ItemStack) -> Bo
 fun <T : Slot> Iterable<T>.filterByID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
     filterByStack { it.item.id == itemID && predicate(it) }
 
-fun <T : Slot> Iterable<T>.filterByStack(predicate: (ItemStack) -> Boolean = { true }) =
+inline fun <T : Slot> Iterable<T>.filterByStack(predicate: (ItemStack) -> Boolean = { true }) =
     filter { predicate(it.stack) }
 
+fun Slot.toHotbarSlotOrNull() =
+    if (this.slotNumber in 36..44 && this.inventory == Wrapper.player?.inventory) HotbarSlot(this)
+    else null
 
 class HotbarSlot(slot: Slot) : Slot(slot.inventory, slot.slotIndex, slot.xPos, slot.yPos) {
     init {

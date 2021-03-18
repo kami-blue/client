@@ -18,8 +18,8 @@ import org.kamiblue.client.util.threads.onMainThreadSafe
  * or slot 0 if none
  */
 inline fun <reified I : Block> SafeClientEvent.swapToBlockOrMove(
-    crossinline predicateItem: (ItemStack) -> Boolean = { true },
-    noinline predicateSlot: (ItemStack) -> Boolean = { true }
+    predicateItem: (ItemStack) -> Boolean = { true },
+    predicateSlot: (ItemStack) -> Boolean = { true }
 ): Boolean {
     return if (swapToBlock<I>(predicateItem)) {
         true
@@ -59,8 +59,8 @@ fun SafeClientEvent.swapToBlockOrMove(
  * or slot 0 if none
  */
 inline fun <reified I : Item> SafeClientEvent.swapToItemOrMove(
-    crossinline predicateItem: (ItemStack) -> Boolean = { true },
-    noinline predicateSlot: (ItemStack) -> Boolean = { true }
+    predicateItem: (ItemStack) -> Boolean = { true },
+    predicateSlot: (ItemStack) -> Boolean = { true }
 ): Boolean {
     return if (swapToItem<I>(predicateItem)) {
         true
@@ -117,7 +117,7 @@ fun SafeClientEvent.swapToItemOrMove(
 /**
  * Try to swap selected hotbar slot to [I] that matches with [predicate]
  */
-inline fun <reified I : Block> SafeClientEvent.swapToBlock(crossinline predicate: (ItemStack) -> Boolean = { true }): Boolean {
+inline fun <reified I : Block> SafeClientEvent.swapToBlock(predicate: (ItemStack) -> Boolean = { true }): Boolean {
     return player.hotbarSlots.firstBlock<I, HotbarSlot>(predicate)?.let {
         swapToSlot(it)
         true
@@ -137,7 +137,7 @@ fun SafeClientEvent.swapToBlock(block: Block, predicate: (ItemStack) -> Boolean 
 /**
  * Try to swap selected hotbar slot to [I] that matches with [predicate]
  */
-inline fun <reified I : Item> SafeClientEvent.swapToItem(crossinline predicate: (ItemStack) -> Boolean = { true }): Boolean {
+inline fun <reified I : Item> SafeClientEvent.swapToItem(predicate: (ItemStack) -> Boolean = { true }): Boolean {
     return player.hotbarSlots.firstItem<I, HotbarSlot>(predicate)?.let {
         swapToSlot(it)
         true
@@ -184,7 +184,7 @@ fun SafeClientEvent.swapToSlot(slot: Int) {
  * Swaps the item in [slotFrom] with the first empty hotbar slot
  * or matches with [predicate] or slot 0 if none of those found
  */
-fun SafeClientEvent.moveToHotbar(slotFrom: Slot, predicate: (ItemStack) -> Boolean): Short {
+inline fun SafeClientEvent.moveToHotbar(slotFrom: Slot, predicate: (ItemStack) -> Boolean): Short {
     return moveToHotbar(slotFrom.slotNumber, predicate)
 }
 
@@ -192,7 +192,7 @@ fun SafeClientEvent.moveToHotbar(slotFrom: Slot, predicate: (ItemStack) -> Boole
  * Swaps the item in [slotFrom] with the first empty hotbar slot
  * or matches with [predicate] or slot 0 if none of those found
  */
-fun SafeClientEvent.moveToHotbar(slotFrom: Int, predicate: (ItemStack) -> Boolean): Short {
+inline fun SafeClientEvent.moveToHotbar(slotFrom: Int, predicate: (ItemStack) -> Boolean): Short {
     val hotbarSlots = player.hotbarSlots
     val slotTo = hotbarSlots.firstItem(Items.AIR)?.hotbarSlot
         ?: hotbarSlots.firstByStack(predicate)?.hotbarSlot ?: 0

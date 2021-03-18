@@ -2,20 +2,19 @@ package org.kamiblue.client.gui.hudgui.elements.player
 
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.InfoCalculator.speed
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.commons.utils.MathUtils
 import java.util.*
 
-object PlayerSpeed : LabelHud(
+internal object PlayerSpeed : LabelHud(
     name = "PlayerSpeed",
     category = Category.PLAYER,
     description = "Player movement speed"
 ) {
 
     private val speedUnit by setting("Speed Unit", SpeedUnit.MPS)
-    private val averageSpeedTime by setting("Average Speed Time", 1.0f, 0.25f..5.0f, 0.25f)
+    private val averageSpeedTime by setting("Average Speed Ticks", 10, 1..50, 1)
 
     @Suppress("UNUSED")
     private enum class SpeedUnit(override val displayName: String, val multiplier: Double) : DisplayEnum {
@@ -47,7 +46,7 @@ object PlayerSpeed : LabelHud(
             speedList.pollFirst()
         }
 
-        while (speedList.size > averageSpeedTime * 20.0f) speedList.pollFirst()
+        while (speedList.size > averageSpeedTime) speedList.pollFirst()
     }
 
 }

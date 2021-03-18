@@ -4,7 +4,6 @@ import baritone.api.event.events.ChatEvent
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TextComponentBase
 import net.minecraft.util.text.TextComponentString
-import net.minecraft.util.text.TextFormatting
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.manager.managers.MessageManager
@@ -13,6 +12,7 @@ import org.kamiblue.client.util.BaritoneUtils
 import org.kamiblue.client.util.TaskState
 import org.kamiblue.client.util.Wrapper
 import java.util.regex.Pattern
+import baritone.api.utils.Helper as BaritoneHelper
 
 object MessageSendHelper {
     private val mc = Wrapper.minecraft
@@ -41,7 +41,7 @@ object MessageSendHelper {
     }
 
     fun sendBaritoneMessage(message: String) {
-        sendRawChatMessage(TextFormatting.DARK_PURPLE.toString() + "[" + TextFormatting.LIGHT_PURPLE + "Baritone" + TextFormatting.DARK_PURPLE + "] " + TextFormatting.RESET + message)
+        BaritoneHelper.HELPER.logDirect(message)
     }
 
     fun sendBaritoneCommand(vararg args: String?) {

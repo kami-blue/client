@@ -25,6 +25,7 @@ import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.runSafeR
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.util.world.getMiningSide
 import org.kamiblue.event.listener.listener
 import java.io.DataInputStream
 import java.io.File
@@ -383,21 +384,10 @@ internal object NoteBot : Module(
     }
 
     private fun SafeClientEvent.clickBlock(pos: BlockPos) {
-        val side = getExposedSide(pos)
-        connection.apply {
-            sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, side))
-            sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, pos, side))
-        }
+        val side = getMiningSide(pos) ?: EnumFacing.UP
+        connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, side))
+        connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, pos, side))
         player.swingArm(EnumHand.MAIN_HAND)
-    }
-
-    private fun SafeClientEvent.getExposedSide(pos: BlockPos): EnumFacing {
-        val playerPos = player.positionVector
-
-        return EnumFacing.values()
-            .filter { world.isAirBlock(pos.offset(it)) }
-            .minByOrNull { WorldUtils.getHitVec(pos, it).distanceTo(playerPos) }
-            ?: EnumFacing.UP
     }
 
     private class Note(val note: Int, val track: Int) {
