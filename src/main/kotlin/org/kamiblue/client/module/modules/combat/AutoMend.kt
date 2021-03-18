@@ -21,7 +21,6 @@ import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.items.clickSlot
 import org.kamiblue.client.util.items.swapToSlot
 import org.kamiblue.client.util.math.Vec2f
-import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.commons.utils.MathUtils.reverseNumber
@@ -32,13 +31,14 @@ internal object AutoMend : Module(
     category = Category.COMBAT,
     description = "Automatically mends armour"
 ) {
+
     private val autoThrow by setting("Auto Throw", true)
     private val throwDelay = setting("Throw Delay", 2, 0..5, 1, description = "Number of ticks between throws to allow absorption")
     private val autoSwitch by setting("Auto Switch", true)
-    private val autoDisableExp by setting("Disable on No Exp Bottle", false, { autoSwitch })
+    private val autoDisableExp by setting("Auto Disable", false, { autoSwitch }, description = "Disable when you run out of XP bottles")
     private val autoDisableComplete by setting("Disable on Complete", false)
     private val takeOff by setting("Take Off", true)
-    private val pauseAutoArmor by setting("Pause AutoArmor", true, { takeOff })
+    private val pauseAutoArmor = setting("Pause AutoArmor", true, { takeOff })
     private val cancelNearby by setting("Cancel Nearby", NearbyMode.OFF, description = "Don't mend when an enemy is nearby")
     private val pauseNearbyRadius by setting("Nearby Radius", 8, 1..8, 1, { cancelNearby != NearbyMode.OFF })
     private val threshold by setting("Repair At", 75, 1..100, 1, description = "Percentage to start repairing any armor piece")
@@ -68,8 +68,15 @@ internal object AutoMend : Module(
 
         onDisable {
             switchback()
-            if (AutoArmor.isPaused && pauseAutoArmor)
+            if (AutoArmor.isPaused && pauseAutoArmor.value) {
                 AutoArmor.isPaused = false
+            }
+        }
+
+        pauseAutoArmor.listeners.add {
+            if (!pauseAutoArmor.value) {
+                AutoArmor.isPaused = false;
+            }
         }
 
         listener<GuiEvent.Displayed> {
@@ -92,34 +99,40 @@ internal object AutoMend : Module(
                         switchback()
                     paused = true
                 }
+
                 return@safeListener
             }
+
             paused = false
 
-            if (!shouldMend() && autoDisableComplete) {
-                MessageSendHelper.sendChatMessage("$chatName Mending completed! disabling")
+            val shouldMend = shouldMend() // don't call twice in same tick
+            if (!shouldMend && autoDisableComplete) {
                 disable()
             }
 
             if ((autoSwitch || autoThrow) // avoid checking if no actions are going to be done
-                && hasBlockUnder() && shouldMend()) {
+                && hasBlockUnder() && shouldMend) {
                 if (autoSwitch && player.heldItemMainhand.item !== Items.EXPERIENCE_BOTTLE) {
                     val xpSlot = findXpPots()
 
                     if (xpSlot == -1) {
                         if (autoDisableExp) {
-                            MessageSendHelper.sendWarningMessage("$chatName No XP in hotbar, disabling")
                             disable()
                         }
+
                         return@safeListener
                     }
+
                     player.inventory.currentItem = xpSlot
                 }
+
                 if (autoThrow && player.heldItemMainhand.item === Items.EXPERIENCE_BOTTLE) {
                     sendPlayerPacket {
                         rotate(Vec2f(player.rotationYaw, 90.0f))
                     }
+
                     isMending = true
+
                     if (validServerSideRotation() && throwDelayTimer.tick(throwDelay.value.toLong())) {
                         playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
                     }
@@ -128,7 +141,7 @@ internal object AutoMend : Module(
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if(!pauseAutoArmor) return@safeListener
+            if (!pauseAutoArmor.value) return@safeListener
             AutoArmor.isPaused = isMending
 
             if (takeOff && isMending) {
