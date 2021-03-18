@@ -105,7 +105,8 @@ internal object AutoMend : Module(
 
                 paused = false
 
-                val shouldMend = shouldMend() // don't call twice in same tick
+                // don't call twice in same tick so store in a var
+                val shouldMend = shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3)
                 if (!shouldMend && autoDisableComplete) {
                     disable()
                 }
@@ -189,10 +190,6 @@ internal object AutoMend : Module(
     private fun SafeClientEvent.shouldMend(i: Int): Boolean { // (100 * damage / max damage) >= (100 - 70)
         val stack = player.inventory.armorInventory[i]
         return hasMending(i) && stack.isItemDamaged && 100 * stack.itemDamage / stack.maxDamage > reverseNumber(threshold, 1, 100)
-    }
-
-    private fun SafeClientEvent.shouldMend(): Boolean {
-        return shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3)
     }
 
     private fun switchback() {
