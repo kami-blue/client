@@ -47,7 +47,6 @@ internal object AutoMend : Module(
     private var initHotbarSlot = -1
     private var isGuiOpened = false
     private var paused = false
-    private var isMending = false
 
     private val throwDelayTimer = TickTimer(TimeUnit.TICKS)
 
@@ -75,7 +74,7 @@ internal object AutoMend : Module(
 
         pauseAutoArmor.listeners.add {
             if (!pauseAutoArmor.value) {
-                AutoArmor.isPaused = false;
+                AutoArmor.isPaused = false
             }
         }
 
@@ -88,73 +87,73 @@ internal object AutoMend : Module(
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            isMending = false
-            if (isGuiOpened && !gui) return@safeListener
+            var isMending = false
 
-            if (cancelNearby != NearbyMode.OFF && isNearbyPlayer()) {
-                if (cancelNearby == NearbyMode.DISABLE) {
-                    disable()
-                } else {
-                    if (!paused)
-                        switchback()
-                    paused = true
+            if (!isGuiOpened || gui) {
+                if (cancelNearby != NearbyMode.OFF && isNearbyPlayer()) {
+                    if (cancelNearby == NearbyMode.DISABLE) {
+                        disable()
+                    } else {
+                        if (!paused)
+                            switchback()
+                        paused = true
+                    }
+
+                    return@safeListener
                 }
 
-                return@safeListener
-            }
+                paused = false
 
-            paused = false
+                val shouldMend = shouldMend() // don't call twice in same tick
+                if (!shouldMend && autoDisableComplete) {
+                    disable()
+                }
 
-            val shouldMend = shouldMend() // don't call twice in same tick
-            if (!shouldMend && autoDisableComplete) {
-                disable()
-            }
+                if ((autoSwitch || autoThrow) // avoid checking if no actions are going to be done
+                    && hasBlockUnder() && shouldMend) {
+                    if (autoSwitch && player.heldItemMainhand.item !== Items.EXPERIENCE_BOTTLE) {
+                        val xpSlot = findXpPots()
 
-            if ((autoSwitch || autoThrow) // avoid checking if no actions are going to be done
-                && hasBlockUnder() && shouldMend) {
-                if (autoSwitch && player.heldItemMainhand.item !== Items.EXPERIENCE_BOTTLE) {
-                    val xpSlot = findXpPots()
+                        if (xpSlot == -1) {
+                            if (autoDisableExp) {
+                                disable()
+                            }
 
-                    if (xpSlot == -1) {
-                        if (autoDisableExp) {
-                            disable()
+                            return@safeListener
                         }
 
-                        return@safeListener
+                        player.inventory.currentItem = xpSlot
                     }
 
-                    player.inventory.currentItem = xpSlot
-                }
+                    if (autoThrow && player.heldItemMainhand.item === Items.EXPERIENCE_BOTTLE) {
+                        sendPlayerPacket {
+                            rotate(Vec2f(player.rotationYaw, 90.0f))
+                        }
 
-                if (autoThrow && player.heldItemMainhand.item === Items.EXPERIENCE_BOTTLE) {
-                    sendPlayerPacket {
-                        rotate(Vec2f(player.rotationYaw, 90.0f))
-                    }
+                        isMending = true
 
-                    isMending = true
-
-                    if (validServerSideRotation() && throwDelayTimer.tick(throwDelay.value.toLong())) {
-                        playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
+                        if (validServerSideRotation() && throwDelayTimer.tick(throwDelay.value.toLong())) {
+                            playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
+                        }
                     }
                 }
             }
-        }
 
-        safeListener<TickEvent.ClientTickEvent> {
-            if (!pauseAutoArmor.value) return@safeListener
-            AutoArmor.isPaused = isMending
+            if (pauseAutoArmor.value) {
+                AutoArmor.isPaused = isMending
 
-            if (takeOff && isMending) {
-                var minSlot = 9
+                if (takeOff && isMending) {
+                    var minSlot = 9
 
-                for (i in 0..3) {
-                    if (shouldMend(i) || !hasMending(i)) continue
-                    val emptySlot = findEmptySlot(minSlot)
-                    minSlot = emptySlot + 1
+                    for (i in 0..3) {
+                        if (shouldMend(i) || !hasMending(i)) continue
+                        val emptySlot = findEmptySlot(minSlot)
+                        minSlot = emptySlot + 1
 
-                    if (emptySlot == -1) break
-                    clickSlot(player.inventoryContainer.windowId, 8 - i, 0, ClickType.PICKUP)
-                    clickSlot(player.inventoryContainer.windowId, emptySlot, 0, ClickType.PICKUP)
+                        if (emptySlot == -1) break
+                        clickSlot(player.inventoryContainer.windowId, 8 - i, 0, ClickType.PICKUP)
+                        clickSlot(player.inventoryContainer.windowId, emptySlot, 0, ClickType.PICKUP)
+                    }
                 }
             }
         }
