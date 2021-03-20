@@ -158,7 +158,7 @@ object SetCommand : ClientCommand(
 
         try {
             setting.setValue(value)
-            MessageSendHelper.sendChatMessage("Set ${formatValue(setting.name)} to ${formatValue(value)}.")
+            MessageSendHelper.sendChatMessage("Set ${formatValue(setting.name)} to ${formatValue(setting.value)}.")
         } catch (e: Exception) {
             MessageSendHelper.sendChatMessage("Unable to set value! ${TextFormatting.RED format e.message.toString()}")
             KamiMod.LOG.info("Unable to set value!", e)
