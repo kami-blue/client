@@ -2,7 +2,6 @@ package org.kamiblue.client.gui.hudgui.elements.misc
 
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
-import org.kamiblue.client.gui.hudgui.elements.misc.MemoryUsage.setting
 import org.kamiblue.client.util.CircularArray
 import org.kamiblue.client.util.TpsCalculator
 
