@@ -11,6 +11,7 @@ internal object TPS : LabelHud(
     category = Category.MISC,
     description = "Server TPS"
 ) {
+
     private val mspt = setting("Show MSPT", false)
 
     // buffered TPS readings to add some fluidity to the TPS HUD element
@@ -20,7 +21,7 @@ internal object TPS : LabelHud(
         tpsBuffer.add(TpsCalculator.tickRate)
         if (mspt.value) {
             displayText.add("%.2f".format(1000 / tpsBuffer.average()), primaryColor)
-            displayText.add("MS/Tick", secondaryColor)
+            displayText.add("mspt", secondaryColor)
         } else {
             displayText.add("%.2f".format(tpsBuffer.average()), primaryColor)
             displayText.add("tps", secondaryColor)
