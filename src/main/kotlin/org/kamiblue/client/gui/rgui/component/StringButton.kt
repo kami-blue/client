@@ -44,15 +44,11 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
-        if (buttonId == 1) {
-            if (!listening) {
-                listening = true
-                componentName = setting.value
-                value = 0.0
-            } else {
-                onStopListening(false)
-            }
-        } else if (buttonId == 0 && listening) {
+        if (buttonId == 0 && !listening) {
+            listening = true
+            componentName = setting.value
+            value = 0.0
+        } else {
             onStopListening(true)
         }
     }
