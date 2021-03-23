@@ -19,7 +19,12 @@ internal object TPS : LabelHud(
     override fun SafeClientEvent.updateText() {
         tpsBuffer.add(TpsCalculator.tickRate)
         if (mspt.value) {
-            displayText.add("%.2f".format(1000 / tpsBuffer.average()), primaryColor)
+            // If the Value returns Zero, it reads "Infinity mspt"
+            if (tpsBuffer.average() == 0.00f) {
+                displayText.add("%.2f".format(0.00f), primaryColor)
+            } else {
+                displayText.add("%.2f".format(1000 / tpsBuffer.average()), primaryColor)
+            }
             displayText.add("mspt", secondaryColor)
         } else {
             displayText.add("%.2f".format(tpsBuffer.average()), primaryColor)
