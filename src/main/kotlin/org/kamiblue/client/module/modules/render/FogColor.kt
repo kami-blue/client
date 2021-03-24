@@ -11,13 +11,13 @@ internal object FogColor : Module(
     description = "Recolors render fog",
     category = Category.RENDER
 ) {
-    private val Color = setting("Color", ColorHolder(111, 166, 222, 255))
+    private val color = setting("Color", ColorHolder(111, 166, 222, 255))
 
     init {
         listener<EntityViewRenderEvent.FogColors> {
-            it.red = Color.value.r.toFloat() / 255f
-            it.green = Color.value.g.toFloat() / 255f
-            it.blue = Color.value.b.toFloat() / 255f
+            it.red = color.value.r.toFloat() / 255f
+            it.green = color.value.g.toFloat() / 255f
+            it.blue = color.value.b.toFloat() / 255f
         }
     }
 }
