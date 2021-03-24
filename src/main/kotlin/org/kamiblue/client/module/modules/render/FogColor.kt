@@ -3,6 +3,7 @@ package org.kamiblue.client.module.modules.render
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import net.minecraftforge.client.event.EntityViewRenderEvent
+import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.event.listener.listener
 
 internal object FogColor : Module(
@@ -10,15 +11,13 @@ internal object FogColor : Module(
     description = "Recolors render fog",
     category = Category.RENDER
 ) {
-    private val r by setting("Red", 111, 0..255, 1)
-    private val g by setting("Green", 166, 0..255, 1)
-    private val b by setting("Blue", 222, 0..255, 1)
+    private val Color = setting("Color", ColorHolder(111, 166, 222, 255))
 
     init {
         listener<EntityViewRenderEvent.FogColors> {
-            it.red = r.toFloat() / 255f
-            it.green = g.toFloat() / 255f
-            it.blue = b.toFloat() / 255f
+            it.red = Color.value.r.toFloat() / 255f
+            it.green = Color.value.g.toFloat() / 255f
+            it.blue = Color.value.b.toFloat() / 255f
         }
     }
 }
