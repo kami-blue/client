@@ -38,10 +38,7 @@ internal object EyeFinder : Module(
     private val range = setting("Range", 64, 8..128, 8, { page.value == Page.ENTITY_TYPE })
 
     /* Rendering settings */
-    private val r = setting("Red", 155, 0..255, 1, { page.value == Page.RENDERING })
-    private val g = setting("Green", 144, 0..255, 1, { page.value == Page.RENDERING })
-    private val b = setting("Blue", 255, 0..255, 1, { page.value == Page.RENDERING })
-    private val a = setting("Alpha", 200, 0..255, 1, { page.value == Page.RENDERING })
+    private val color by setting("Color", ColorHolder(155, 144, 255, 200), visibility = { page.value == Page.RENDERING })
     private val thickness = setting("Thickness", 2.0f, 0.25f..5.0f, 0.25f, { page.value == Page.RENDERING })
 
 
@@ -107,14 +104,14 @@ internal object EyeFinder : Module(
     private fun drawLine(entity: Entity, pair: Pair<RayTraceResult, Float>) {
         val eyePos = entity.getPositionEyes(mc.renderPartialTicks)
         val result = pair.first
-        val alpha = (a.value * pair.second).toInt()
+        val alpha = (color.a * pair.second).toInt()
 
         /* Render line */
         val buffer = KamiTessellator.buffer
         GlStateManager.glLineWidth(thickness.value)
         KamiTessellator.begin(GL_LINES)
-        buffer.pos(eyePos.x, eyePos.y, eyePos.z).color(r.value, g.value, b.value, alpha).endVertex()
-        buffer.pos(result.hitVec.x, result.hitVec.y, result.hitVec.z).color(r.value, g.value, b.value, alpha).endVertex()
+        buffer.pos(eyePos.x, eyePos.y, eyePos.z).color(color.r, color.g, color.b, alpha).endVertex()
+        buffer.pos(result.hitVec.x, result.hitVec.y, result.hitVec.z).color(color.r, color.g, color.b, alpha).endVertex()
         KamiTessellator.render()
 
         /* Render hit position */
@@ -125,13 +122,12 @@ internal object EyeFinder : Module(
                 val offset = getInterpolatedAmount(result.entityHit, KamiTessellator.pTicks())
                 result.entityHit.renderBoundingBox.offset(offset)
             }
-            val colour = ColorHolder(r.value, g.value, b.value)
             val renderer = ESPRenderer()
             renderer.aFilled = (alpha / 3)
             renderer.aOutline = alpha
             renderer.thickness = (thickness.value)
             renderer.through = false
-            renderer.add(box, colour)
+            renderer.add(box, color)
             renderer.render(true)
         }
     }

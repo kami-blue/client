@@ -48,9 +48,7 @@ internal object WaypointRender : Module(
     private val filled = setting("Filled", true, { page.value == Page.ESP })
     private val outline = setting("Outline", true, { page.value == Page.ESP })
     private val tracer = setting("Tracer", true, { page.value == Page.ESP })
-    private val r = setting("Red", 31, 0..255, 1, { page.value == Page.ESP })
-    private val g = setting("Green", 200, 0..255, 1, { page.value == Page.ESP })
-    private val b = setting("Blue", 63, 0..255, 1, { page.value == Page.ESP })
+    private val color by setting("Color", ColorHolder(31, 200, 63), false, { page.value == Page.ESP })
     private val aFilled = setting("Filled Alpha", 63, 0..255, 1, { page.value == Page.ESP && filled.value })
     private val aOutline = setting("Outline Alpha", 160, 0..255, 1, { page.value == Page.ESP && outline.value })
     private val aTracer = setting("Tracer Alpha", 200, 0..255, 1, { page.value == Page.ESP && tracer.value })
@@ -76,7 +74,6 @@ internal object WaypointRender : Module(
     init {
         listener<RenderWorldEvent> {
             if (waypointMap.isEmpty()) return@listener
-            val color = ColorHolder(r.value, g.value, b.value)
             val renderer = ESPRenderer()
             renderer.aFilled = if (filled.value) aFilled.value else 0
             renderer.aOutline = if (outline.value) aOutline.value else 0
