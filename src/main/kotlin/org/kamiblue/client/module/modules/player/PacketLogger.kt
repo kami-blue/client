@@ -97,29 +97,33 @@ internal object PacketLogger : Module(
         }
 
         listener<PacketEvent.Receive>(Int.MAX_VALUE) {
-            if (captureTiming != CaptureTiming.PRE ||
-                ignoreCancelled && it.cancelled) return@listener
+            if (captureTiming != CaptureTiming.PRE || ignoreCancelled && it.cancelled) { 
+                return@listener
+            }
 
             receivePacket(it.packet)
         }
 
         listener<PacketEvent.PostReceive>(Int.MIN_VALUE) {
-            if (captureTiming != CaptureTiming.POST ||
-                ignoreCancelled && it.cancelled) return@listener
+            if (captureTiming != CaptureTiming.POST || ignoreCancelled && it.cancelled) { 
+                return@listener
+            }
 
             receivePacket(it.packet)
         }
 
         listener<PacketEvent.Send>(Int.MAX_VALUE) {
-            if (captureTiming != CaptureTiming.PRE ||
-                ignoreCancelled && it.cancelled) return@listener
+            if (captureTiming != CaptureTiming.PRE || ignoreCancelled && it.cancelled) {
+                return@listener
+            }
 
             sendPacket(it.packet)
         }
 
         listener<PacketEvent.PostSend>(Int.MIN_VALUE) {
-            if (captureTiming != CaptureTiming.POST ||
-                ignoreCancelled && it.cancelled) return@listener
+            if (captureTiming != CaptureTiming.POST || ignoreCancelled && it.cancelled) {
+                return@listener
+            }
 
             sendPacket(it.packet)
         }
