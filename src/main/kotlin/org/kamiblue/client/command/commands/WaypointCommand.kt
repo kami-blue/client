@@ -11,6 +11,8 @@ import org.kamiblue.client.util.math.CoordinateConverter.asString
 import org.kamiblue.client.util.math.CoordinateConverter.bothConverted
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.text.formatValue
+import java.text.SimpleDateFormat
+import java.util.*
 
 object WaypointCommand : ClientCommand(
     name = "waypoint",
@@ -19,6 +21,7 @@ object WaypointCommand : ClientCommand(
 ) {
     private val stashRegex = "\\(\\d+ chests, \\d+ shulkers, \\d+ droppers, \\d+ dispensers, \\d+ hoppers\\)".toRegex()
     private var confirmTime = 0L
+    private val sdf = SimpleDateFormat("HH:mm:ss dd/MM/yyyy")
 
     init {
         literal("add", "new", "create", "+") {
@@ -109,10 +112,11 @@ object WaypointCommand : ClientCommand(
         }
 
         literal("sync") {
-            execute("Sync waypoints with baritone"){
-                for (waypoint in BaritoneAPI.getProvider().primaryBaritone.worldProvider.currentWorld.waypoints.allWaypoints){
+            execute("Sync waypoints with baritone") {
+                for (waypoint in BaritoneAPI.getProvider().primaryBaritone.worldProvider.currentWorld.waypoints.allWaypoints) {
                     WaypointManager.get(waypoint.location)?: run { // Don't duplicate already existing waypoints.
-                        WaypointManager.add(waypoint.location, waypoint.name)
+                        val date = sdf.format(Date(waypoint.creationTimestamp))
+                        WaypointManager.add(Waypoint(waypoint.location, waypoint.name, date, 0))
                     }
                 }
             }
