@@ -1,5 +1,6 @@
 package org.kamiblue.client.command.commands
 
+import baritone.api.BaritoneAPI
 import net.minecraft.util.math.BlockPos
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.manager.managers.WaypointManager
@@ -104,6 +105,16 @@ object WaypointCommand : ClientCommand(
         literal("clear") {
             execute("Clear all waypoints") {
                 clear()
+            }
+        }
+
+        literal("sync") {
+            execute("Sync waypoints with baritone"){
+                for (waypoint in BaritoneAPI.getProvider().primaryBaritone.worldProvider.currentWorld.waypoints.allWaypoints){
+                    WaypointManager.get(waypoint.location)?: run { // Don't duplicate already existing waypoints.
+                        WaypointManager.add(waypoint.location, waypoint.name)
+                    }
+                }
             }
         }
     }
