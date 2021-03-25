@@ -90,7 +90,7 @@ object WaypointManager : Manager {
         return waypoint
     }
 
-    fun add(waypoint: Waypoint){
+    fun add(waypoint: Waypoint) {
         waypoints.add(waypoint)
         KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.ADD, waypoint))
     }
