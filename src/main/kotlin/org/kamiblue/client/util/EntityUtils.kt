@@ -14,13 +14,19 @@ import net.minecraft.entity.passive.*
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.chunk.EmptyChunk
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.FriendManager
+import org.kamiblue.client.module.modules.movement.EntitySpeed
+import org.kamiblue.client.module.modules.movement.EntitySpeed.isBorderingChunk
+import org.kamiblue.client.util.MovementUtils.calcMoveYaw
 import org.kamiblue.client.util.items.id
 import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
+import kotlin.math.cos
 import kotlin.math.floor
+import kotlin.math.sin
 
 object EntityUtils {
     private val mc = Minecraft.getMinecraft()
@@ -171,4 +177,23 @@ object EntityUtils {
             .minByOrNull { player.getDistance(it) }
             ?.positionVector
             ?.toBlockPos()
+
+    fun SafeClientEvent.steerEntity(entity: Entity, speed: Float, antiStuck: Boolean) {
+        val yawRad = calcMoveYaw()
+
+        val motionX = -sin(yawRad) * speed
+        val motionZ = cos(yawRad) * speed
+
+        if (MovementUtils.isInputting && !isBorderingChunk(entity, motionX, motionZ, antiStuck)) {
+            entity.motionX = motionX
+            entity.motionZ = motionZ
+        } else {
+            entity.motionX = 0.0
+            entity.motionZ = 0.0
+        }
+    }
+
+    private fun SafeClientEvent.isBorderingChunk(entity: Entity, motionX: Double, motionZ: Double, antiStuck: Boolean): Boolean {
+        return antiStuck && world.getChunk((entity.posX + motionX).toInt() shr 4, (entity.posZ + motionZ).toInt() shr 4) is EmptyChunk
+    }
 }
