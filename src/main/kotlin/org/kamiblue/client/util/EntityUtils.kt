@@ -17,8 +17,6 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.chunk.EmptyChunk
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.manager.managers.FriendManager
-import org.kamiblue.client.module.modules.movement.EntitySpeed
-import org.kamiblue.client.module.modules.movement.EntitySpeed.isBorderingChunk
 import org.kamiblue.client.util.MovementUtils.calcMoveYaw
 import org.kamiblue.client.util.items.id
 import org.kamiblue.client.util.math.VectorUtils.toBlockPos
