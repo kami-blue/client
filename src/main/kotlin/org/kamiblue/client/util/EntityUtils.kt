@@ -20,12 +20,11 @@ import org.kamiblue.client.util.items.id
 import org.kamiblue.client.util.math.VectorUtils.toBlockPos
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
-import kotlin.math.floor
 
 object EntityUtils {
     private val mc = Minecraft.getMinecraft()
 
-    val Entity.flooredPosition get() = BlockPos(floor(posX).toInt(), floor(posY).toInt(), floor(posZ).toInt())
+    val Entity.flooredPosition get() = BlockPos(posX.floorToInt(), posY.floorToInt(), posZ.floorToInt())
     val Entity.prevPosVector get() = Vec3d(this.prevPosX, this.prevPosY, this.prevPosZ)
 
     val Entity.isPassive
