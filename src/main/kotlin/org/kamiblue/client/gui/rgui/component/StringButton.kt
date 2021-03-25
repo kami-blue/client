@@ -78,10 +78,15 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)
-        if (listening && System.currentTimeMillis() % 1000 < 500){
+        if (listening && System.currentTimeMillis() % 1000 < 500) {
             val width = FontRenderAdapter.getStringWidth(componentName)
             val height = FontRenderAdapter.getFontHeight()
-            RenderUtils2D.drawLine(vertexHelper, Vec2d(width + 1.0, 1.0), Vec2d(width + 1.0, height.toDouble() + 2.0), color = GuiColors.text)
+            RenderUtils2D.drawLine(
+                vertexHelper,
+                Vec2d(width + 2.0, 1.0),
+                Vec2d(width + 2.0, height.toDouble() + 2.0),
+                color = GuiColors.text
+            )
         }
     }
 }
