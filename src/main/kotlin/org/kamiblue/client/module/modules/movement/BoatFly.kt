@@ -79,8 +79,6 @@ internal object BoatFly : Module(
             entity.motionX = 0.0
             entity.motionZ = 0.0
         }
-
-
         // Make sure the boat doesn't turn etc (params: isLeftDown, isRightDown, isForwardDown, isBackDown)
         if (entity is EntityBoat) {
             entity.rotationYaw = player.rotationYaw
