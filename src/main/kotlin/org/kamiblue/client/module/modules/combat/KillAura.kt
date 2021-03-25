@@ -28,7 +28,7 @@ internal object KillAura : Module(
     name = "KillAura",
     alias = arrayOf("KA", "Aura", "TriggerBot"),
     category = Category.COMBAT,
-    description = "Hits entities around you",
+    description = "Kills crewmates around you! 'Pretty Sus!' - FitMC",
     modulePriority = 50
 ) {
     private val mode by setting("Mode", Mode.COOLDOWN)
