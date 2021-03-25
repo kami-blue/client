@@ -1,9 +1,7 @@
 package org.kamiblue.client.module.modules.movement
 
 import net.minecraft.entity.Entity
-import net.minecraft.entity.passive.AbstractHorse
-import net.minecraft.entity.passive.EntityHorse
-import net.minecraft.entity.passive.EntityPig
+import net.minecraft.entity.item.EntityBoat
 import net.minecraft.network.play.client.CPacketInput
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketVehicleMove
@@ -21,16 +19,18 @@ import org.kamiblue.client.util.threads.safeListener
 import kotlin.math.cos
 import kotlin.math.sin
 
-internal object EntitySpeed : Module(
-    name = "EntitySpeed",
+internal object BoatFly : Module(
+    name = "BoatFly",
     category = Category.MOVEMENT,
-    description = "Abuse client-sided movement to shape sound barrier breaking rideables"
+    description = "Fly using boats"
 ) {
+    private const val flight = true
+
     private val speed = setting("Speed", 1.0f, 0.1f..25.0f, 0.1f)
     private val antiStuck = setting("Anti Stuck", true)
-    private val flight = setting("Flight", false)
-    private val glideSpeed = setting("Glide Speed", 0.1f, 0.0f..1.0f, 0.01f, { flight.value })
-    private val upSpeed = setting("Up Speed", 1.0f, 0.0f..5.0f, 0.1f, { flight.value })
+    private val glideSpeed = setting("Glide Speed", 0.1f, 0.0f..1.0f, 0.01f)
+    private val upSpeed = setting("Up Speed", 1.0f, 0.0f..5.0f, 0.1f)
+    private val opacity = setting("Boat Opacity", 1.0f, 0.0f..1.0f, 0.01f)
     private val forceInteract = setting("Force Interact", false)
     private val interactTickDelay = setting("Interact Delay", 2, 1..20, 1, { forceInteract.value }, description = "Force interact packet delay, in ticks.")
 
@@ -38,7 +38,7 @@ internal object EntitySpeed : Module(
         safeListener<PacketEvent.Send> {
             val ridingEntity = player.ridingEntity
 
-            if (!forceInteract.value) return@safeListener
+            if (!forceInteract.value || ridingEntity !is EntityBoat) return@safeListener
 
             if (it.packet is CPacketPlayer.Rotation || it.packet is CPacketInput) {
                 it.cancel()
@@ -52,15 +52,15 @@ internal object EntitySpeed : Module(
         }
 
         safeListener<PacketEvent.Receive> {
-            if (!forceInteract.value || it.packet !is SPacketMoveVehicle) return@safeListener
+            if (!forceInteract.value || player.ridingEntity !is EntityBoat || it.packet !is SPacketMoveVehicle) return@safeListener
             it.cancel()
         }
 
         safeListener<PlayerTravelEvent> {
             player.ridingEntity?.let {
-                if (it is EntityPig || it is AbstractHorse && it.controllingPassenger == player) {
+                if (it is EntityBoat && it.controllingPassenger == player) {
                     steerEntity(it)
-                    if (flight.value) fly(it)
+                    if (flight) fly(it)
                 }
             }
         }
@@ -80,9 +80,12 @@ internal object EntitySpeed : Module(
             entity.motionZ = 0.0
         }
 
-        if (entity is EntityHorse) {
-            entity.rotationYaw = player.rotationYaw
-        }
+
+            // Make sure the boat doesn't turn etc (params: isLeftDown, isRightDown, isForwardDown, isBackDown)
+            if (entity is EntityBoat) {
+                entity.rotationYaw = player.rotationYaw
+                entity.updateInputs(false, false, false, false)
+            }
     }
 
     private fun fly(entity: Entity) {
@@ -93,4 +96,7 @@ internal object EntitySpeed : Module(
     private fun SafeClientEvent.isBorderingChunk(entity: Entity, motionX: Double, motionZ: Double): Boolean {
         return antiStuck.value && world.getChunk((entity.posX + motionX).toInt() shr 4, (entity.posZ + motionZ).toInt() shr 4) is EmptyChunk
     }
+
+    @JvmStatic
+    fun getOpacity(): Float = opacity.value
 }
