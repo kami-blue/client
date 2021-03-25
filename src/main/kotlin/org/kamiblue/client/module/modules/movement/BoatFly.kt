@@ -81,11 +81,11 @@ internal object BoatFly : Module(
         }
 
 
-            // Make sure the boat doesn't turn etc (params: isLeftDown, isRightDown, isForwardDown, isBackDown)
-            if (entity is EntityBoat) {
-                entity.rotationYaw = player.rotationYaw
-                entity.updateInputs(false, false, false, false)
-            }
+        // Make sure the boat doesn't turn etc (params: isLeftDown, isRightDown, isForwardDown, isBackDown)
+        if (entity is EntityBoat) {
+            entity.rotationYaw = player.rotationYaw
+            entity.updateInputs(false, false, false, false)
+        }
     }
 
     private fun fly(entity: Entity) {
