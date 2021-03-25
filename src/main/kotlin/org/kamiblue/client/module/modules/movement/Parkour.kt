@@ -13,9 +13,9 @@ internal object Parkour : Module(
 ) {
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if(Companion.mc.player.onGround &&
-            !Companion.mc.player.isSneaking &&
-            Companion.mc.world.getCollisionBoxes(Companion.mc.player, Companion.mc.player.entityBoundingBox.offset(0.0, -0.5, 0.0).expand(-0.001, 0.0, -0.001)).isEmpty())
-            Companion.mc.player.jump() }
+            if(player.onGround &&
+            !player.isSneaking &&
+            world.getCollisionBoxes(player, player.entityBoundingBox.offset(0.0, -0.5, 0.0).expand(-0.001, 0.0, -0.001)).isEmpty())
+            player.jump() }
         }
     }
