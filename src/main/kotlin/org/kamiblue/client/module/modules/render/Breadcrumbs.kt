@@ -10,6 +10,7 @@ import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.EntityUtils.getInterpolatedPos
+import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.KamiTessellator
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
 import org.kamiblue.client.util.text.MessageSendHelper.sendChatMessage
@@ -36,10 +37,7 @@ internal object Breadcrumbs : Module(
     private val maxDistance = setting("Max Distance", 4096, 1024..16384, 1024)
     private val yOffset = setting("Y Offset", 0.5f, 0.0f..1.0f, 0.05f)
     private val throughBlocks = setting("Through Blocks", true)
-    private val r = setting("Red", 255, 0..255, 1)
-    private val g = setting("Green", 166, 0..255, 1)
-    private val b = setting("Blue", 188, 0..255, 1)
-    private val a = setting("Alpha", 200, 0..255, 1)
+    private val color by setting("Color", ColorHolder(255, 166, 188, 200))
     private val thickness = setting("Line Thickness", 2.0f, 0.25f..8.0f, 0.25f)
 
     private val mainList = ConcurrentHashMap<String, HashMap<Int, ArrayDeque<Vec3d>>>() /* <Server IP, <Dimension, PositionList>> */
@@ -119,7 +117,7 @@ internal object Breadcrumbs : Module(
             KamiTessellator.begin(GL_LINE_STRIP)
             for (pos in posList) {
                 val offsetPost = pos.add(offset)
-                buffer.pos(offsetPost.x, offsetPost.y, offsetPost.z).color(r.value, g.value, b.value, (a.value * alphaMultiplier).toInt()).endVertex()
+                buffer.pos(offsetPost.x, offsetPost.y, offsetPost.z).color(color.r, color.g, color.b, (color.a * alphaMultiplier).toInt()).endVertex()
             }
             KamiTessellator.render()
         }
