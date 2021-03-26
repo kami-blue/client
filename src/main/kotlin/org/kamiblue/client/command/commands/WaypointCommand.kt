@@ -125,7 +125,7 @@ object WaypointCommand : ClientCommand(
                 for (waypoint in waypoints) {
                     WaypointManager.get(waypoint.location) ?: run { // Don't duplicate already existing waypoints.
                         val date = sdf.format(Date(waypoint.creationTimestamp))
-                        WaypointManager.add(Waypoint(waypoint.location, waypoint.name, date, 0))
+                        WaypointManager.add(Waypoint(waypoint.location, waypoint.name, date))
                     }
                 }
 
