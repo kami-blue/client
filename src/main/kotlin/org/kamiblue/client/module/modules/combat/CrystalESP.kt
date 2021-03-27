@@ -56,9 +56,7 @@ internal object CrystalESP : Module(
     private val animationScale = setting("Animation Scale", 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
     private val crystalRange = setting("Crystal ESP Range", 16.0f, 0.0f..16.0f, 0.5f, { page.value == Page.CRYSTAL_ESP })
 
-    private val r = setting("Red", 155, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
-    private val g = setting("Green", 144, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
-    private val b = setting("Blue", 255, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
+    private val colour by setting("Color", ColorHolder(155, 144, 255), false, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
     private val aFilled = setting("Filled Alpha", 47, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && filled.value })
     private val aOutline = setting("Outline Alpha", 127, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && outline.value })
     private val aTracer = setting("Tracer Alpha", 200, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && tracer.value })
@@ -165,8 +163,8 @@ internal object CrystalESP : Module(
                 for ((pos, quad) in renderCrystalMap) {
                     val progress = getAnimationProgress(quad.third, quad.fourth)
                     val box = AxisAlignedBB(pos).shrink(0.5 - progress * 0.5)
-                    val color = ColorHolder(r.value, g.value, b.value, (progress * 255.0f).toInt())
-                    renderer.add(box, color)
+                    colour.a = (progress * 255.0f).toInt()
+                    renderer.add(box, colour)
                 }
 
                 renderer.render(true)
