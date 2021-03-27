@@ -4,6 +4,7 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.events.*
+import org.kamiblue.client.gui.hudgui.elements.world.Radar
 import org.kamiblue.client.manager.managers.WaypointManager
 import org.kamiblue.client.manager.managers.WaypointManager.Waypoint
 import org.kamiblue.client.module.Category
@@ -17,6 +18,7 @@ import org.kamiblue.client.util.graphics.font.TextComponent
 import org.kamiblue.client.util.graphics.font.VAlign
 import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.math.VectorUtils.distanceTo
+import org.kamiblue.client.util.math.VectorUtils.toVec3d
 import org.kamiblue.client.util.math.VectorUtils.toVec3dCenter
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
@@ -31,6 +33,7 @@ internal object WaypointRender : Module(
     category = Category.RENDER
 ) {
 
+    private val renderMode by setting("Mode", RenderMode.BOTH)
     private val page = setting("Page", Page.INFO_BOX)
 
     /* Page one */
@@ -43,23 +46,27 @@ internal object WaypointRender : Module(
     private val infoBoxRange = setting("Info Box Range", 512, 128..2048, 64, { page.value == Page.INFO_BOX })
 
     /* Page two */
-    private val espRangeLimit = setting("Render Range", true, { page.value == Page.ESP })
-    private val espRange = setting("Range", 4096, 1024..16384, 1024, { page.value == Page.ESP && espRangeLimit.value })
-    private val filled = setting("Filled", true, { page.value == Page.ESP })
-    private val outline = setting("Outline", true, { page.value == Page.ESP })
-    private val tracer = setting("Tracer", true, { page.value == Page.ESP })
-    private val color by setting("Color", ColorHolder(31, 200, 63), false, { page.value == Page.ESP })
-    private val aFilled = setting("Filled Alpha", 63, 0..255, 1, { page.value == Page.ESP && filled.value })
-    private val aOutline = setting("Outline Alpha", 160, 0..255, 1, { page.value == Page.ESP && outline.value })
-    private val aTracer = setting("Tracer Alpha", 200, 0..255, 1, { page.value == Page.ESP && tracer.value })
+    private val espRangeLimit = setting("Render Range", true, { page.value == Page.RENDER && renderMode != RenderMode.RADAR })
+    private val espRange = setting("Range", 4096, 1024..16384, 1024, { page.value == Page.RENDER && espRangeLimit.value && renderMode != RenderMode.RADAR })
+    private val filled = setting("Filled", true, { page.value == Page.RENDER && renderMode != RenderMode.RADAR })
+    private val outline = setting("Outline", true, { page.value == Page.RENDER && renderMode != RenderMode.RADAR })
+    private val tracer = setting("Tracer", true, { page.value == Page.RENDER && renderMode != RenderMode.RADAR })
+    private val color by setting("Color", ColorHolder(31, 200, 63), false, { page.value == Page.RENDER })
+    private val aFilled = setting("Filled Alpha", 63, 0..255, 1, { page.value == Page.RENDER && filled.value && renderMode != RenderMode.RADAR })
+    private val aOutline = setting("Outline Alpha", 160, 0..255, 1, { page.value == Page.RENDER && outline.value && renderMode != RenderMode.RADAR })
+    private val aTracer = setting("Tracer Alpha", 200, 0..255, 1, { page.value == Page.RENDER && tracer.value && renderMode != RenderMode.RADAR })
     private val thickness = setting("Line Thickness", 2.0f, 0.25f..8.0f, 0.25f)
 
     private enum class Dimension {
         CURRENT, ANY
     }
 
+    private enum class RenderMode {
+        WORLD, RADAR, BOTH
+    }
+
     private enum class Page {
-        INFO_BOX, ESP
+        INFO_BOX, RENDER
     }
 
     // This has to be sorted so the further ones doesn't overlaps the closer ones
@@ -73,7 +80,7 @@ internal object WaypointRender : Module(
 
     init {
         listener<RenderWorldEvent> {
-            if (waypointMap.isEmpty()) return@listener
+            if (waypointMap.isEmpty() || renderMode == RenderMode.RADAR) return@listener
             val renderer = ESPRenderer()
             renderer.aFilled = if (filled.value) aFilled.value else 0
             renderer.aOutline = if (outline.value) aOutline.value else 0
@@ -131,6 +138,29 @@ internal object WaypointRender : Module(
         textComponent.draw(drawShadow = false, horizontalAlign = HAlign.CENTER, verticalAlign = VAlign.CENTER)
 
         glPopMatrix()
+    }
+
+    init {
+        safeListener<RenderRadarEvent> {
+            if (renderMode == RenderMode.WORLD) return@safeListener
+
+            for (waypoint in waypointMap.keys) {
+                val pos = getPos(waypoint, Vec2d(player.position.x.toDouble(), player.position.z.toDouble()), it.scale)
+
+                if (isInRadius(pos, it.radius)) {
+                    RenderUtils2D.drawCircleFilled(it.vertexHelper, pos, 2.5 / it.scale, color = color)
+                }
+            }
+        }
+    }
+
+    fun getPos(waypoint: Waypoint, playerOffset: Vec2d, scale: Float): Vec2d {
+        val position = waypoint.pos
+        return Vec2d(position.x.toDouble(), position.z.toDouble()).minus(playerOffset).div(scale.toDouble())
+    }
+
+    fun isInRadius(pos: Vec2d, radius: Float): Boolean {
+        return pos.length() < radius
     }
 
     init {
