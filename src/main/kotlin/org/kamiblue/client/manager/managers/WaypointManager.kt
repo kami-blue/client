@@ -135,11 +135,11 @@ object WaypointManager : Manager {
         val name: String,
 
         @SerializedName(value = "date", alternate = ["time"])
-        val date: String,
-        val dimension: Int = genDimension()
+        val date: String
     ) {
         val id: Int = genID()
         val server: String? = genServer() /* can be null from old configs */
+        val dimension: Int = genDimension()
 
         fun currentPos() = CoordinateConverter.toCurrent(dimension, pos)
 
