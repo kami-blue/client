@@ -25,38 +25,40 @@ internal object Tracers : Module(
     description = "Draws lines to other living entities",
     category = Category.RENDER
 ) {
-    private val page = setting("Page", Page.ENTITY_TYPE)
+    private val page by setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE })
-    private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && players.value })
-    private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && players.value })
-    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE })
-    private val passive = setting("Passive Mobs", false, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val neutral = setting("Neutral Mobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val hostile = setting("Hostile Mobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val invisible = setting("Invisible", true, { page.value == Page.ENTITY_TYPE })
-    private val range = setting("Range", 64, 8..512, 8, { page.value == Page.ENTITY_TYPE })
+    private val players by setting("Players", true, { page == Page.ENTITY_TYPE })
+    private val friends by setting("Friends", false, { page == Page.ENTITY_TYPE && players })
+    private val sleeping by setting("Sleeping", false, { page == Page.ENTITY_TYPE && players })
+    private val mobs by setting("Mobs", true, { page == Page.ENTITY_TYPE })
+    private val passive by setting("Passive Mobs", false, { page == Page.ENTITY_TYPE && mobs })
+    private val neutral by setting("Neutral Mobs", true, { page == Page.ENTITY_TYPE && mobs })
+    private val hostile by setting("Hostile Mobs", true, { page == Page.ENTITY_TYPE && mobs })
+    private val invisible by setting("Invisible", true, { page == Page.ENTITY_TYPE })
+    private val range by setting("Range", 64, 8..512, 8, { page == Page.ENTITY_TYPE })
 
     /* Color settings */
-    private val colorPlayer = setting("Player Color", DyeColors.KAMI, { page.value == Page.COLOR })
-    private val colorFriend = setting("Friend Color", DyeColors.RAINBOW, { page.value == Page.COLOR })
-    private val colorPassive = setting("Passive Mob Color", DyeColors.GREEN, { page.value == Page.COLOR })
-    private val colorNeutral = setting("Neutral Mob Color", DyeColors.YELLOW, { page.value == Page.COLOR })
-    private val colorHostile = setting("Hostile Mob Color", DyeColors.RED, { page.value == Page.COLOR })
+    private val colorPlayer by setting("Player Color", ColorHolder(155, 144, 255), false, { page == Page.COLOR })
+    private val colorFriend by setting("Friend Color", ColorHolder(32, 250, 32), false, { page == Page.COLOR })
+    private val colorPassive by setting("Passive Mob Color", ColorHolder(132, 240, 32), false, { page == Page.COLOR })
+    private val colorNeutral by setting("Neutral Mob Color", ColorHolder(255, 232, 0), false, { page == Page.COLOR })
+    private val colorHostile by setting("Hostile Mob Color", ColorHolder(250, 32, 32), false, { page == Page.COLOR })
+    private val colorFar by setting("Far Color", ColorHolder(255, 255, 255), false, { page == Page.COLOR })
 
     /* General rendering settings */
-    private val rangedColor = setting("Ranged Color", true, { page.value == Page.RENDERING })
-    private val colorChangeRange = setting("Color Change Range", 16, 8..128, 8, { page.value == Page.RENDERING && rangedColor.value })
-    private val playerOnly = setting("Player Only", true, { page.value == Page.RENDERING && rangedColor.value })
-    private val colorFar = setting("Far Color", DyeColors.WHITE, { page.value == Page.COLOR })
-    private val aFar = setting("Far Alpha", 127, 0..255, 1, { page.value == Page.RENDERING && rangedColor.value })
-    private val a = setting("Tracer Alpha", 255, 0..255, 1, { page.value == Page.RENDERING })
-    private val yOffset = setting("y Offset Percentage", 0, 0..100, 5, { page.value == Page.RENDERING })
-    private val thickness = setting("Line Thickness", 2.0f, 0.25f..5.0f, 0.25f, { page.value == Page.RENDERING })
+    private val alpha by setting("Alpha", 255, 0..255, 1, { page == Page.RENDERING })
+    private val yOffset by setting("Y Offset Percentage", 0, 0..100, 5, { page == Page.RENDERING })
+    private val thickness by setting("Line Thickness", 2.0f, 0.25f..5.0f, 0.25f, { page == Page.RENDERING })
+
+    /* Range color settings */
+    private val rangedColor by setting("Ranged Color", true, { page == Page.RANGE_COLOR })
+    private val colorChangeRange by setting("Color Change Range", 16, 8..128, 8, { page == Page.RANGE_COLOR && rangedColor })
+    private val playerOnly by setting("Player Only", true, { page == Page.RANGE_COLOR && rangedColor })
+    private val alphaFar by setting("Far Alpha", 127, 0..255, 1, { page == Page.RANGE_COLOR && rangedColor })
 
     private enum class Page {
-        ENTITY_TYPE, COLOR, RENDERING
+        ENTITY_TYPE, COLOR, RENDERING, RANGE_COLOR
     }
 
     private var renderList = ConcurrentHashMap<Entity, Pair<ColorHolder, Float>>() /* <Entity, <RGBAColor, AlphaMultiplier>> */
@@ -65,14 +67,16 @@ internal object Tracers : Module(
 
     init {
         listener<RenderWorldEvent> {
-            renderer.aTracer = a.value
-            renderer.thickness = thickness.value
-            renderer.tracerOffset = yOffset.value
+            renderer.aTracer = alpha
+            renderer.thickness = thickness
+            renderer.tracerOffset = yOffset
+
             for ((entity, pair) in renderList) {
                 val rgba = pair.first.clone()
                 rgba.a = (rgba.a * pair.second).toInt()
                 renderer.add(entity, rgba)
             }
+
             renderer.render(true)
         }
 
@@ -80,10 +84,10 @@ internal object Tracers : Module(
             cycler++
             alwaysListening = renderList.isNotEmpty()
 
-            val player = arrayOf(players.value, friends.value, sleeping.value)
-            val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
+            val player = arrayOf(players, friends, sleeping)
+            val mob = arrayOf(mobs, passive, neutral, hostile)
             val entityList = if (isEnabled) {
-                getTargetList(player, mob, invisible.value, range.value.toFloat(), ignoreSelf = false)
+                getTargetList(player, mob, invisible, range.toFloat(), ignoreSelf = false)
             } else {
                 ArrayList()
             }
@@ -96,8 +100,12 @@ internal object Tracers : Module(
             for ((entity, pair) in renderList) {
                 cacheMap.computeIfPresent(entity) { _, cachePair -> Pair(cachePair.first, min(pair.second + 0.075f, 1f)) }
                 cacheMap.computeIfAbsent(entity) { Pair(getColor(entity), pair.second - 0.05f) }
-                if (pair.second < 0f) cacheMap.remove(entity)
+
+                if (pair.second < 0f) {
+                    cacheMap.remove(entity)
+                }
             }
+
             renderList.clear()
             renderList.putAll(cacheMap)
         }
@@ -105,30 +113,24 @@ internal object Tracers : Module(
 
     private fun getColor(entity: Entity): ColorHolder {
         val color = when {
-            FriendManager.isFriend(entity.name) -> colorFriend.value
-            entity is EntityPlayer -> colorPlayer.value
-            entity.isPassive -> colorPassive.value
-            entity.isNeutral -> colorNeutral.value
-            else -> colorHostile.value
-        }.color
-
-        return if (color == DyeColors.RAINBOW.color) {
-            getRangedColor(entity, cycler.currentRgba(a.value))
-        } else {
-            color.a = a.value
-            getRangedColor(entity, color)
+            FriendManager.isFriend(entity.name) -> colorFriend
+            entity is EntityPlayer -> colorPlayer
+            entity.isPassive -> colorPassive
+            entity.isNeutral -> colorNeutral
+            else -> colorHostile
         }
+
+        return getRangedColor(entity, color)
     }
 
-    private fun getRangedColor(entity: Entity, rgba: ColorHolder): ColorHolder {
-        if (!rangedColor.value || playerOnly.value && entity !is EntityPlayer) return rgba
+    private fun getRangedColor(entity: Entity, c: ColorHolder): ColorHolder {
+        if (!rangedColor || playerOnly && entity !is EntityPlayer) return c
         val distance = mc.player.getDistance(entity)
-        val colorFar = colorFar.value.color
-        colorFar.a = aFar.value
-        val r = convertRange(distance, 0f, colorChangeRange.value.toFloat(), rgba.r.toFloat(), colorFar.r.toFloat()).toInt()
-        val g = convertRange(distance, 0f, colorChangeRange.value.toFloat(), rgba.g.toFloat(), colorFar.g.toFloat()).toInt()
-        val b = convertRange(distance, 0f, colorChangeRange.value.toFloat(), rgba.b.toFloat(), colorFar.b.toFloat()).toInt()
-        val a = convertRange(distance, 0f, colorChangeRange.value.toFloat(), a.value.toFloat(), colorFar.a.toFloat()).toInt()
+
+        val r = convertRange(distance, 0f, colorChangeRange.toFloat(), c.r.toFloat(), colorFar.r.toFloat()).toInt()
+        val g = convertRange(distance, 0f, colorChangeRange.toFloat(), c.g.toFloat(), colorFar.g.toFloat()).toInt()
+        val b = convertRange(distance, 0f, colorChangeRange.toFloat(), c.b.toFloat(), colorFar.b.toFloat()).toInt()
+        val a = convertRange(distance, 0f, colorChangeRange.toFloat(), alpha.toFloat(), alphaFar.toFloat()).toInt()
         return ColorHolder(r, g, b, a)
     }
 }

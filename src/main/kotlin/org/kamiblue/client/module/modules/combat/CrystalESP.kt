@@ -6,10 +6,12 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.manager.managers.CombatManager
+import org.kamiblue.client.manager.managers.HotbarManager.serverSideItem
 import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -54,9 +56,7 @@ internal object CrystalESP : Module(
     private val animationScale = setting("Animation Scale", 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
     private val crystalRange = setting("Crystal ESP Range", 16.0f, 0.0f..16.0f, 0.5f, { page.value == Page.CRYSTAL_ESP })
 
-    private val r = setting("Red", 155, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
-    private val g = setting("Green", 144, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
-    private val b = setting("Blue", 255, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
+    private val colour by setting("Color", ColorHolder(155, 144, 255), false, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
     private val aFilled = setting("Filled Alpha", 47, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && filled.value })
     private val aOutline = setting("Outline Alpha", 127, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && outline.value })
     private val aTracer = setting("Tracer Alpha", 200, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && tracer.value })
@@ -80,10 +80,10 @@ internal object CrystalESP : Module(
         }
     }
 
-    private fun checkHeldItem(packet: CPacketPlayerTryUseItemOnBlock) = packet.hand == EnumHand.MAIN_HAND
-        && mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).item == Items.END_CRYSTAL
+    private fun SafeClientEvent.checkHeldItem(packet: CPacketPlayerTryUseItemOnBlock) = packet.hand == EnumHand.MAIN_HAND
+        && player.serverSideItem.item == Items.END_CRYSTAL
         || packet.hand == EnumHand.OFF_HAND
-        && mc.player.heldItemOffhand.item == Items.END_CRYSTAL
+        && player.heldItemOffhand.item == Items.END_CRYSTAL
 
     init {
         safeListener<TickEvent.ClientTickEvent> { event ->
@@ -163,8 +163,8 @@ internal object CrystalESP : Module(
                 for ((pos, quad) in renderCrystalMap) {
                     val progress = getAnimationProgress(quad.third, quad.fourth)
                     val box = AxisAlignedBB(pos).shrink(0.5 - progress * 0.5)
-                    val color = ColorHolder(r.value, g.value, b.value, (progress * 255.0f).toInt())
-                    renderer.add(box, color)
+                    colour.a = (progress * 255.0f).toInt()
+                    renderer.add(box, colour)
                 }
 
                 renderer.render(true)
@@ -173,7 +173,7 @@ internal object CrystalESP : Module(
 
         listener<RenderOverlayEvent> {
             if (!showDamage.value && !showSelfDamage.value) return@listener
-            GlStateUtils.rescale(mc.displayWidth.toDouble(), mc.displayHeight.toDouble())
+            GlStateUtils.rescaleActual()
 
             for ((pos, quad) in renderCrystalMap) {
                 glPushMatrix()

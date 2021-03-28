@@ -1,6 +1,9 @@
 package org.kamiblue.client.gui.rgui
 
+import org.kamiblue.client.setting.GuiConfig
+import org.kamiblue.client.setting.configs.AbstractConfig
 import org.kamiblue.client.util.math.Vec2f
+import org.kamiblue.commons.interfaces.Nameable
 
 open class InteractiveComponent(
     name: String,
@@ -8,8 +11,9 @@ open class InteractiveComponent(
     posY: Float,
     width: Float,
     height: Float,
-    settingGroup: SettingGroup
-) : Component(name, posX, posY, width, height, settingGroup) {
+    settingGroup: SettingGroup,
+    config: AbstractConfig<out Nameable> = GuiConfig
+) : Component(name, posX, posY, width, height, settingGroup, config) {
 
     // Interactive info
     protected var lastMousePos = Vec2f.ZERO

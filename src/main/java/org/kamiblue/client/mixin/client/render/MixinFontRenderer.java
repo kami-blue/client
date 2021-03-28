@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
@@ -22,27 +21,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinFontRenderer {
 
     @Shadow public int FONT_HEIGHT;
-    @Shadow private float alpha;
     @Shadow protected float posX;
     @Shadow protected float posY;
+    @Shadow private float alpha;
     @Shadow private float red;
     @Shadow private float green;
     @Shadow private float blue;
 
-    @Shadow
-    protected abstract void renderStringAtPos(String text, boolean shadow);
+    @Shadow protected abstract void renderStringAtPos(String text, boolean shadow);
 
     /**
      * @author Tiger
      */
-    @Redirect(method = "renderString", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;renderStringAtPos(Ljava/lang/String;Z)V"))
-    private void renderStringAtPos(FontRenderer fontRenderer, String text, boolean shadow) {
+    @Inject(method = "renderString", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;renderStringAtPos(Ljava/lang/String;Z)V", shift = At.Shift.BEFORE), cancellable = true)
+    private void renderStringAtPos(String text, float x, float y, int color, boolean shadow, CallbackInfoReturnable<Integer> cir) {
         if (KamiMoji.INSTANCE.isEnabled() && text.contains(":")) {
             text = KamiMoji.renderText(text, FONT_HEIGHT, shadow, posX, posY, alpha);
+            GlStateManager.color(red, blue, green, alpha); // Big Mojang meme :monkey:
+            renderStringAtPos(text, shadow);
+            cir.setReturnValue((int) posX);
         }
-
-        GlStateManager.color(red, blue, green, alpha); // Big Mojang meme :monkey:
-        renderStringAtPos(text, shadow);
     }
 
     /**

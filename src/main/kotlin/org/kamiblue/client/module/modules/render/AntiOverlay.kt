@@ -16,6 +16,7 @@ internal object AntiOverlay : Module(
     description = "Prevents rendering of fire, water and block texture overlays.",
     category = Category.RENDER
 ) {
+    val hurtCamera = setting("Hurt Camera", true)
     private val fire = setting("Fire", true)
     private val water = setting("Water", true)
     private val blocks = setting("Blocks", true)
@@ -23,7 +24,7 @@ internal object AntiOverlay : Module(
     private val blindness = setting("Blindness", true)
     private val nausea = setting("Nausea", true)
     val totems = setting("Totems", true)
-    private val vignette = setting("Vignette", true)
+    private val vignette = setting("Vignette", false)
     private val helmet = setting("Helmet", true)
     private val tutorial = setting("Tutorial", true)
     private val potionIcons = setting("Potion Icons", false)

@@ -24,6 +24,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
     override val minimizable: Boolean get() = false
 
     var setting: ColorSetting? = null
+    var originalColor: ColorHolder? = null
     private var hoveredChild: Slider? = null
         set(value) {
             if (value == field) return
@@ -69,6 +70,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         super.onDisplayed()
         updatePos()
         setting?.let {
+            originalColor = it.value
             r.value = it.value.r
             g.value = it.value.g
             b.value = it.value.b
@@ -152,6 +154,8 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
             hue = (relativeY / fieldHeight).coerceIn(0.0f, 1.0f)
             updateRGBFromHSB()
         }
+
+        setting?.value = ColorHolder(r.value, g.value, b.value, a.value)
     }
 
     private fun isInPair(mousePos: Vec2f, pair: Pair<Vec2f, Vec2f>) =
@@ -284,11 +288,16 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
     }
 
     private fun actionOk() {
-        setting?.value = ColorHolder(r.value, g.value, b.value, a.value)
-        actionCancel()
+        setting?.value = ColorHolder(r.value, g.value, b.value, a.value) // Make sure that everything is in sync.
+        closeScreen()
     }
 
     private fun actionCancel() {
+        setting?.value = originalColor!!
+        closeScreen()
+    }
+
+    private fun closeScreen() {
         setting = null
         visible = false
     }

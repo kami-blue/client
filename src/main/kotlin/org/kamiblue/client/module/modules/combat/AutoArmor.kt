@@ -21,13 +21,21 @@ internal object AutoArmor : Module(
     description = "Automatically equips armour",
     modulePriority = 500
 ) {
+
     private val delay = setting("Delay", 5, 1..10, 1)
 
     private val timer = TickTimer(TimeUnit.TICKS)
     private var lastTask = TaskState(true)
 
+    var isPaused = false
+
     init {
+        onToggle {
+            isPaused = false
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
+            if (isPaused) return@safeListener
             if (!timer.tick(delay.value.toLong()) || !lastTask.done) return@safeListener
 
             if (!player.inventory.itemStack.isEmpty) {
@@ -35,6 +43,7 @@ internal object AutoArmor : Module(
                 else removeHoldingItem()
                 return@safeListener
             }
+
             // store slots and values of best armor pieces, initialize with currently equipped armor
             // Pair<Slot, Value>
             val bestArmors = Array(4) { -1 to getArmorValue(player.inventory.armorInventory[it]) }
@@ -46,10 +55,14 @@ internal object AutoArmor : Module(
                 if (item !is ItemArmor) continue
 
                 val armorType = item.armorType.index
-                if (armorType == 2 && player.inventory.armorInventory[2].item == Items.ELYTRA) continue // Skip if item is chestplate and we have elytra equipped
+
+                // Skip if item is chestplate and we have elytra equipped
+                if (armorType == 2 && player.inventory.armorInventory[2].item == Items.ELYTRA) continue
                 val armorValue = getArmorValue(itemStack)
 
-                if (armorValue > bestArmors[armorType].second) bestArmors[armorType] = slot to armorValue
+                if (armorValue > bestArmors[armorType].second) {
+                    bestArmors[armorType] = slot to armorValue
+                }
             }
 
             // equip better armor
@@ -67,6 +80,7 @@ internal object AutoArmor : Module(
         for (i in 0 until itemStack.enchantmentTagList.tagCount()) {
             val id = itemStack.enchantmentTagList.getCompoundTagAt(i).getShort("id").toInt()
             val level = itemStack.enchantmentTagList.getCompoundTagAt(i).getShort("lvl").toInt()
+
             if (id != 0) continue
             return 1f + 0.04f * level
         }
@@ -87,6 +101,7 @@ internal object AutoArmor : Module(
                     PlayerInventoryManager.ClickInfo(0, pair.first, type = ClickType.PICKUP) // Put the old one into the empty slot
                 )
             }
+
             break // Don't move more than one at once
         }
     }

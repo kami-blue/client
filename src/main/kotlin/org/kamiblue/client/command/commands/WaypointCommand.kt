@@ -1,15 +1,20 @@
 package org.kamiblue.client.command.commands
 
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.TextFormatting
 import org.kamiblue.client.command.ClientCommand
 import org.kamiblue.client.manager.managers.WaypointManager
 import org.kamiblue.client.manager.managers.WaypointManager.Waypoint
 import org.kamiblue.client.module.modules.movement.AutoWalk
+import org.kamiblue.client.util.BaritoneUtils
 import org.kamiblue.client.util.InfoCalculator
 import org.kamiblue.client.util.math.CoordinateConverter.asString
 import org.kamiblue.client.util.math.CoordinateConverter.bothConverted
 import org.kamiblue.client.util.text.MessageSendHelper
+import org.kamiblue.client.util.text.format
 import org.kamiblue.client.util.text.formatValue
+import java.text.SimpleDateFormat
+import java.util.*
 
 object WaypointCommand : ClientCommand(
     name = "waypoint",
@@ -18,6 +23,7 @@ object WaypointCommand : ClientCommand(
 ) {
     private val stashRegex = "\\(\\d+ chests, \\d+ shulkers, \\d+ droppers, \\d+ dispensers, \\d+ hoppers\\)".toRegex()
     private var confirmTime = 0L
+    private val sdf = SimpleDateFormat("HH:mm:ss dd/MM/yyyy")
 
     init {
         literal("add", "new", "create", "+") {
@@ -106,18 +112,38 @@ object WaypointCommand : ClientCommand(
                 clear()
             }
         }
+
+        literal("sync") {
+            execute("Sync Baritone waypoints to KAMI Blue") {
+                val waypoints = BaritoneUtils.primary?.worldProvider?.currentWorld?.waypoints?.allWaypoints
+
+                if (waypoints == null || waypoints.size == 0) {
+                    MessageSendHelper.sendErrorMessage("There are no available Baritone waypoints to import!")
+                    return@execute
+                }
+
+                for (waypoint in waypoints) {
+                    WaypointManager.get(waypoint.location) ?: run { // Don't duplicate already existing waypoints.
+                        val date = sdf.format(Date(waypoint.creationTimestamp))
+                        WaypointManager.add(Waypoint(waypoint.location, waypoint.name, date))
+                    }
+                }
+
+                MessageSendHelper.sendChatMessage("Imported ${formatValue(waypoints.size)} waypoints from Baritone!")
+            }
+        }
     }
 
     private fun add(name: String, pos: BlockPos) {
         WaypointManager.add(pos, name)
-        MessageSendHelper.sendChatMessage("Added waypoint at ${pos.asString()} in the ${InfoCalculator.dimension()} with name '&7$name&f'.")
+        MessageSendHelper.sendChatMessage("Added waypoint at ${pos.asString()} in the ${InfoCalculator.dimension()} with name ${formatValue(name)}.")
     }
 
     private fun delete(id: Int) {
         if (WaypointManager.remove(id)) {
-            MessageSendHelper.sendChatMessage("Removed waypoint with ID $id")
+            MessageSendHelper.sendChatMessage("Removed waypoint with ID ${formatValue(id)}")
         } else {
-            MessageSendHelper.sendChatMessage("No waypoint with ID $id")
+            MessageSendHelper.sendChatMessage("No waypoint with ID ${formatValue(id)}")
         }
     }
 
@@ -128,7 +154,7 @@ object WaypointCommand : ClientCommand(
             val pos = waypoint.currentPos()
             MessageSendHelper.sendBaritoneCommand("goto", pos.x.toString(), pos.y.toString(), pos.z.toString())
         } else {
-            MessageSendHelper.sendChatMessage("Couldn't find a waypoint with the ID $id")
+            MessageSendHelper.sendChatMessage("Couldn't find a waypoint with the ID ${formatValue(id)}")
         }
     }
 
@@ -163,9 +189,9 @@ object WaypointCommand : ClientCommand(
     private fun search(name: String) {
         val filtered = WaypointManager.waypoints.filter { it.name.equals(name, true) }
         if (filtered.isEmpty()) {
-            MessageSendHelper.sendChatMessage("No results for &7$name&f")
+            MessageSendHelper.sendChatMessage("No results for ${formatValue(name)}")
         } else {
-            MessageSendHelper.sendChatMessage("Result of search for &7$name&f:")
+            MessageSendHelper.sendChatMessage("Result of search for ${formatValue(name)}:")
             filtered.forEach {
                 MessageSendHelper.sendRawChatMessage(format(it))
             }
@@ -181,12 +207,11 @@ object WaypointCommand : ClientCommand(
         } else {
             confirmTime = 0L
             WaypointManager.clear()
-            MessageSendHelper.sendChatMessage("Waypoints have been &ccleared")
+            MessageSendHelper.sendChatMessage("Waypoints have been ${TextFormatting.RED format "cleared"}")
         }
     }
 
     private fun format(waypoint: Waypoint): String {
-        return "${waypoint.id} [${waypoint.server}] ${waypoint.name} (${bothConverted(waypoint.dimension, waypoint.pos)})"
+        return "${waypoint.id} ${formatValue(waypoint.server.toString())} ${waypoint.name} (${bothConverted(waypoint.dimension, waypoint.pos)})"
     }
-
 }

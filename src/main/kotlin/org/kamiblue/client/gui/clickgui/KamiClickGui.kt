@@ -27,7 +27,7 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, AbstractModule>() {
         for ((category, buttons) in allButtons) {
             val window = ListWindow(category, posX, posY, 90.0f, 300.0f, Component.SettingGroup.CLICK_GUI)
 
-            window.children.addAll(buttons)
+            window.children.addAll(buttons.customSort())
             moduleWindows.add(window)
             posX += 90.0f
 
@@ -41,14 +41,7 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, AbstractModule>() {
     }
 
     override fun onDisplayed() {
-        val allButtons = ModuleManager.modules
-            .groupBy { it.category.displayName }
-            .mapValues { (_, modules) -> modules.map { ModuleButton(it) } }
-
-        moduleWindows.forEach { window ->
-            window.children.clear()
-            allButtons[window.originalName]?.let { window.children.addAll(it) }
-        }
+        reorderModules()
 
         super.onDisplayed()
     }
@@ -87,6 +80,25 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, AbstractModule>() {
                 if (child !is ModuleButton) continue
                 child.visible = function(child)
             }
+        }
+    }
+
+    fun reorderModules() {
+        val allButtons = ModuleManager.modules
+            .groupBy { it.category.displayName }
+            .mapValues { (_, modules) -> modules.map { ModuleButton(it) } }
+
+        moduleWindows.forEach { window ->
+            window.children.clear()
+            allButtons[window.name]?.let { window.children.addAll(it.customSort()) }
+        }
+    }
+
+    private fun List<ModuleButton>.customSort(): List<ModuleButton> {
+        return when (ClickGUI.sortBy.value) {
+            ClickGUI.SortByOptions.CUSTOM -> this.sortedByDescending { it.module.priorityForGui.value }
+            ClickGUI.SortByOptions.FREQUENCY -> this.sortedByDescending { it.module.clicks.value }
+            else -> this.sortedBy { it.name }
         }
     }
 }

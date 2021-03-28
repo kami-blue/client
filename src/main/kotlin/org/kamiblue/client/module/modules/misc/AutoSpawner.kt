@@ -22,6 +22,8 @@ import org.kamiblue.client.util.items.swapToSlot
 import org.kamiblue.client.util.math.VectorUtils
 import org.kamiblue.client.util.text.MessageSendHelper.sendChatMessage
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.client.util.world.isBlacklisted
+import org.kamiblue.client.util.world.isReplaceable
 
 /**
  * TODO: Rewrite
@@ -307,8 +309,9 @@ internal object AutoSpawner : Module(
         val neighbour = pos.offset(side)
         val opposite = side.opposite
         val hitVec = Vec3d(neighbour).add(0.5, 0.5, 0.5).add(Vec3d(opposite.directionVec).scale(0.5))
-        val neighbourBlock = world.getBlockState(neighbour).block
-        if (!isSneaking && (WorldUtils.blackList.contains(neighbourBlock) || WorldUtils.shulkerList.contains(neighbourBlock))) {
+        val blockState = world.getBlockState(neighbour)
+
+        if (!isSneaking && blockState.isBlacklisted) {
             connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_SNEAKING))
             isSneaking = true
         }
@@ -323,7 +326,7 @@ internal object AutoSpawner : Module(
                 continue
             }
             val blockState = world.getBlockState(neighbour)
-            if (!blockState.material.isReplaceable && blockState.block !is BlockTallGrass && blockState.block !is BlockDeadBush) {
+            if (!blockState.isReplaceable && blockState.block !is BlockTallGrass && blockState.block !is BlockDeadBush) {
                 return side
             }
         }

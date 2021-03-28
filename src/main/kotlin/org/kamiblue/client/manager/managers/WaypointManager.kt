@@ -90,6 +90,11 @@ object WaypointManager : Manager {
         return waypoint
     }
 
+    fun add(waypoint: Waypoint) {
+        waypoints.add(waypoint)
+        KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.ADD, waypoint))
+    }
+
     fun remove(pos: BlockPos, currentDimension: Boolean = false): Boolean {
         val waypoint = get(pos, currentDimension)
         val removed = waypoints.remove(waypoint)

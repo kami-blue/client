@@ -16,7 +16,7 @@ object SignBookCommand : ClientCommand(
     description = "Colored book names. &f#n&7 for a new line and &f&&7 for colour codes"
 ) {
     init {
-        string("title") { titleArg ->
+        greedy("title") { titleArg ->
             executeSafe {
                 val item = player.inventory.getCurrentItem()
 

@@ -25,12 +25,8 @@ internal object HoleESP : Module(
     private val filled = setting("Filled", true)
     private val outline = setting("Outline", true)
     private val hideOwn = setting("Hide Own", true)
-    private val r1 = setting("Obby Red", 208, 0..255, 1, { shouldAddObsidian() })
-    private val g1 = setting("Obby Green", 144, 0..255, 1, { shouldAddObsidian() })
-    private val b1 = setting("Obby Blue", 255, 0..255, 1, { shouldAddObsidian() })
-    private val r2 = setting("Bedrock Red", 144, 0..255, 1, { shouldAddBedrock() })
-    private val g2 = setting("Bedrock Green", 144, 0..255, 1, { shouldAddBedrock() })
-    private val b2 = setting("Bedrock Blue", 255, 0..255, 1, { shouldAddBedrock() })
+    private val colorObsidian by setting("Obby Color", ColorHolder(208, 144, 255), false, visibility = { shouldAddObsidian() })
+    private val colorBedrock by setting("Bedrock Color", ColorHolder(144, 144, 255), false, visibility = { shouldAddBedrock() })
     private val aFilled = setting("Filled Alpha", 31, 0..255, 1, { filled.value })
     private val aOutline = setting("Outline Alpha", 127, 0..255, 1, { outline.value })
     private val renderMode = setting("Mode", Mode.BLOCK_HOLE)
@@ -60,8 +56,6 @@ internal object HoleESP : Module(
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
 
-        val colorObsidian = ColorHolder(r1.value, g1.value, b1.value)
-        val colorBedrock = ColorHolder(r2.value, g2.value, b2.value)
         val playerPos = player.positionVector.toBlockPos()
         val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL
         else GeometryMasks.Quad.DOWN

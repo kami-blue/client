@@ -4,7 +4,7 @@ import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.util.InfoCalculator
 
-object Ping : LabelHud(
+internal object Ping : LabelHud(
     name = "Ping",
     category = Category.MISC,
     description = "Delay between client and server"

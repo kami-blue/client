@@ -12,6 +12,7 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.client.setting.settings.impl.primitive.BooleanSetting
 import org.kamiblue.client.util.BaritoneUtils
 import org.kamiblue.client.util.Bind
+import org.kamiblue.client.util.EntityUtils.isInOrAboveLiquid
 import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.client.util.threads.safeListener
@@ -38,7 +39,6 @@ internal object Step : Module(
     private val bindDownStep by setting("Bind Down Step", Bind())
 
     private const val defaultHeight = 0.6f
-    private val SafeClientEvent.shouldRunStep get() = !player.isElytraFlying && !player.capabilities.isFlying && !player.isOnLadder && !player.isInWater && !player.isInLava
 
     private val ignoredPackets = HashSet<CPacketPlayer>()
     private var lastCollidedTick = 0
@@ -61,7 +61,7 @@ internal object Step : Module(
         }
 
         onToggle {
-            BaritoneUtils.settings?.assumeStep?.value = isEnabled
+            BaritoneUtils.settings?.assumeStep?.value = it && upStep.value
         }
 
         listener<InputEvent.KeyInputEvent> {
@@ -90,6 +90,13 @@ internal object Step : Module(
             if (player.onGround) onGroundTick = player.ticksExisted
         }
     }
+
+    private val SafeClientEvent.shouldRunStep: Boolean
+        get() = !mc.gameSettings.keyBindSneak.isKeyDown
+            && !player.isElytraFlying
+            && !player.capabilities.isFlying
+            && !player.isOnLadder
+            && !player.isInOrAboveLiquid
 
     private fun SafeClientEvent.setStepHeight() {
         player.stepHeight = if (upStep.value && player.onGround && player.collidedHorizontally) height else defaultHeight
@@ -131,4 +138,10 @@ internal object Step : Module(
     private val stepOne = doubleArrayOf(0.41999, 0.75320)
     private val stepOneHalf = doubleArrayOf(0.41999, 0.75320, 1.00133, 1.16611, 1.24919, 1.17079)
     private val stepTwo = doubleArrayOf(0.42, 0.78, 0.63, 0.51, 0.90, 1.21, 1.45, 1.43)
+
+    init {
+        upStep.valueListeners.add { _, it ->
+            BaritoneUtils.settings?.assumeStep?.value = isEnabled && it
+        }
+    }
 }

@@ -3,7 +3,7 @@ package org.kamiblue.client.gui.hudgui.elements.misc
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 
-object ServerBrand : LabelHud(
+internal object ServerBrand : LabelHud(
     name = "ServerBrand",
     category = Category.MISC,
     description = "Brand / type of the server"

@@ -119,7 +119,7 @@ open class Slider(
                     (renderHeight * ClickGUI.getScaleFactor()).roundToInt()
             )
         }*/
-        val text = if (isBold) TextFormatting.BOLD format name else name
+        val text = if (isBold) TextFormatting.BOLD format componentName else componentName
 
         FontRenderAdapter.drawString(text, 1.5f, 1.0f, color = GuiColors.text)
         //GlStateUtils.popScissor()

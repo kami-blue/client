@@ -39,8 +39,8 @@ class TextComponent(val separator: String = " ") {
     /**
      * Adds new text element to [currentLine], and goes to the next line
      */
-    fun addLine(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: Style = Style.REGULAR) {
-        add(text, color, style)
+    fun addLine(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: Style = Style.REGULAR, scale: Float = 1f) {
+        add(text, color, style, scale)
         currentLine++
     }
 
@@ -55,8 +55,8 @@ class TextComponent(val separator: String = " ") {
     /**
      * Adds new text element to [currentLine]
      */
-    fun add(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: Style = Style.REGULAR) {
-        add(TextElement(text, color, style))
+    fun add(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: Style = Style.REGULAR, scale: Float = 1f) {
+        add(TextElement(text, color, style, scale))
     }
 
     /**
@@ -145,7 +145,7 @@ class TextComponent(val separator: String = " ") {
             for (textElement in textElementList) {
                 val color = textElement.color.clone()
                 color.a = (color.a * alpha).toInt()
-                FontRenderAdapter.drawString(textElement.text, drawShadow = drawShadow, color = color, customFont = customFont)
+                FontRenderAdapter.drawString(textElement.text, drawShadow = drawShadow, color = color, customFont = customFont, scale = textElement.scale)
                 val adjustedSeparator = if (separator == " " && customFont) "  " else " "
                 glTranslatef(FontRenderAdapter.getStringWidth(textElement.text + adjustedSeparator, customFont = customFont), 0f, 0f)
             }
@@ -165,7 +165,7 @@ class TextComponent(val separator: String = " ") {
 
     }
 
-    class TextElement(textIn: String, val color: ColorHolder = ColorHolder(255, 255, 255), val style: Style = Style.REGULAR) {
+    class TextElement(textIn: String, val color: ColorHolder = ColorHolder(255, 255, 255), val style: Style = Style.REGULAR, val scale: Float = 1f) {
         val text = "${style.code}$textIn"
 
         override fun toString(): String {

@@ -6,6 +6,7 @@ import org.kamiblue.client.command.CommandManager
 import org.kamiblue.client.mixin.extension.historyBuffer
 import org.kamiblue.client.mixin.extension.sentHistoryCursor
 import org.kamiblue.client.module.modules.client.GuiColors
+import org.kamiblue.client.util.color.ColorConverter
 import org.kamiblue.client.util.graphics.GlStateUtils
 import org.kamiblue.client.util.graphics.RenderUtils2D
 import org.kamiblue.client.util.graphics.VertexHelper
@@ -140,11 +141,10 @@ class KamiGuiChat(
     }
 
     private fun commandAutoComplete(inputName: String) {
-        // Since we are doing multiple operation in a chain
-        // It would worth the payoff of using Stream
-        CommandManager.getCommands()
-            .flatMap { it.allNames.toList() }
-            .filter { it.length >= inputName.length && it.startsWith(inputName) }
+        CommandManager.getCommands().asSequence()
+            .flatMap { it.allNames.asSequence() }
+            .filter { it.length >= inputName.length }
+            .filter { it.startsWith(inputName) }
             .minOrNull()
             ?.let {
                 cachePredict = it.substring(min(inputName.length, it.length))
@@ -166,30 +166,34 @@ class KamiGuiChat(
         // Get the max matched number of args, filter all trees that has less matched args
         // And map to the current arg in the tree if exists
         val maxMatches = treeMatchedCounts.maxOfOrNull { it.first } ?: return null
-        return treeMatchedCounts
+        return treeMatchedCounts.asSequence()
             .filter { it.first == maxMatches }
             .mapNotNull { it.second.getArgTree().getOrNull(argIndex) }
+            .toList()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        val vertexHelper = VertexHelper(GlStateUtils.useVbo())
+
         // Draw rect background
-        drawRect(2, height - 14, width - 2, height - 2, Integer.MIN_VALUE)
+        val pos1 = Vec2d(2.0, height - 14.0)
+        val pos2 = Vec2d(width - 2.0, height - 2.0)
+        RenderUtils2D.drawRectFilled(vertexHelper, pos1, pos2, GuiColors.backGround)
 
         // Draw predict string
         if (predictString.isNotBlank()) {
-            val posX = fontRenderer.getStringWidth(inputField.text) + inputField.x
-            val posY = inputField.y
-            fontRenderer.drawStringWithShadow(predictString, posX.toFloat(), posY.toFloat(), 0x666666)
+            val posX = (fontRenderer.getStringWidth(inputField.text) + inputField.x).toFloat()
+            val posY = (inputField.y).toFloat()
+            fontRenderer.drawStringWithShadow(predictString, posX, posY, 0x808080)
         }
 
         // Draw normal string
         inputField.drawTextBox()
 
         // Draw outline around input field
-        val vertexHelper = VertexHelper(GlStateUtils.useVbo())
-        val pos1 = Vec2d(inputField.x - 2.0, inputField.y - 2.0)
-        val pos2 = pos1.plus(inputField.width.toDouble(), inputField.height.toDouble())
-        RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, GuiColors.primary)
+        val pos3 = Vec2d(inputField.x - 2.0, inputField.y - 2.0)
+        val pos4 = pos3.plus(inputField.width.toDouble(), inputField.height.toDouble())
+        RenderUtils2D.drawRectOutline(vertexHelper, pos3, pos4, 1.5f, GuiColors.primary)
     }
 
 }

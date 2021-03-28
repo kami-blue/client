@@ -31,37 +31,41 @@ internal object WaypointRender : Module(
     category = Category.RENDER
 ) {
 
-    private val page = setting("Page", Page.INFO_BOX)
+    private val renderMode by setting("Mode", RenderMode.BOTH)
+    private val page by setting("Page", Page.INFO_BOX)
 
     /* Page one */
-    private val dimension = setting("Dimension", Dimension.CURRENT, { page.value == Page.INFO_BOX })
-    private val showName = setting("Show Name", true, { page.value == Page.INFO_BOX })
-    private val showDate = setting("Show Date", false, { page.value == Page.INFO_BOX })
-    private val showCoords = setting("Show Coords", true, { page.value == Page.INFO_BOX })
-    private val showDist = setting("Show Distance", true, { page.value == Page.INFO_BOX })
-    private val textScale = setting("Text Scale", 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.INFO_BOX })
-    private val infoBoxRange = setting("Info Box Range", 512, 128..2048, 64, { page.value == Page.INFO_BOX })
+    private val dimension = setting("Dimension", Dimension.CURRENT, { page == Page.INFO_BOX })
+    private val showName = setting("Show Name", true, { page == Page.INFO_BOX })
+    private val showDate = setting("Show Date", false, { page == Page.INFO_BOX })
+    private val showCoordinates = setting("Show Coordinates", true, { page == Page.INFO_BOX })
+    private val showDist = setting("Show Distance", true, { page == Page.INFO_BOX })
+    private val textScale by setting("Text Scale", 1.0f, 0.0f..2.0f, 0.1f, { page == Page.INFO_BOX })
+    private val infoBoxRange by setting("Info Box Range", 512, 128..2048, 64, { page == Page.INFO_BOX })
 
     /* Page two */
-    private val espRangeLimit = setting("Render Range", true, { page.value == Page.ESP })
-    private val espRange = setting("Range", 4096, 1024..16384, 1024, { page.value == Page.ESP && espRangeLimit.value })
-    private val filled = setting("Filled", true, { page.value == Page.ESP })
-    private val outline = setting("Outline", true, { page.value == Page.ESP })
-    private val tracer = setting("Tracer", true, { page.value == Page.ESP })
-    private val r = setting("Red", 31, 0..255, 1, { page.value == Page.ESP })
-    private val g = setting("Green", 200, 0..255, 1, { page.value == Page.ESP })
-    private val b = setting("Blue", 63, 0..255, 1, { page.value == Page.ESP })
-    private val aFilled = setting("Filled Alpha", 63, 0..255, 1, { page.value == Page.ESP && filled.value })
-    private val aOutline = setting("Outline Alpha", 160, 0..255, 1, { page.value == Page.ESP && outline.value })
-    private val aTracer = setting("Tracer Alpha", 200, 0..255, 1, { page.value == Page.ESP && tracer.value })
-    private val thickness = setting("Line Thickness", 2.0f, 0.25f..8.0f, 0.25f)
+    private val espRangeLimit by setting("Render Range", true, { page == Page.RENDER && renderMode != RenderMode.RADAR })
+    private val espRange by setting("Range", 4096, 1024..16384, 1024, { page == Page.RENDER && espRangeLimit && renderMode != RenderMode.RADAR })
+    private val filled by setting("Filled", true, { page == Page.RENDER && renderMode != RenderMode.RADAR })
+    private val outline by setting("Outline", true, { page == Page.RENDER && renderMode != RenderMode.RADAR })
+    private val tracer by setting("Tracer", true, { page == Page.RENDER && renderMode != RenderMode.RADAR })
+    private val color by setting("Color", ColorHolder(31, 200, 63), false, { page == Page.RENDER })
+    private val aFilled by setting("Filled Alpha", 63, 0..255, 1, { page == Page.RENDER && filled && renderMode != RenderMode.RADAR })
+    private val aOutline by setting("Outline Alpha", 160, 0..255, 1, { page == Page.RENDER && outline && renderMode != RenderMode.RADAR })
+    private val aTracer by setting("Tracer Alpha", 200, 0..255, 1, { page == Page.RENDER && tracer && renderMode != RenderMode.RADAR })
+    private val thickness by setting("Line Thickness", 2.0f, 0.25f..8.0f, 0.25f, { page == Page.RENDER })
+    private val waypointDot by setting("Waypoint Dot Size", 3.5, 1.0..8.0, 0.5, { page == Page.RENDER && renderMode != RenderMode.WORLD })
 
     private enum class Dimension {
         CURRENT, ANY
     }
 
+    private enum class RenderMode {
+        WORLD, RADAR, BOTH
+    }
+
     private enum class Page {
-        INFO_BOX, ESP
+        INFO_BOX, RENDER
     }
 
     // This has to be sorted so the further ones doesn't overlaps the closer ones
@@ -75,42 +79,55 @@ internal object WaypointRender : Module(
 
     init {
         listener<RenderWorldEvent> {
-            if (waypointMap.isEmpty()) return@listener
-            val color = ColorHolder(r.value, g.value, b.value)
+            if (waypointMap.isEmpty() || renderMode == RenderMode.RADAR) return@listener
+
             val renderer = ESPRenderer()
-            renderer.aFilled = if (filled.value) aFilled.value else 0
-            renderer.aOutline = if (outline.value) aOutline.value else 0
-            renderer.aTracer = if (tracer.value) aTracer.value else 0
-            renderer.thickness = thickness.value
+            renderer.aFilled = if (filled) aFilled else 0
+            renderer.aOutline = if (outline) aOutline else 0
+            renderer.aTracer = if (tracer) aTracer else 0
+            renderer.thickness = thickness
+
             GlStateUtils.depth(false)
+
             for (waypoint in waypointMap.keys) {
                 val distance = mc.player.distanceTo(waypoint.pos)
-                if (espRangeLimit.value && distance > espRange.value) continue
+                if (espRangeLimit && distance > espRange) continue
+
                 renderer.add(AxisAlignedBB(waypoint.pos), color) /* Adds pos to ESPRenderer list */
-                drawVerticalLines(waypoint.pos, color, aOutline.value) /* Draw lines from y 0 to y 256 */
+                drawVerticalLines(waypoint.pos, color, aOutline) /* Draw lines from y 0 to y 256 */
             }
+
             GlStateUtils.depth(true)
             renderer.render(true)
         }
     }
 
     private fun drawVerticalLines(pos: BlockPos, color: ColorHolder, a: Int) {
-        val box = AxisAlignedBB(pos.x.toDouble(), 0.0, pos.z.toDouble(),
-            pos.x + 1.0, 256.0, pos.z + 1.0)
+        val box = AxisAlignedBB(
+            pos.x.toDouble(), 0.0, pos.z.toDouble(),
+            pos.x + 1.0, 256.0, pos.z + 1.0
+        )
+
         KamiTessellator.begin(GL_LINES)
-        KamiTessellator.drawOutline(box, color, a, GeometryMasks.Quad.ALL, thickness.value)
+        KamiTessellator.drawOutline(box, color, a, GeometryMasks.Quad.ALL, thickness)
         KamiTessellator.render()
     }
 
     init {
         listener<RenderOverlayEvent> {
-            if (waypointMap.isEmpty() || !showCoords.value && !showName.value && !showDate.value && !showDist.value) return@listener
+            if (waypointMap.isEmpty() || !showCoordinates.value && !showName.value && !showDate.value && !showDist.value) {
+                return@listener
+            }
+
             GlStateUtils.rescaleActual()
+
             for ((waypoint, textComponent) in waypointMap) {
                 val distance = sqrt(mc.player.getDistanceSqToCenter(waypoint.pos))
-                if (distance > infoBoxRange.value) continue
+                if (distance > infoBoxRange) continue
+
                 drawText(waypoint.pos, textComponent, distance.roundToInt())
             }
+
             GlStateUtils.rescaleMc()
         }
     }
@@ -120,7 +137,7 @@ internal object WaypointRender : Module(
 
         val screenPos = ProjectionUtils.toScreenPos(pos.toVec3dCenter())
         glTranslatef(screenPos.x.toFloat(), screenPos.y.toFloat(), 0f)
-        glScalef(textScale.value * 2f, textScale.value * 2f, 0f)
+        glScalef(textScale * 2f, textScale * 2f, 0f)
 
         val textComponent = TextComponent(textComponentIn).apply { if (showDist.value) add("$distance m") }
         val stringWidth = textComponent.getWidth()
@@ -166,9 +183,27 @@ internal object WaypointRender : Module(
             }
         }
 
+        safeListener<RenderRadarEvent> {
+            if (renderMode == RenderMode.WORLD) return@safeListener
+
+            for (waypoint in waypointMap.keys) {
+                val pos = getPos(waypoint, Vec2d(player.position.x.toDouble(), player.position.z.toDouble()), it.scale)
+
+                // Check if pos is inside radius
+                if (pos.length() < it.radius) {
+                    RenderUtils2D.drawCircleFilled(it.vertexHelper, pos, waypointDot / it.scale, color = color)
+                }
+            }
+        }
+
         listener<ConnectionEvent.Disconnect> {
             currentServer = null
         }
+    }
+
+    private fun getPos(waypoint: Waypoint, playerOffset: Vec2d, scale: Float): Vec2d {
+        val position = waypoint.pos
+        return Vec2d(position.x.toDouble(), position.z.toDouble()).minus(playerOffset).div(scale.toDouble())
     }
 
     private fun updateList() {
@@ -195,7 +230,7 @@ internal object WaypointRender : Module(
             TextComponent().apply {
                 if (showName.value) addLine(waypoint.name)
                 if (showDate.value) addLine(waypoint.date)
-                if (showCoords.value) addLine(waypoint.toString())
+                if (showCoordinates.value) addLine(waypoint.toString())
             }
         }
     }
@@ -206,7 +241,7 @@ internal object WaypointRender : Module(
         ) {
             showName.listeners.add(this)
             showDate.listeners.add(this)
-            showCoords.listeners.add(this)
+            showCoordinates.listeners.add(this)
             showDist.listeners.add(this)
         }
 

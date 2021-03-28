@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import org.kamiblue.client.AsyncLoader
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.ClientExecuteEvent
+import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.module.modules.client.CommandConfig
 import org.kamiblue.client.util.StopTimer
 import org.kamiblue.client.util.text.MessageSendHelper
@@ -11,6 +12,8 @@ import org.kamiblue.client.util.text.formatValue
 import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.onMainThread
 import org.kamiblue.command.AbstractCommandManager
+import org.kamiblue.command.Command
+import org.kamiblue.command.CommandBuilder
 import org.kamiblue.command.utils.CommandNotFoundException
 import org.kamiblue.command.utils.SubCommandNotFoundException
 import org.kamiblue.commons.utils.ClassUtils
@@ -18,7 +21,7 @@ import org.kamiblue.commons.utils.ClassUtils.instance
 
 object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoader<List<Class<out ClientCommand>>> {
     override var deferred: Deferred<List<Class<out ClientCommand>>>? = null
-    val prefix: String get() = CommandConfig.prefix.value
+    val prefix: String get() = CommandConfig.prefix
 
     override fun preLoad0(): List<Class<out ClientCommand>> {
         val stopTimer = StopTimer()
@@ -40,6 +43,20 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoade
 
         val time = stopTimer.stop()
         KamiMod.LOG.info("${input.size} commands loaded, took ${time}ms")
+    }
+
+    override fun register(builder: CommandBuilder<ClientExecuteEvent>): Command<ClientExecuteEvent> {
+        synchronized(lockObject) {
+            KamiEventBus.subscribe(builder)
+            return super.register(builder)
+        }
+    }
+
+    override fun unregister(builder: CommandBuilder<ClientExecuteEvent>): Command<ClientExecuteEvent>? {
+        synchronized(lockObject) {
+            KamiEventBus.unsubscribe(builder)
+            return super.unregister(builder)
+        }
     }
 
     fun runCommand(string: String) {
@@ -76,7 +93,9 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoade
             ?: throw SubCommandNotFoundException(event.args, command)
 
         onMainThread {
-            finalArg.invoke(event)
+            runBlocking {
+                finalArg.invoke(event)
+            }
         }
     }
 

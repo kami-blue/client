@@ -5,14 +5,13 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.math.MathHelper
 import org.kamiblue.client.gui.hudgui.HudElement
-import org.kamiblue.client.setting.GuiConfig.setting
 import org.kamiblue.client.util.graphics.GlStateUtils
 import org.kamiblue.client.util.graphics.KamiTessellator
 import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.threads.runSafe
 import org.lwjgl.opengl.GL11.*
 
-object PlayerModel : HudElement(
+internal object PlayerModel : HudElement(
     name = "PlayerModel",
     category = Category.PLAYER,
     description = "Your player icon, or players you attacked"

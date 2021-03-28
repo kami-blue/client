@@ -5,22 +5,28 @@ import org.kamiblue.client.AsyncLoader
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.KamiEventBus
 import org.kamiblue.client.gui.clickgui.KamiClickGui
-import org.kamiblue.client.gui.hudgui.HudElement
+import org.kamiblue.client.gui.hudgui.AbstractHudElement
 import org.kamiblue.client.gui.hudgui.KamiHudGui
+import org.kamiblue.client.util.AsyncCachedValue
 import org.kamiblue.client.util.StopTimer
+import org.kamiblue.client.util.TimeUnit
+import org.kamiblue.commons.collections.AliasSet
 import org.kamiblue.commons.utils.ClassUtils
 import org.kamiblue.commons.utils.ClassUtils.instance
-import org.lwjgl.input.Keyboard
 import java.lang.reflect.Modifier
 
-object GuiManager : AsyncLoader<List<Class<out HudElement>>> {
-    override var deferred: Deferred<List<Class<out HudElement>>>? = null
-    val hudElementsMap = LinkedHashMap<Class<out HudElement>, HudElement>()
+internal object GuiManager : AsyncLoader<List<Class<out AbstractHudElement>>> {
+    override var deferred: Deferred<List<Class<out AbstractHudElement>>>? = null
+    private val hudElementSet = AliasSet<AbstractHudElement>()
 
-    override fun preLoad0(): List<Class<out HudElement>> {
+    val hudElements by AsyncCachedValue(5L, TimeUnit.SECONDS) {
+        hudElementSet.distinct().sortedBy { it.name }
+    }
+
+    override fun preLoad0(): List<Class<out AbstractHudElement>> {
         val stopTimer = StopTimer()
 
-        val list = ClassUtils.findClasses<HudElement>("org.kamiblue.client.gui.hudgui.elements") {
+        val list = ClassUtils.findClasses<AbstractHudElement>("org.kamiblue.client.gui.hudgui.elements") {
             filter { Modifier.isFinal(it.modifiers) }
         }
 
@@ -30,11 +36,11 @@ object GuiManager : AsyncLoader<List<Class<out HudElement>>> {
         return list
     }
 
-    override fun load0(input: List<Class<out HudElement>>) {
+    override fun load0(input: List<Class<out AbstractHudElement>>) {
         val stopTimer = StopTimer()
 
         for (clazz in input) {
-            hudElementsMap[clazz] = clazz.instance
+            register(clazz.instance)
         }
 
         val time = stopTimer.stop()
@@ -47,10 +53,15 @@ object GuiManager : AsyncLoader<List<Class<out HudElement>>> {
         KamiEventBus.subscribe(KamiHudGui)
     }
 
-    internal fun onBind(eventKey: Int) {
-        if (eventKey == 0 || Keyboard.isKeyDown(Keyboard.KEY_F3)) return  // if key is the 'none' key (stuff like mod key in i3 might return 0)
-        for (hudElement in hudElementsMap) {
-            if (hudElement.value.bind.isDown(eventKey)) hudElement.value.visible = !hudElement.value.visible
-        }
+    internal fun register(hudElement: AbstractHudElement) {
+        hudElementSet.add(hudElement)
+        KamiHudGui.register(hudElement)
     }
+
+    internal fun unregister(hudElement: AbstractHudElement) {
+        hudElementSet.remove(hudElement)
+        KamiHudGui.unregister(hudElement)
+    }
+
+    fun getHudElementOrNull(name: String?) = name?.let { hudElementSet[it] }
 }
