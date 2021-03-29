@@ -4,10 +4,10 @@ import baritone.api.pathing.goals.GoalXZ
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
-import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.BaritoneSettingsInitEvent
+import org.kamiblue.client.event.events.InputEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
@@ -97,7 +97,7 @@ internal object AntiAFK : Module(
             }
         }
 
-        listener<InputEvent.KeyInputEvent> {
+        listener<net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent> {
             if (inputTimeout > 0 && isPressing()) {
                 startPos = null
                 inputTimer.reset()

@@ -5,7 +5,7 @@ import net.minecraft.client.gui.GuiRepair
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiEditSign
 import net.minecraft.util.MovementInputFromOptions
-import net.minecraftforge.client.event.InputUpdateEvent
+import org.kamiblue.client.event.events.InputUpdateEvent
 import org.kamiblue.client.KamiMod
 import org.kamiblue.client.gui.AbstractKamiGui
 import org.kamiblue.client.module.Category

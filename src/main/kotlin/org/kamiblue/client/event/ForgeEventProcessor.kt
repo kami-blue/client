@@ -14,7 +14,6 @@ import org.kamiblue.client.event.events.BaritoneCommandEvent
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.event.events.ResolutionUpdateEvent
-import org.kamiblue.client.gui.GuiManager
 import org.kamiblue.client.gui.mc.KamiGuiChat
 import org.kamiblue.client.module.ModuleManager
 import org.kamiblue.client.util.Wrapper
@@ -96,17 +95,7 @@ internal object ForgeEventProcessor {
     }
 
     @SubscribeEvent
-    fun onEventMouse(event: InputEvent.MouseInputEvent) {
-        KamiEventBus.post(event)
-    }
-
-    @SubscribeEvent
     fun onChunkLoaded(event: ChunkEvent.Unload) {
-        KamiEventBus.post(event)
-    }
-
-    @SubscribeEvent
-    fun onInputUpdate(event: InputUpdateEvent) {
         KamiEventBus.post(event)
     }
 

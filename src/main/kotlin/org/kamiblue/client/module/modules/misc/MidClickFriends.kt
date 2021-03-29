@@ -3,7 +3,7 @@ package org.kamiblue.client.module.modules.misc
 import kotlinx.coroutines.launch
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.util.math.RayTraceResult
-import net.minecraftforge.fml.common.gameevent.InputEvent
+import org.kamiblue.client.event.events.InputEvent
 import org.kamiblue.client.manager.managers.FriendManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module

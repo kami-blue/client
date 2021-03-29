@@ -14,11 +14,11 @@ import net.minecraft.util.MovementInputFromOptions
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
-import net.minecraftforge.client.event.InputUpdateEvent
-import net.minecraftforge.fml.common.gameevent.InputEvent
+import org.kamiblue.client.event.events.InputUpdateEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.ConnectionEvent
+import org.kamiblue.client.event.events.InputEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.PlayerAttackEvent
 import org.kamiblue.client.module.Category
@@ -128,7 +128,7 @@ internal object Freecam : Module(
             if (it.entity == mc.player) it.cancel()
         }
 
-        safeListener<InputEvent.KeyInputEvent> {
+        safeListener<net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent> {
             // Force it to stay in first person lol
             if (mc.gameSettings.keyBindTogglePerspective.isKeyDown) mc.gameSettings.thirdPersonView = 2
         }

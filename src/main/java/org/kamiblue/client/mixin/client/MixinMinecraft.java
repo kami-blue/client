@@ -14,6 +14,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.ForgeHooks;
 import org.kamiblue.client.event.KamiEventBus;
 import org.kamiblue.client.event.events.GuiEvent;
+import org.kamiblue.client.event.events.InputEvent;
 import org.kamiblue.client.event.events.RunGameLoopEvent;
 import org.kamiblue.client.gui.mc.KamiGuiUpdateNotification;
 import org.kamiblue.client.manager.managers.HotbarManager;
@@ -165,6 +166,11 @@ public abstract class MixinMinecraft {
             Wrapper.getMinecraft().displayGuiScreen(new KamiGuiUpdateNotification());
         }
         PluginError.Companion.displayErrors();
+    }
+
+    @Inject(method = "runTickMouse", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getEventButton()I"))
+    public void mouseTick(CallbackInfo info) {
+        KamiEventBus.INSTANCE.post(new InputEvent.MouseInputEvent());
     }
 
 }

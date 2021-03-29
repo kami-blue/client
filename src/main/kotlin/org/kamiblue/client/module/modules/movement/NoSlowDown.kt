@@ -6,7 +6,7 @@ import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketPlayerDigging
 import net.minecraft.network.play.client.CPacketPlayerDigging.Action
 import net.minecraft.util.EnumFacing
-import net.minecraftforge.client.event.InputUpdateEvent
+import org.kamiblue.client.event.events.InputUpdateEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.PacketEvent

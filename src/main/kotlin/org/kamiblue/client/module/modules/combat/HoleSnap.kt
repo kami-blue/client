@@ -4,8 +4,8 @@ import net.minecraft.network.play.server.SPacketPlayerPosLook
 import net.minecraft.util.MovementInputFromOptions
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import net.minecraftforge.client.event.InputUpdateEvent
 import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.InputUpdateEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.PlayerMoveEvent
 import org.kamiblue.client.event.events.RenderWorldEvent

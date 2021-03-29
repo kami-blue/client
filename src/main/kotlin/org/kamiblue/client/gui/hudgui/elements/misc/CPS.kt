@@ -1,7 +1,7 @@
 package org.kamiblue.client.gui.hudgui.elements.misc
 
-import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.client.event.SafeClientEvent
+import org.kamiblue.client.event.events.InputEvent
 import org.kamiblue.client.event.events.RunGameLoopEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.util.TickTimer

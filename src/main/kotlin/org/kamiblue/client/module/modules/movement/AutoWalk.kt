@@ -2,7 +2,7 @@ package org.kamiblue.client.module.modules.movement
 
 import baritone.api.pathing.goals.GoalXZ
 import net.minecraft.util.MovementInputFromOptions
-import net.minecraftforge.client.event.InputUpdateEvent
+import org.kamiblue.client.event.events.InputUpdateEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.event.events.BaritoneCommandEvent

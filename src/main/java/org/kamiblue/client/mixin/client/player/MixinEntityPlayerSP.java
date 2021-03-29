@@ -10,10 +10,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.util.MovementInput;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
 import org.kamiblue.client.event.KamiEventBus;
+import org.kamiblue.client.event.events.InputUpdateEvent;
 import org.kamiblue.client.event.events.OnUpdateWalkingPlayerEvent;
 import org.kamiblue.client.event.events.PlayerMoveEvent;
 import org.kamiblue.client.gui.mc.KamiGuiBeacon;
@@ -49,6 +51,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
     @Shadow private boolean serverSneakState;
     @Shadow private boolean prevOnGround;
     @Shadow private boolean autoJumpEnabled;
+    @Shadow public MovementInput movementInput;
 
     @Shadow protected abstract boolean isCurrentViewEntity();
     @Shadow protected abstract void updateAutoJump(float p_189810_1_, float p_189810_2_);
@@ -234,5 +237,10 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         double pitchDiff = rotation.getY() - this.lastReportedPitch;
 
         return yawDiff != 0.0D || pitchDiff != 0.0D;
+    }
+
+    @Inject(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/MovementInput;updatePlayerMoveState()V", shift = At.Shift.AFTER))
+    public void onPlayerMoveStateUpdate(CallbackInfo ci) {
+        KamiEventBus.INSTANCE.post(new InputUpdateEvent(this, movementInput));
     }
 }

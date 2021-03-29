@@ -3,7 +3,7 @@ package org.kamiblue.client.module.modules.misc
 import net.minecraft.entity.Entity
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.RayTraceResult
-import net.minecraftforge.fml.common.gameevent.InputEvent
+import org.kamiblue.client.event.events.InputEvent
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.TickTimer
