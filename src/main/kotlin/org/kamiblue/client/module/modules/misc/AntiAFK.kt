@@ -34,7 +34,7 @@ internal object AntiAFK : Module(
     private val delay by setting("Action Delay", 50, 5..100, 5)
     private val variation by setting("Variation", 25, 0..50, 5)
     private val autoReply by setting("Auto Reply", true)
-    private val replyMessage by setting("Reply Message", "I am currently AFK and using KAMI Blue!", { autoReply })
+    private val replyMessage by setting("Reply Message", "I am AFK with KAMI Blue!", { autoReply })
     private val swing = setting("Swing", true)
     private val jump = setting("Jump", true)
     private val turn = setting("Turn", true)
