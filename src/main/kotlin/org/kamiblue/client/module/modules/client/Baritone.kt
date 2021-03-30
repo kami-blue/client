@@ -23,11 +23,11 @@ internal object Baritone : Module(
     alwaysEnabled = true
 ) {
     private val showOnRadar by setting("Show Path on Radar", true, description = "Show the current path on radar.")
-    private val colour by setting("Colour", ColorHolder(255, 0, 0), visibility = { showOnRadar })
+    private val color by setting("Path Color", ColorHolder(32, 250, 32), visibility = { showOnRadar })
     private val allowBreak = setting("Allow Break", true)
     private val allowSprint = setting("Allow Sprint", true)
     private val allowPlace = setting("Allow Place", true)
-    val allowInventory = setting("Allow Inventory", false)
+    private val allowInventory = setting("Allow Inventory", false)
     private val freeLook = setting("Free Look", true)
     private val allowDownwardTunneling = setting("Downward Tunneling", true)
     private val allowParkour = setting("Allow Parkour", true)
@@ -61,7 +61,7 @@ internal object Baritone : Module(
                 val positionTo = getPos(movement.dest, playerOffset, it.scale)
 
                 if (positionFrom.length() < it.radius && positionTo.length() < it.radius) {
-                    RenderUtils2D.drawLine(it.vertexHelper, positionFrom, positionTo, color = colour)
+                    RenderUtils2D.drawLine(it.vertexHelper, positionFrom, positionTo, color = color, lineWidth = 3f)
                 }
             }
         }
