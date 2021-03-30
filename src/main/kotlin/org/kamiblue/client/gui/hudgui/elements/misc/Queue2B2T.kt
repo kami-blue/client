@@ -1,38 +1,96 @@
 package org.kamiblue.client.gui.hudgui.elements.misc
 
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.client.KamiMod
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.gui.hudgui.LabelHud
 import org.kamiblue.client.util.TickTimer
 import org.kamiblue.client.util.TimeUnit
 import org.kamiblue.client.util.WebUtils
+import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.client.util.threads.safeListener
+import org.kamiblue.commons.utils.grammar
 
 internal object Queue2B2T : LabelHud(
     name = "2B2T Queue",
     category = Category.MISC,
     description = "Length of 2B2T Queue"
 ) {
-    private var queueURL = "https://2bqueue.info/queue"
-    private val waitTime = TickTimer(TimeUnit.SECONDS)
-    var initialGet = WebUtils.getUrlContents(queueURL).replace("\n", "").split("\"")
-    val fixData = Regex("[^A-Za-z0-9 ]") //There's probably an easier way, but it's 2 am
-    var priority = fixData.replace(initialGet[2], "")
-    var standard = fixData.replace(initialGet[4], "")
+    private const val apiUrl = "https://2bqueue.info/queue"
+    private val gson = Gson()
+    private val queueData = QueueData(0, 0, 0, 0)
 
-    init{
+    private val lastUpdateTimer = TickTimer(TimeUnit.SECONDS)
+    private val dataUpdateTimer = TickTimer(TimeUnit.SECONDS)
+
+    private val hasShownWarning = setting("Has Shown Warning", false, { false })
+
+    init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (!waitTime.tick(60L)) return@safeListener
-            priority = fixData.replace(getQueueData()[2], "")
-            standard = fixData.replace(getQueueData()[4], "")
-            waitTime.reset()
+            if (dataUpdateTimer.tick(15L)) {
+                updateQueueData()
+            }
         }
     }
+
     override fun SafeClientEvent.updateText() {
-        displayText.add(("Priority: $priority, Standard: $standard"), primaryColor)
+        if (!hasShownWarning.value) {
+            MessageSendHelper.sendWarningMessage(
+                "This module uses an external API, 2bqueue.info, which is operated by Tycrek at the time of writing." +
+                "If you do not trust this external API / have not verified the safety yourself, disable this HUD component."
+            )
+            hasShownWarning.value = true
+        }
+
+        displayText.add("Priority: ", primaryColor)
+        displayText.add("${queueData.priority}", secondaryColor)
+        displayText.add("Regular: ", primaryColor)
+        displayText.addLine("${queueData.regular}", secondaryColor)
+        displayText.add("Last updated ${queueData.getLastUpdate()} ago", primaryColor)
     }
 
-    fun getQueueData(): List<String> {
-        return WebUtils.getUrlContents(queueURL).replace("\n", "").split("\"")
+    private fun updateQueueData() {
+        val tmpData = try {
+            val json = WebUtils.getUrlContents(apiUrl)
+            gson.fromJson(json, QueueData::class.java)
+        } catch (e: Exception) {
+            KamiMod.LOG.debug("Exception in ${this.javaClass.simpleName}", e)
+            return
+        }
+
+        // Instead of overwriting the object, copy the values
+        // This is because of the lastUpdateCache
+        queueData.priority = tmpData.priority
+        queueData.regular = tmpData.regular
+        queueData.total = tmpData.total
+        queueData.lastUpdated = tmpData.lastUpdated
+    }
+
+    private data class QueueData(
+        @SerializedName("prio")
+        var priority: Int,
+        var regular: Int,
+        var total: Int,
+        @SerializedName("timems")
+        var lastUpdated: Long
+    ) {
+        private var lastUpdateCache: String = "0 minutes, 0 seconds"
+
+        fun getLastUpdate(): String {
+            if (lastUpdateTimer.tick(1L)) {
+                val difference = System.currentTimeMillis() - lastUpdated
+
+                val minuteAmt = difference / 60000L % 60L
+                val secondAmt = difference / 1000L % 60L
+                val minutes = grammar(minuteAmt.toInt(), "minute", "minutes")
+                val seconds = grammar(secondAmt.toInt(), "second", "seconds")
+
+                lastUpdateCache = "$minutes, $seconds"
+            }
+
+            return lastUpdateCache
+        }
     }
 }
