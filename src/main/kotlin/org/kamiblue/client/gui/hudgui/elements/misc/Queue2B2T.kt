@@ -39,7 +39,7 @@ internal object Queue2B2T : LabelHud(
         if (!hasShownWarning.value) {
             MessageSendHelper.sendWarningMessage(
                 "This module uses an external API, 2bqueue.info, which is operated by Tycrek at the time of writing." +
-                "If you do not trust this external API / have not verified the safety yourself, disable this HUD component."
+                    "If you do not trust this external API / have not verified the safety yourself, disable this HUD component."
             )
             hasShownWarning.value = true
         }
@@ -58,7 +58,7 @@ internal object Queue2B2T : LabelHud(
         } catch (e: Exception) {
             KamiMod.LOG.debug("Exception in ${this.javaClass.simpleName}", e)
             return
-        }
+        } ?: return
 
         // Instead of overwriting the object, copy the values
         // This is because of the lastUpdateCache
