@@ -25,7 +25,7 @@ public class MixinModelBoat {
         }
     }
 
-    @Inject(method = { "render" }, at = { @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ModelBoat;setRotationAngles(FFFFFFLnet/minecraft/entity/Entity;)V") }, cancellable = true)
+    @Inject(method = "render", at = { @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ModelBoat;setRotationAngles(FFFFFFLnet/minecraft/entity/Entity;)V") }, cancellable = true)
     private void onRender(final Entity entityIn, final float limbSwing, final float limbSwingAmount, final float ageInTicks, final float netHeadYaw, final float headPitch, final float scale, final CallbackInfo ci) {
         if (BoatFly.INSTANCE.isEnabled() && entityIn == Wrapper.getPlayer().getRidingEntity()) {
             final double size = BoatFly.INSTANCE.getSize();
@@ -36,4 +36,13 @@ public class MixinModelBoat {
         }
     }
 
+    @Inject(method = "renderMultipass", at = { @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;colorMask(ZZZZ)V", ordinal = 0) })
+    private void onRenderMultipass(final Entity entityIn, final float partialTicks, final float p_187054_3_, final float p_187054_4_, final float p_187054_5_, final float p_187054_6_, final float scale, final CallbackInfo ci) {
+        if (BoatFly.INSTANCE.isEnabled() && entityIn == Wrapper.getPlayer().getRidingEntity()) {
+            final double size = BoatFly.INSTANCE.getSize();
+            if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 0 && size != 1.0) {
+                GlStateManager.scale(size, size, size);
+            }
+        }
+    }
 }
