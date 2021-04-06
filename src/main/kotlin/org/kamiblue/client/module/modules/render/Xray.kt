@@ -1,11 +1,6 @@
 package org.kamiblue.client.module.modules.render
 
-import net.minecraft.block.BlockDirt
-import net.minecraft.block.BlockGrass
-import net.minecraft.block.BlockStone
 import net.minecraft.block.state.IBlockState
-import net.minecraft.client.renderer.BlockFluidRenderer
-import net.minecraft.client.renderer.BlockRendererDispatcher
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.setting.settings.impl.collection.CollectionSetting
@@ -19,8 +14,9 @@ internal object Xray : Module(
 
     val visibleList = setting(CollectionSetting("Visible List", defaultVisibleList, { false }))
 
+    @JvmStatic
     fun shouldReplace(state: IBlockState): Boolean {
-        return !visibleList.contains(state.block.registryName.toString())
+        return isEnabled && !visibleList.contains(state.block.registryName.toString())
     }
 
     init {

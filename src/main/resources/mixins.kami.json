@@ -49,6 +49,7 @@
     "player.MixinEntityPlayer",
     "player.MixinEntityPlayerSP",
     "player.MixinPlayerControllerMP",
+    "render.MixinBlockFluidRenderer",
     "render.MixinBlockModelRenderer",
     "render.MixinDebugRendererChunkBorder",
     "render.MixinEntityRenderer",
@@ -66,16 +67,15 @@
     "render.MixinRenderLivingBase",
     "render.MixinRenderManager",
     "render.MixinRenderPlayer",
+    "render.MixinStateImplementation",
     "render.MixinTileEntityRendererDispatcher",
     "render.MixinTileEntitySignRenderer",
+    "render.MixinTileRendererDispatcher",
     "render.MixinViewFrustum",
     "render.MixinVisGraph",
     "world.MixinBlockLiquid",
     "world.MixinBlockSoulSand",
     "world.MixinBlockWeb",
-    "world.MixinWorld",
-    "render.MixinBlockFluidRenderer",
-    "render.MixinStateImplementation",
-    "render.MixinTileRendererDispatcher"
+    "world.MixinWorld"
   ]
 }
