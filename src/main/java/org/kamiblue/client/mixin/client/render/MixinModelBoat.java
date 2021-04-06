@@ -1,5 +1,6 @@
 package org.kamiblue.client.mixin.client.render;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBoat;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
@@ -21,6 +22,17 @@ public class MixinModelBoat {
         if (Wrapper.getPlayer().getRidingEntity() == entityIn && BoatFly.INSTANCE.isEnabled()) {
             GlStateManager.color(1.0f, 1.0f, 1.0f, BoatFly.INSTANCE.getOpacity());
             GlStateManager.enableBlend();
+        }
+    }
+
+    @Inject(method = { "render" }, at = { @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ModelBoat;setRotationAngles(FFFFFFLnet/minecraft/entity/Entity;)V") }, cancellable = true)
+    private void onRender(final Entity entityIn, final float limbSwing, final float limbSwingAmount, final float ageInTicks, final float netHeadYaw, final float headPitch, final float scale, final CallbackInfo ci) {
+        if (BoatFly.INSTANCE.isEnabled() && entityIn == Wrapper.getPlayer().getRidingEntity()) {
+            final double size = BoatFly.INSTANCE.getSize();
+            //in 3rd person this thing freaks out
+            if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 0 && size != 1.0) {
+                GlStateManager.scale(size, size, size);
+            }
         }
     }
 
