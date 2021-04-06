@@ -49,6 +49,7 @@
     "player.MixinEntityPlayer",
     "player.MixinEntityPlayerSP",
     "player.MixinPlayerControllerMP",
+    "render.MixinBlockModelRenderer",
     "render.MixinDebugRendererChunkBorder",
     "render.MixinEntityRenderer",
     "render.MixinFontRenderer",
@@ -72,6 +73,9 @@
     "world.MixinBlockLiquid",
     "world.MixinBlockSoulSand",
     "world.MixinBlockWeb",
-    "world.MixinWorld"
+    "world.MixinWorld",
+    "render.MixinBlockFluidRenderer",
+    "render.MixinStateImplementation",
+    "render.MixinTileRendererDispatcher"
   ]
 }
