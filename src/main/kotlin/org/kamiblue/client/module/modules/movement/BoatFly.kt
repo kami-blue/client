@@ -77,4 +77,15 @@ internal object BoatFly : Module(
         if (!entity.isInWater) entity.motionY = -glideSpeed.toDouble()
         if (mc.gameSettings.keyBindJump.isKeyDown) entity.motionY += upSpeed / 2.0
     }
+
+    @JvmStatic
+    fun isBoatFlying(entityIn: Entity): Boolean {
+        return isEnabled && mc.player?.ridingEntity == entityIn
+    }
+
+    @JvmStatic
+    fun shouldModifyScale(entityIn: Entity): Boolean {
+        return isBoatFlying(entityIn) && mc.gameSettings.thirdPersonView == 0
+    }
+
 }
