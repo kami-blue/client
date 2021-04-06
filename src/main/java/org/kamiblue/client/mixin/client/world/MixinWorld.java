@@ -12,24 +12,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = World.class, priority = Integer.MAX_VALUE)
 public class MixinWorld {
-    @Inject(method = "checkLightFor", at = @At("HEAD"), cancellable = true)
-    private void checkLightForHead(EnumSkyBlock lightType, BlockPos pos, CallbackInfoReturnable<Boolean> ci) {
-        if (lightType == EnumSkyBlock.SKY && NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.getSkylight().getValue()) {
-            ci.setReturnValue(false);
-        }
-    }
+	@Inject(method = "checkLightFor", at = @At("HEAD"), cancellable = true)
+	private void checkLightForHead(EnumSkyBlock lightType, BlockPos pos, CallbackInfoReturnable<Boolean> ci) {
+		if (lightType == EnumSkyBlock.SKY && NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.getSkylight().getValue()) {
+			ci.setReturnValue(false);
+		}
+	}
 
-    @Inject(method = "getThunderStrength", at = @At("HEAD"), cancellable = true)
-    private void getThunderStrengthHead(float delta, CallbackInfoReturnable<Float> cir) {
-        if (AntiWeather.INSTANCE.isEnabled()) {
-            cir.setReturnValue(0.0f);
-        }
-    }
+	@Inject(method = "getThunderStrength", at = @At("HEAD"), cancellable = true)
+	private void getThunderStrengthHead(float delta, CallbackInfoReturnable<Float> cir) {
+		if (AntiWeather.INSTANCE.isEnabled()) {
+			cir.setReturnValue(0.0f);
+		}
+	}
 
-    @Inject(method = "getRainStrength", at = @At("HEAD"), cancellable = true)
-    private void getRainStrengthHead(float delta, CallbackInfoReturnable<Float> cir) {
-        if (AntiWeather.INSTANCE.isEnabled()) {
-            cir.setReturnValue(0.0f);
-        }
-    }
+	@Inject(method = "getRainStrength", at = @At("HEAD"), cancellable = true)
+	private void getRainStrengthHead(float delta, CallbackInfoReturnable<Float> cir) {
+		if (AntiWeather.INSTANCE.isEnabled()) {
+			cir.setReturnValue(0.0f);
+		}
+	}
 }

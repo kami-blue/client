@@ -10,14 +10,14 @@ varying vec2 uv;
 varying vec2 offset;
 
 void main() {
-    int intIterations = int(iterations);
-    vec2 randomOffset = offset;
-    vec4 color = texture2D(DiffuseSampler, fragCoord + randomOffset * uv);
+	int intIterations = int(iterations);
+	vec2 randomOffset = offset;
+	vec4 color = texture2D(DiffuseSampler, fragCoord + randomOffset * uv);
 
-    for (int i = 1; i < intIterations; i++) {
-        color += texture2D(DiffuseSampler, fragCoord + randomOffset * uv);
-        randomOffset = vec2(sin(dot(randomOffset, randomSeed)), sin(dot(vec2(randomOffset.y, randomOffset.x), randomSeed)));
-    }
+	for (int i = 1; i < intIterations; i++) {
+		color += texture2D(DiffuseSampler, fragCoord + randomOffset * uv);
+		randomOffset = vec2(sin(dot(randomOffset, randomSeed)), sin(dot(vec2(randomOffset.y, randomOffset.x), randomSeed)));
+	}
 
-    gl_FragColor = color / float(intIterations);
+	gl_FragColor = color / float(intIterations);
 }

@@ -6,5 +6,5 @@ import org.kamiblue.client.event.ICancellable
 import org.kamiblue.client.event.ProfilerEvent
 
 class PlayerTravelEvent : Event, ICancellable by Cancellable(), ProfilerEvent {
-    override val profilerName: String = "kbPlayerTravel"
+	override val profilerName: String = "kbPlayerTravel"
 }

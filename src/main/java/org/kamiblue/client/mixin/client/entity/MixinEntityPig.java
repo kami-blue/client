@@ -13,12 +13,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EntityPig.class)
 public class MixinEntityPig {
 
-    @Inject(method = "canBeSteered", at = @At("HEAD"), cancellable = true)
-    public void canBeSteered(CallbackInfoReturnable<Boolean> returnable) {
-        if (EntitySpeed.INSTANCE.isEnabled()) {
-            returnable.setReturnValue(true);
-            returnable.cancel();
-        }
-    }
+	@Inject(method = "canBeSteered", at = @At("HEAD"), cancellable = true)
+	public void canBeSteered(CallbackInfoReturnable<Boolean> returnable) {
+		if (EntitySpeed.INSTANCE.isEnabled()) {
+			returnable.setReturnValue(true);
+			returnable.cancel();
+		}
+	}
 
 }

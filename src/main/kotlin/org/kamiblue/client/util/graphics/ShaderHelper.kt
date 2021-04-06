@@ -15,65 +15,65 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_VENDOR
 
 class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) {
-    private val mc = Wrapper.minecraft
+	private val mc = Wrapper.minecraft
 
-    val shader: ShaderGroup?
-    private val frameBufferMap = HashMap<String, Framebuffer>()
-    private var frameBuffersInitialized = false
+	val shader: ShaderGroup?
+	private val frameBufferMap = HashMap<String, Framebuffer>()
+	private var frameBuffersInitialized = false
 
-    init {
-        shader = when {
-            !OpenGlHelper.shadersSupported -> {
-                KamiMod.LOG.warn("Shaders are unsupported by OpenGL!")
-                null
-            }
+	init {
+		shader = when {
+			!OpenGlHelper.shadersSupported -> {
+				KamiMod.LOG.warn("Shaders are unsupported by OpenGL!")
+				null
+			}
 
-            isIntegratedGraphics -> {
-                KamiMod.LOG.warn("Running on Intel Integrated Graphics!")
-                null
-            }
+			isIntegratedGraphics -> {
+				KamiMod.LOG.warn("Running on Intel Integrated Graphics!")
+				null
+			}
 
-            else -> {
-                try {
-                    ShaderLinkHelper.setNewStaticShaderLinkHelper()
+			else -> {
+				try {
+					ShaderLinkHelper.setNewStaticShaderLinkHelper()
 
-                    ShaderGroup(mc.textureManager, mc.resourceManager, mc.framebuffer, shaderIn).also {
-                        it.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
-                    }
-                } catch (e: Exception) {
-                    KamiMod.LOG.warn("Failed to load shaders")
-                    e.printStackTrace()
+					ShaderGroup(mc.textureManager, mc.resourceManager, mc.framebuffer, shaderIn).also {
+						it.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
+					}
+				} catch (e: Exception) {
+					KamiMod.LOG.warn("Failed to load shaders")
+					e.printStackTrace()
 
-                    null
-                }?.also {
-                    for (name in frameBufferNames) {
-                        frameBufferMap[name] = it.getFramebufferRaw(name)
-                    }
-                }
-            }
+					null
+				}?.also {
+					for (name in frameBufferNames) {
+						frameBufferMap[name] = it.getFramebufferRaw(name)
+					}
+				}
+			}
 
-        }
+		}
 
-        listener<TickEvent.ClientTickEvent> {
-            if (!frameBuffersInitialized) {
-                shader?.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
+		listener<TickEvent.ClientTickEvent> {
+			if (!frameBuffersInitialized) {
+				shader?.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
 
-                frameBuffersInitialized = true
-            }
-        }
+				frameBuffersInitialized = true
+			}
+		}
 
-        listener<ResolutionUpdateEvent> {
-            shader?.createBindFramebuffers(it.width, it.height) // this will not run if on Intel GPU or unsupported Shaders
-        }
+		listener<ResolutionUpdateEvent> {
+			shader?.createBindFramebuffers(it.width, it.height) // this will not run if on Intel GPU or unsupported Shaders
+		}
 
-        KamiEventBus.subscribe(this)
-    }
+		KamiEventBus.subscribe(this)
+	}
 
-    fun getFrameBuffer(name: String) = frameBufferMap[name]
+	fun getFrameBuffer(name: String) = frameBufferMap[name]
 
-    companion object {
-        val isIntegratedGraphics by lazy {
-            GlStateManager.glGetString(GL_VENDOR).contains("Intel")
-        }
-    }
+	companion object {
+		val isIntegratedGraphics by lazy {
+			GlStateManager.glGetString(GL_VENDOR).contains("Intel")
+		}
+	}
 }

@@ -14,66 +14,66 @@ import org.kamiblue.client.util.threads.BackgroundScope
 import java.io.File
 
 @Mod(
-    modid = KamiMod.ID,
-    name = KamiMod.NAME,
-    version = KamiMod.VERSION
+	modid = KamiMod.ID,
+	name = KamiMod.NAME,
+	version = KamiMod.VERSION
 )
 class KamiMod {
 
-    companion object {
-        const val NAME = "KAMI Blue"
-        const val ID = "kamiblue"
-        const val DIRECTORY = "kamiblue/"
+	companion object {
+		const val NAME = "KAMI Blue"
+		const val ID = "kamiblue"
+		const val DIRECTORY = "kamiblue/"
 
-        const val VERSION = "2.04.xx-dev" // Used for debugging. R.MM.DD-hash format.
-        const val VERSION_SIMPLE = "2.04.xx-dev" // Shown to the user. R.MM.DD[-beta] format.
-        const val VERSION_MAJOR = "2.04.01" // Used for update checking. RR.MM.01 format.
-        const val BUILD_NUMBER = -1 // Do not remove, currently unused but will be used in the future.
+		const val VERSION = "2.04.xx-dev" // Used for debugging. R.MM.DD-hash format.
+		const val VERSION_SIMPLE = "2.04.xx-dev" // Shown to the user. R.MM.DD[-beta] format.
+		const val VERSION_MAJOR = "2.04.01" // Used for update checking. RR.MM.01 format.
+		const val BUILD_NUMBER = -1 // Do not remove, currently unused but will be used in the future.
 
-        const val APP_ID = "638403216278683661"
+		const val APP_ID = "638403216278683661"
 
-        const val DOWNLOADS_API = "https://kamiblue.org/api/v1/downloads.json"
-        const val CAPES_JSON = "https://raw.githubusercontent.com/kami-blue/cape-api/capes/capes.json"
-        const val GITHUB_LINK = "https://github.com/kami-blue"
-        const val WEBSITE_LINK = "https://kamiblue.org"
+		const val DOWNLOADS_API = "https://kamiblue.org/api/v1/downloads.json"
+		const val CAPES_JSON = "https://raw.githubusercontent.com/kami-blue/cape-api/capes/capes.json"
+		const val GITHUB_LINK = "https://github.com/kami-blue"
+		const val WEBSITE_LINK = "https://kamiblue.org"
 
-        const val KAMI_KATAKANA = "カミブル"
+		const val KAMI_KATAKANA = "カミブル"
 
-        val LOG: Logger = LogManager.getLogger(NAME)
+		val LOG: Logger = LogManager.getLogger(NAME)
 
-        var ready: Boolean = false; private set
-    }
+		var ready: Boolean = false; private set
+	}
 
-    @Suppress("UNUSED_PARAMETER")
-    @Mod.EventHandler
-    fun preInit(event: FMLPreInitializationEvent) {
-        val directory = File(DIRECTORY)
-        if (!directory.exists()) directory.mkdir()
+	@Suppress("UNUSED_PARAMETER")
+	@Mod.EventHandler
+	fun preInit(event: FMLPreInitializationEvent) {
+		val directory = File(DIRECTORY)
+		if (!directory.exists()) directory.mkdir()
 
-        KamiGuiUpdateNotification.updateCheck()
-        LoaderWrapper.preLoadAll()
-    }
+		KamiGuiUpdateNotification.updateCheck()
+		LoaderWrapper.preLoadAll()
+	}
 
-    @Suppress("UNUSED_PARAMETER")
-    @Mod.EventHandler
-    fun init(event: FMLInitializationEvent) {
-        LOG.info("Initializing $NAME $VERSION")
+	@Suppress("UNUSED_PARAMETER")
+	@Mod.EventHandler
+	fun init(event: FMLInitializationEvent) {
+		LOG.info("Initializing $NAME $VERSION")
 
-        LoaderWrapper.loadAll()
+		LoaderWrapper.loadAll()
 
-        MinecraftForge.EVENT_BUS.register(ForgeEventProcessor)
+		MinecraftForge.EVENT_BUS.register(ForgeEventProcessor)
 
-        ConfigUtils.moveAllLegacyConfigs()
-        ConfigUtils.loadAll()
+		ConfigUtils.moveAllLegacyConfigs()
+		ConfigUtils.loadAll()
 
-        BackgroundScope.start()
+		BackgroundScope.start()
 
-        LOG.info("$NAME initialized!")
-    }
+		LOG.info("$NAME initialized!")
+	}
 
-    @Suppress("UNUSED_PARAMETER")
-    @Mod.EventHandler
-    fun postInit(event: FMLPostInitializationEvent) {
-        ready = true
-    }
+	@Suppress("UNUSED_PARAMETER")
+	@Mod.EventHandler
+	fun postInit(event: FMLPostInitializationEvent) {
+		ready = true
+	}
 }

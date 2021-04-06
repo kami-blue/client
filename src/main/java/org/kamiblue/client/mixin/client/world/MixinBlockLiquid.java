@@ -15,17 +15,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BlockLiquid.class)
 public class MixinBlockLiquid {
-    @Inject(method = "modifyAcceleration", at = @At("HEAD"), cancellable = true)
-    public void modifyAcceleration(World worldIn, BlockPos pos, Entity entityIn, Vec3d motion, CallbackInfoReturnable<Vec3d> cir) {
-        if (Velocity.getCancelLiquidVelocity()) {
-            cir.setReturnValue(motion);
-        }
-    }
+	@Inject(method = "modifyAcceleration", at = @At("HEAD"), cancellable = true)
+	public void modifyAcceleration(World worldIn, BlockPos pos, Entity entityIn, Vec3d motion, CallbackInfoReturnable<Vec3d> cir) {
+		if (Velocity.getCancelLiquidVelocity()) {
+			cir.setReturnValue(motion);
+		}
+	}
 
-    @Inject(method = "canCollideCheck", at = @At("HEAD"), cancellable = true)
-    public void canCollideCheck(IBlockState blockState, boolean hitIfLiquid, CallbackInfoReturnable<Boolean> cir) {
-        if (BlockInteraction.isLiquidInteractEnabled()) {
-            cir.setReturnValue(true);
-        }
-    }
+	@Inject(method = "canCollideCheck", at = @At("HEAD"), cancellable = true)
+	public void canCollideCheck(IBlockState blockState, boolean hitIfLiquid, CallbackInfoReturnable<Boolean> cir) {
+		if (BlockInteraction.isLiquidInteractEnabled()) {
+			cir.setReturnValue(true);
+		}
+	}
 }

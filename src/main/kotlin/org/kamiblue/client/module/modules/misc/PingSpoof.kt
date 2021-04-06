@@ -12,23 +12,23 @@ import org.kamiblue.client.util.threads.onMainThreadSafe
 import org.kamiblue.event.listener.listener
 
 internal object PingSpoof : Module(
-    name = "PingSpoof",
-    category = Category.MISC,
-    description = "Cancels or adds delay to your ping packets"
+	name = "PingSpoof",
+	category = Category.MISC,
+	description = "Cancels or adds delay to your ping packets"
 ) {
-    private val delay = setting("Delay", 100, 0..2000, 25)
+	private val delay = setting("Delay", 100, 0..2000, 25)
 
-    init {
-        listener<PacketEvent.Receive> {
-            if (it.packet is SPacketKeepAlive) {
-                it.cancel()
-                defaultScope.launch {
-                    delay(delay.value.toLong())
-                    onMainThreadSafe {
-                        connection.sendPacket(CPacketKeepAlive(it.packet.id))
-                    }
-                }
-            }
-        }
-    }
+	init {
+		listener<PacketEvent.Receive> {
+			if (it.packet is SPacketKeepAlive) {
+				it.cancel()
+				defaultScope.launch {
+					delay(delay.value.toLong())
+					onMainThreadSafe {
+						connection.sendPacket(CPacketKeepAlive(it.packet.id))
+					}
+				}
+			}
+		}
+	}
 }

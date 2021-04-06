@@ -19,8 +19,8 @@ source "$__utils"
 check_git || exit $?
 
 CUR_HASH="-"$(git log --pretty=%h -1) # for the -hash
-CUR_R=$(($(date +"%Y") - 2019))       # Current year - 2019
-CUR_M_D=$(date +".%m.%d")             # Current month and day, formatted
+CUR_R=$(($(date +"%Y") - 2019))	   # Current year - 2019
+CUR_M_D=$(date +".%m.%d")			 # Current month and day, formatted
 
 if [ "$1" == "major" ]; then
   CUR_HASH=""

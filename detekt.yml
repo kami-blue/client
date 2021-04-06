@@ -1,9 +1,9 @@
 complexity:
   active: true
   ComplexMethod:
-    active: false
+	active: false
 
 style:
   active: true
   UnnecessaryParentheses:
-    active: false
+	active: false

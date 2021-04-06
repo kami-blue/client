@@ -15,17 +15,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiChat.class)
 public abstract class MixinGuiChat extends GuiScreen {
 
-    @Shadow protected GuiTextField inputField;
-    @Shadow private String historyBuffer;
-    @Shadow private int sentHistoryCursor;
+	@Shadow protected GuiTextField inputField;
+	@Shadow private String historyBuffer;
+	@Shadow private int sentHistoryCursor;
 
-    @Inject(method = "keyTyped(CI)V", at = @At("RETURN"))
-    public void returnKeyTyped(char typedChar, int keyCode, CallbackInfo info) {
-        GuiScreen currentScreen = Wrapper.getMinecraft().currentScreen;
-        if (currentScreen instanceof GuiChat && !(currentScreen instanceof KamiGuiChat)
-            && inputField.getText().startsWith(CommandManager.INSTANCE.getPrefix())) {
-            Wrapper.getMinecraft().displayGuiScreen(new KamiGuiChat(inputField.getText(), historyBuffer, sentHistoryCursor));
-        }
-    }
+	@Inject(method = "keyTyped(CI)V", at = @At("RETURN"))
+	public void returnKeyTyped(char typedChar, int keyCode, CallbackInfo info) {
+		GuiScreen currentScreen = Wrapper.getMinecraft().currentScreen;
+		if (currentScreen instanceof GuiChat && !(currentScreen instanceof KamiGuiChat)
+			&& inputField.getText().startsWith(CommandManager.INSTANCE.getPrefix())) {
+			Wrapper.getMinecraft().displayGuiScreen(new KamiGuiChat(inputField.getText(), historyBuffer, sentHistoryCursor));
+		}
+	}
 
 }

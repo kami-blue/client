@@ -7,16 +7,16 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(GuiChat.class)
 public interface AccessorGuiChat {
 
-    @Accessor("historyBuffer")
-    String getHistoryBuffer();
+	@Accessor("historyBuffer")
+	String getHistoryBuffer();
 
-    @Accessor("historyBuffer")
-    void setHistoryBuffer(String value);
+	@Accessor("historyBuffer")
+	void setHistoryBuffer(String value);
 
-    @Accessor("sentHistoryCursor")
-    int getSentHistoryCursor();
+	@Accessor("sentHistoryCursor")
+	int getSentHistoryCursor();
 
-    @Accessor("sentHistoryCursor")
-    void setSentHistoryCursor(int value);
+	@Accessor("sentHistoryCursor")
+	void setSentHistoryCursor(int value);
 
 }

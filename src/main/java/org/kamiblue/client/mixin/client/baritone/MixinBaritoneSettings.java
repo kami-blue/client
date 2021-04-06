@@ -10,9 +10,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = Settings.class, remap = false)
 public class MixinBaritoneSettings {
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void baritoneSettingsInit(CallbackInfo ci) {
-        BaritoneUtils.INSTANCE.setInitialized(true);
-        BaritoneSettingsInitEvent.INSTANCE.post();
-    }
+	@Inject(method = "<init>", at = @At("RETURN"))
+	private void baritoneSettingsInit(CallbackInfo ci) {
+		BaritoneUtils.INSTANCE.setInitialized(true);
+		BaritoneSettingsInitEvent.INSTANCE.post();
+	}
 }

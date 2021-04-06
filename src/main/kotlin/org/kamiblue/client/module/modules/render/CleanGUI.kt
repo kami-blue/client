@@ -4,11 +4,11 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 
 internal object CleanGUI : Module(
-    name = "CleanGUI",
-    category = Category.RENDER,
-    showOnArray = false,
-    description = "Modifies parts of the GUI to be transparent"
+	name = "CleanGUI",
+	category = Category.RENDER,
+	showOnArray = false,
+	description = "Modifies parts of the GUI to be transparent"
 ) {
-    val inventoryGlobal = setting("Inventory", true)
-    val chatGlobal = setting("Chat", false)
+	val inventoryGlobal = setting("Inventory", true)
+	val chatGlobal = setting("Chat", false)
 }

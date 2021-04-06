@@ -12,33 +12,33 @@ import java.net.URL
 import java.nio.channels.Channels
 
 object WebUtils {
-    fun openWebLink(url: String) {
-        try {
-            Desktop.getDesktop().browse(URI(url))
-        } catch (e: IOException) {
-            KamiMod.LOG.error("Couldn't open link: $url")
-        }
-    }
+	fun openWebLink(url: String) {
+		try {
+			Desktop.getDesktop().browse(URI(url))
+		} catch (e: IOException) {
+			KamiMod.LOG.error("Couldn't open link: $url")
+		}
+	}
 
-    fun getUrlContents(url: String): String {
-        val content = StringBuilder()
+	fun getUrlContents(url: String): String {
+		val content = StringBuilder()
 
-        ConnectionUtils.runConnection(url, block = { connection ->
-            val bufferedReader = BufferedReader(InputStreamReader(connection.inputStream))
-            bufferedReader.forEachLine { content.append("$it\n") }
-        }, catch = {
-            it.printStackTrace()
-        })
+		ConnectionUtils.runConnection(url, block = { connection ->
+			val bufferedReader = BufferedReader(InputStreamReader(connection.inputStream))
+			bufferedReader.forEachLine { content.append("$it\n") }
+		}, catch = {
+			it.printStackTrace()
+		})
 
-        return content.toString()
-    }
+		return content.toString()
+	}
 
-    @Throws(IOException::class)
-    fun downloadUsingNIO(url: String, file: String) {
-        Channels.newChannel(URL(url).openStream()).use { channel ->
-            FileOutputStream(file).use {
-                it.channel.transferFrom(channel, 0, Long.MAX_VALUE)
-            }
-        }
-    }
+	@Throws(IOException::class)
+	fun downloadUsingNIO(url: String, file: String) {
+		Channels.newChannel(URL(url).openStream()).use { channel ->
+			FileOutputStream(file).use {
+				it.channel.transferFrom(channel, 0, Long.MAX_VALUE)
+			}
+		}
+	}
 }

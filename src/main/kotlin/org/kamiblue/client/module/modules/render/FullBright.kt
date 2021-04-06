@@ -9,66 +9,66 @@ import kotlin.math.max
 import kotlin.math.min
 
 internal object FullBright : Module(
-    name = "FullBright",
-    description = "Makes everything brighter!",
-    category = Category.RENDER,
-    alwaysListening = true
+	name = "FullBright",
+	description = "Makes everything brighter!",
+	category = Category.RENDER,
+	alwaysListening = true
 ) {
-    private val gamma by setting("Gamma", 12.0f, 5.0f..15.0f, 0.5f)
-    private val transitionLength by setting("Transition Length", 3.0f, 0.0f..10.0f, 0.5f)
-    private var oldValue by setting("Old Value", 1.0f, 0.0f..1.0f, 0.1f, { false })
+	private val gamma by setting("Gamma", 12.0f, 5.0f..15.0f, 0.5f)
+	private val transitionLength by setting("Transition Length", 3.0f, 0.0f..10.0f, 0.5f)
+	private var oldValue by setting("Old Value", 1.0f, 0.0f..1.0f, 0.1f, { false })
 
-    private var gammaSetting: Float
-        get() = mc.gameSettings.gammaSetting
-        set(gammaIn) {
-            mc.gameSettings.gammaSetting = gammaIn
-        }
-    private val disableTimer = TickTimer()
+	private var gammaSetting: Float
+		get() = mc.gameSettings.gammaSetting
+		set(gammaIn) {
+			mc.gameSettings.gammaSetting = gammaIn
+		}
+	private val disableTimer = TickTimer()
 
-    init {
-        onEnable {
-            oldValue = mc.gameSettings.gammaSetting
-        }
+	init {
+		onEnable {
+			oldValue = mc.gameSettings.gammaSetting
+		}
 
-        onDisable {
-            disableTimer.reset()
-        }
+		onDisable {
+			disableTimer.reset()
+		}
 
-        safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase != TickEvent.Phase.START) return@safeListener
-            when {
-                isEnabled -> {
-                    transition(gamma)
-                    alwaysListening = true
-                }
+		safeListener<TickEvent.ClientTickEvent> {
+			if (it.phase != TickEvent.Phase.START) return@safeListener
+			when {
+				isEnabled -> {
+					transition(gamma)
+					alwaysListening = true
+				}
 
-                isDisabled && gammaSetting != oldValue
-                    && !disableTimer.tick((transitionLength * 1000.0f).toLong(), false) -> {
-                    transition(oldValue)
-                }
+				isDisabled && gammaSetting != oldValue
+					&& !disableTimer.tick((transitionLength * 1000.0f).toLong(), false) -> {
+					transition(oldValue)
+				}
 
-                else -> {
-                    alwaysListening = false
-                    disable()
-                }
-            }
-        }
-    }
+				else -> {
+					alwaysListening = false
+					disable()
+				}
+			}
+		}
+	}
 
-    private fun transition(target: Float) {
-        gammaSetting = when {
-            gammaSetting !in 0f..15f -> target
+	private fun transition(target: Float) {
+		gammaSetting = when {
+			gammaSetting !in 0f..15f -> target
 
-            gammaSetting == target -> return
+			gammaSetting == target -> return
 
-            gammaSetting < target -> min(gammaSetting + getTransitionAmount(), target)
+			gammaSetting < target -> min(gammaSetting + getTransitionAmount(), target)
 
-            else -> max(gammaSetting - getTransitionAmount(), target)
-        }
-    }
+			else -> max(gammaSetting - getTransitionAmount(), target)
+		}
+	}
 
-    private fun getTransitionAmount(): Float {
-        if (transitionLength == 0f) return 15f
-        return (1f / transitionLength / 20f) * (gamma - oldValue)
-    }
+	private fun getTransitionAmount(): Float {
+		if (transitionLength == 0f) return 15f
+		return (1f / transitionLength / 20f) * (gamma - oldValue)
+	}
 }

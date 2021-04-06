@@ -16,106 +16,106 @@ import java.nio.file.Files
 
 object ConfigUtils {
 
-    fun loadAll(): Boolean {
-        var success = ConfigManager.loadAll()
-        success = MacroManager.loadMacros() && success // Macro
-        success = WaypointManager.loadWaypoints() && success // Waypoint
-        success = FriendManager.loadFriends() && success // Friends
-        success = UUIDManager.load() && success // UUID Cache
+	fun loadAll(): Boolean {
+		var success = ConfigManager.loadAll()
+		success = MacroManager.loadMacros() && success // Macro
+		success = WaypointManager.loadWaypoints() && success // Waypoint
+		success = FriendManager.loadFriends() && success // Friends
+		success = UUIDManager.load() && success // UUID Cache
 
-        return success
-    }
+		return success
+	}
 
-    fun saveAll(): Boolean {
-        var success = ConfigManager.saveAll()
-        success = MacroManager.saveMacros() && success // Macro
-        success = WaypointManager.saveWaypoints() && success // Waypoint
-        success = FriendManager.saveFriends() && success // Friends
-        success = UUIDManager.save() && success // UUID Cache
+	fun saveAll(): Boolean {
+		var success = ConfigManager.saveAll()
+		success = MacroManager.saveMacros() && success // Macro
+		success = WaypointManager.saveWaypoints() && success // Waypoint
+		success = FriendManager.saveFriends() && success // Friends
+		success = UUIDManager.save() && success // UUID Cache
 
-        return success
-    }
+		return success
+	}
 
-    fun isPathValid(path: String): Boolean {
-        return try {
-            File(path).canonicalPath
-            true
-        } catch (e: Throwable) {
-            false
-        }
-    }
+	fun isPathValid(path: String): Boolean {
+		return try {
+			File(path).canonicalPath
+			true
+		} catch (e: Throwable) {
+			false
+		}
+	}
 
-    fun fixEmptyJson(file: File, isArray: Boolean = false) {
-        var empty = false
+	fun fixEmptyJson(file: File, isArray: Boolean = false) {
+		var empty = false
 
-        if (!file.exists()) {
-            file.createNewFile()
-            empty = true
-        } else if (file.length() <= 8) {
-            val string = file.readText()
-            empty = string.isBlank() || string.all {
-                it == '[' || it == ']' || it == '{' || it == '}' || it == ' ' || it == '\n' || it == '\r'
-            }
-        }
+		if (!file.exists()) {
+			file.createNewFile()
+			empty = true
+		} else if (file.length() <= 8) {
+			val string = file.readText()
+			empty = string.isBlank() || string.all {
+				it == '[' || it == ']' || it == '{' || it == '}' || it == ' ' || it == '\n' || it == '\r'
+			}
+		}
 
-        if (empty) {
-            try {
-                FileWriter(file, false).use {
-                    it.write(if (isArray) "[]" else "{}")
-                }
-            } catch (exception: IOException) {
-                KamiMod.LOG.warn("Failed fixing empty json", exception)
-            }
-        }
-    }
+		if (empty) {
+			try {
+				FileWriter(file, false).use {
+					it.write(if (isArray) "[]" else "{}")
+				}
+			} catch (exception: IOException) {
+				KamiMod.LOG.warn("Failed fixing empty json", exception)
+			}
+		}
+	}
 
-    // TODO: Introduce a version helper for KamiMod.BUILD_NUMBER for version-specific configs. This should be theoritically fine for now
-    fun moveAllLegacyConfigs() {
-        moveLegacyConfig("kamiblue/generic.json", "kamiblue/generic.bak", GenericConfig)
-        moveLegacyConfig("kamiblue/modules/default.json", "kamiblue/modules/default.bak", ModuleConfig)
-        moveLegacyConfig("KAMIBlueCoords.json", "kamiblue/waypoints.json")
-        moveLegacyConfig("KAMIBlueWaypoints.json", "kamiblue/waypoints.json")
-        moveLegacyConfig("KAMIBlueMacros.json", "kamiblue/macros.json")
-        moveLegacyConfig("KAMIBlueFriends.json", "kamiblue/friends.json")
-        moveLegacyConfig("chat_filter.json", "kamiblue/chat_filter.json")
-    }
+	// TODO: Introduce a version helper for KamiMod.BUILD_NUMBER for version-specific configs. This should be theoritically fine for now
+	fun moveAllLegacyConfigs() {
+		moveLegacyConfig("kamiblue/generic.json", "kamiblue/generic.bak", GenericConfig)
+		moveLegacyConfig("kamiblue/modules/default.json", "kamiblue/modules/default.bak", ModuleConfig)
+		moveLegacyConfig("KAMIBlueCoords.json", "kamiblue/waypoints.json")
+		moveLegacyConfig("KAMIBlueWaypoints.json", "kamiblue/waypoints.json")
+		moveLegacyConfig("KAMIBlueMacros.json", "kamiblue/macros.json")
+		moveLegacyConfig("KAMIBlueFriends.json", "kamiblue/friends.json")
+		moveLegacyConfig("chat_filter.json", "kamiblue/chat_filter.json")
+	}
 
-    private fun moveLegacyConfig(oldConfigIn: String, oldConfigBakIn: String, newConfig: IConfig) {
-        if (newConfig.file.exists() || newConfig.backup.exists()) return
+	private fun moveLegacyConfig(oldConfigIn: String, oldConfigBakIn: String, newConfig: IConfig) {
+		if (newConfig.file.exists() || newConfig.backup.exists()) return
 
-        val oldConfig = File(oldConfigIn)
-        val oldConfigBak = File(oldConfigBakIn)
+		val oldConfig = File(oldConfigIn)
+		val oldConfigBak = File(oldConfigBakIn)
 
-        if (!oldConfig.exists() && !oldConfigBak.exists()) return
+		if (!oldConfig.exists() && !oldConfigBak.exists()) return
 
-        try {
-            newConfig.file.parentFile.mkdirs()
-            Files.move(oldConfig.absoluteFile.toPath(), newConfig.file.absoluteFile.toPath())
-        } catch (e: Exception) {
-            KamiMod.LOG.warn("Error moving legacy config", e)
-        }
+		try {
+			newConfig.file.parentFile.mkdirs()
+			Files.move(oldConfig.absoluteFile.toPath(), newConfig.file.absoluteFile.toPath())
+		} catch (e: Exception) {
+			KamiMod.LOG.warn("Error moving legacy config", e)
+		}
 
-        try {
-            newConfig.backup.parentFile.mkdirs()
-            Files.move(oldConfigBak.absoluteFile.toPath(), newConfig.backup.absoluteFile.toPath())
-        } catch (e: Exception) {
-            KamiMod.LOG.warn("Error moving legacy config", e)
-        }
-    }
+		try {
+			newConfig.backup.parentFile.mkdirs()
+			Files.move(oldConfigBak.absoluteFile.toPath(), newConfig.backup.absoluteFile.toPath())
+		} catch (e: Exception) {
+			KamiMod.LOG.warn("Error moving legacy config", e)
+		}
+	}
 
-    private fun moveLegacyConfig(oldConfigIn: String, newConfigIn: String) {
-        val newConfig = File(newConfigIn)
-        if (newConfig.exists()) return
+	private fun moveLegacyConfig(oldConfigIn: String, newConfigIn: String) {
+		val newConfig = File(newConfigIn)
+		if (newConfig.exists()) return
 
-        val oldConfig = File(oldConfigIn)
-        if (!oldConfig.exists()) return
+		val oldConfig = File(oldConfigIn)
+		if (!oldConfig.exists()) return
 
-        try {
-            newConfig.parentFile.mkdirs()
-            Files.move(oldConfig.absoluteFile.toPath(), newConfig.absoluteFile.toPath())
-        } catch (e: Exception) {
-            KamiMod.LOG.warn("Error moving legacy config", e)
-        }
-    }
+		try {
+			newConfig.parentFile.mkdirs()
+			Files.move(oldConfig.absoluteFile.toPath(), newConfig.absoluteFile.toPath())
+		} catch (e: Exception) {
+			KamiMod.LOG.warn("Error moving legacy config", e)
+		}
+	}
 
 }

@@ -12,19 +12,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = RenderLivingBase.class, priority = 114514)
 public class MixinRenderLivingBase<T extends EntityLivingBase> {
-    @Inject(method = "renderModel", at = @At("HEAD"), cancellable = true)
-    public void renderModelHead(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, CallbackInfo ci) {
-        if (entity == null || !RenderEntityEvent.getRenderingEntities()) return;
+	@Inject(method = "renderModel", at = @At("HEAD"), cancellable = true)
+	public void renderModelHead(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, CallbackInfo ci) {
+		if (entity == null || !RenderEntityEvent.getRenderingEntities()) return;
 
-        RenderEntityEvent eventModel = new RenderEntityEvent.Model(entity, Phase.PRE);
-        KamiEventBus.INSTANCE.post(eventModel);
-    }
+		RenderEntityEvent eventModel = new RenderEntityEvent.Model(entity, Phase.PRE);
+		KamiEventBus.INSTANCE.post(eventModel);
+	}
 
-    @Inject(method = "renderModel", at = @At("RETURN"), cancellable = true)
-    public void renderEntityReturn(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, CallbackInfo ci) {
-        if (entity == null || !RenderEntityEvent.getRenderingEntities()) return;
+	@Inject(method = "renderModel", at = @At("RETURN"), cancellable = true)
+	public void renderEntityReturn(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, CallbackInfo ci) {
+		if (entity == null || !RenderEntityEvent.getRenderingEntities()) return;
 
-        RenderEntityEvent eventModel = new RenderEntityEvent.Model(entity, Phase.POST);
-        KamiEventBus.INSTANCE.post(eventModel);
-    }
+		RenderEntityEvent eventModel = new RenderEntityEvent.Model(entity, Phase.POST);
+		KamiEventBus.INSTANCE.post(eventModel);
+	}
 }

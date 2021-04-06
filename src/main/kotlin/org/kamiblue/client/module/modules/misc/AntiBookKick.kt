@@ -16,22 +16,22 @@ import org.kamiblue.event.listener.listener
  * https://discordapp.com/channels/573954110454366214/634010802403409931/693919755647844352
  */
 internal object AntiBookKick : Module(
-    name = "AntiBookKick",
-    category = Category.MISC,
-    description = "Prevents being kicked by clicking on books",
-    showOnArray = false
+	name = "AntiBookKick",
+	category = Category.MISC,
+	description = "Prevents being kicked by clicking on books",
+	showOnArray = false
 ) {
-    init {
-        listener<PacketEvent.PostSend> {
-            if (it.packet !is CPacketClickWindow) return@listener
-            if (it.packet.clickedItem.item !is ItemWrittenBook) return@listener
+	init {
+		listener<PacketEvent.PostSend> {
+			if (it.packet !is CPacketClickWindow) return@listener
+			if (it.packet.clickedItem.item !is ItemWrittenBook) return@listener
 
-            it.cancel()
-            MessageSendHelper.sendWarningMessage(chatName
-                + " Don't click the book \""
-                + it.packet.clickedItem.displayName
-                + "\", shift click it instead!")
-            mc.player.openContainer.slotClick(it.packet.slotId, it.packet.usedButton, it.packet.clickType, mc.player)
-        }
-    }
+			it.cancel()
+			MessageSendHelper.sendWarningMessage(chatName
+				+ " Don't click the book \""
+				+ it.packet.clickedItem.displayName
+				+ "\", shift click it instead!")
+			mc.player.openContainer.slotClick(it.packet.slotId, it.packet.usedButton, it.packet.clickType, mc.player)
+		}
+	}
 }

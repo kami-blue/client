@@ -11,44 +11,44 @@ import org.kamiblue.client.plugin.PluginManager
 import org.kamiblue.client.util.threads.mainScope
 
 internal object LoaderWrapper {
-    private val loaderList = ArrayList<AsyncLoader<*>>()
+	private val loaderList = ArrayList<AsyncLoader<*>>()
 
-    init {
-        loaderList.add(ModuleManager)
-        loaderList.add(CommandManager)
-        loaderList.add(ManagerLoader)
-        loaderList.add(GuiManager)
-        loaderList.add(PluginManager)
-    }
+	init {
+		loaderList.add(ModuleManager)
+		loaderList.add(CommandManager)
+		loaderList.add(ManagerLoader)
+		loaderList.add(GuiManager)
+		loaderList.add(PluginManager)
+	}
 
-    @JvmStatic
-    fun preLoadAll() {
-        loaderList.forEach { it.preLoad() }
-    }
+	@JvmStatic
+	fun preLoadAll() {
+		loaderList.forEach { it.preLoad() }
+	}
 
-    @JvmStatic
-    fun loadAll() {
-        runBlocking {
-            loaderList.forEach { it.load() }
-        }
-    }
+	@JvmStatic
+	fun loadAll() {
+		runBlocking {
+			loaderList.forEach { it.load() }
+		}
+	}
 }
 
 internal interface AsyncLoader<T> {
-    var deferred: Deferred<T>?
+	var deferred: Deferred<T>?
 
-    fun preLoad() {
-        deferred = preLoadAsync()
-    }
+	fun preLoad() {
+		deferred = preLoadAsync()
+	}
 
-    private fun preLoadAsync(): Deferred<T> {
-        return mainScope.async { preLoad0() }
-    }
+	private fun preLoadAsync(): Deferred<T> {
+		return mainScope.async { preLoad0() }
+	}
 
-    suspend fun load() {
-        load0((deferred ?: preLoadAsync()).await())
-    }
+	suspend fun load() {
+		load0((deferred ?: preLoadAsync()).await())
+	}
 
-    fun preLoad0(): T
-    fun load0(input: T)
+	fun preLoad0(): T
+	fun load0(input: T)
 }

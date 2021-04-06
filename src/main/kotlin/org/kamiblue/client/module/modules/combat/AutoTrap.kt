@@ -33,113 +33,113 @@ import org.lwjgl.input.Keyboard
 
 @CombatManager.CombatModule
 internal object AutoTrap : Module(
-    name = "AutoTrap",
-    category = Category.COMBAT,
-    description = "Traps your enemies in obsidian",
-    modulePriority = 60
+	name = "AutoTrap",
+	category = Category.COMBAT,
+	description = "Traps your enemies in obsidian",
+	modulePriority = 60
 ) {
-    private val trapMode = setting("Trap Mode", TrapMode.FULL_TRAP)
-    private val selfTrap = setting("Self Trap", false)
-    private val bindSelfTrap = setting("Bind Self Trap", Bind())
-    private val autoDisable = setting("Auto Disable", true)
-    private val strictDirection by setting("Strict Direction", false)
-    private val placeSpeed = setting("Places Per Tick", 4f, 0.25f..5f, 0.25f)
+	private val trapMode = setting("Trap Mode", TrapMode.FULL_TRAP)
+	private val selfTrap = setting("Self Trap", false)
+	private val bindSelfTrap = setting("Bind Self Trap", Bind())
+	private val autoDisable = setting("Auto Disable", true)
+	private val strictDirection by setting("Strict Direction", false)
+	private val placeSpeed = setting("Places Per Tick", 4f, 0.25f..5f, 0.25f)
 
-    private var job: Job? = null
+	private var job: Job? = null
 
-    override fun isActive(): Boolean {
-        return isEnabled && job.isActiveOrFalse
-    }
+	override fun isActive(): Boolean {
+		return isEnabled && job.isActiveOrFalse
+	}
 
-    init {
-        onDisable {
-            resetHotbar()
-        }
+	init {
+		onDisable {
+			resetHotbar()
+		}
 
-        safeListener<TickEvent.ClientTickEvent> {
-            if (!job.isActiveOrFalse && canRun()) job = runAutoTrap()
+		safeListener<TickEvent.ClientTickEvent> {
+			if (!job.isActiveOrFalse && canRun()) job = runAutoTrap()
 
-            if (job.isActiveOrFalse) {
-                getObby()?.let {
-                    spoofHotbar(it)
-                } ?: return@safeListener
-                sendPlayerPacket {
-                    cancelRotate()
-                }
-            } else if (CombatManager.isOnTopPriority(AutoTrap)) {
-                resetHotbar()
-            }
-        }
+			if (job.isActiveOrFalse) {
+				getObby()?.let {
+					spoofHotbar(it)
+				} ?: return@safeListener
+				sendPlayerPacket {
+					cancelRotate()
+				}
+			} else if (CombatManager.isOnTopPriority(AutoTrap)) {
+				resetHotbar()
+			}
+		}
 
-        listener<InputEvent.KeyInputEvent> {
-            if (bindSelfTrap.value.isDown(Keyboard.getEventKey())) {
-                selfTrap.value = !selfTrap.value
-            }
-        }
-    }
+		listener<InputEvent.KeyInputEvent> {
+			if (bindSelfTrap.value.isDown(Keyboard.getEventKey())) {
+				selfTrap.value = !selfTrap.value
+			}
+		}
+	}
 
-    private fun SafeClientEvent.canRun(): Boolean {
-        (if (selfTrap.value) player else CombatManager.target)?.positionVector?.toBlockPos()?.let {
-            for (offset in trapMode.value.offset) {
-                if (!world.isPlaceable(it.add(offset))) continue
-                return true
-            }
-        }
-        return false
-    }
+	private fun SafeClientEvent.canRun(): Boolean {
+		(if (selfTrap.value) player else CombatManager.target)?.positionVector?.toBlockPos()?.let {
+			for (offset in trapMode.value.offset) {
+				if (!world.isPlaceable(it.add(offset))) continue
+				return true
+			}
+		}
+		return false
+	}
 
-    private fun SafeClientEvent.getObby(): HotbarSlot? {
-        val slots = player.hotbarSlots.firstBlock(Blocks.OBSIDIAN)
+	private fun SafeClientEvent.getObby(): HotbarSlot? {
+		val slots = player.hotbarSlots.firstBlock(Blocks.OBSIDIAN)
 
-        if (slots == null) { // Obsidian check
-            MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
-            disable()
-            return null
-        }
+		if (slots == null) { // Obsidian check
+			MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
+			disable()
+			return null
+		}
 
-        return slots
-    }
+		return slots
+	}
 
-    private fun SafeClientEvent.runAutoTrap() = defaultScope.launch {
-        val entity = if (selfTrap.value) player else CombatManager.target ?: return@launch
+	private fun SafeClientEvent.runAutoTrap() = defaultScope.launch {
+		val entity = if (selfTrap.value) player else CombatManager.target ?: return@launch
 
-        buildStructure(
-            entity.flooredPosition,
-            SurroundUtils.surroundOffset,
-            placeSpeed.value,
-            3,
-            4.25f,
-            strictDirection
-        ) {
-            isEnabled && CombatManager.isOnTopPriority(AutoTrap)
-        }
+		buildStructure(
+			entity.flooredPosition,
+			SurroundUtils.surroundOffset,
+			placeSpeed.value,
+			3,
+			4.25f,
+			strictDirection
+		) {
+			isEnabled && CombatManager.isOnTopPriority(AutoTrap)
+		}
 
-        if (autoDisable.value) disable()
-    }
+		if (autoDisable.value) disable()
+	}
 
-    @Suppress("UNUSED")
-    private enum class TrapMode(val offset: Array<BlockPos>) {
-        FULL_TRAP(arrayOf(
-            BlockPos(1, 0, 0),
-            BlockPos(-1, 0, 0),
-            BlockPos(0, 0, 1),
-            BlockPos(0, 0, -1),
-            BlockPos(1, 1, 0),
-            BlockPos(-1, 1, 0),
-            BlockPos(0, 1, 1),
-            BlockPos(0, 1, -1),
-            BlockPos(0, 2, 0)
-        )),
-        CRYSTAL_TRAP(arrayOf(
-            BlockPos(1, 1, 1),
-            BlockPos(1, 1, 0),
-            BlockPos(1, 1, -1),
-            BlockPos(0, 1, -1),
-            BlockPos(-1, 1, -1),
-            BlockPos(-1, 1, 0),
-            BlockPos(-1, 1, 1),
-            BlockPos(0, 1, 1),
-            BlockPos(0, 2, 0)
-        ))
-    }
+	@Suppress("UNUSED")
+	private enum class TrapMode(val offset: Array<BlockPos>) {
+		FULL_TRAP(arrayOf(
+			BlockPos(1, 0, 0),
+			BlockPos(-1, 0, 0),
+			BlockPos(0, 0, 1),
+			BlockPos(0, 0, -1),
+			BlockPos(1, 1, 0),
+			BlockPos(-1, 1, 0),
+			BlockPos(0, 1, 1),
+			BlockPos(0, 1, -1),
+			BlockPos(0, 2, 0)
+		)),
+		CRYSTAL_TRAP(arrayOf(
+			BlockPos(1, 1, 1),
+			BlockPos(1, 1, 0),
+			BlockPos(1, 1, -1),
+			BlockPos(0, 1, -1),
+			BlockPos(-1, 1, -1),
+			BlockPos(-1, 1, 0),
+			BlockPos(-1, 1, 1),
+			BlockPos(0, 1, 1),
+			BlockPos(0, 2, 0)
+		))
+	}
 }

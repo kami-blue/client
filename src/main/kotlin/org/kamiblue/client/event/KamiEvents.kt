@@ -6,35 +6,35 @@ import org.kamiblue.event.eventbus.IEventBus
 interface Event
 
 interface ProfilerEvent {
-    val profilerName: String
+	val profilerName: String
 }
 
 open class SingletonEvent(val eventBus: IEventBus) {
-    fun post() {
-        eventBus.post(this)
-    }
+	fun post() {
+		eventBus.post(this)
+	}
 }
 
 interface IMultiPhase<T : Event> {
-    val phase: Phase
+	val phase: Phase
 
-    fun nextPhase(): T
+	fun nextPhase(): T
 }
 
 interface ICancellable {
-    var cancelled: Boolean
+	var cancelled: Boolean
 
-    fun cancel() {
-        cancelled = true
-    }
+	fun cancel() {
+		cancelled = true
+	}
 }
 
 open class Cancellable : ICancellable {
-    override var cancelled = false
+	override var cancelled = false
 }
 
 enum class Phase(override val displayName: String) : DisplayEnum {
-    PRE("Pre"),
-    PERI("Peri"),
-    POST("Post")
+	PRE("Pre"),
+	PERI("Peri"),
+	POST("Post")
 }

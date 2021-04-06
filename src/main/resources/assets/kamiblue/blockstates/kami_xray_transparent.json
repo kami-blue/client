@@ -1,9 +1,9 @@
 {
-    "variants": {
-        "normal": [
-            {
-                "model": "kamiblue:kami_xray_transparent"
-            }
-        ]
-    }
+	"variants": {
+		"normal": [
+			{
+				"model": "kamiblue:kami_xray_transparent"
+			}
+		]
+	}
 }

@@ -11,11 +11,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ParticleManager.class)
 public class MixinParticleManager {
 
-    @Inject(method = "addEffect", at = @At("HEAD"), cancellable = true)
-    public void addEffect(Particle effect, CallbackInfo ci) {
-        if (NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.handleParticle(effect)) {
-            ci.cancel();
-        }
-    }
+	@Inject(method = "addEffect", at = @At("HEAD"), cancellable = true)
+	public void addEffect(Particle effect, CallbackInfo ci) {
+		if (NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.handleParticle(effect)) {
+			ci.cancel();
+		}
+	}
 
 }

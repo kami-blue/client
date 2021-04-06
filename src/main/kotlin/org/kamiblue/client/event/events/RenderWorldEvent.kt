@@ -9,13 +9,13 @@ import org.kamiblue.client.util.Wrapper
 import org.kamiblue.client.util.graphics.KamiTessellator
 
 class RenderWorldEvent : Event, ProfilerEvent {
-    override val profilerName: String = "kbRender3D"
+	override val profilerName: String = "kbRender3D"
 
-    init {
-        KamiTessellator.buffer.setTranslation(
-            -Wrapper.minecraft.renderManager.renderPosX,
-            -Wrapper.minecraft.renderManager.renderPosY,
-            -Wrapper.minecraft.renderManager.renderPosZ
-        )
-    }
+	init {
+		KamiTessellator.buffer.setTranslation(
+			-Wrapper.minecraft.renderManager.renderPosX,
+			-Wrapper.minecraft.renderManager.renderPosY,
+			-Wrapper.minecraft.renderManager.renderPosZ
+		)
+	}
 }

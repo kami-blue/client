@@ -15,12 +15,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LayerElytra.class)
 public class MixinLayerElytra {
 
-    @Shadow @Final protected RenderLivingBase<?> renderPlayer;
-    @Shadow @Final private ModelElytra modelElytra;
+	@Shadow @Final protected RenderLivingBase<?> renderPlayer;
+	@Shadow @Final private ModelElytra modelElytra;
 
-    @Inject(method = "doRenderLayer", at = @At("HEAD"), cancellable = true)
-    public void doRenderLayer(EntityLivingBase entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, CallbackInfo ci) {
-        if (Capes.INSTANCE.tryRenderElytra(renderPlayer, modelElytra, entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, partialTicks))
-            ci.cancel();
-    }
+	@Inject(method = "doRenderLayer", at = @At("HEAD"), cancellable = true)
+	public void doRenderLayer(EntityLivingBase entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, CallbackInfo ci) {
+		if (Capes.INSTANCE.tryRenderElytra(renderPlayer, modelElytra, entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, partialTicks))
+			ci.cancel();
+	}
 }

@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(CPacketCloseWindow.class)
 public interface AccessorCPacketCloseWindow {
 
-    @Accessor("windowId")
-    int kbGetWindowID();
+	@Accessor("windowId")
+	int kbGetWindowID();
 
 }

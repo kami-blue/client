@@ -10,11 +10,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MapItemRenderer.class)
 public class MixinMapItemRenderer {
-    @Inject(method = "renderMap", at = @At(value = "HEAD"), cancellable = true)
-    public void renderMap(MapData mapdataIn, boolean noOverlayRendering, CallbackInfo ci) {
-        if (NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.getMap().getValue()) {
-            ci.cancel();
-            NoRender.INSTANCE.renderFakeMap();
-        }
-    }
+	@Inject(method = "renderMap", at = @At(value = "HEAD"), cancellable = true)
+	public void renderMap(MapData mapdataIn, boolean noOverlayRendering, CallbackInfo ci) {
+		if (NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.getMap().getValue()) {
+			ci.cancel();
+			NoRender.INSTANCE.renderFakeMap();
+		}
+	}
 }

@@ -20,36 +20,36 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(FontRenderer.class)
 public abstract class MixinFontRenderer {
 
-    @Shadow public int FONT_HEIGHT;
-    @Shadow protected float posX;
-    @Shadow protected float posY;
-    @Shadow private float alpha;
-    @Shadow private float red;
-    @Shadow private float green;
-    @Shadow private float blue;
+	@Shadow public int FONT_HEIGHT;
+	@Shadow protected float posX;
+	@Shadow protected float posY;
+	@Shadow private float alpha;
+	@Shadow private float red;
+	@Shadow private float green;
+	@Shadow private float blue;
 
-    @Shadow protected abstract void renderStringAtPos(String text, boolean shadow);
+	@Shadow protected abstract void renderStringAtPos(String text, boolean shadow);
 
-    /**
-     * @author Tiger
-     */
-    @Inject(method = "renderString", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;renderStringAtPos(Ljava/lang/String;Z)V", shift = At.Shift.BEFORE), cancellable = true)
-    private void renderStringAtPos(String text, float x, float y, int color, boolean shadow, CallbackInfoReturnable<Integer> cir) {
-        if (KamiMoji.INSTANCE.isEnabled() && text.contains(":")) {
-            text = KamiMoji.renderText(text, FONT_HEIGHT, shadow, posX, posY, alpha);
-            GlStateManager.color(red, blue, green, alpha); // Big Mojang meme :monkey:
-            renderStringAtPos(text, shadow);
-            cir.setReturnValue((int) posX);
-        }
-    }
+	/**
+	 * @author Tiger
+	 */
+	@Inject(method = "renderString", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;renderStringAtPos(Ljava/lang/String;Z)V", shift = At.Shift.BEFORE), cancellable = true)
+	private void renderStringAtPos(String text, float x, float y, int color, boolean shadow, CallbackInfoReturnable<Integer> cir) {
+		if (KamiMoji.INSTANCE.isEnabled() && text.contains(":")) {
+			text = KamiMoji.renderText(text, FONT_HEIGHT, shadow, posX, posY, alpha);
+			GlStateManager.color(red, blue, green, alpha); // Big Mojang meme :monkey:
+			renderStringAtPos(text, shadow);
+			cir.setReturnValue((int) posX);
+		}
+	}
 
-    /**
-     * @author cats
-     */
-    @Inject(method = "getStringWidth", at = @At("TAIL"), cancellable = true)
-    public void getStringWidth(String text, CallbackInfoReturnable<Integer> cir) {
-        if (cir.getReturnValue() != 0 && KamiMoji.INSTANCE.isEnabled() && text.contains(":")) {
-            cir.setReturnValue(KamiMoji.getStringWidth(cir.getReturnValue(), text, FONT_HEIGHT));
-        }
-    }
+	/**
+	 * @author cats
+	 */
+	@Inject(method = "getStringWidth", at = @At("TAIL"), cancellable = true)
+	public void getStringWidth(String text, CallbackInfoReturnable<Integer> cir) {
+		if (cir.getReturnValue() != 0 && KamiMoji.INSTANCE.isEnabled() && text.contains(":")) {
+			cir.setReturnValue(KamiMoji.getStringWidth(cir.getReturnValue(), text, FONT_HEIGHT));
+		}
+	}
 }

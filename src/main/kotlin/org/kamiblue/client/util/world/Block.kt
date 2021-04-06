@@ -10,24 +10,24 @@ import org.kamiblue.client.util.Wrapper
 import org.kamiblue.client.util.items.blockBlacklist
 
 val IBlockState.isBlacklisted: Boolean
-    get() = blockBlacklist.contains(this.block)
+	get() = blockBlacklist.contains(this.block)
 
 val IBlockState.isLiquid: Boolean
-    get() = this.material.isLiquid
+	get() = this.material.isLiquid
 
 val IBlockState.isWater: Boolean
-    get() = this.block == Blocks.WATER
+	get() = this.block == Blocks.WATER
 
 val IBlockState.isReplaceable: Boolean
-    get() = this.material.isReplaceable
+	get() = this.material.isReplaceable
 
 val IBlockState.isFullBox: Boolean
-    get() = Wrapper.world?.let {
-        this.getCollisionBoundingBox(it, BlockPos.ORIGIN)
-    } == Block.FULL_BLOCK_AABB
+	get() = Wrapper.world?.let {
+		this.getCollisionBoundingBox(it, BlockPos.ORIGIN)
+	} == Block.FULL_BLOCK_AABB
 
 fun WorldClient.getSelectedBox(pos: BlockPos): AxisAlignedBB =
-    this.getBlockState(pos).getSelectedBoundingBox(this, pos)
+	this.getBlockState(pos).getSelectedBoundingBox(this, pos)
 
 fun WorldClient.getCollisionBox(pos: BlockPos): AxisAlignedBB? =
-    this.getBlockState(pos).getCollisionBoundingBox(this, pos)
+	this.getBlockState(pos).getCollisionBoundingBox(this, pos)

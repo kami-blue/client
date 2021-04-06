@@ -41,147 +41,147 @@ import java.util.*
 
 @CombatManager.CombatModule
 internal object CrystalBasePlace : Module(
-    name = "CrystalBasePlace",
-    description = "Places obby for placing crystal on",
-    category = Category.COMBAT,
-    modulePriority = 90
+	name = "CrystalBasePlace",
+	description = "Places obby for placing crystal on",
+	category = Category.COMBAT,
+	modulePriority = 90
 ) {
-    private val manualPlaceBind = setting("Bind Manual Place", Bind())
-    private val minDamageInc = setting("Min Damage Inc", 2.0f, 0.0f..10.0f, 0.25f)
-    private val range = setting("Range", 4.0f, 0.0f..8.0f, 0.5f)
-    private val delay = setting("Delay", 20, 0..50, 5)
+	private val manualPlaceBind = setting("Bind Manual Place", Bind())
+	private val minDamageInc = setting("Min Damage Inc", 2.0f, 0.0f..10.0f, 0.25f)
+	private val range = setting("Range", 4.0f, 0.0f..8.0f, 0.5f)
+	private val delay = setting("Delay", 20, 0..50, 5)
 
-    private val timer = TickTimer()
-    private val renderer = ESPRenderer().apply { aFilled = 33; aOutline = 233 }
-    private var inactiveTicks = 0
-    private var rotationTo: Vec3d? = null
-    private var placePacket: CPacketPlayerTryUseItemOnBlock? = null
+	private val timer = TickTimer()
+	private val renderer = ESPRenderer().apply { aFilled = 33; aOutline = 233 }
+	private var inactiveTicks = 0
+	private var rotationTo: Vec3d? = null
+	private var placePacket: CPacketPlayerTryUseItemOnBlock? = null
 
-    override fun isActive(): Boolean {
-        return isEnabled && inactiveTicks <= 3
-    }
+	override fun isActive(): Boolean {
+		return isEnabled && inactiveTicks <= 3
+	}
 
-    init {
-        onDisable {
-            inactiveTicks = 0
-            placePacket = null
-            resetHotbar()
-        }
+	init {
+		onDisable {
+			inactiveTicks = 0
+			placePacket = null
+			resetHotbar()
+		}
 
-        listener<RenderWorldEvent> {
-            val clear = inactiveTicks >= 30
-            renderer.render(clear)
-        }
+		listener<RenderWorldEvent> {
+			val clear = inactiveTicks >= 30
+			renderer.render(clear)
+		}
 
-        safeListener<InputEvent.KeyInputEvent> {
-            if (!CombatManager.isOnTopPriority(this@CrystalBasePlace) || CombatSetting.pause) return@safeListener
-            val target = CombatManager.target ?: return@safeListener
+		safeListener<InputEvent.KeyInputEvent> {
+			if (!CombatManager.isOnTopPriority(this@CrystalBasePlace) || CombatSetting.pause) return@safeListener
+			val target = CombatManager.target ?: return@safeListener
 
-            if (manualPlaceBind.value.isDown(Keyboard.getEventKey())) prePlace(target)
-        }
+			if (manualPlaceBind.value.isDown(Keyboard.getEventKey())) prePlace(target)
+		}
 
-        safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase != TickEvent.Phase.START) return@safeListener
-            inactiveTicks++
+		safeListener<TickEvent.ClientTickEvent> {
+			if (it.phase != TickEvent.Phase.START) return@safeListener
+			inactiveTicks++
 
-            if (!CombatManager.isOnTopPriority(CrystalBasePlace) || CombatSetting.pause) return@safeListener
+			if (!CombatManager.isOnTopPriority(CrystalBasePlace) || CombatSetting.pause) return@safeListener
 
-            val slot = player.hotbarSlots.firstBlock(Blocks.OBSIDIAN) ?: return@safeListener
-            val target = CombatManager.target ?: return@safeListener
+			val slot = player.hotbarSlots.firstBlock(Blocks.OBSIDIAN) ?: return@safeListener
+			val target = CombatManager.target ?: return@safeListener
 
-            placePacket?.let { packet ->
-                if (inactiveTicks > 1) {
-                    if (!isHoldingObby) spoofHotbar(slot.hotbarSlot)
-                    player.swingArm(EnumHand.MAIN_HAND)
-                    connection.sendPacket(packet)
-                    resetHotbar()
-                    placePacket = null
-                }
-            }
+			placePacket?.let { packet ->
+				if (inactiveTicks > 1) {
+					if (!isHoldingObby) spoofHotbar(slot.hotbarSlot)
+					player.swingArm(EnumHand.MAIN_HAND)
+					connection.sendPacket(packet)
+					resetHotbar()
+					placePacket = null
+				}
+			}
 
-            if (placePacket == null && CrystalAura.isEnabled && CrystalAura.inactiveTicks > 15) prePlace(target)
+			if (placePacket == null && CrystalAura.isEnabled && CrystalAura.inactiveTicks > 15) prePlace(target)
 
-            if (isActive()) {
-                rotationTo?.let { hitVec ->
-                    sendPlayerPacket {
-                        rotate(getRotationTo(hitVec))
-                    }
-                }
-            } else {
-                rotationTo = null
-            }
-        }
-    }
+			if (isActive()) {
+				rotationTo?.let { hitVec ->
+					sendPlayerPacket {
+						rotate(getRotationTo(hitVec))
+					}
+				}
+			} else {
+				rotationTo = null
+			}
+		}
+	}
 
-    private val SafeClientEvent.isHoldingObby
-        get() = isObby(player.heldItemMainhand)
-            || isObby(player.serverSideItem)
+	private val SafeClientEvent.isHoldingObby
+		get() = isObby(player.heldItemMainhand)
+			|| isObby(player.serverSideItem)
 
-    private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
+	private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
 
-    private fun SafeClientEvent.prePlace(entity: EntityLivingBase) {
-        if (rotationTo != null || !timer.tick((delay.value * 50.0f).toLong(), false)) return
-        val placeInfo = getPlaceInfo(entity)
+	private fun SafeClientEvent.prePlace(entity: EntityLivingBase) {
+		if (rotationTo != null || !timer.tick((delay.value * 50.0f).toLong(), false)) return
+		val placeInfo = getPlaceInfo(entity)
 
-        if (placeInfo != null) {
-            rotationTo = placeInfo.hitVec
-            placePacket = CPacketPlayerTryUseItemOnBlock(placeInfo.pos, placeInfo.side, EnumHand.MAIN_HAND, placeInfo.hitVecOffset.x.toFloat(), placeInfo.hitVecOffset.y.toFloat(), placeInfo.hitVecOffset.z.toFloat())
+		if (placeInfo != null) {
+			rotationTo = placeInfo.hitVec
+			placePacket = CPacketPlayerTryUseItemOnBlock(placeInfo.pos, placeInfo.side, EnumHand.MAIN_HAND, placeInfo.hitVecOffset.x.toFloat(), placeInfo.hitVecOffset.y.toFloat(), placeInfo.hitVecOffset.z.toFloat())
 
-            renderer.clear()
-            renderer.add(placeInfo.placedPos, ColorHolder(255, 255, 255))
+			renderer.clear()
+			renderer.add(placeInfo.placedPos, ColorHolder(255, 255, 255))
 
-            inactiveTicks = 0
-            timer.reset()
-        } else {
-            timer.reset((delay.value * -25.0f).toLong())
-        }
-    }
+			inactiveTicks = 0
+			timer.reset()
+		} else {
+			timer.reset((delay.value * -25.0f).toLong())
+		}
+	}
 
-    private fun SafeClientEvent.getPlaceInfo(entity: EntityLivingBase): PlaceInfo? {
-        val cacheMap = TreeMap<Float, BlockPos>(compareByDescending { it })
-        val prediction = CombatSetting.getPrediction(entity)
-        val eyePos = player.getPositionEyes(1.0f)
-        val posList = VectorUtils.getBlockPosInSphere(eyePos, range.value)
-        val maxCurrentDamage = CombatManager.placeMap.entries
-            .filter { eyePos.distanceTo(it.key) < range.value }
-            .map { it.value.targetDamage }
-            .maxOrNull() ?: 0.0f
+	private fun SafeClientEvent.getPlaceInfo(entity: EntityLivingBase): PlaceInfo? {
+		val cacheMap = TreeMap<Float, BlockPos>(compareByDescending { it })
+		val prediction = CombatSetting.getPrediction(entity)
+		val eyePos = player.getPositionEyes(1.0f)
+		val posList = VectorUtils.getBlockPosInSphere(eyePos, range.value)
+		val maxCurrentDamage = CombatManager.placeMap.entries
+			.filter { eyePos.distanceTo(it.key) < range.value }
+			.map { it.value.targetDamage }
+			.maxOrNull() ?: 0.0f
 
-        for (pos in posList) {
-            // Placeable check
-            if (!world.isPlaceable(pos)) continue
+		for (pos in posList) {
+			// Placeable check
+			if (!world.isPlaceable(pos)) continue
 
-            // Neighbour blocks check
-            if (!hasNeighbour(pos)) continue
+			// Neighbour blocks check
+			if (!hasNeighbour(pos)) continue
 
-            // Damage check
-            val damage = calcPlaceDamage(pos, entity, prediction.first, prediction.second)
-            if (!checkDamage(damage.first, damage.second, maxCurrentDamage)) continue
+			// Damage check
+			val damage = calcPlaceDamage(pos, entity, prediction.first, prediction.second)
+			if (!checkDamage(damage.first, damage.second, maxCurrentDamage)) continue
 
-            cacheMap[damage.first] = pos
-        }
+			cacheMap[damage.first] = pos
+		}
 
-        for (pos in cacheMap.values) {
-            return getNeighbour(pos, 1) ?: continue
-        }
-        return null
-    }
+		for (pos in cacheMap.values) {
+			return getNeighbour(pos, 1) ?: continue
+		}
+		return null
+	}
 
-    private fun SafeClientEvent.calcPlaceDamage(pos: BlockPos, entity: EntityLivingBase, entityPos: Vec3d, entityBB: AxisAlignedBB): Pair<Float, Float> {
-        // Set up a fake obsidian here for proper damage calculation
-        val prevState = world.getBlockState(pos)
-        world.setBlockState(pos, Blocks.OBSIDIAN.defaultState)
+	private fun SafeClientEvent.calcPlaceDamage(pos: BlockPos, entity: EntityLivingBase, entityPos: Vec3d, entityBB: AxisAlignedBB): Pair<Float, Float> {
+		// Set up a fake obsidian here for proper damage calculation
+		val prevState = world.getBlockState(pos)
+		world.setBlockState(pos, Blocks.OBSIDIAN.defaultState)
 
-        // Checks damage
-        val damage = calcCrystalDamage(pos, entity, entityPos, entityBB)
-        val selfDamage = calcCrystalDamage(pos, player)
+		// Checks damage
+		val damage = calcCrystalDamage(pos, entity, entityPos, entityBB)
+		val selfDamage = calcCrystalDamage(pos, player)
 
-        // Revert the block state before return
-        world.setBlockState(pos, prevState)
+		// Revert the block state before return
+		world.setBlockState(pos, prevState)
 
-        return damage to selfDamage
-    }
+		return damage to selfDamage
+	}
 
-    private fun checkDamage(damage: Float, selfDamage: Float, maxCurrentDamage: Float) =
-        selfDamage < CrystalAura.maxSelfDamage && damage > CrystalAura.minDamage && (maxCurrentDamage < CrystalAura.minDamage || damage - maxCurrentDamage >= minDamageInc.value)
+	private fun checkDamage(damage: Float, selfDamage: Float, maxCurrentDamage: Float) =
+		selfDamage < CrystalAura.maxSelfDamage && damage > CrystalAura.minDamage && (maxCurrentDamage < CrystalAura.minDamage || damage - maxCurrentDamage >= minDamageInc.value)
 }

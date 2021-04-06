@@ -23,20 +23,20 @@ val ItemFood.foodValue get() = this.getHealAmount(ItemStack.EMPTY)
 val ItemFood.saturation get() = foodValue * this.getSaturationModifier(ItemStack.EMPTY) * 2f
 
 val ItemStack.attackDamage
-    get() = this.item.baseAttackDamage + EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, this).let {
-        if (it > 0) it * 0.5f + 0.5f
-        else 0.0f
-    }
+	get() = this.item.baseAttackDamage + EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, this).let {
+		if (it > 0) it * 0.5f + 0.5f
+		else 0.0f
+	}
 
 val Item.baseAttackDamage
-    get() = when (this) {
-        is ItemSword -> this.attackDamage + 4.0f
-        is ItemTool -> this.attackDamage + 1.0f
-        else -> 1.0f
-    }
+	get() = when (this) {
+		is ItemSword -> this.attackDamage + 4.0f
+		is ItemTool -> this.attackDamage + 1.0f
+		else -> 1.0f
+	}
 
 fun SafeClientEvent.itemPayload(item: ItemStack, channelIn: String) {
-    val buffer = PacketBuffer(Unpooled.buffer())
-    buffer.writeItemStack(item)
-    player.connection.sendPacket(CPacketCustomPayload(channelIn, buffer))
+	val buffer = PacketBuffer(Unpooled.buffer())
+	buffer.writeItemStack(item)
+	player.connection.sendPacket(CPacketCustomPayload(channelIn, buffer))
 }

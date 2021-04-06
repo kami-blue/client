@@ -9,37 +9,37 @@ import org.kamiblue.client.util.threads.runSafeR
 import org.kamiblue.client.util.threads.safeListener
 
 internal object FakeGameMode : Module(
-    name = "FakeGameMode",
-    description = "Fakes your current gamemode client side",
-    category = Category.MISC
+	name = "FakeGameMode",
+	description = "Fakes your current gamemode client side",
+	category = Category.MISC
 ) {
-    private val gamemode by setting("Mode", GameMode.CREATIVE)
+	private val gamemode by setting("Mode", GameMode.CREATIVE)
 
-    @Suppress("UNUSED")
-    private enum class GameMode(val gameType: GameType) {
-        SURVIVAL(GameType.SURVIVAL),
-        CREATIVE(GameType.CREATIVE),
-        ADVENTURE(GameType.ADVENTURE),
-        SPECTATOR(GameType.SPECTATOR)
-    }
+	@Suppress("UNUSED")
+	private enum class GameMode(val gameType: GameType) {
+		SURVIVAL(GameType.SURVIVAL),
+		CREATIVE(GameType.CREATIVE),
+		ADVENTURE(GameType.ADVENTURE),
+		SPECTATOR(GameType.SPECTATOR)
+	}
 
-    private var prevGameMode: GameType? = null
+	private var prevGameMode: GameType? = null
 
-    init {
-        safeListener<TickEvent.ClientTickEvent> {
-            playerController.setGameType(gamemode.gameType)
-        }
+	init {
+		safeListener<TickEvent.ClientTickEvent> {
+			playerController.setGameType(gamemode.gameType)
+		}
 
-        onEnable {
-            runSafeR {
-                prevGameMode = playerController.currentGameType
-            } ?: disable()
-        }
+		onEnable {
+			runSafeR {
+				prevGameMode = playerController.currentGameType
+			} ?: disable()
+		}
 
-        onDisable {
-            runSafe {
-                prevGameMode?.let { playerController.setGameType(it) }
-            }
-        }
-    }
+		onDisable {
+			runSafe {
+				prevGameMode?.let { playerController.setGameType(it) }
+			}
+		}
+	}
 }

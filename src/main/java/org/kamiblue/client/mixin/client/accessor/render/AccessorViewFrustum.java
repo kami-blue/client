@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(ViewFrustum.class)
 public interface AccessorViewFrustum {
 
-    @Invoker
-    RenderChunk invokeGetRenderChunk(BlockPos pos);
+	@Invoker
+	RenderChunk invokeGetRenderChunk(BlockPos pos);
 
 }

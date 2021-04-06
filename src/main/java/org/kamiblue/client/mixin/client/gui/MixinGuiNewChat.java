@@ -18,18 +18,18 @@ import java.util.List;
 
 @Mixin(GuiNewChat.class)
 public abstract class MixinGuiNewChat {
-    @Shadow @Final private List<ChatLine> chatLines;
-    @Shadow @Final private List<ChatLine> drawnChatLines;
+	@Shadow @Final private List<ChatLine> chatLines;
+	@Shadow @Final private List<ChatLine> drawnChatLines;
 
-    @Redirect(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiNewChat;drawRect(IIIII)V"))
-    private void drawRectBackgroundClean(int left, int top, int right, int bottom, int color) {
-        if (!CleanGUI.INSTANCE.isEnabled() || !CleanGUI.INSTANCE.getChatGlobal().getValue()) {
-            Gui.drawRect(left, top, right, bottom, color);
-        }
-    }
+	@Redirect(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiNewChat;drawRect(IIIII)V"))
+	private void drawRectBackgroundClean(int left, int top, int right, int bottom, int color) {
+		if (!CleanGUI.INSTANCE.isEnabled() || !CleanGUI.INSTANCE.getChatGlobal().getValue()) {
+			Gui.drawRect(left, top, right, bottom, color);
+		}
+	}
 
-    @Inject(method = "setChatLine", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I", ordinal = 0, remap = false), cancellable = true)
-    public void setChatLineInvokeSize(ITextComponent chatComponent, int chatLineId, int updateCounter, boolean displayOnly, CallbackInfo ci) {
-        ExtraChatHistory.handleSetChatLine(drawnChatLines, chatLines, chatComponent, chatLineId, updateCounter, displayOnly, ci);
-    }
+	@Inject(method = "setChatLine", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I", ordinal = 0, remap = false), cancellable = true)
+	public void setChatLineInvokeSize(ITextComponent chatComponent, int chatLineId, int updateCounter, boolean displayOnly, CallbackInfo ci) {
+		ExtraChatHistory.handleSetChatLine(drawnChatLines, chatLines, chatComponent, chatLineId, updateCounter, displayOnly, ci);
+	}
 }

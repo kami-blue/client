@@ -16,20 +16,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(C00Handshake.class)
 public class MixinC00Handshake {
 
-    @Shadow private int protocolVersion;
-    @Shadow private String ip;
-    @Shadow private int port;
-    @Shadow private EnumConnectionState requestedState;
+	@Shadow private int protocolVersion;
+	@Shadow private String ip;
+	@Shadow private int port;
+	@Shadow private EnumConnectionState requestedState;
 
-    @Inject(method = "writePacketData", at = @At(value = "HEAD"), cancellable = true)
-    public void writePacketData(PacketBuffer buf, CallbackInfo info) {
-        if (FakeVanillaClient.INSTANCE.isEnabled()) {
-            info.cancel();
-            buf.writeVarInt(protocolVersion);
-            buf.writeString(ip);
-            buf.writeShort(port);
-            buf.writeVarInt(requestedState.getId());
-        }
-    }
+	@Inject(method = "writePacketData", at = @At(value = "HEAD"), cancellable = true)
+	public void writePacketData(PacketBuffer buf, CallbackInfo info) {
+		if (FakeVanillaClient.INSTANCE.isEnabled()) {
+			info.cancel();
+			buf.writeVarInt(protocolVersion);
+			buf.writeString(ip);
+			buf.writeShort(port);
+			buf.writeVarInt(requestedState.getId());
+		}
+	}
 
 }

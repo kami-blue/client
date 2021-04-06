@@ -7,10 +7,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(Timer.class)
 public interface AccessorTimer {
 
-    @Accessor("tickLength")
-    float getTickLength();
+	@Accessor("tickLength")
+	float getTickLength();
 
-    @Accessor("tickLength")
-    void setTickLength(float value);
+	@Accessor("tickLength")
+	void setTickLength(float value);
 
 }

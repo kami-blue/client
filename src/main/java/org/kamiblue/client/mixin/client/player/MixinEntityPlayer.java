@@ -15,20 +15,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = EntityPlayer.class, priority = Integer.MAX_VALUE)
 public abstract class MixinEntityPlayer extends EntityLivingBase {
 
-    public MixinEntityPlayer(World worldIn) {
-        super(worldIn);
-    }
+	public MixinEntityPlayer(World worldIn) {
+		super(worldIn);
+	}
 
-    @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
-    public void travel(float strafe, float vertical, float forward, CallbackInfo info) {
-        //noinspection ConstantConditions
-        if (EntityPlayerSP.class.isAssignableFrom(this.getClass())) {
-            PlayerTravelEvent event = new PlayerTravelEvent();
-            KamiEventBus.INSTANCE.post(event);
-            if (event.getCancelled()) {
-                move(MoverType.SELF, motionX, motionY, motionZ);
-                info.cancel();
-            }
-        }
-    }
+	@Inject(method = "travel", at = @At("HEAD"), cancellable = true)
+	public void travel(float strafe, float vertical, float forward, CallbackInfo info) {
+		//noinspection ConstantConditions
+		if (EntityPlayerSP.class.isAssignableFrom(this.getClass())) {
+			PlayerTravelEvent event = new PlayerTravelEvent();
+			KamiEventBus.INSTANCE.post(event);
+			if (event.getCancelled()) {
+				move(MoverType.SELF, motionX, motionY, motionZ);
+				info.cancel();
+			}
+		}
+	}
 }

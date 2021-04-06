@@ -22,24 +22,24 @@ import java.util.List;
 @Mixin(GuiPlayerTabOverlay.class)
 public class MixinGuiPlayerTabOverlay {
 
-    private List<NetworkPlayerInfo> preSubList = CollectionsKt.emptyList();
+	private List<NetworkPlayerInfo> preSubList = CollectionsKt.emptyList();
 
-    @ModifyVariable(method = "renderPlayerlist", at = @At(value = "STORE", ordinal = 0), ordinal = 0)
-    public List<NetworkPlayerInfo> renderPlayerlistStorePlayerListPre(List<NetworkPlayerInfo> list) {
-        preSubList = list;
-        return list;
-    }
+	@ModifyVariable(method = "renderPlayerlist", at = @At(value = "STORE", ordinal = 0), ordinal = 0)
+	public List<NetworkPlayerInfo> renderPlayerlistStorePlayerListPre(List<NetworkPlayerInfo> list) {
+		preSubList = list;
+		return list;
+	}
 
-    @ModifyVariable(method = "renderPlayerlist", at = @At(value = "STORE", ordinal = 1), ordinal = 0)
-    public List<NetworkPlayerInfo> renderPlayerlistStorePlayerListPost(List<NetworkPlayerInfo> list) {
-        return ExtraTab.subList(preSubList, list);
-    }
+	@ModifyVariable(method = "renderPlayerlist", at = @At(value = "STORE", ordinal = 1), ordinal = 0)
+	public List<NetworkPlayerInfo> renderPlayerlistStorePlayerListPost(List<NetworkPlayerInfo> list) {
+		return ExtraTab.subList(preSubList, list);
+	}
 
-    @Inject(method = "getPlayerName", at = @At("HEAD"), cancellable = true)
-    public void getPlayerName(NetworkPlayerInfo networkPlayerInfoIn, CallbackInfoReturnable<String> cir) {
-        if (TabFriends.INSTANCE.isEnabled()) {
-            cir.setReturnValue(TabFriends.getPlayerName(networkPlayerInfoIn));
-        }
-    }
+	@Inject(method = "getPlayerName", at = @At("HEAD"), cancellable = true)
+	public void getPlayerName(NetworkPlayerInfo networkPlayerInfoIn, CallbackInfoReturnable<String> cir) {
+		if (TabFriends.INSTANCE.isEnabled()) {
+			cir.setReturnValue(TabFriends.getPlayerName(networkPlayerInfoIn));
+		}
+	}
 
 }

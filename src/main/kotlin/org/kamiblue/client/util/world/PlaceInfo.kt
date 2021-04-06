@@ -5,10 +5,10 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
 class PlaceInfo(
-    val pos: BlockPos,
-    val side: EnumFacing,
-    val dist: Double,
-    val hitVecOffset: Vec3d,
-    val hitVec: Vec3d,
-    val placedPos: BlockPos
+	val pos: BlockPos,
+	val side: EnumFacing,
+	val dist: Double,
+	val hitVecOffset: Vec3d,
+	val hitVec: Vec3d,
+	val placedPos: BlockPos
 )

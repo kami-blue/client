@@ -13,11 +13,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LayerCape.class)
 public class MixinLayerCape {
-    @Shadow @Final private RenderPlayer playerRenderer;
+	@Shadow @Final private RenderPlayer playerRenderer;
 
-    @Inject(method = "doRenderLayer", at = @At("HEAD"), cancellable = true)
-    public void doRenderLayer(AbstractClientPlayer player, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, CallbackInfo ci) {
-        if (Capes.INSTANCE.tryRenderCape(playerRenderer, player, partialTicks))
-            ci.cancel();
-    }
+	@Inject(method = "doRenderLayer", at = @At("HEAD"), cancellable = true)
+	public void doRenderLayer(AbstractClientPlayer player, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, CallbackInfo ci) {
+		if (Capes.INSTANCE.tryRenderCape(playerRenderer, player, partialTicks))
+			ci.cancel();
+	}
 }

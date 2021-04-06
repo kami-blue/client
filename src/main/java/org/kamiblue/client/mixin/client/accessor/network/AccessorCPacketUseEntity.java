@@ -6,12 +6,12 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(CPacketUseEntity.class)
 public interface AccessorCPacketUseEntity {
-    @Accessor("entityId")
-    int getId();
+	@Accessor("entityId")
+	int getId();
 
-    @Accessor("entityId")
-    void setId(int value);
+	@Accessor("entityId")
+	void setId(int value);
 
-    @Accessor("action")
-    void setAction(CPacketUseEntity.Action value);
+	@Accessor("action")
+	void setAction(CPacketUseEntity.Action value);
 }

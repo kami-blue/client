@@ -54,14 +54,14 @@ REPO="$KAMI_REPO_NIGHTLY"
 curl -H "Content-Type: application/json" -X POST \
   -d '{"embeds": [{"title": "Download v'"$VERSION"'","color": 10195199,"description": "[**DOWNLOAD**](https://github.com/'"$KAMI_OWNER"'/'"$REPO"'/releases/download/'"$VERSION"'/'"$JAR_NAME"')\n\n**Changelog:** \n'"$CHANGELOG"'\n\nDiff: ['"$OLD_COMMIT"'...'"$HEAD"'](https://github.com/'"$KAMI_OWNER"'/'"$REPO"'/compare/'"$OLD_COMMIT"'...'"$HEAD"') "}]}' \
   "$KAMI_WEBHOOK" || {
-    echo "[runAutomatedRelease] Failed to post changelog embed"
-    exit 1
+	echo "[runAutomatedRelease] Failed to post changelog embed"
+	exit 1
 }
 
 # Send ping
 if [ -n "$KAMI_UPDATES_ROLE_ID" ]; then
   curl -X POST \
-    -H "Content-Type: application/json" \
-    -d '{"username": "", "content": "<@&'"$KAMI_UPDATES_ROLE_ID"'>"}' \
-    "$KAMI_WEBHOOK"
+	-H "Content-Type: application/json" \
+	-d '{"username": "", "content": "<@&'"$KAMI_UPDATES_ROLE_ID"'>"}' \
+	"$KAMI_WEBHOOK"
 fi

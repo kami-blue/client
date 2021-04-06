@@ -16,60 +16,60 @@ import org.kamiblue.client.util.threads.defaultScope
 import org.kamiblue.client.util.threads.safeListener
 
 internal object VoidESP : Module(
-    name = "VoidESP",
-    description = "Highlights holes leading to the void",
-    category = Category.RENDER
+	name = "VoidESP",
+	description = "Highlights holes leading to the void",
+	category = Category.RENDER
 ) {
-    private val filled by setting("Filled", true)
-    private val outline by setting("Outline", true)
-    private val color by setting("Color", ColorHolder(148, 161, 255), false)
-    private val aFilled by setting("Filled Alpha", 127, 0..255, 1)
-    private val aOutline by setting("Outline Alpha", 255, 0..255, 1)
-    private val renderMode by setting("Mode", Mode.BLOCK_HOLE)
-    private val range by setting("Range", 8, 4..32, 1)
+	private val filled by setting("Filled", true)
+	private val outline by setting("Outline", true)
+	private val color by setting("Color", ColorHolder(148, 161, 255), false)
+	private val aFilled by setting("Filled Alpha", 127, 0..255, 1)
+	private val aOutline by setting("Outline Alpha", 255, 0..255, 1)
+	private val renderMode by setting("Mode", Mode.BLOCK_HOLE)
+	private val range by setting("Range", 8, 4..32, 1)
 
-    @Suppress("UNUSED")
-    private enum class Mode {
-        BLOCK_HOLE, BLOCK_VOID, FLAT
-    }
+	@Suppress("UNUSED")
+	private enum class Mode {
+		BLOCK_HOLE, BLOCK_VOID, FLAT
+	}
 
-    private val renderer = ESPRenderer()
-    private val timer = TickTimer()
+	private val renderer = ESPRenderer()
+	private val timer = TickTimer()
 
-    init {
-        safeListener<RenderWorldEvent> {
-            if (timer.tick(133L)) { // Avoid running this on a tick
-                updateRenderer()
-            }
-            renderer.render(false)
-        }
-    }
+	init {
+		safeListener<RenderWorldEvent> {
+			if (timer.tick(133L)) { // Avoid running this on a tick
+				updateRenderer()
+			}
+			renderer.render(false)
+		}
+	}
 
-    private fun SafeClientEvent.updateRenderer() {
-        renderer.aFilled = if (filled) aFilled else 0
-        renderer.aOutline = if (outline) aOutline else 0
+	private fun SafeClientEvent.updateRenderer() {
+		renderer.aFilled = if (filled) aFilled else 0
+		renderer.aOutline = if (outline) aOutline else 0
 
-        val color = color.clone()
-        val side = if (renderMode != Mode.FLAT) GeometryMasks.Quad.ALL else GeometryMasks.Quad.DOWN
+		val color = color.clone()
+		val side = if (renderMode != Mode.FLAT) GeometryMasks.Quad.ALL else GeometryMasks.Quad.DOWN
 
-        defaultScope.launch {
-            val cached = ArrayList<Triple<AxisAlignedBB, ColorHolder, Int>>()
+		defaultScope.launch {
+			val cached = ArrayList<Triple<AxisAlignedBB, ColorHolder, Int>>()
 
-            for (x in -range..range) for (z in -range..range) {
-                val pos = BlockPos(player.posX + x, 0.0, player.posZ + z)
-                if (player.distanceTo(pos) > range) continue
-                if (!isVoid(pos)) continue
+			for (x in -range..range) for (z in -range..range) {
+				val pos = BlockPos(player.posX + x, 0.0, player.posZ + z)
+				if (player.distanceTo(pos) > range) continue
+				if (!isVoid(pos)) continue
 
-                val renderPos = if (renderMode == Mode.BLOCK_VOID) pos.down() else pos
-                cached.add(Triple(AxisAlignedBB(renderPos), color, side))
-            }
+				val renderPos = if (renderMode == Mode.BLOCK_VOID) pos.down() else pos
+				cached.add(Triple(AxisAlignedBB(renderPos), color, side))
+			}
 
-            renderer.replaceAll(cached)
-        }
-    }
+			renderer.replaceAll(cached)
+		}
+	}
 
-    private fun SafeClientEvent.isVoid(pos: BlockPos) = world.isAirBlock(pos)
-        && world.isAirBlock(pos.up())
-        && world.isAirBlock(pos.up().up())
+	private fun SafeClientEvent.isVoid(pos: BlockPos) = world.isAirBlock(pos)
+		&& world.isAirBlock(pos.up())
+		&& world.isAirBlock(pos.up().up())
 
 }

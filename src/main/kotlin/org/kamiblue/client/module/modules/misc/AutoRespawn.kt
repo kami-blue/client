@@ -11,27 +11,27 @@ import org.kamiblue.client.util.text.MessageSendHelper
 import org.kamiblue.event.listener.listener
 
 internal object AutoRespawn : Module(
-    name = "AutoRespawn",
-    description = "Automatically respawn after dying",
-    category = Category.MISC
+	name = "AutoRespawn",
+	description = "Automatically respawn after dying",
+	category = Category.MISC
 ) {
-    private val respawn = setting("Respawn", true)
-    private val deathCoords = setting("Save Death Coords", true)
-    private val antiGlitchScreen = setting("Anti Glitch Screen", true)
+	private val respawn = setting("Respawn", true)
+	private val deathCoords = setting("Save Death Coords", true)
+	private val antiGlitchScreen = setting("Anti Glitch Screen", true)
 
-    init {
-        listener<GuiEvent.Displayed> {
-            if (it.screen !is GuiGameOver) return@listener
+	init {
+		listener<GuiEvent.Displayed> {
+			if (it.screen !is GuiGameOver) return@listener
 
-            if (deathCoords.value && mc.player.health <= 0) {
-                WaypointManager.add("Death - " + InfoCalculator.getServerType())
-                MessageSendHelper.sendChatMessage("You died at ${mc.player.position.asString()}")
-            }
+			if (deathCoords.value && mc.player.health <= 0) {
+				WaypointManager.add("Death - " + InfoCalculator.getServerType())
+				MessageSendHelper.sendChatMessage("You died at ${mc.player.position.asString()}")
+			}
 
-            if (respawn.value || antiGlitchScreen.value && mc.player.health > 0) {
-                mc.player.respawnPlayer()
-                mc.displayGuiScreen(null)
-            }
-        }
-    }
+			if (respawn.value || antiGlitchScreen.value && mc.player.health > 0) {
+				mc.player.respawnPlayer()
+				mc.displayGuiScreen(null)
+			}
+		}
+	}
 }

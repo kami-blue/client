@@ -9,7 +9,7 @@ import org.kamiblue.client.module.Module
  * @see MixinWorld.getRainStrengthHead
  */
 internal object AntiWeather : Module(
-    name = "AntiWeather",
-    description = "Removes rain and thunder from your world",
-    category = Category.MISC
+	name = "AntiWeather",
+	description = "Removes rain and thunder from your world",
+	category = Category.MISC
 )

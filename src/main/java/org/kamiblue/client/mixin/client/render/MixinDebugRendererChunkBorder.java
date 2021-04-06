@@ -10,13 +10,13 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(DebugRendererChunkBorder.class)
 public class MixinDebugRendererChunkBorder {
 
-    @ModifyVariable(method = "render", at = @At(value = "STORE", ordinal = 0))
-    public EntityPlayer render(EntityPlayer entityPlayer) {
-        if (Wrapper.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
-            return (EntityPlayer) Wrapper.getMinecraft().getRenderViewEntity();
-        } else {
-            return Wrapper.getMinecraft().player;
-        }
-    }
+	@ModifyVariable(method = "render", at = @At(value = "STORE", ordinal = 0))
+	public EntityPlayer render(EntityPlayer entityPlayer) {
+		if (Wrapper.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
+			return (EntityPlayer) Wrapper.getMinecraft().getRenderViewEntity();
+		} else {
+			return Wrapper.getMinecraft().player;
+		}
+	}
 
 }

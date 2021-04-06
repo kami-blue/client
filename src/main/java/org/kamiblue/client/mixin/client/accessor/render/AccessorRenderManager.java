@@ -7,16 +7,16 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(RenderManager.class)
 public interface AccessorRenderManager {
 
-    @Accessor("renderPosX")
-    double getRenderPosX();
+	@Accessor("renderPosX")
+	double getRenderPosX();
 
-    @Accessor("renderPosY")
-    double getRenderPosY();
+	@Accessor("renderPosY")
+	double getRenderPosY();
 
-    @Accessor("renderPosZ")
-    double getRenderPosZ();
+	@Accessor("renderPosZ")
+	double getRenderPosZ();
 
-    @Accessor("renderOutlines")
-    boolean getRenderOutlines();
+	@Accessor("renderOutlines")
+	boolean getRenderOutlines();
 
 }

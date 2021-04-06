@@ -11,24 +11,24 @@ import org.kamiblue.client.util.threads.safeListener
 
 @CombatManager.CombatModule
 internal object AimBot : Module(
-    name = "AimBot",
-    description = "Automatically aims at entities for you.",
-    category = Category.COMBAT,
-    modulePriority = 20
+	name = "AimBot",
+	description = "Automatically aims at entities for you.",
+	category = Category.COMBAT,
+	modulePriority = 20
 ) {
-    private val bowOnly by setting("Bow Only", true)
-    private val autoSwap by setting("Auto Swap", false)
+	private val bowOnly by setting("Bow Only", true)
+	private val autoSwap by setting("Auto Swap", false)
 
-    init {
-        safeListener<TickEvent.ClientTickEvent> {
-            if (player.heldItemMainhand.item != Items.BOW) {
-                if (autoSwap) swapToItem(Items.BOW)
-                if (bowOnly) return@safeListener
-            }
+	init {
+		safeListener<TickEvent.ClientTickEvent> {
+			if (player.heldItemMainhand.item != Items.BOW) {
+				if (autoSwap) swapToItem(Items.BOW)
+				if (bowOnly) return@safeListener
+			}
 
-            CombatManager.target?.let {
-                faceEntityClosest(it)
-            }
-        }
-    }
+			CombatManager.target?.let {
+				faceEntityClosest(it)
+			}
+		}
+	}
 }

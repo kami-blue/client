@@ -15,15 +15,15 @@ val GuiBossOverlay.mapBossInfos: Map<UUID, BossInfoClient>? get() = (this as Acc
 fun GuiBossOverlay.render(x: Int, y: Int, info: BossInfo) = (this as AccessorGuiBossOverlay).invokeRender(x, y, info)
 
 var GuiChat.historyBuffer: String
-    get() = (this as AccessorGuiChat).historyBuffer
-    set(value) {
-        (this as AccessorGuiChat).historyBuffer = value
-    }
+	get() = (this as AccessorGuiChat).historyBuffer
+	set(value) {
+		(this as AccessorGuiChat).historyBuffer = value
+	}
 var GuiChat.sentHistoryCursor: Int
-    get() = (this as AccessorGuiChat).sentHistoryCursor
-    set(value) {
-        (this as AccessorGuiChat).sentHistoryCursor = value
-    }
+	get() = (this as AccessorGuiChat).sentHistoryCursor
+	set(value) {
+		(this as AccessorGuiChat).sentHistoryCursor = value
+	}
 
 val GuiDisconnected.parentScreen: GuiScreen get() = (this as AccessorGuiDisconnected).parentScreen
 val GuiDisconnected.reason: String get() = (this as AccessorGuiDisconnected).reason

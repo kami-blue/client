@@ -5,39 +5,39 @@ import com.google.gson.reflect.TypeToken
 import org.kamiblue.client.setting.settings.ImmutableSetting
 
 class CollectionSetting<E : Any, T : MutableCollection<E>>(
-    name: String,
-    override val value: T,
-    visibility: () -> Boolean = { true },
-    description: String = "",
+	name: String,
+	override val value: T,
+	visibility: () -> Boolean = { true },
+	description: String = "",
 ) : ImmutableSetting<T>(name, value, visibility, { _, input -> input }, description), MutableCollection<E> by value {
 
-    override val defaultValue: T = valueClass.newInstance()
-    private val lockObject = Any()
-    private val type = TypeToken.getArray(value.first().javaClass).type
+	override val defaultValue: T = valueClass.newInstance()
+	private val lockObject = Any()
+	private val type = TypeToken.getArray(value.first().javaClass).type
 
-    init {
-        value.toCollection(defaultValue)
-    }
+	init {
+		value.toCollection(defaultValue)
+	}
 
-    override fun resetValue() {
-        synchronized(lockObject) {
-            value.clear()
-            value.addAll(defaultValue)
-        }
-    }
+	override fun resetValue() {
+		synchronized(lockObject) {
+			value.clear()
+			value.addAll(defaultValue)
+		}
+	}
 
-    override fun write(): JsonElement = gson.toJsonTree(value)
+	override fun write(): JsonElement = gson.toJsonTree(value)
 
-    override fun read(jsonElement: JsonElement?) {
-        jsonElement?.asJsonArray?.let {
-            val cacheArray = gson.fromJson<Array<E>>(it, type)
-            synchronized(lockObject) {
-                value.clear()
-                value.addAll(cacheArray)
-            }
-        }
-    }
+	override fun read(jsonElement: JsonElement?) {
+		jsonElement?.asJsonArray?.let {
+			val cacheArray = gson.fromJson<Array<E>>(it, type)
+			synchronized(lockObject) {
+				value.clear()
+				value.addAll(cacheArray)
+			}
+		}
+	}
 
-    override fun toString() = value.joinToString { it.toString() }
+	override fun toString() = value.joinToString { it.toString() }
 
 }

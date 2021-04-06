@@ -8,23 +8,23 @@ import org.kamiblue.client.event.events.ShutdownEvent
 import org.kamiblue.client.util.ConfigUtils.saveAll
 
 object Wrapper {
-    @JvmStatic
-    val minecraft: Minecraft
-        get() = Minecraft.getMinecraft()
+	@JvmStatic
+	val minecraft: Minecraft
+		get() = Minecraft.getMinecraft()
 
-    @JvmStatic
-    val player: EntityPlayerSP?
-        get() = minecraft.player
+	@JvmStatic
+	val player: EntityPlayerSP?
+		get() = minecraft.player
 
-    @JvmStatic
-    val world: WorldClient?
-        get() = minecraft.world
+	@JvmStatic
+	val world: WorldClient?
+		get() = minecraft.world
 
-    @JvmStatic
-    fun saveAndShutdown() {
-        if (!KamiMod.ready) return
+	@JvmStatic
+	fun saveAndShutdown() {
+		if (!KamiMod.ready) return
 
-        ShutdownEvent.post()
-        saveAll()
-    }
+		ShutdownEvent.post()
+		saveAll()
+	}
 }

@@ -21,126 +21,126 @@ import java.util.*
 
 object PlayerPacketManager : Manager {
 
-    /** TreeMap for all packets to be sent, sorted by their callers' priority */
-    private val packetMap = TreeMap<AbstractModule, Packet>(compareByDescending { it.modulePriority })
+	/** TreeMap for all packets to be sent, sorted by their callers' priority */
+	private val packetMap = TreeMap<AbstractModule, Packet>(compareByDescending { it.modulePriority })
 
-    var serverSidePosition: Vec3d = Vec3d.ZERO; private set
-    var prevServerSidePosition: Vec3d = Vec3d.ZERO; private set
+	var serverSidePosition: Vec3d = Vec3d.ZERO; private set
+	var prevServerSidePosition: Vec3d = Vec3d.ZERO; private set
 
-    var serverSideRotation = Vec2f.ZERO; private set
-    var prevServerSideRotation = Vec2f.ZERO; private set
+	var serverSideRotation = Vec2f.ZERO; private set
+	var prevServerSideRotation = Vec2f.ZERO; private set
 
-    private var clientSidePitch = Vec2f.ZERO
+	private var clientSidePitch = Vec2f.ZERO
 
-    init {
-        listener<OnUpdateWalkingPlayerEvent>(Int.MIN_VALUE) {
-            if (it.phase != Phase.PERI || packetMap.isEmpty()) return@listener
+	init {
+		listener<OnUpdateWalkingPlayerEvent>(Int.MIN_VALUE) {
+			if (it.phase != Phase.PERI || packetMap.isEmpty()) return@listener
 
-            it.apply(packetMap.values.first())
-            packetMap.clear()
-        }
+			it.apply(packetMap.values.first())
+			packetMap.clear()
+		}
 
-        listener<PacketEvent.PostSend>(-6969) {
-            if (it.cancelled || it.packet !is CPacketPlayer) return@listener
+		listener<PacketEvent.PostSend>(-6969) {
+			if (it.cancelled || it.packet !is CPacketPlayer) return@listener
 
-            if (it.packet.moving) {
-                serverSidePosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
-            }
+			if (it.packet.moving) {
+				serverSidePosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
+			}
 
-            if (it.packet.rotating) {
-                serverSideRotation = Vec2f(it.packet.yaw, it.packet.pitch)
-                Wrapper.player?.let { player -> player.rotationYawHead = it.packet.yaw }
-            }
-        }
+			if (it.packet.rotating) {
+				serverSideRotation = Vec2f(it.packet.yaw, it.packet.pitch)
+				Wrapper.player?.let { player -> player.rotationYawHead = it.packet.yaw }
+			}
+		}
 
-        safeListener<TickEvent.ClientTickEvent>(0x2269420) {
-            if (it.phase != TickEvent.Phase.START) return@safeListener
-            prevServerSidePosition = serverSidePosition
-            prevServerSideRotation = serverSideRotation
-        }
+		safeListener<TickEvent.ClientTickEvent>(0x2269420) {
+			if (it.phase != TickEvent.Phase.START) return@safeListener
+			prevServerSidePosition = serverSidePosition
+			prevServerSideRotation = serverSideRotation
+		}
 
-        listener<RenderEntityEvent.All> {
-            if (it.entity != Wrapper.player || it.entity.isRiding) return@listener
+		listener<RenderEntityEvent.All> {
+			if (it.entity != Wrapper.player || it.entity.isRiding) return@listener
 
-            when (it.phase) {
-                Phase.PRE -> {
-                    with(it.entity) {
-                        clientSidePitch = Vec2f(prevRotationPitch, rotationPitch)
-                        prevRotationPitch = prevServerSideRotation.y
-                        rotationPitch = serverSideRotation.y
-                    }
-                }
-                Phase.POST -> {
-                    with(it.entity) {
-                        prevRotationPitch = clientSidePitch.x
-                        rotationPitch = clientSidePitch.y
-                    }
-                }
-                else -> {
-                    // Ignored
-                }
-            }
-        }
-    }
+			when (it.phase) {
+				Phase.PRE -> {
+					with(it.entity) {
+						clientSidePitch = Vec2f(prevRotationPitch, rotationPitch)
+						prevRotationPitch = prevServerSideRotation.y
+						rotationPitch = serverSideRotation.y
+					}
+				}
+				Phase.POST -> {
+					with(it.entity) {
+						prevRotationPitch = clientSidePitch.x
+						rotationPitch = clientSidePitch.y
+					}
+				}
+				else -> {
+					// Ignored
+				}
+			}
+		}
+	}
 
-    inline fun AbstractModule.sendPlayerPacket(block: Packet.Builder.() -> Unit) {
-        Packet.Builder().apply(block).build()?.let {
-            sendPlayerPacket(it)
-        }
-    }
+	inline fun AbstractModule.sendPlayerPacket(block: Packet.Builder.() -> Unit) {
+		Packet.Builder().apply(block).build()?.let {
+			sendPlayerPacket(it)
+		}
+	}
 
-    fun AbstractModule.sendPlayerPacket(packet: Packet) {
-        packetMap[this] = packet
-    }
+	fun AbstractModule.sendPlayerPacket(packet: Packet) {
+		packetMap[this] = packet
+	}
 
-    class Packet private constructor(
-        val moving: Boolean?,
-        val rotating: Boolean?,
-        val position: Vec3d?,
-        val rotation: Vec2f?,
-        val cancelAll: Boolean
-    ) {
-        class Builder {
-            private var position: Vec3d? = null
-            private var moving: Boolean? = null
+	class Packet private constructor(
+		val moving: Boolean?,
+		val rotating: Boolean?,
+		val position: Vec3d?,
+		val rotation: Vec2f?,
+		val cancelAll: Boolean
+	) {
+		class Builder {
+			private var position: Vec3d? = null
+			private var moving: Boolean? = null
 
-            private var rotation: Vec2f? = null
-            private var rotating: Boolean? = null
+			private var rotation: Vec2f? = null
+			private var rotating: Boolean? = null
 
-            private var cancelAll = false
-            private var empty = true
+			private var cancelAll = false
+			private var empty = true
 
-            fun move(position: Vec3d) {
-                this.position = position
-                this.moving = true
-                this.empty = false
-            }
+			fun move(position: Vec3d) {
+				this.position = position
+				this.moving = true
+				this.empty = false
+			}
 
-            fun rotate(rotation: Vec2f) {
-                this.rotation = rotation
-                this.rotating = true
-                this.empty = false
-            }
+			fun rotate(rotation: Vec2f) {
+				this.rotation = rotation
+				this.rotating = true
+				this.empty = false
+			}
 
-            fun cancelAll() {
-                this.cancelAll = true
-                this.empty = false
-            }
+			fun cancelAll() {
+				this.cancelAll = true
+				this.empty = false
+			}
 
-            fun cancelMove() {
-                this.position = null
-                this.moving = false
-                this.empty = false
-            }
+			fun cancelMove() {
+				this.position = null
+				this.moving = false
+				this.empty = false
+			}
 
-            fun cancelRotate() {
-                this.rotation = null
-                this.rotating = false
-                this.empty = false
-            }
+			fun cancelRotate() {
+				this.rotation = null
+				this.rotating = false
+				this.empty = false
+			}
 
-            fun build() =
-                if (!empty) Packet(moving, rotating, position, rotation, cancelAll) else null
-        }
-    }
+			fun build() =
+				if (!empty) Packet(moving, rotating, position, rotation, cancelAll) else null
+		}
+	}
 }

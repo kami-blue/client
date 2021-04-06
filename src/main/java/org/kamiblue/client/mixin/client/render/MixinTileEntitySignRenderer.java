@@ -17,18 +17,18 @@ import static org.kamiblue.client.mixin.extension.GuiKt.getTileSign;
 @Mixin(TileEntitySignRenderer.class)
 public class MixinTileEntitySignRenderer {
 
-    private final Minecraft mc = Minecraft.getMinecraft();
+	private final Minecraft mc = Minecraft.getMinecraft();
 
-    @Redirect(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/tileentity/TileEntitySign;signText:[Lnet/minecraft/util/text/ITextComponent;", opcode = Opcodes.GETFIELD))
-    public ITextComponent[] getRenderViewEntity(TileEntitySign sign) {
-        if (NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.getSignText().getValue()) {
-            GuiScreen screen = mc.currentScreen;
-            if (screen instanceof GuiEditSign && getTileSign((GuiEditSign) screen).equals(sign)) {
-                return sign.signText;
-            }
-            return new ITextComponent[]{};
-        }
-        return sign.signText;
-    }
+	@Redirect(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/tileentity/TileEntitySign;signText:[Lnet/minecraft/util/text/ITextComponent;", opcode = Opcodes.GETFIELD))
+	public ITextComponent[] getRenderViewEntity(TileEntitySign sign) {
+		if (NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.getSignText().getValue()) {
+			GuiScreen screen = mc.currentScreen;
+			if (screen instanceof GuiEditSign && getTileSign((GuiEditSign) screen).equals(sign)) {
+				return sign.signText;
+			}
+			return new ITextComponent[]{};
+		}
+		return sign.signText;
+	}
 
 }

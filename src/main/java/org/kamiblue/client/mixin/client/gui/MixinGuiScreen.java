@@ -18,29 +18,29 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiScreen.class)
 public class MixinGuiScreen {
 
-    @Inject(method = "renderToolTip", at = @At("HEAD"), cancellable = true)
-    public void renderToolTip(ItemStack stack, int x, int y, CallbackInfo info) {
-        if (ShulkerPreview.INSTANCE.isEnabled() && stack.getItem() instanceof ItemShulkerBox) {
-            NBTTagCompound tagCompound = ShulkerPreview.getShulkerData(stack);
+	@Inject(method = "renderToolTip", at = @At("HEAD"), cancellable = true)
+	public void renderToolTip(ItemStack stack, int x, int y, CallbackInfo info) {
+		if (ShulkerPreview.INSTANCE.isEnabled() && stack.getItem() instanceof ItemShulkerBox) {
+			NBTTagCompound tagCompound = ShulkerPreview.getShulkerData(stack);
 
-            if (tagCompound != null) {
-                info.cancel();
-                ShulkerPreview.renderShulkerAndItems(stack, x, y, tagCompound);
-            }
-        } else if (MapPreview.INSTANCE.isEnabled() && stack.getItem() instanceof ItemMap) {
-            MapData mapData = MapPreview.getMapData(stack);
+			if (tagCompound != null) {
+				info.cancel();
+				ShulkerPreview.renderShulkerAndItems(stack, x, y, tagCompound);
+			}
+		} else if (MapPreview.INSTANCE.isEnabled() && stack.getItem() instanceof ItemMap) {
+			MapData mapData = MapPreview.getMapData(stack);
 
-            if (mapData != null) {
-                info.cancel();
-                MapPreview.drawMap(stack, mapData, x, y);
-            }
-        }
-    }
+			if (mapData != null) {
+				info.cancel();
+				MapPreview.drawMap(stack, mapData, x, y);
+			}
+		}
+	}
 
-    @Inject(method = "drawWorldBackground(I)V", at = @At("HEAD"), cancellable = true)
-    private void drawWorldBackgroundWrapper(final int tint, final CallbackInfo ci) {
-        if (Wrapper.getWorld() != null && CleanGUI.INSTANCE.isEnabled() && (CleanGUI.INSTANCE.getInventoryGlobal().getValue())) {
-            ci.cancel();
-        }
-    }
+	@Inject(method = "drawWorldBackground(I)V", at = @At("HEAD"), cancellable = true)
+	private void drawWorldBackgroundWrapper(final int tint, final CallbackInfo ci) {
+		if (Wrapper.getWorld() != null && CleanGUI.INSTANCE.isEnabled() && (CleanGUI.INSTANCE.getInventoryGlobal().getValue())) {
+			ci.cancel();
+		}
+	}
 }

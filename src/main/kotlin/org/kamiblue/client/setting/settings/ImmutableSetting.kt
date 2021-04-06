@@ -10,12 +10,12 @@ package org.kamiblue.client.setting.settings
  * @param description Description of this setting
  */
 abstract class ImmutableSetting<T : Any>(
-    override val name: String,
-    valueIn: T,
-    override val visibility: () -> Boolean,
-    val consumer: (prev: T, input: T) -> T,
-    override val description: String
+	override val name: String,
+	valueIn: T,
+	override val visibility: () -> Boolean,
+	val consumer: (prev: T, input: T) -> T,
+	override val description: String
 ) : AbstractSetting<T>() {
-    override val value: T = valueIn
-    override val valueClass: Class<T> = valueIn.javaClass
+	override val value: T = valueIn
+	override val valueClass: Class<T> = valueIn.javaClass
 }

@@ -8,31 +8,31 @@ import org.kamiblue.client.util.threads.runSafe
 import org.kamiblue.event.listener.listener
 
 internal object PortalGodMode : Module(
-    name = "PortalGodMode",
-    category = Category.PLAYER,
-    description = "Don't take damage in portals"
+	name = "PortalGodMode",
+	category = Category.PLAYER,
+	description = "Don't take damage in portals"
 ) {
-    private val instantTeleport by setting("Instant Teleport", true)
+	private val instantTeleport by setting("Instant Teleport", true)
 
-    private var packet: CPacketConfirmTeleport? = null
+	private var packet: CPacketConfirmTeleport? = null
 
-    init {
-        onEnable {
-            packet = null
-        }
+	init {
+		onEnable {
+			packet = null
+		}
 
-        onDisable {
-            runSafe {
-                if (instantTeleport) packet?.let {
-                    connection.sendPacket(it)
-                }
-            }
-        }
+		onDisable {
+			runSafe {
+				if (instantTeleport) packet?.let {
+					connection.sendPacket(it)
+				}
+			}
+		}
 
-        listener<PacketEvent.Send> {
-            if (it.packet !is CPacketConfirmTeleport) return@listener
-            it.cancel()
-            packet = it.packet
-        }
-    }
+		listener<PacketEvent.Send> {
+			if (it.packet !is CPacketConfirmTeleport) return@listener
+			it.cancel()
+			packet = it.packet
+		}
+	}
 }

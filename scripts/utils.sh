@@ -13,18 +13,18 @@ root_kami_dir() {
 
 check_var() {
   if [ -z "$2" ]; then
-    echo "Variable '$1' is not set, exiting." >&2
-    exit 1
+	echo "Variable '$1' is not set, exiting." >&2
+	exit 1
   fi
 }
 
 check_git() {
   if [ ! -d "$(root_kami_dir)/.git" ]; then
-    echo "Could not detect git repository, exiting" >&2
-    exit 1
+	echo "Could not detect git repository, exiting" >&2
+	exit 1
   elif [ ! "$(git status | tail -n 1)" == "nothing to commit, working tree clean" ]; then
-    echo "Either not working in a clean tree or you have unpushed commits. Exiting." >&2
-    exit 1
+	echo "Either not working in a clean tree or you have unpushed commits. Exiting." >&2
+	exit 1
   fi
 }
 

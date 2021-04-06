@@ -18,17 +18,17 @@ import org.kamiblue.client.util.threads.onMainThreadSafe
  * or slot 0 if none
  */
 inline fun <reified I : Block> SafeClientEvent.swapToBlockOrMove(
-    predicateItem: (ItemStack) -> Boolean = { true },
-    predicateSlot: (ItemStack) -> Boolean = { true }
+	predicateItem: (ItemStack) -> Boolean = { true },
+	predicateSlot: (ItemStack) -> Boolean = { true }
 ): Boolean {
-    return if (swapToBlock<I>(predicateItem)) {
-        true
-    } else {
-        player.storageSlots.firstBlock<I, Slot>(predicateItem)?.let {
-            moveToHotbar(it, predicateSlot)
-            true
-        } ?: false
-    }
+	return if (swapToBlock<I>(predicateItem)) {
+		true
+	} else {
+		player.storageSlots.firstBlock<I, Slot>(predicateItem)?.let {
+			moveToHotbar(it, predicateSlot)
+			true
+		} ?: false
+	}
 }
 
 /**
@@ -38,18 +38,18 @@ inline fun <reified I : Block> SafeClientEvent.swapToBlockOrMove(
  * or slot 0 if none
  */
 fun SafeClientEvent.swapToBlockOrMove(
-    block: Block,
-    predicateItem: (ItemStack) -> Boolean = { true },
-    predicateSlot: (ItemStack) -> Boolean = { true }
+	block: Block,
+	predicateItem: (ItemStack) -> Boolean = { true },
+	predicateSlot: (ItemStack) -> Boolean = { true }
 ): Boolean {
-    return if (swapToBlock(block, predicateItem)) {
-        true
-    } else {
-        player.storageSlots.firstBlock(block, predicateItem)?.let {
-            moveToHotbar(it, predicateSlot)
-            true
-        } ?: false
-    }
+	return if (swapToBlock(block, predicateItem)) {
+		true
+	} else {
+		player.storageSlots.firstBlock(block, predicateItem)?.let {
+			moveToHotbar(it, predicateSlot)
+			true
+		} ?: false
+	}
 }
 
 /**
@@ -59,17 +59,17 @@ fun SafeClientEvent.swapToBlockOrMove(
  * or slot 0 if none
  */
 inline fun <reified I : Item> SafeClientEvent.swapToItemOrMove(
-    predicateItem: (ItemStack) -> Boolean = { true },
-    predicateSlot: (ItemStack) -> Boolean = { true }
+	predicateItem: (ItemStack) -> Boolean = { true },
+	predicateSlot: (ItemStack) -> Boolean = { true }
 ): Boolean {
-    return if (swapToItem<I>(predicateItem)) {
-        true
-    } else {
-        player.storageSlots.firstItem<I, Slot>(predicateItem)?.let {
-            moveToHotbar(it, predicateSlot)
-            true
-        } ?: false
-    }
+	return if (swapToItem<I>(predicateItem)) {
+		true
+	} else {
+		player.storageSlots.firstItem<I, Slot>(predicateItem)?.let {
+			moveToHotbar(it, predicateSlot)
+			true
+		} ?: false
+	}
 }
 
 /**
@@ -79,18 +79,18 @@ inline fun <reified I : Item> SafeClientEvent.swapToItemOrMove(
  * or slot 0 if none
  */
 fun SafeClientEvent.swapToItemOrMove(
-    item: Item,
-    predicateItem: (ItemStack) -> Boolean = { true },
-    predicateSlot: (ItemStack) -> Boolean = { true }
+	item: Item,
+	predicateItem: (ItemStack) -> Boolean = { true },
+	predicateSlot: (ItemStack) -> Boolean = { true }
 ): Boolean {
-    return if (swapToItem(item, predicateItem)) {
-        true
-    } else {
-        player.storageSlots.firstItem(item, predicateItem)?.let {
-            moveToHotbar(it, predicateSlot)
-            true
-        } ?: false
-    }
+	return if (swapToItem(item, predicateItem)) {
+		true
+	} else {
+		player.storageSlots.firstItem(item, predicateItem)?.let {
+			moveToHotbar(it, predicateSlot)
+			true
+		} ?: false
+	}
 }
 
 /**
@@ -100,84 +100,84 @@ fun SafeClientEvent.swapToItemOrMove(
  * or slot 0 if none
  */
 fun SafeClientEvent.swapToItemOrMove(
-    itemID: Int,
-    predicateItem: (ItemStack) -> Boolean = { true },
-    predicateSlot: (ItemStack) -> Boolean = { true }
+	itemID: Int,
+	predicateItem: (ItemStack) -> Boolean = { true },
+	predicateSlot: (ItemStack) -> Boolean = { true }
 ): Boolean {
-    return if (swapToID(itemID, predicateItem)) {
-        true
-    } else {
-        player.storageSlots.firstID(itemID, predicateItem)?.let {
-            moveToHotbar(it, predicateSlot)
-            true
-        } ?: false
-    }
+	return if (swapToID(itemID, predicateItem)) {
+		true
+	} else {
+		player.storageSlots.firstID(itemID, predicateItem)?.let {
+			moveToHotbar(it, predicateSlot)
+			true
+		} ?: false
+	}
 }
 
 /**
  * Try to swap selected hotbar slot to [I] that matches with [predicate]
  */
 inline fun <reified I : Block> SafeClientEvent.swapToBlock(predicate: (ItemStack) -> Boolean = { true }): Boolean {
-    return player.hotbarSlots.firstBlock<I, HotbarSlot>(predicate)?.let {
-        swapToSlot(it)
-        true
-    } ?: false
+	return player.hotbarSlots.firstBlock<I, HotbarSlot>(predicate)?.let {
+		swapToSlot(it)
+		true
+	} ?: false
 }
 
 /**
  * Try to swap selected hotbar slot to [block] that matches with [predicate]
  */
 fun SafeClientEvent.swapToBlock(block: Block, predicate: (ItemStack) -> Boolean = { true }): Boolean {
-    return player.hotbarSlots.firstBlock(block, predicate)?.let {
-        swapToSlot(it)
-        true
-    } ?: false
+	return player.hotbarSlots.firstBlock(block, predicate)?.let {
+		swapToSlot(it)
+		true
+	} ?: false
 }
 
 /**
  * Try to swap selected hotbar slot to [I] that matches with [predicate]
  */
 inline fun <reified I : Item> SafeClientEvent.swapToItem(predicate: (ItemStack) -> Boolean = { true }): Boolean {
-    return player.hotbarSlots.firstItem<I, HotbarSlot>(predicate)?.let {
-        swapToSlot(it)
-        true
-    } ?: false
+	return player.hotbarSlots.firstItem<I, HotbarSlot>(predicate)?.let {
+		swapToSlot(it)
+		true
+	} ?: false
 }
 
 /**
  * Try to swap selected hotbar slot to [item] that matches with [predicate]
  */
 fun SafeClientEvent.swapToItem(item: Item, predicate: (ItemStack) -> Boolean = { true }): Boolean {
-    return player.hotbarSlots.firstItem(item, predicate)?.let {
-        swapToSlot(it)
-        true
-    } ?: false
+	return player.hotbarSlots.firstItem(item, predicate)?.let {
+		swapToSlot(it)
+		true
+	} ?: false
 }
 
 /**
  * Try to swap selected hotbar slot to item with [itemID] that matches with [predicate]
  */
 fun SafeClientEvent.swapToID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }): Boolean {
-    return player.hotbarSlots.firstID(itemID, predicate)?.let {
-        swapToSlot(it)
-        true
-    } ?: false
+	return player.hotbarSlots.firstID(itemID, predicate)?.let {
+		swapToSlot(it)
+		true
+	} ?: false
 }
 
 /**
  * Swap the selected hotbar slot to [hotbarSlot]
  */
 fun SafeClientEvent.swapToSlot(hotbarSlot: HotbarSlot) {
-    swapToSlot(hotbarSlot.hotbarSlot)
+	swapToSlot(hotbarSlot.hotbarSlot)
 }
 
 /**
  * Swap the selected hotbar slot to [slot]
  */
 fun SafeClientEvent.swapToSlot(slot: Int) {
-    if (slot !in 0..8) return
-    player.inventory.currentItem = slot
-    playerController.updateController()
+	if (slot !in 0..8) return
+	player.inventory.currentItem = slot
+	playerController.updateController()
 }
 
 /**
@@ -185,7 +185,7 @@ fun SafeClientEvent.swapToSlot(slot: Int) {
  * or matches with [predicate] or slot 0 if none of those found
  */
 inline fun SafeClientEvent.moveToHotbar(slotFrom: Slot, predicate: (ItemStack) -> Boolean): Short {
-    return moveToHotbar(slotFrom.slotNumber, predicate)
+	return moveToHotbar(slotFrom.slotNumber, predicate)
 }
 
 /**
@@ -193,41 +193,41 @@ inline fun SafeClientEvent.moveToHotbar(slotFrom: Slot, predicate: (ItemStack) -
  * or matches with [predicate] or slot 0 if none of those found
  */
 inline fun SafeClientEvent.moveToHotbar(slotFrom: Int, predicate: (ItemStack) -> Boolean): Short {
-    val hotbarSlots = player.hotbarSlots
-    val slotTo = hotbarSlots.firstItem(Items.AIR)?.hotbarSlot
-        ?: hotbarSlots.firstByStack(predicate)?.hotbarSlot ?: 0
+	val hotbarSlots = player.hotbarSlots
+	val slotTo = hotbarSlots.firstItem(Items.AIR)?.hotbarSlot
+		?: hotbarSlots.firstByStack(predicate)?.hotbarSlot ?: 0
 
-    return moveToHotbar(slotFrom, slotTo)
+	return moveToHotbar(slotFrom, slotTo)
 }
 
 /**
  * Swaps the item in [slotFrom] with the hotbar slot [slotTo].
  */
 fun SafeClientEvent.moveToHotbar(slotFrom: Slot, slotTo: HotbarSlot): Short {
-    return moveToHotbar(0, slotFrom, slotTo)
+	return moveToHotbar(0, slotFrom, slotTo)
 }
 
 /**
  * Swaps the item in [slotFrom] with the hotbar slot [hotbarSlotTo].
  */
 fun SafeClientEvent.moveToHotbar(windowId: Int, slotFrom: Slot, hotbarSlotTo: HotbarSlot): Short {
-    return moveToHotbar(windowId, slotFrom.slotNumber, hotbarSlotTo.hotbarSlot)
+	return moveToHotbar(windowId, slotFrom.slotNumber, hotbarSlotTo.hotbarSlot)
 }
 
 /**
  * Swaps the item in [slotFrom] with the hotbar slot [hotbarSlotTo].
  */
 fun SafeClientEvent.moveToHotbar(slotFrom: Int, hotbarSlotTo: Int): Short {
-    return moveToHotbar(0, slotFrom, hotbarSlotTo)
+	return moveToHotbar(0, slotFrom, hotbarSlotTo)
 }
 
 /**
  * Swaps the item in [slotFrom] with the hotbar slot [hotbarSlotTo].
  */
 fun SafeClientEvent.moveToHotbar(windowId: Int, slotFrom: Int, hotbarSlotTo: Int): Short {
-    // mouseButton is actually the hotbar
-    swapToSlot(hotbarSlotTo)
-    return clickSlot(windowId, slotFrom, hotbarSlotTo, type = ClickType.SWAP)
+	// mouseButton is actually the hotbar
+	swapToSlot(hotbarSlotTo)
+	return clickSlot(windowId, slotFrom, hotbarSlotTo, type = ClickType.SWAP)
 }
 
 /**
@@ -235,7 +235,7 @@ fun SafeClientEvent.moveToHotbar(windowId: Int, slotFrom: Int, hotbarSlotTo: Int
  * if [slotTo] contains an item, then move it to [slotFrom]
  */
 fun SafeClientEvent.moveToSlot(slotFrom: Slot, slotTo: Slot): ShortArray {
-    return moveToSlot(0, slotFrom.slotNumber, slotTo.slotNumber)
+	return moveToSlot(0, slotFrom.slotNumber, slotTo.slotNumber)
 }
 
 /**
@@ -243,7 +243,7 @@ fun SafeClientEvent.moveToSlot(slotFrom: Slot, slotTo: Slot): ShortArray {
  * if [slotTo] contains an item, then move it to [slotFrom]
  */
 fun SafeClientEvent.moveToSlot(slotFrom: Int, slotTo: Int): ShortArray {
-    return moveToSlot(0, slotFrom, slotTo)
+	return moveToSlot(0, slotFrom, slotTo)
 }
 
 /**
@@ -251,11 +251,11 @@ fun SafeClientEvent.moveToSlot(slotFrom: Int, slotTo: Int): ShortArray {
  * if [slotTo] contains an item, then move it to [slotFrom]
  */
 fun SafeClientEvent.moveToSlot(windowId: Int, slotFrom: Int, slotTo: Int): ShortArray {
-    return shortArrayOf(
-        clickSlot(windowId, slotFrom, type = ClickType.PICKUP),
-        clickSlot(windowId, slotTo, type = ClickType.PICKUP),
-        clickSlot(windowId, slotFrom, type = ClickType.PICKUP)
-    )
+	return shortArrayOf(
+		clickSlot(windowId, slotFrom, type = ClickType.PICKUP),
+		clickSlot(windowId, slotTo, type = ClickType.PICKUP),
+		clickSlot(windowId, slotFrom, type = ClickType.PICKUP)
+	)
 }
 
 /**
@@ -263,38 +263,38 @@ fun SafeClientEvent.moveToSlot(windowId: Int, slotFrom: Int, slotTo: Int): Short
  * Note: Not working
  */
 fun SafeClientEvent.moveAllToSlot(slotTo: Int): ShortArray {
-    return shortArrayOf(
-        clickSlot(slot = slotTo, type = ClickType.PICKUP_ALL),
-        clickSlot(slot = slotTo, type = ClickType.PICKUP)
-    )
+	return shortArrayOf(
+		clickSlot(slot = slotTo, type = ClickType.PICKUP_ALL),
+		clickSlot(slot = slotTo, type = ClickType.PICKUP)
+	)
 }
 
 /**
  * Quick move (Shift + Click) the item in [slot] in player inventory
  */
 fun SafeClientEvent.quickMoveSlot(slot: Int): Short {
-    return quickMoveSlot(0, slot)
+	return quickMoveSlot(0, slot)
 }
 
 /**
  * Quick move (Shift + Click) the item in [slot] in specified [windowId]
  */
 fun SafeClientEvent.quickMoveSlot(windowId: Int, slot: Int): Short {
-    return clickSlot(windowId, slot, type = ClickType.QUICK_MOVE)
+	return clickSlot(windowId, slot, type = ClickType.QUICK_MOVE)
 }
 
 /**
  * Quick move (Shift + Click) the item in [slot] in player inventory
  */
 fun SafeClientEvent.quickMoveSlot(slot: Slot): Short {
-    return quickMoveSlot(0, slot)
+	return quickMoveSlot(0, slot)
 }
 
 /**
  * Quick move (Shift + Click) the item in [slot] in specified [windowId]
  */
 fun SafeClientEvent.quickMoveSlot(windowId: Int, slot: Slot): Short {
-    return clickSlot(windowId, slot, type = ClickType.QUICK_MOVE)
+	return clickSlot(windowId, slot, type = ClickType.QUICK_MOVE)
 }
 
 
@@ -302,41 +302,41 @@ fun SafeClientEvent.quickMoveSlot(windowId: Int, slot: Slot): Short {
  * Throw all the item in [slot] in player inventory
  */
 fun SafeClientEvent.throwAllInSlot(slot: Int): Short {
-    return throwAllInSlot(0, slot)
+	return throwAllInSlot(0, slot)
 }
 
 /**
  * Throw all the item in [slot] in specified [windowId]
  */
 fun SafeClientEvent.throwAllInSlot(windowId: Int, slot: Int): Short {
-    return clickSlot(windowId, slot, 1, ClickType.THROW)
+	return clickSlot(windowId, slot, 1, ClickType.THROW)
 }
 
 /**
  * Throw all the item in [slot] in player inventory
  */
 fun SafeClientEvent.throwAllInSlot(slot: Slot): Short {
-    return throwAllInSlot(0, slot)
+	return throwAllInSlot(0, slot)
 }
 
 /**
  * Throw all the item in [slot] in specified [windowId]
  */
 fun SafeClientEvent.throwAllInSlot(windowId: Int, slot: Slot): Short {
-    return clickSlot(windowId, slot, 1, ClickType.THROW)
+	return clickSlot(windowId, slot, 1, ClickType.THROW)
 }
 
 /**
  * Put the item currently holding by mouse to somewhere or throw it
  */
 fun SafeClientEvent.removeHoldingItem() {
-    if (player.inventory.itemStack.isEmpty) return
+	if (player.inventory.itemStack.isEmpty) return
 
-    val slot = player.inventoryContainer.getSlots(9..45).firstItem(Items.AIR)?.slotNumber // Get empty slots in inventory and offhand
-        ?: player.craftingSlots.firstItem(Items.AIR)?.slotNumber // Get empty slots in crafting slot
-        ?: -999 // Throw on the ground
+	val slot = player.inventoryContainer.getSlots(9..45).firstItem(Items.AIR)?.slotNumber // Get empty slots in inventory and offhand
+		?: player.craftingSlots.firstItem(Items.AIR)?.slotNumber // Get empty slots in crafting slot
+		?: -999 // Throw on the ground
 
-    clickSlot(slot = slot, type = ClickType.PICKUP)
+	clickSlot(slot = slot, type = ClickType.PICKUP)
 }
 
 
@@ -346,7 +346,7 @@ fun SafeClientEvent.removeHoldingItem() {
  * @return Transaction id
  */
 fun SafeClientEvent.clickSlot(windowId: Int = 0, slot: Slot, mouseButton: Int = 0, type: ClickType): Short {
-    return clickSlot(windowId, slot.slotNumber, mouseButton, type)
+	return clickSlot(windowId, slot.slotNumber, mouseButton, type)
 }
 
 /**
@@ -355,17 +355,17 @@ fun SafeClientEvent.clickSlot(windowId: Int = 0, slot: Slot, mouseButton: Int = 
  * @return Transaction id
  */
 fun SafeClientEvent.clickSlot(windowId: Int = 0, slot: Int, mouseButton: Int = 0, type: ClickType): Short {
-    val container = if (windowId == 0) player.inventoryContainer else player.openContainer
-    container ?: return -32768
+	val container = if (windowId == 0) player.inventoryContainer else player.openContainer
+	container ?: return -32768
 
-    val playerInventory = player.inventory ?: return -32768
-    val transactionID = container.getNextTransactionID(playerInventory)
-    val itemStack = container.slotClick(slot, mouseButton, type, player)
+	val playerInventory = player.inventory ?: return -32768
+	val transactionID = container.getNextTransactionID(playerInventory)
+	val itemStack = container.slotClick(slot, mouseButton, type, player)
 
-    connection.sendPacket(CPacketClickWindow(windowId, slot, mouseButton, type, itemStack, transactionID))
-    runBlocking {
-        onMainThreadSafe { playerController.updateController() }
-    }
+	connection.sendPacket(CPacketClickWindow(windowId, slot, mouseButton, type, itemStack, transactionID))
+	runBlocking {
+		onMainThreadSafe { playerController.updateController() }
+	}
 
-    return transactionID
+	return transactionID
 }

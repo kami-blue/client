@@ -9,15 +9,15 @@ import org.kamiblue.client.module.Module
 import org.kamiblue.event.listener.listener
 
 internal object AntiForceLook : Module(
-    name = "AntiForceLook",
-    category = Category.PLAYER,
-    description = "Stops server packets from turning your head"
+	name = "AntiForceLook",
+	category = Category.PLAYER,
+	description = "Stops server packets from turning your head"
 ) {
-    init {
-        listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketPlayerPosLook || mc.player == null) return@listener
-            it.packet.rotationYaw = mc.player.rotationYaw
-            it.packet.rotationPitch = mc.player.rotationPitch
-        }
-    }
+	init {
+		listener<PacketEvent.Receive> {
+			if (it.packet !is SPacketPlayerPosLook || mc.player == null) return@listener
+			it.packet.rotationYaw = mc.player.rotationYaw
+			it.packet.rotationPitch = mc.player.rotationPitch
+		}
+	}
 }

@@ -7,13 +7,13 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(SPacketExplosion.class)
 public interface AccessorSPacketExplosion {
 
-    @Accessor("motionX")
-    void setMotionX(float value);
+	@Accessor("motionX")
+	void setMotionX(float value);
 
-    @Accessor("motionY")
-    void setMotionY(float value);
+	@Accessor("motionY")
+	void setMotionY(float value);
 
-    @Accessor("motionZ")
-    void setMotionZ(float value);
+	@Accessor("motionZ")
+	void setMotionZ(float value);
 
 }

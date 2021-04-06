@@ -13,36 +13,36 @@ import org.kamiblue.client.util.threads.onMainThreadSafe
 import java.util.*
 
 object PeekCommand : ClientCommand(
-    name = "peek",
-    alias = arrayOf("shulkerpeek"),
-    description = "Look inside the contents of a shulker box without opening it."
+	name = "peek",
+	alias = arrayOf("shulkerpeek"),
+	description = "Look inside the contents of a shulker box without opening it."
 ) {
-    init {
-        executeSafe {
-            val itemStack = player.inventory.getCurrentItem()
-            val item = itemStack.item
+	init {
+		executeSafe {
+			val itemStack = player.inventory.getCurrentItem()
+			val item = itemStack.item
 
-            if (item is ItemShulkerBox) {
-                val entityBox = TileEntityShulkerBox().apply {
-                    this.world = this@executeSafe.world
-                }
+			if (item is ItemShulkerBox) {
+				val entityBox = TileEntityShulkerBox().apply {
+					this.world = this@executeSafe.world
+				}
 
-                val nbtTag = itemStack.tagCompound ?: return@executeSafe
-                entityBox.readFromNBT(nbtTag.getCompoundTag("BlockEntityTag"))
+				val nbtTag = itemStack.tagCompound ?: return@executeSafe
+				entityBox.readFromNBT(nbtTag.getCompoundTag("BlockEntityTag"))
 
-                val scaledResolution = ScaledResolution(mc)
-                val gui = GuiShulkerBox(player.inventory, entityBox)
-                gui.setWorldAndResolution(mc, scaledResolution.scaledWidth, scaledResolution.scaledHeight)
+				val scaledResolution = ScaledResolution(mc)
+				val gui = GuiShulkerBox(player.inventory, entityBox)
+				gui.setWorldAndResolution(mc, scaledResolution.scaledWidth, scaledResolution.scaledHeight)
 
-                defaultScope.launch {
-                    delay(50L)
-                    onMainThreadSafe {
-                        mc.displayGuiScreen(gui)
-                    }
-                }
-            } else {
-                MessageSendHelper.sendErrorMessage("You aren't holding a shulker box.")
-            }
-        }
-    }
+				defaultScope.launch {
+					delay(50L)
+					onMainThreadSafe {
+						mc.displayGuiScreen(gui)
+					}
+				}
+			} else {
+				MessageSendHelper.sendErrorMessage("You aren't holding a shulker box.")
+			}
+		}
+	}
 }

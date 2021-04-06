@@ -9,11 +9,11 @@ varying vec2 fragCoord4;
 varying vec2 fragCoord5;
 
 void main() {
-    vec4 color = texture2D(DiffuseSampler, fragCoord1);
-    color += texture2D(DiffuseSampler, fragCoord2);
-    color += texture2D(DiffuseSampler, fragCoord3);
-    color += texture2D(DiffuseSampler, fragCoord4);
-    color += texture2D(DiffuseSampler, fragCoord5);
+	vec4 color = texture2D(DiffuseSampler, fragCoord1);
+	color += texture2D(DiffuseSampler, fragCoord2);
+	color += texture2D(DiffuseSampler, fragCoord3);
+	color += texture2D(DiffuseSampler, fragCoord4);
+	color += texture2D(DiffuseSampler, fragCoord5);
 
-    gl_FragColor = color * 0.2;
+	gl_FragColor = color * 0.2;
 }

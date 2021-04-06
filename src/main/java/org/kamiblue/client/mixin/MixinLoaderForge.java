@@ -16,45 +16,45 @@ import java.util.Map;
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 public class MixinLoaderForge implements IFMLLoadingPlugin {
 
-    /* This is NOT using KamiMod, as importing it causes the issue described here: https://github.com/SpongePowered/Mixin/issues/388 */
-    public static final Logger log = LogManager.getLogger("KAMI Blue");
-    private static boolean isObfuscatedEnvironment = false;
+	/* This is NOT using KamiMod, as importing it causes the issue described here: https://github.com/SpongePowered/Mixin/issues/388 */
+	public static final Logger log = LogManager.getLogger("KAMI Blue");
+	private static boolean isObfuscatedEnvironment = false;
 
-    public MixinLoaderForge() {
-        log.info("KAMI Blue and Baritone mixins initializing...");
+	public MixinLoaderForge() {
+		log.info("KAMI Blue and Baritone mixins initializing...");
 
-        MixinBootstrap.init();
+		MixinBootstrap.init();
 
-        Mixins.addConfigurations("mixins.kami.json", "mixins.baritone.json");
-        MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
+		Mixins.addConfigurations("mixins.kami.json", "mixins.baritone.json");
+		MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
 
-        log.info("KAMI Blue and Baritone mixins initialised.");
+		log.info("KAMI Blue and Baritone mixins initialised.");
 
-        log.info(MixinEnvironment.getDefaultEnvironment().getObfuscationContext());
-    }
+		log.info(MixinEnvironment.getDefaultEnvironment().getObfuscationContext());
+	}
 
-    @Override
-    public String[] getASMTransformerClass() {
-        return new String[0];
-    }
+	@Override
+	public String[] getASMTransformerClass() {
+		return new String[0];
+	}
 
-    @Override
-    public String getModContainerClass() {
-        return null;
-    }
+	@Override
+	public String getModContainerClass() {
+		return null;
+	}
 
-    @Override
-    public String getSetupClass() {
-        return null;
-    }
+	@Override
+	public String getSetupClass() {
+		return null;
+	}
 
-    @Override
-    public void injectData(Map<String, Object> data) {
-        isObfuscatedEnvironment = (boolean) data.get("runtimeDeobfuscationEnabled");
-    }
+	@Override
+	public void injectData(Map<String, Object> data) {
+		isObfuscatedEnvironment = (boolean) data.get("runtimeDeobfuscationEnabled");
+	}
 
-    @Override
-    public String getAccessTransformerClass() {
-        return null;
-    }
+	@Override
+	public String getAccessTransformerClass() {
+		return null;
+	}
 }

@@ -7,25 +7,25 @@ import org.kamiblue.client.process.PauseProcess
 import org.kamiblue.client.util.BaritoneUtils
 
 internal object BaritoneProcess : LabelHud(
-    name = "BaritoneProcess",
-    category = Category.CLIENT,
-    description = "Shows what Baritone is doing"
+	name = "BaritoneProcess",
+	category = Category.CLIENT,
+	description = "Shows what Baritone is doing"
 ) {
 
-    override fun SafeClientEvent.updateText() {
-        val process = BaritoneUtils.primary?.pathingControlManager?.mostRecentInControl()?.orElse(null) ?: return
+	override fun SafeClientEvent.updateText() {
+		val process = BaritoneUtils.primary?.pathingControlManager?.mostRecentInControl()?.orElse(null) ?: return
 
-        when {
-            process == PauseProcess -> {
-                displayText.addLine(process.displayName0())
-            }
-            AutoWalk.baritoneWalk -> {
-                displayText.addLine("AutoWalk (${AutoWalk.direction.displayName})")
-            }
-            else -> {
-                displayText.addLine("Process: ${process.displayName()}")
-            }
-        }
-    }
+		when {
+			process == PauseProcess -> {
+				displayText.addLine(process.displayName0())
+			}
+			AutoWalk.baritoneWalk -> {
+				displayText.addLine("AutoWalk (${AutoWalk.direction.displayName})")
+			}
+			else -> {
+				displayText.addLine("Process: ${process.displayName()}")
+			}
+		}
+	}
 
 }

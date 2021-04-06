@@ -8,20 +8,20 @@ import java.io.File
  */
 interface IConfig : Nameable {
 
-    /** Main file of the config */
-    val file: File
+	/** Main file of the config */
+	val file: File
 
-    /** Backup file of the config */
-    val backup: File
+	/** Backup file of the config */
+	val backup: File
 
-    /**
-     * Save this group to its .json file
-     */
-    fun save()
+	/**
+	 * Save this group to its .json file
+	 */
+	fun save()
 
-    /**
-     * Load all setting values in from its .json file
-     */
-    fun load()
+	/**
+	 * Load all setting values in from its .json file
+	 */
+	fun load()
 
 }
