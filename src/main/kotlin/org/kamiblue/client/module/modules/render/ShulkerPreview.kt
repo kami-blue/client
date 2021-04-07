@@ -14,6 +14,12 @@ import net.minecraft.util.NonNullList
 import org.kamiblue.client.mixin.client.gui.MixinGuiScreen
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.color.ColorGradient
+import org.kamiblue.client.util.color.ColorHolder
+import org.kamiblue.client.util.graphics.GlStateUtils
+import org.kamiblue.client.util.graphics.RenderUtils2D
+import org.kamiblue.client.util.graphics.VertexHelper
+import org.kamiblue.client.util.math.Vec2d
 
 /**
  * @see MixinGuiScreen.renderToolTip
@@ -93,6 +99,11 @@ internal object ShulkerPreview : Module(
         drawGradientRect(x - 3, y + height + 2, x + width + 3, y + height + 3, 1344798847, 1344798847)
 
         fontRenderer.drawString(stack.displayName, x, y, 0xffffff)
+
+        RenderUtils2D.drawGradientFilledRect(VertexHelper(GlStateUtils.useVbo()), Vec2d(x.toDouble(), y.toDouble()), Vec2d((x + width).toDouble(), (y + height).toDouble()), ColorGradient(
+            0f to ColorHolder(),
+            100f to ColorHolder(0, 255, 0)
+        ))
     }
 
     private fun renderShulkerItems(shulkerInventory: NonNullList<ItemStack>, originalX: Int, originalY: Int) {

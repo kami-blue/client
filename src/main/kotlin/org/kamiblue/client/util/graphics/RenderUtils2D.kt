@@ -4,6 +4,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.item.ItemStack
 import org.kamiblue.client.util.Wrapper
+import org.kamiblue.client.util.color.ColorGradient
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.commons.utils.MathUtils
@@ -110,6 +111,41 @@ object RenderUtils2D {
         vertexHelper.put(pos1, color)
         vertexHelper.put(pos2, color)
         vertexHelper.put(pos3, color)
+        vertexHelper.end()
+
+        releaseGl()
+    }
+
+    fun drawGradientFilledRect(vertexHelper: VertexHelper, pos1: Vec2d, pos2: Vec2d, colorGradient: ColorGradient) {
+        val colourArray = colorGradient.colorArray
+        val largest = colourArray.last().first
+        val diffInPosY = pos2.y - pos1.y
+        val pixelsPerUnit = diffInPosY / largest
+
+        for ((i, current) in colourArray.withIndex()) {
+            if (i < colourArray.size - 1) {
+                val next = colourArray[i + 1]
+                val topY = pixelsPerUnit * current.first + pos1.y
+                val bottomY = pixelsPerUnit * next.first + pos1.y
+
+                drawGradientFilledRect(vertexHelper, pos1.copy(y = topY), pos2.copy(y = topY), pos1.copy(y = bottomY), pos2.copy(y = bottomY), current.second, current.second, next.second, next.second)
+            }
+        }
+    }
+
+    fun drawGradientFilledRect(vertexHelper: VertexHelper, pos1: Vec2d, pos2: Vec2d, pos3: Vec2d, pos4: Vec2d, colour1: ColorHolder, colour2: ColorHolder, colour3: ColorHolder, colour4: ColorHolder) {
+        prepareGl()
+
+        vertexHelper.begin(GL_TRIANGLES)
+        vertexHelper.put(pos1, colour1)
+        vertexHelper.put(pos2, colour2)
+        vertexHelper.put(pos3, colour3)
+        vertexHelper.end()
+
+        vertexHelper.begin(GL_TRIANGLES)
+        vertexHelper.put(pos2, colour2)
+        vertexHelper.put(pos3, colour3)
+        vertexHelper.put(pos4, colour4)
         vertexHelper.end()
 
         releaseGl()
