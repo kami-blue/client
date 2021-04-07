@@ -14,12 +14,14 @@ import net.minecraft.util.NonNullList
 import org.kamiblue.client.mixin.client.gui.MixinGuiScreen
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.color.ColorConverter
 import org.kamiblue.client.util.color.ColorGradient
 import org.kamiblue.client.util.color.ColorHolder
 import org.kamiblue.client.util.graphics.GlStateUtils
 import org.kamiblue.client.util.graphics.RenderUtils2D
 import org.kamiblue.client.util.graphics.VertexHelper
 import org.kamiblue.client.util.math.Vec2d
+import org.kamiblue.commons.extension.floorToInt
 
 /**
  * @see MixinGuiScreen.renderToolTip
@@ -81,29 +83,31 @@ internal object ShulkerPreview : Module(
 
     private fun renderShulker(stack: ItemStack, originalX: Int, originalY: Int) {
         val width = 144.coerceAtLeast(fontRenderer.getStringWidth(stack.displayName) + 3) // 9 * 16
+        val vertexHelper = VertexHelper(GlStateUtils.useVbo())
 
-        val x = originalX + 12
-        val y = originalY - 12
+        val x = (originalX + 12).toDouble()
+        val y = (originalY - 12).toDouble()
         val height = 48 + 9 // 3 * 16
 
         itemRenderer.zLevel = 300.0f
         // Magic numbers taken from Minecraft code
-        drawGradientRect(x - 3, y - 4, x + width + 3, y - 3, -267386864, -267386864)
-        drawGradientRect(x - 3, y + height + 3, x + width + 3, y + height + 4, -267386864, -267386864)
-        drawGradientRect(x - 3, y - 3, x + width + 3, y + height + 3, -267386864, -267386864)
-        drawGradientRect(x - 4, y - 3, x - 3, y + height + 3, -267386864, -267386864)
-        drawGradientRect(x + width + 3, y - 3, x + width + 4, y + height + 3, -267386864, -267386864)
-        drawGradientRect(x - 3, y - 3 + 1, x - 3 + 1, y + height + 3 - 1, 1347420415, 1344798847)
-        drawGradientRect(x + width + 2, y - 3 + 1, x + width + 3, y + height + 3 - 1, 1347420415, 1344798847)
-        drawGradientRect(x - 3, y - 3, x + width + 3, y - 3 + 1, 1347420415, 1347420415)
-        drawGradientRect(x - 3, y + height + 2, x + width + 3, y + height + 3, 1344798847, 1344798847)
 
-        fontRenderer.drawString(stack.displayName, x, y, 0xffffff)
+        RenderUtils2D.drawRoundedRectFilled(vertexHelper,
+            Vec2d(x - 3, y - 4),
+            Vec2d((x + width + 3), (y + height + 4)),
+            1.0,
+            segments = 1,
+            color = ColorHolder(16, 0,16, 240))
 
-        RenderUtils2D.drawGradientFilledRect(VertexHelper(GlStateUtils.useVbo()), Vec2d(x.toDouble(), y.toDouble()), Vec2d((x + width).toDouble(), (y + height).toDouble()), ColorGradient(
-            0f to ColorHolder(),
-            100f to ColorHolder(0, 255, 0)
-        ))
+        RenderUtils2D.drawGradientFilledRect(vertexHelper,
+            Vec2d(x - 2, y - 3),
+            Vec2d(x + width + 2, y + height + 3),
+            ColorGradient(0.0f to ColorHolder(80, 0, 255, 80), 1.0f to ColorHolder(40, 0, 127, 80))
+        )
+
+        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(x - 1, y - 2), Vec2d(x + width + 1, y + height + 2), ColorHolder(16, 0,16, 240))
+
+        fontRenderer.drawString(stack.displayName, x.floorToInt(), y.floorToInt(), 0xffffff)
     }
 
     private fun renderShulkerItems(shulkerInventory: NonNullList<ItemStack>, originalX: Int, originalY: Int) {
@@ -115,44 +119,4 @@ internal object ShulkerPreview : Module(
             itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, itemStack, x, y, null)
         }
     }
-
-    private fun drawGradientRect(left: Int, top: Int, right: Int, bottom: Int, startColor: Int, endColor: Int) {
-        GlStateManager.disableTexture2D()
-        GlStateManager.enableBlend()
-        GlStateManager.disableAlpha()
-        GlStateManager.tryBlendFuncSeparate(
-            GlStateManager.SourceFactor.SRC_ALPHA,
-            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-            GlStateManager.SourceFactor.ONE,
-            GlStateManager.DestFactor.ZERO
-        )
-        GlStateManager.shadeModel(7425)
-
-        val tessellator = Tessellator.getInstance()
-        val bufBuilder = tessellator.buffer
-
-        bufBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR)
-        bufBuilder.colorVertex(right, top, startColor)
-        bufBuilder.colorVertex(left, top, startColor)
-        bufBuilder.colorVertex(left, bottom, endColor)
-        bufBuilder.colorVertex(right, bottom, endColor)
-        tessellator.draw()
-
-        GlStateManager.shadeModel(7424)
-        GlStateManager.disableBlend()
-        GlStateManager.enableAlpha()
-        GlStateManager.enableTexture2D()
-    }
-
-    private fun BufferBuilder.colorVertex(x: Int, y: Int, color: Int) {
-        this.pos(x.toDouble(), y.toDouble(), 300.0)
-            .color(
-                (color shr 16 and 255) / 255f,
-                (color shr 8 and 255) / 255f,
-                (color and 255) / 255f,
-                (color shr 24 and 255) / 255f
-            )
-            .endVertex()
-    }
-
 }
