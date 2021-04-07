@@ -271,14 +271,12 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
     private fun drawColorPreview(vertexHelper: VertexHelper) {
         RenderUtils2D.prepareGl()
 
-        // Previous color
-        val prevColor = setting?.value?.clone()?.apply { a = 255 }
-        RenderUtils2D.drawRectFilled(vertexHelper, prevColorPos.first.toVec2d(), prevColorPos.second.toVec2d(), prevColor
+        RenderUtils2D.drawRectFilled(vertexHelper, prevColorPos.first.toVec2d(), prevColorPos.second.toVec2d(), originalColor
             ?: ColorHolder())
         RenderUtils2D.drawRectOutline(vertexHelper, prevColorPos.first.toVec2d(), prevColorPos.second.toVec2d(), 1.5f, GuiColors.outline)
 
         // Current color
-        val currentColor = ColorHolder(r.value, g.value, b.value)
+        val currentColor = setting?.value ?: ColorHolder()
         RenderUtils2D.drawRectFilled(vertexHelper, currentColorPos.first.toVec2d(), currentColorPos.second.toVec2d(), currentColor)
         RenderUtils2D.drawRectOutline(vertexHelper, currentColorPos.first.toVec2d(), currentColorPos.second.toVec2d(), 1.5f, GuiColors.outline)
 
