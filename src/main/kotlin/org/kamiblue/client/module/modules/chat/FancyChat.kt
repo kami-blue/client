@@ -106,12 +106,27 @@ internal object FancyChat : Module(
 
     private fun uwuConverter(input: String): String {
         var lInput = input
+        lInput = lInput.replace('L', 'W')
+        lInput = lInput.replace('R', 'W')
+        lInput = lInput.replace('l', 'w')
+        lInput = lInput.replace('r', 'w')
+        lInput = lInput.replace(" n", " ny")
+        lInput = lInput.replace(" N", " Ny")
         lInput = lInput.replace("ove", "uv")
-        lInput = lInput.replace("the", "da")
-        lInput = lInput.replace("is", "ish")
-        lInput = lInput.replace("r", "w")
-        lInput = lInput.replace("ve", "v")
-        lInput = lInput.replace("l", "w")
+        lInput = lInput.replace("OVE", "UV")
+        lInput = lInput.replace("this", "dis")
+        lInput = lInput.replace("no", "nyo")
+        lInput = lInput.replace("mo", "myo")
+        lInput = lInput.replace("No", "Nyo")
+        lInput = lInput.replace("Mo", "Myo")
+        lInput = lInput.replace("na", "nya")
+        lInput = lInput.replace("ni", "nyi")
+        lInput = lInput.replace("nu", "nyu")
+        lInput = lInput.replace("ne", "nye")
+        lInput = lInput.replace("anye", "ane")
+        lInput = lInput.replace("inye", "ine")
+        lInput = lInput.replace("onye", "one")
+        lInput = lInput.replace("unye", "une")
         return lInput
     }
 
