@@ -56,17 +56,17 @@ internal object ShulkerPreview : Module(
     }
 
     private fun renderShulker(stack: ItemStack, originalX: Int, originalY: Int) {
-        val width = 144.coerceAtLeast(FontRenderAdapter.getStringWidth(stack.displayName).ceilToInt() + 3) // 9 * 16
+        val width = 144.coerceAtLeast(FontRenderAdapter.getStringWidth(stack.displayName).ceilToInt() + 3)
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())
 
         val x = (originalX + 12).toDouble()
         val y = (originalY - 12).toDouble()
-        val height = FontRenderAdapter.getFontHeight() + 48 // 3 * 16
+        val height = FontRenderAdapter.getFontHeight() + 48
 
         RenderUtils2D.drawRoundedRectFilled(
             vertexHelper,
             Vec2d(x - 4, y - 4),
-            Vec2d((x + width + 4), (y + height + 4)),
+            Vec2d(x + width + 4, y + height + 4),
             1.0,
             color = backgroundColorSetting
         )
