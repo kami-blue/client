@@ -26,6 +26,7 @@ internal object ShulkerPreview : Module(
     description = "Previews shulkers in the game GUI"
 ) {
 
+    private val useCustomFont by setting("Use Custom Font", false)
     private val backgroundColorSetting by setting("Background Color", ColorHolder(16, 0, 16, 240))
     private val borderTopColor by setting("Top Border Color", ColorHolder(80, 0, 255, 80))
     private val borderBottomColor by setting("Bottom Border Color", ColorHolder(40, 0, 127, 80))
@@ -81,7 +82,7 @@ internal object ShulkerPreview : Module(
 
         RenderUtils2D.drawLineWithColorPoints(vertexHelper, points, 5.0f)
 
-        FontRenderAdapter.drawString(stack.displayName, x.toFloat(), y.toFloat() - 2)
+        FontRenderAdapter.drawString(stack.displayName, x.toFloat(), y.toFloat() - 2, useCustomFont)
     }
 
     private fun renderShulkerItems(shulkerInventory: NonNullList<ItemStack>, originalX: Int, originalY: Int) {
