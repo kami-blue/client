@@ -5,7 +5,7 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 class ColorGradient(vararg stops: Pair<Float, ColorHolder>) {
-    val colorArray = stops.sortedBy { it.first }.toTypedArray()
+    private val colorArray = stops.sortedBy { it.first }.toTypedArray()
 
     fun get(valueIn: Float): ColorHolder {
         if (colorArray.isEmpty()) return ColorHolder(255, 255, 255)

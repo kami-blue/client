@@ -26,9 +26,9 @@ internal object ShulkerPreview : Module(
     description = "Previews shulkers in the game GUI"
 ) {
 
-    val backgroundColorSetting by setting("Background Color", ColorHolder(16, 0, 16, 240))
-    val borderTopColor by setting("Top Border Color", ColorHolder(80, 0, 255, 80))
-    val borderBottomColor by setting("Bottom Border Color", ColorHolder(40, 0, 127, 80))
+    private val backgroundColorSetting by setting("Background Color", ColorHolder(16, 0, 16, 240))
+    private val borderTopColor by setting("Top Border Color", ColorHolder(80, 0, 255, 80))
+    private val borderBottomColor by setting("Bottom Border Color", ColorHolder(40, 0, 127, 80))
 
     fun renderShulkerAndItems(stack: ItemStack, originalX: Int, originalY: Int, tagCompound: NBTTagCompound) {
         val shulkerInventory = NonNullList.withSize(27, ItemStack.EMPTY)
