@@ -37,7 +37,6 @@ internal object ShulkerPreview : Module(
         ItemStackHelper.loadAllItems(tagCompound, shulkerInventory)
 
         renderShulker(stack, originalX, originalY)
-
         renderShulkerItems(shulkerInventory, originalX, originalY)
 
         GlStateManager.popMatrix()
@@ -62,19 +61,23 @@ internal object ShulkerPreview : Module(
 
         val x = (originalX + 12).toDouble()
         val y = (originalY - 12).toDouble()
-        val height = FontRenderAdapter.getFontHeight() + 48
+        val height = FontRenderAdapter.getFontHeight() + 48 // 3 * 16
 
-        RenderUtils2D.drawRoundedRectFilled(vertexHelper,
+        RenderUtils2D.drawRoundedRectFilled(
+            vertexHelper,
             Vec2d(x - 4, y - 4),
             Vec2d((x + width + 4), (y + height + 4)),
             1.0,
-            color = backgroundColorSetting)
+            color = backgroundColorSetting
+        )
 
-        val points = arrayOf(Vec2d(x - 3, y - 3) to borderTopColor,
+        val points = arrayOf(
+            Vec2d(x - 3, y - 3) to borderTopColor,
             Vec2d(x - 3, y + height + 3) to borderBottomColor,
             Vec2d(x + width + 3, y + height + 3) to borderBottomColor,
             Vec2d(x + width + 3, y - 3) to borderTopColor,
-            Vec2d(x - 3, y - 3) to borderTopColor)
+            Vec2d(x - 3, y - 3) to borderTopColor
+        )
 
         RenderUtils2D.drawLineWithColorPoints(vertexHelper, points, 5.0f)
 
