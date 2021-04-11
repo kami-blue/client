@@ -14,6 +14,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.*
 import net.minecraft.tileentity.*
 import net.minecraft.util.ResourceLocation
+import net.minecraft.world.EnumSkyBlock
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.registries.GameData
 import org.kamiblue.client.event.Phase
@@ -58,7 +59,8 @@ internal object NoRender : Module(
     private val particles = setting("Particles", true, { page.value == Page.OTHER })
     private val falling = setting("Falling Blocks", true, { page.value == Page.OTHER })
     val beacon = setting("Beacon Beams", true, { page.value == Page.OTHER })
-    val skylight = setting("SkyLight Updates", true, { page.value == Page.OTHER })
+    private val allLightingUpdates by setting("All Lighting Updates", true, { page.value == Page.OTHER })
+    private val skylight by setting("SkyLight Updates", true, { page.value == Page.OTHER && !allLightingUpdates })
     private val enchantingTable = setting("Enchanting Books", true, { page.value == Page.OTHER })
     private val enchantingTableSnow = setting("Enchanting Table Snow", false, { page.value == Page.OTHER }, description = "Replace enchanting table models with snow layers")
     private val projectiles = setting("Projectiles", false, { page.value == Page.OTHER })
@@ -151,6 +153,10 @@ internal object NoRender : Module(
                 }
             }
         }
+    }
+
+    fun handleLighting(lightType: EnumSkyBlock): Boolean {
+        return isEnabled && (skylight && lightType == EnumSkyBlock.SKY || allLightingUpdates)
     }
 
     fun handleParticle(particle: Particle) = particles.value
