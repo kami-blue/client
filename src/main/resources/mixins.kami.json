@@ -51,6 +51,7 @@
     "player.MixinPlayerControllerMP",
     "render.MixinBlockFluidRenderer",
     "render.MixinBlockModelRenderer",
+    "render.MixinBlock",
     "render.MixinDebugRendererChunkBorder",
     "render.MixinEntityRenderer",
     "render.MixinFontRenderer",
