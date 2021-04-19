@@ -1,4 +1,4 @@
-package org.kamiblue.client.mixin.client.render;
+package org.kamiblue.client.mixin.client.world;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockFluidRenderer;
@@ -13,12 +13,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BlockFluidRenderer.class)
 public class MixinBlockFluidRenderer {
-
     @Inject(method = "renderFluid", at = @At("HEAD"), cancellable = true)
     public void renderFluid(IBlockAccess blockAccess, IBlockState blockStateIn, BlockPos blockPosIn, BufferBuilder bufferBuilderIn, CallbackInfoReturnable<Boolean> ci) {
         if (Xray.shouldReplace(blockStateIn)) {
             ci.cancel();
         }
     }
-
 }

@@ -6,11 +6,13 @@ import org.kamiblue.client.module.modules.movement.SafeWalk;
 import org.kamiblue.client.module.modules.movement.Velocity;
 import org.kamiblue.client.module.modules.player.Freecam;
 import org.kamiblue.client.module.modules.player.ViewLock;
+import org.kamiblue.client.module.modules.render.Xray;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = Entity.class, priority = Integer.MAX_VALUE)
 public abstract class MixinEntity {
@@ -47,5 +49,12 @@ public abstract class MixinEntity {
 
         if (Freecam.handleTurn(casted, yaw, pitch, ci)) return;
         ViewLock.handleTurn(casted, yaw, pitch, ci);
+    }
+
+    @Inject(method = "getBrightnessForRender", at = @At("HEAD"), cancellable = true)
+    public void getBrightnessForRender(CallbackInfoReturnable<Integer> cir) {
+        if (Xray.INSTANCE.isEnabled()) {
+            cir.setReturnValue(15);
+        }
     }
 }

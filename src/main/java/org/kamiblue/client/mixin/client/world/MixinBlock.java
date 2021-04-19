@@ -1,4 +1,4 @@
-package org.kamiblue.client.mixin.client.render;
+package org.kamiblue.client.mixin.client.world;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
