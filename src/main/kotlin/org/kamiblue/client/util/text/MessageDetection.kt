@@ -70,7 +70,7 @@ object MessageDetection {
         ANY(*SENT.regexes, *RECEIVE.regexes);
 
         override fun playerName(input: CharSequence) = matchedRegex(input)?.let { regex ->
-            input.replace(regex, "$1").takeIf { it.isNotBlank() }
+            regex.find(input)?.groupValues?.get(1)?.takeIf { it.isNotBlank() }
         }
     }
 

@@ -32,6 +32,7 @@ internal object BoatFly : Module(
     private val glideSpeed by setting("Glide Speed", 0.1f, 0.0f..1.0f, 0.01f)
     private val upSpeed by setting("Up Speed", 1.0f, 0.0f..5.0f, 0.1f)
     val opacity by setting("Boat Opacity", 1.0f, 0.0f..1.0f, 0.01f)
+    val size by setting("Boat Scale", 1.0, 0.05..1.5, 0.01)
     private val forceInteract by setting("Force Interact", false)
     private val interactTickDelay by setting("Interact Delay", 2, 1..20, 1, { forceInteract }, description = "Force interact packet delay, in ticks.")
 
@@ -76,4 +77,15 @@ internal object BoatFly : Module(
         if (!entity.isInWater) entity.motionY = -glideSpeed.toDouble()
         if (mc.gameSettings.keyBindJump.isKeyDown) entity.motionY += upSpeed / 2.0
     }
+
+    @JvmStatic
+    fun isBoatFlying(entityIn: Entity): Boolean {
+        return isEnabled && mc.player?.ridingEntity == entityIn
+    }
+
+    @JvmStatic
+    fun shouldModifyScale(entityIn: Entity): Boolean {
+        return isBoatFlying(entityIn) && mc.gameSettings.thirdPersonView == 0
+    }
+
 }

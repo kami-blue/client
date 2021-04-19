@@ -36,7 +36,7 @@ internal object ModuleList : HudElement(
     private val showInvisible by setting("Show Invisible", false)
     private val rainbow by setting("Rainbow", true)
     private val rainbowLength by setting("Rainbow Length", 10.0f, 1.0f..20.0f, 0.5f, { rainbow })
-    private val indexedHue by setting("Indexed Hue", 0.5f, 0.0f..1.0f, 0.05f)
+    private val indexedHue by setting("Indexed Hue", 0.5f, 0.0f..1.0f, 0.05f, { rainbow })
     private val primary by setting("Primary Color", ColorHolder(155, 144, 255), false)
     private val secondary by setting("Secondary Color", ColorHolder(255, 255, 255), false)
 

@@ -1,11 +1,6 @@
 package org.kamiblue.client.module.modules.render
 
-import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.inventory.ItemStackHelper
 import net.minecraft.item.ItemShulkerBox
 import net.minecraft.item.ItemStack
@@ -14,6 +9,13 @@ import net.minecraft.util.NonNullList
 import org.kamiblue.client.mixin.client.gui.MixinGuiScreen
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
+import org.kamiblue.client.util.color.ColorHolder
+import org.kamiblue.client.util.graphics.GlStateUtils
+import org.kamiblue.client.util.graphics.RenderUtils2D
+import org.kamiblue.client.util.graphics.VertexHelper
+import org.kamiblue.client.util.graphics.font.FontRenderAdapter
+import org.kamiblue.client.util.math.Vec2d
+import org.kamiblue.commons.extension.ceilToInt
 
 /**
  * @see MixinGuiScreen.renderToolTip
@@ -24,42 +26,23 @@ internal object ShulkerPreview : Module(
     description = "Previews shulkers in the game GUI"
 ) {
 
-    private val itemRenderer = Minecraft.getMinecraft().renderItem
-    private val fontRenderer = Minecraft.getMinecraft().fontRenderer
+    private val useCustomFont by setting("Use Custom Font", false)
+    private val backgroundColorSetting by setting("Background Color", ColorHolder(16, 0, 16, 190))
+    private val borderTopColor by setting("Top Border Color", ColorHolder(144, 101, 237, 54))
+    private val borderBottomColor by setting("Bottom Border Color", ColorHolder(40, 0, 127, 80))
 
-    @JvmStatic
     fun renderShulkerAndItems(stack: ItemStack, originalX: Int, originalY: Int, tagCompound: NBTTagCompound) {
-
         val shulkerInventory = NonNullList.withSize(27, ItemStack.EMPTY)
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(0.0, 0.0, 500.0)
         ItemStackHelper.loadAllItems(tagCompound, shulkerInventory)
 
-        GlStateManager.enableBlend()
-        GlStateManager.disableRescaleNormal()
-        RenderHelper.disableStandardItemLighting()
-        GlStateManager.disableLighting()
-        GlStateManager.disableDepth()
-
         renderShulker(stack, originalX, originalY)
-
-        GlStateManager.enableBlend()
-        GlStateManager.enableAlpha()
-        GlStateManager.enableTexture2D()
-        GlStateManager.enableLighting()
-        GlStateManager.enableDepth()
-        RenderHelper.enableGUIStandardItemLighting()
-
         renderShulkerItems(shulkerInventory, originalX, originalY)
 
-        RenderHelper.disableStandardItemLighting()
-        itemRenderer.zLevel = 0.0f
-
-        GlStateManager.enableLighting()
-        GlStateManager.enableDepth()
-        RenderHelper.enableStandardItemLighting()
-        GlStateManager.enableRescaleNormal()
+        GlStateManager.popMatrix()
     }
 
-    @JvmStatic
     fun getShulkerData(stack: ItemStack): NBTTagCompound? {
         val tagCompound = if (stack.item is ItemShulkerBox) stack.tagCompound else return null
 
@@ -74,74 +57,39 @@ internal object ShulkerPreview : Module(
     }
 
     private fun renderShulker(stack: ItemStack, originalX: Int, originalY: Int) {
-        val width = 144.coerceAtLeast(fontRenderer.getStringWidth(stack.displayName) + 3) // 9 * 16
+        val width = 144.coerceAtLeast(FontRenderAdapter.getStringWidth(stack.displayName).ceilToInt() + 3)
+        val vertexHelper = VertexHelper(GlStateUtils.useVbo())
 
-        val x = originalX + 12
-        val y = originalY - 12
-        val height = 48 + 9 // 3 * 16
+        val x = (originalX + 12).toDouble()
+        val y = (originalY - 12).toDouble()
+        val height = FontRenderAdapter.getFontHeight() + 48
 
-        itemRenderer.zLevel = 300.0f
-        // Magic numbers taken from Minecraft code
-        drawGradientRect(x - 3, y - 4, x + width + 3, y - 3, -267386864, -267386864)
-        drawGradientRect(x - 3, y + height + 3, x + width + 3, y + height + 4, -267386864, -267386864)
-        drawGradientRect(x - 3, y - 3, x + width + 3, y + height + 3, -267386864, -267386864)
-        drawGradientRect(x - 4, y - 3, x - 3, y + height + 3, -267386864, -267386864)
-        drawGradientRect(x + width + 3, y - 3, x + width + 4, y + height + 3, -267386864, -267386864)
-        drawGradientRect(x - 3, y - 3 + 1, x - 3 + 1, y + height + 3 - 1, 1347420415, 1344798847)
-        drawGradientRect(x + width + 2, y - 3 + 1, x + width + 3, y + height + 3 - 1, 1347420415, 1344798847)
-        drawGradientRect(x - 3, y - 3, x + width + 3, y - 3 + 1, 1347420415, 1347420415)
-        drawGradientRect(x - 3, y + height + 2, x + width + 3, y + height + 3, 1344798847, 1344798847)
+        RenderUtils2D.drawRoundedRectFilled(
+            vertexHelper,
+            Vec2d(x - 4, y - 4),
+            Vec2d(x + width + 4, y + height + 4),
+            1.0,
+            color = backgroundColorSetting
+        )
 
-        fontRenderer.drawString(stack.displayName, x, y, 0xffffff)
+        val points = arrayOf(
+            Vec2d(x - 3, y - 3) to borderTopColor,
+            Vec2d(x - 3, y + height + 3) to borderBottomColor,
+            Vec2d(x + width + 3, y + height + 3) to borderBottomColor,
+            Vec2d(x + width + 3, y - 3) to borderTopColor,
+            Vec2d(x - 3, y - 3) to borderTopColor
+        )
+
+        RenderUtils2D.drawLineWithColorPoints(vertexHelper, points, 5.0f)
+
+        FontRenderAdapter.drawString(stack.displayName, x.toFloat(), y.toFloat() - 2.0f, customFont = useCustomFont)
     }
 
     private fun renderShulkerItems(shulkerInventory: NonNullList<ItemStack>, originalX: Int, originalY: Int) {
         for (i in 0 until shulkerInventory.size) {
-            val x = originalX + i % 9 * 16 + 11
-            val y = originalY + i / 9 * 16 - 11 + 8
-            val itemStack: ItemStack = shulkerInventory[i]
-            itemRenderer.renderItemAndEffectIntoGUI(itemStack, x, y)
-            itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, itemStack, x, y, null)
+            val x = originalX + (i % 9) * 16 + 11
+            val y = originalY + (i / 9) * 16 - 2
+            RenderUtils2D.drawItem(shulkerInventory[i], x, y)
         }
     }
-
-    private fun drawGradientRect(left: Int, top: Int, right: Int, bottom: Int, startColor: Int, endColor: Int) {
-        GlStateManager.disableTexture2D()
-        GlStateManager.enableBlend()
-        GlStateManager.disableAlpha()
-        GlStateManager.tryBlendFuncSeparate(
-            GlStateManager.SourceFactor.SRC_ALPHA,
-            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-            GlStateManager.SourceFactor.ONE,
-            GlStateManager.DestFactor.ZERO
-        )
-        GlStateManager.shadeModel(7425)
-
-        val tessellator = Tessellator.getInstance()
-        val bufBuilder = tessellator.buffer
-
-        bufBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR)
-        bufBuilder.colorVertex(right, top, startColor)
-        bufBuilder.colorVertex(left, top, startColor)
-        bufBuilder.colorVertex(left, bottom, endColor)
-        bufBuilder.colorVertex(right, bottom, endColor)
-        tessellator.draw()
-
-        GlStateManager.shadeModel(7424)
-        GlStateManager.disableBlend()
-        GlStateManager.enableAlpha()
-        GlStateManager.enableTexture2D()
-    }
-
-    private fun BufferBuilder.colorVertex(x: Int, y: Int, color: Int) {
-        this.pos(x.toDouble(), y.toDouble(), 300.0)
-            .color(
-                (color shr 16 and 255) / 255f,
-                (color shr 8 and 255) / 255f,
-                (color and 255) / 255f,
-                (color shr 24 and 255) / 255f
-            )
-            .endVertex()
-    }
-
 }

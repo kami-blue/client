@@ -139,6 +139,9 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
 
     // Gui init
     open fun onDisplayed() {
+        lastClickedWindow = null
+        lastEventButton = -1
+
         displayed.value = true
 
         for (window in windowList) window.onDisplayed()

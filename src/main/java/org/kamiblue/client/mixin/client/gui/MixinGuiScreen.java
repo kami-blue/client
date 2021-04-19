@@ -21,11 +21,11 @@ public class MixinGuiScreen {
     @Inject(method = "renderToolTip", at = @At("HEAD"), cancellable = true)
     public void renderToolTip(ItemStack stack, int x, int y, CallbackInfo info) {
         if (ShulkerPreview.INSTANCE.isEnabled() && stack.getItem() instanceof ItemShulkerBox) {
-            NBTTagCompound tagCompound = ShulkerPreview.getShulkerData(stack);
+            NBTTagCompound tagCompound = ShulkerPreview.INSTANCE.getShulkerData(stack);
 
             if (tagCompound != null) {
                 info.cancel();
-                ShulkerPreview.renderShulkerAndItems(stack, x, y, tagCompound);
+                ShulkerPreview.INSTANCE.renderShulkerAndItems(stack, x, y, tagCompound);
             }
         } else if (MapPreview.INSTANCE.isEnabled() && stack.getItem() instanceof ItemMap) {
             MapData mapData = MapPreview.getMapData(stack);

@@ -43,7 +43,7 @@ internal object ChatFilter : Module(
 
                 MessageSendHelper.sendChatMessage("$chatName Loaded '&7chat_filter.txt&f'!")
             } catch (exception: FileNotFoundException) {
-                MessageSendHelper.sendErrorMessage("$chatName Couldn't find a file called '&7chat_filter.txt&f' inside your '&7.minecraft&f' folder, disabling")
+                MessageSendHelper.sendErrorMessage("$chatName Couldn't find a file called '&7chat_filter.txt&f' inside your '&7.minecraft/kamiblue&f' folder, disabling")
                 disable()
             } catch (exception: Exception) {
                 MessageSendHelper.sendErrorMessage(exception.toString())

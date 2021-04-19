@@ -12,9 +12,6 @@ import org.kamiblue.client.util.math.Vec2d
 import org.kamiblue.client.util.threads.safeListener
 import org.kamiblue.event.listener.listener
 
-/**
- * Created by Dewy on the 21st of April, 2020
- */
 internal object Baritone : Module(
     name = "Baritone",
     category = Category.CLIENT,
@@ -33,7 +30,6 @@ internal object Baritone : Module(
     private val allowParkour = setting("Allow Parkour", true)
     private val allowParkourPlace = setting("Allow Parkour Place", true)
     private val avoidPortals = setting("Avoid Portals", false)
-    private val mapArtMode = setting("Map Art Mode", false)
     private val renderGoal = setting("Render Goals", true)
     private val failureTimeout = setting("Fail Timeout", 2, 1..20, 1)
     private val blockReachDistance = setting("Reach Distance", 4.5f, 1.0f..10.0f, 0.5f)
@@ -83,7 +79,6 @@ internal object Baritone : Module(
             it.allowParkour.value = allowParkour.value
             it.allowParkourPlace.value = allowParkourPlace.value
             it.enterPortal.value = !avoidPortals.value
-            it.mapArtMode.value = mapArtMode.value
             it.renderGoal.value = renderGoal.value
             it.failureTimeoutMS.value = failureTimeout.value * 1000L
             it.blockReachDistance.value = blockReachDistance.value

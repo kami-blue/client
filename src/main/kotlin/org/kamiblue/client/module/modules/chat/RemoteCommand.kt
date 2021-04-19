@@ -20,7 +20,7 @@ internal object RemoteCommand : Module(
 ) {
     private val allow = setting("Allow", Allow.FRIENDS)
     private val repeatAll by setting("Repeat All", false)
-    private val custom by setting("Custom", "unchanged")
+    private val custom by setting("Custom", "unchanged", { allow.value == Allow.CUSTOM || allow.value == Allow.FRIENDS_AND_CUSTOM })
 
     init {
         allow.listeners.add {
@@ -68,11 +68,7 @@ internal object RemoteCommand : Module(
     }
 
     private fun isCustomUser(username: String): Boolean {
-        val customPlayers = custom.split(",")
-        for (player in customPlayers) {
-            if (player == username) return true
-        }
-        return false
+        return custom.split(",").any { it.equals(username, true) }
     }
 
     private enum class Allow {

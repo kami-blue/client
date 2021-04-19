@@ -12,7 +12,6 @@ import org.kamiblue.client.event.events.RenderOverlayEvent
 import org.kamiblue.client.event.events.RenderWorldEvent
 import org.kamiblue.client.manager.managers.CombatManager
 import org.kamiblue.client.manager.managers.HotbarManager.serverSideItem
-import org.kamiblue.client.manager.managers.PlayerPacketManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.util.Quad
@@ -56,7 +55,7 @@ internal object CrystalESP : Module(
     private val animationScale = setting("Animation Scale", 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
     private val crystalRange = setting("Crystal ESP Range", 16.0f, 0.0f..16.0f, 0.5f, { page.value == Page.CRYSTAL_ESP })
 
-    private val colour by setting("Color", ColorHolder(155, 144, 255), false, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
+    private val color by setting("Color", ColorHolder(155, 144, 255), false, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
     private val aFilled = setting("Filled Alpha", 47, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && filled.value })
     private val aOutline = setting("Outline Alpha", 127, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && outline.value })
     private val aTracer = setting("Tracer Alpha", 200, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && tracer.value })
@@ -163,8 +162,8 @@ internal object CrystalESP : Module(
                 for ((pos, quad) in renderCrystalMap) {
                     val progress = getAnimationProgress(quad.third, quad.fourth)
                     val box = AxisAlignedBB(pos).shrink(0.5 - progress * 0.5)
-                    colour.a = (progress * 255.0f).toInt()
-                    renderer.add(box, colour)
+                    color.a = (progress * 255.0f).toInt()
+                    renderer.add(box, color)
                 }
 
                 renderer.render(true)

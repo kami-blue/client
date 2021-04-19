@@ -7,27 +7,11 @@ import java.io.BufferedReader
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
-import java.net.InetSocketAddress
-import java.net.Socket
 import java.net.URI
 import java.net.URL
 import java.nio.channels.Channels
 
 object WebUtils {
-    var isInternetDown = false; private set
-
-    // TODO: Make a manager for this across modules
-    fun update() {
-        isInternetDown = try {
-            Socket().use { socket ->
-                socket.connect(InetSocketAddress("1.1.1.1", 80), 100)
-                false
-            }
-        } catch (e: Exception) {
-            true // Either timeout or unreachable or failed DNS lookup.
-        }
-    }
-
     fun openWebLink(url: String) {
         try {
             Desktop.getDesktop().browse(URI(url))

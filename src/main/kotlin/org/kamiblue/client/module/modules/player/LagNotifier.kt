@@ -7,6 +7,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.events.ConnectionEvent
 import org.kamiblue.client.event.events.PacketEvent
 import org.kamiblue.client.event.events.RenderOverlayEvent
+import org.kamiblue.client.manager.managers.NetworkManager
 import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.process.PauseProcess.pauseBaritone
@@ -68,9 +69,7 @@ internal object LagNotifier : Module(
                 val timeoutMillis = (timeout * 1000.0f).toLong()
                 when {
                     lastPacketTimer.tick(timeoutMillis, false) -> {
-                        if (pingTimer.tick(1L)) WebUtils.update()
-
-                        text = if (WebUtils.isInternetDown) "Your internet is offline! "
+                        text = if (NetworkManager.isOffline) "Your internet is offline! "
                         else "Server Not Responding! "
 
                         text += timeDifference(lastPacketTimer.time)

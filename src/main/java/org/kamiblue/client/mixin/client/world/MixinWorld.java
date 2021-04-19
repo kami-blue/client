@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinWorld {
     @Inject(method = "checkLightFor", at = @At("HEAD"), cancellable = true)
     private void checkLightForHead(EnumSkyBlock lightType, BlockPos pos, CallbackInfoReturnable<Boolean> ci) {
-        if (lightType == EnumSkyBlock.SKY && NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.getSkylight().getValue()) {
+        if (NoRender.INSTANCE.handleLighting(lightType)) {
             ci.setReturnValue(false);
         }
     }
