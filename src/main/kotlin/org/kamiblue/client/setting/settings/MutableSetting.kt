@@ -32,8 +32,9 @@ open class MutableSetting<T : Any>(
                 }
                 field = new
 
-                valueListeners.forEach { it(prev, field) }
-                listeners.forEach { it() }
+                // TODO: CollectionSetting.editValue needs to somehow work here
+                valueListeners.forEach { it.invoke(prev, field) }
+                listeners.forEach { it.invoke() }
             }
         }
 

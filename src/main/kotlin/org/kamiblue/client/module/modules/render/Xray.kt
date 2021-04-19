@@ -24,7 +24,7 @@ internal object Xray : Module(
             mc.renderGlobal.loadRenderers()
         }
 
-        visibleList.listeners.add {
+        visibleList.editListeners.add {
             mc.renderGlobal.loadRenderers()
         }
     }

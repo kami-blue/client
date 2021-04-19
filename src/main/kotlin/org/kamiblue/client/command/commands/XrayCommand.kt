@@ -17,7 +17,12 @@ object XrayCommand : ClientCommand(
                 execute("Add a block to visible xray list") {
                     val blockName = blockArg.value.registryName.toString()
 
-                    addBlock(blockName)
+                    if (Xray.visibleList.contains(blockName)) {
+                        MessageSendHelper.sendErrorMessage("${formatValue(blockName)} is already added to the visible block list")
+                    } else {
+                        Xray.visibleList.editValue { it.add(blockName) }
+                        MessageSendHelper.sendChatMessage("${formatValue(blockName)} has been added to the visible block list")
+                    }
                 }
             }
         }
@@ -27,9 +32,10 @@ object XrayCommand : ClientCommand(
                 execute("Remove a block from visible xray list") {
                     val blockName = blockArg.value.registryName.toString()
 
-                    if (!Xray.visibleList.remove(blockName)) {
+                    if (!Xray.visibleList.contains(blockName)) {
                         MessageSendHelper.sendErrorMessage("You do not have ${formatValue(blockName)} added to xray visible block list")
                     } else {
+                        Xray.visibleList.editValue { it.remove(blockName) }
                         MessageSendHelper.sendChatMessage("Removed ${formatValue(blockName)} from xray visible block list")
                     }
                 }
@@ -41,8 +47,10 @@ object XrayCommand : ClientCommand(
                 execute("Set the xray list to one block") {
                     val blockName = blockArg.value.registryName.toString()
 
-                    Xray.visibleList.clear()
-                    Xray.visibleList.add(blockName)
+                    Xray.visibleList.editValue {
+                        it.clear()
+                        it.add(blockName)
+                    }
                     MessageSendHelper.sendChatMessage("Set the xray block list to ${formatValue(blockName)}")
                 }
             }
@@ -50,7 +58,7 @@ object XrayCommand : ClientCommand(
 
         literal("reset", "default") {
             execute("Reset the visible block list to defaults") {
-                Xray.visibleList.resetValue()
+                Xray.visibleList.editValue { it.resetValue() }
                 MessageSendHelper.sendChatMessage("Reset the visible block list to defaults")
             }
         }
@@ -63,17 +71,9 @@ object XrayCommand : ClientCommand(
 
         literal("clear") {
             execute("Set the visible list to nothing") {
-                Xray.visibleList.clear()
+                Xray.visibleList.editValue { it.clear() }
                 MessageSendHelper.sendChatMessage("Cleared the visible block list")
             }
-        }
-    }
-
-    private fun addBlock(blockName: String) {
-        if (!Xray.visibleList.add(blockName)) {
-            MessageSendHelper.sendErrorMessage("${formatValue(blockName)} is already added to the visible block list")
-        } else {
-            MessageSendHelper.sendChatMessage("${formatValue(blockName)} has been added to the visible block list")
         }
     }
 }

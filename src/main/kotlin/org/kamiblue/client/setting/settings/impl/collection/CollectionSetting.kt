@@ -14,9 +14,17 @@ class CollectionSetting<E : Any, T : MutableCollection<E>>(
     override val defaultValue: T = valueClass.newInstance()
     private val lockObject = Any()
     private val type = TypeToken.getArray(value.first().javaClass).type
+    val editListeners = ArrayList<() -> Unit>()
 
     init {
         value.toCollection(defaultValue)
+    }
+
+    // Should be used instead of directly accessing value itself
+    // TODO: Hook into [MutableSetting] and allow this to work with `this.value.add(someVal)`
+    fun editValue(block: (value: CollectionSetting<E, T>) -> Unit) {
+        block.invoke(this)
+        editListeners.forEach { it.invoke() }
     }
 
     override fun resetValue() {
