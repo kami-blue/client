@@ -53,6 +53,7 @@
     "render.MixinBlockModelRenderer",
     "render.MixinBlock",
     "render.MixinDebugRendererChunkBorder",
+    "render.MixinEntity",
     "render.MixinEntityRenderer",
     "render.MixinFontRenderer",
     "render.MixinItemRenderer",
