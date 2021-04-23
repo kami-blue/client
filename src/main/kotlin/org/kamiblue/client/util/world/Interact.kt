@@ -38,7 +38,7 @@ private fun SafeClientEvent.getNeighbourSequence(
     sides: Array<EnumFacing>,
     sequence: ArrayList<PlaceInfo>,
     toIgnore: HashSet<Pair<BlockPos, EnumFacing>>
-): List<PlaceInfo>? {
+): List<PlaceInfo> {
     for (side in sides) {
         checkNeighbour(eyePos, pos, side, range, visibleSideCheck, true, toIgnore)?.let {
             sequence.add(it)
@@ -55,12 +55,16 @@ private fun SafeClientEvent.getNeighbourSequence(
             val newSequence = ArrayList(sequence)
             newSequence.add(placeInfo)
 
-            return getNeighbourSequence(eyePos, newPos, attempts - 1, range, visibleSideCheck, sides, newSequence, toIgnore)
-                ?: continue
+            val neigh = getNeighbourSequence(eyePos, newPos, attempts - 1, range, visibleSideCheck, sides, newSequence, toIgnore)
+            if (neigh.isNotEmpty()) {
+                return neigh
+            } else {
+                continue
+            }
         }
     }
 
-    return null
+    return emptyList()
 }
 
 fun SafeClientEvent.getNeighbour(

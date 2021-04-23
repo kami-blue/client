@@ -3,6 +3,7 @@ package org.kamiblue.client.module.modules.misc
 import club.minnced.discord.rpc.DiscordEventHandlers
 import club.minnced.discord.rpc.DiscordRichPresence
 import net.minecraft.client.Minecraft
+import net.minecraft.init.Blocks
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.capeapi.CapeType
 import org.kamiblue.client.KamiMod
@@ -30,11 +31,12 @@ internal object DiscordRPC : Module(
     description = "Discord Rich Presence",
     enabledByDefault = true
 ) {
-    private val line1Left by setting("Line 1 Left", LineInfo.VERSION) // details left
-    private val line1Right by setting("Line 1 Right", LineInfo.USERNAME) // details right
-    private val line2Left by setting("Line 2 Left", LineInfo.SERVER_IP) // state left
-    private val line2Right by setting("Line 2 Right", LineInfo.HEALTH) // state right
-    private val coordsConfirm by setting("Coords Confirm", false, { showCoordsConfirm() })
+    private val highwayMode by setting("HighwayMode", false)
+    private val line1Left by setting("Line 1 Left", LineInfo.VERSION, { !highwayMode }) // details left
+    private val line1Right by setting("Line 1 Right", LineInfo.USERNAME, { !highwayMode }) // details right
+    private val line2Left by setting("Line 2 Left", LineInfo.DIMENSION, { !highwayMode }) // state left
+    private val line2Right by setting("Line 2 Right", LineInfo.HEALTH, { !highwayMode }) // state right
+    private val coordsConfirm by setting("Coords Confirm", false, { showCoordsConfirm() && !highwayMode })
 
     private enum class LineInfo {
         VERSION, WORLD, DIMENSION, USERNAME, HEALTH, HUNGER, SERVER_IP, COORDS, SPEED, HELD_ITEM, FPS, TPS, NONE
@@ -98,8 +100,28 @@ internal object DiscordRPC : Module(
     }
 
     private fun updateRPC() {
-        presence.details = getLine(line1Left) + getSeparator(0) + getLine(line1Right)
-        presence.state = getLine(line2Left) + getSeparator(1) + getLine(line2Right)
+        if (highwayMode) {
+            if (HighwayTools.matPlaced + HighwayTools.netherrackMined > 0) {
+                var pre = ""
+                when (HighwayTools.mode) {
+                    HighwayTools.Mode.HIGHWAY, HighwayTools.Mode.FLAT -> {
+                        presence.details = "%,d ${HighwayTools.material.localizedName}".format(HighwayTools.matPlaced)
+                        pre = "placed"
+                    }
+                    HighwayTools.Mode.TUNNEL -> {
+                        presence.details = "%,d ${Blocks.NETHERRACK.localizedName}".format(HighwayTools.netherrackMined)
+                        pre = "mined"
+                    }
+                }
+                presence.state = "$pre with ${KamiMod.VERSION_SIMPLE}"
+            } else {
+                presence.details = "running ${KamiMod.VERSION_SIMPLE}"
+                presence.state = ""
+            }
+        } else {
+            presence.details = getLine(line1Left) + getSeparator(0) + getLine(line1Right)
+            presence.state = getLine(line2Left) + getSeparator(1) + getLine(line2Right)
+        }
         rpc.Discord_UpdatePresence(presence)
     }
 

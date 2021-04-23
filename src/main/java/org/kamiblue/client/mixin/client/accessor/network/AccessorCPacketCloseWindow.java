@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface AccessorCPacketCloseWindow {
 
     @Accessor("windowId")
-    int kbGetWindowID();
+    int kbGetWindowId();
 
 }

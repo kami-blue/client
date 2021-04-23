@@ -26,7 +26,7 @@ class KamiMod {
         const val DIRECTORY = "kamiblue/"
 
         const val VERSION = "2.04.xx-dev" // Used for debugging. R.MM.DD-hash format.
-        const val VERSION_SIMPLE = "2.04.xx-dev" // Shown to the user. R.MM.DD[-beta] format.
+        const val VERSION_SIMPLE = "ht-v9.9-dev" // Shown to the user. R.MM.DD[-beta] format.
         const val VERSION_MAJOR = "2.04.01" // Used for update checking. RR.MM.01 format.
         const val BUILD_NUMBER = -1 // Do not remove, currently unused but will be used in the future.
 

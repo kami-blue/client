@@ -1,10 +1,10 @@
 package org.kamiblue.client.module.modules.player
 
-import net.minecraft.client.settings.KeyBinding
 import net.minecraft.init.Items
 import net.minecraft.init.MobEffects
 import net.minecraft.inventory.Slot
 import net.minecraft.item.*
+import net.minecraft.network.play.client.CPacketPlayerTryUseItem
 import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.client.event.SafeClientEvent
@@ -12,7 +12,6 @@ import org.kamiblue.client.module.Category
 import org.kamiblue.client.module.Module
 import org.kamiblue.client.process.PauseProcess.pauseBaritone
 import org.kamiblue.client.process.PauseProcess.unpauseBaritone
-import org.kamiblue.client.util.*
 import org.kamiblue.client.util.combat.CombatUtils.scaledHealth
 import org.kamiblue.client.util.items.*
 import org.kamiblue.client.util.threads.runSafe
@@ -76,34 +75,24 @@ internal object AutoEat : Module(
                 else -> PreferredFood.NORMAL
             }
 
-            val hand = when {
-                !shouldEat(preferredFood) -> {
-                    null // Null = stop eating
+            if (shouldEat(preferredFood)) {
+                when {
+                    isValidAndPreferred(player.heldItemOffhand, preferredFood) -> eat(EnumHand.OFF_HAND)
+                    isValidAndPreferred(player.heldItemMainhand, preferredFood) -> eat(EnumHand.MAIN_HAND)
+                    swapToFood(preferredFood) -> {
+                        when {
+                            isValidAndPreferredRecursive(player.heldItemOffhand, preferredFood) -> eat(EnumHand.OFF_HAND)
+                            isValidAndPreferredRecursive(player.heldItemMainhand, preferredFood) -> eat(EnumHand.MAIN_HAND)
+                        }
+                    }
                 }
-                isValidAndPreferred(player.heldItemOffhand, preferredFood) -> {
-                    EnumHand.OFF_HAND
-                }
-                isValidAndPreferred(player.heldItemMainhand, preferredFood) -> {
-                    EnumHand.MAIN_HAND
-                }
-                swapToFood(preferredFood) -> { // If we found valid food and moved
-                    // Set eating and pause then wait until next tick
-                    startEating()
-                    return@safeListener
-                }
-                // If there isn't valid food in inventory or directly valid food in hand, do recursive check on items in hand
-                isValidAndPreferredRecursive(player.heldItemOffhand, preferredFood) -> {
-                    EnumHand.OFF_HAND
-                }
-                isValidAndPreferredRecursive(player.heldItemMainhand, preferredFood) -> {
-                    EnumHand.MAIN_HAND
-                }
-                else -> {
-                    null // If we can't find any valid food then stop eating
+            } else {
+                if (eating) {
+                    stopEating()
+                } else {
+                    swapBack()
                 }
             }
-
-            eatOrStop(hand)
         }
     }
 
@@ -117,27 +106,10 @@ internal object AutoEat : Module(
         player.foodStats.foodLevel < belowHunger
             || preferredFood != PreferredFood.NORMAL
 
-    private fun SafeClientEvent.eatOrStop(hand: EnumHand?) {
-        if (hand != null) {
-            eat(hand)
-        } else {
-            // Stop eating first and swap back in the next tick
-            if (eating) {
-                stopEating()
-            } else {
-                swapBack()
-            }
-        }
-    }
-
     private fun SafeClientEvent.eat(hand: EnumHand) {
         if (!eating || !player.isHandActive || player.activeHand != hand) {
-            KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
-
-            // Vanilla Minecraft prioritize offhand so we need to force it using the specific hand
-            playerController.processRightClick(player, world, hand)
+            connection.sendPacket(CPacketPlayerTryUseItem(hand))
         }
-
         startEating()
     }
 
@@ -148,10 +120,6 @@ internal object AutoEat : Module(
 
     private fun stopEating() {
         unpauseBaritone()
-
-        runSafe {
-            KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
-        }
 
         eating = false
     }

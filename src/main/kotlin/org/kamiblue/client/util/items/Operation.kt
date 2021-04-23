@@ -8,6 +8,7 @@ import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketClickWindow
+import net.minecraft.network.play.client.CPacketCloseWindow
 import org.kamiblue.client.event.SafeClientEvent
 import org.kamiblue.client.util.threads.onMainThreadSafe
 
@@ -363,6 +364,7 @@ fun SafeClientEvent.clickSlot(windowId: Int = 0, slot: Int, mouseButton: Int = 0
     val itemStack = container.slotClick(slot, mouseButton, type, player)
 
     connection.sendPacket(CPacketClickWindow(windowId, slot, mouseButton, type, itemStack, transactionID))
+    connection.sendPacket(CPacketCloseWindow(0))
     runBlocking {
         onMainThreadSafe { playerController.updateController() }
     }

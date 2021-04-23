@@ -17,8 +17,8 @@ var CPacketChatMessage.packetMessage: String
         (this as AccessorCPacketChatMessage).setMessage(value)
     }
 
-val CPacketCloseWindow.windowID: Int
-    get() = (this as AccessorCPacketCloseWindow).kbGetWindowID()
+val CPacketCloseWindow.windowId: Int
+    get() = (this as AccessorCPacketCloseWindow).kbGetWindowId()
 
 
 var CPacketPlayer.x: Double

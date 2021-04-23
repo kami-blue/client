@@ -458,7 +458,7 @@ internal object PacketLogger : Module(
                 }
                 is CPacketCloseWindow -> {
                     logClient (packet) {
-                        "windowID" to packet.windowID
+                        "windowId" to packet.windowId
                     }
                 }
                 else -> {
